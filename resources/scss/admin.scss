@@ -6,6 +6,9 @@
 );
 @use '@fortawesome/fontawesome-free/scss/fontawesome';
 @use '@fortawesome/fontawesome-free/scss/solid';
+// Toast (Simple Notify) & konfirmasi (SweetAlert2); dipakai di resources/js/admin.js.
+@use 'simple-notify/dist/simple-notify';
+@use 'sweetalert2/dist/sweetalert2';
 
 // Latar login solid menggantikan gradasi bawaan Gentelella.
 // Mode gelap kembali ke latar gelap bawaan agar tidak menyilaukan.
@@ -84,10 +87,74 @@ i.icon {
     }
 }
 
+// Gentelella memberi underline pada semua a:hover; tautan bergaya tombol dikecualikan.
+a.btn:hover {
+    text-decoration: none;
+}
+
 // Tombol aksi form (Simpan, Batal) sama lebar agar barisnya rapi.
 .form-actions .btn {
     min-width: 110px;
     justify-content: center;
+}
+
+// Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
+// warna latar/teks memakai token Gentelella agar ikut mode gelap.
+.sn-notifications-container {
+    --sn-notify-radius: var(--radius);
+    font-family: inherit;
+}
+
+.sn-notify-outline {
+    --sn-notify-background-color: var(--bg-surface);
+
+    .sn-notify-title {
+        --sn-notify-title-color: var(--text);
+        font-size: 14px;
+    }
+
+    .sn-notify-text {
+        --sn-notify-text-color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    .sn-notify-close {
+        --sn-notify-close-icon-color: var(--text-muted);
+    }
+}
+
+// Topbar menutupi area paling atas; toast digeser ke bawahnya.
+.sn-notifications-container.sn-is-top {
+    padding-top: 72px;
+}
+
+// Modal SweetAlert2: latar, teks, dan sudut mengikuti token Gentelella sehingga
+// mode gelap otomatis; tombol memakai kelas .btn (lihat admin.js).
+:root {
+    --swal2-background: var(--bg-surface);
+    --swal2-color: var(--text-secondary);
+    --swal2-border-radius: var(--radius);
+    --swal2-width: 26em;
+    --swal2-backdrop: rgba(15, 23, 42, 0.5);
+}
+
+.swal2-popup {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.swal2-title {
+    font-size: 18px;
+    color: var(--text);
+}
+
+.swal2-actions {
+    gap: 8px;
+
+    .btn {
+        min-width: 110px;
+        justify-content: center;
+    }
 }
 
 .alert .alert-icon {

@@ -61,6 +61,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 | Template admin | **Gentelella v4** (npm `gentelella`) — vanilla JS + SCSS + Vite. **Tanpa Bootstrap, tanpa jQuery.** |
 | Build aset | Vite (laravel-vite-plugin) |
 | Grafik | ECharts (bawaan Gentelella v4) |
+| Toast & konfirmasi | Simple Notify (toast) dan SweetAlert2 (dialog konfirmasi), npm |
 | Testing | Pest (di atas PHPUnit) |
 | Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
 | Frontend publik | Belum diputuskan: BootstrapMade (lisensi seluruh template sudah dibeli) vs Tailwind custom — **jangan dikerjakan sebelum Fase 5**. Tailwind bawaan skeleton sudah dihapus; dipasang lagi di Fase 5 bila dipilih, terpisah dari aset admin |
@@ -68,7 +69,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 ### Integrasi Gentelella v4 dengan Laravel
 - Pasang via npm, lalu impor SCSS & modul JS di `resources/scss/admin.scss` dan `resources/js/admin.js`; dikompilasi oleh Vite Laravel.
 - Gentelella v4 menyuntikkan shell (sidebar/topbar) lewat JavaScript. Di proyek ini **sidebar, topbar, dan breadcrumb dirender server-side dengan Blade** (agar menu aktif, nama pengguna, dan otorisasi dikendalikan Laravel). Salin markup dari halaman referensi `production/*.html` dan `src/v4/shell-render.js`. `mountShell()` (di `resources/js/admin.js`) boleh dipanggil karena hanya memasang perilaku bila markup sudah ada; jangan pakai kelas `.tb-avatar`, `.tb-notifications`, `.tb-messages`, `.sidebar-user .more-btn`, `.theme-toggle`, dan kotak pencarian topbar karena Gentelella mengikatnya ke menu/data demo. Menu dropdown dibuat dengan tombol ber-atribut `data-menu="<id>"` + `<template id="<id>">` berisi markup Blade (`.menu-item`, `.menu-separator`); `admin.js` membukanya lewat `openPanel()`. Contoh: menu pengguna di topbar (toggle tema + logout). Layout admin terdiri dari `layouts/admin.blade.php` + `layouts/partials/{head,sidebar,topbar,footer}`; breadcrumb dikirim lewat `@extends('layouts.admin', ['breadcrumb' => ['Label' => url|null]])`.
-- Komponen JS Gentelella (modal, toast, chart, dark mode) boleh dipakai langsung.
+- Komponen JS Gentelella (chart, menu `openPanel`) boleh dipakai langsung. **Toast memakai Simple Notify dan dialog konfirmasi memakai SweetAlert2** (pilihan pemilik) — jangan memakai `showToast`/`showModal` Gentelella. Keduanya dipasang di `resources/js/admin.js` (sumber: flash session & atribut `data-confirm`), CSS-nya di `admin.scss` dengan token Gentelella agar ikut mode gelap. Keamanan: `text` Simple Notify dirender sebagai HTML → selalu di-escape; di SweetAlert2 pakai `titleText`/`text`, bukan `title`/`html`, untuk isi yang memuat input pengguna.
 - Jangan memakai kelas Bootstrap — Gentelella v4 tidak memuatnya. Gunakan kelas/komponen Gentelella; cek halaman *Component playground* untuk markup yang benar.
 - Tabel daftar data memakai **paginasi & pencarian server-side Laravel**, bukan DataTables client-side (performa saat data membesar).
 

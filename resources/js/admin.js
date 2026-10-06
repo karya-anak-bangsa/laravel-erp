@@ -2,8 +2,10 @@
 // (drawer mobile, mode rail, submenu) karena markup sudah ada.
 import { mountShell } from 'gentelella/v4/shell';
 import { openPanel } from 'gentelella/v4/menus';
-import { showModal } from 'gentelella/v4/modal';
-import { showToast } from 'gentelella/v4/toast';
+// Toast & konfirmasi memakai Simple Notify & SweetAlert2 (pilihan pemilik), bukan
+// komponen Gentelella. Build ESM tanpa CSS bawaan; CSS-nya dimuat di admin.scss.
+import Notify from 'simple-notify';
+import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
 
 mountShell();
 
@@ -51,20 +53,37 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (ev
 });
 
 // Flash message dari Laravel (layouts/partials/flash.blade.php) → toast.
+const judulToast = { success: 'Berhasil', error: 'Gagal', warning: 'Perhatian', info: 'Informasi' };
+
+// Simple Notify memasukkan "text" sebagai HTML; pesan bisa memuat input pengguna
+// (mis. nama akun), jadi di-escape lebih dulu agar tidak menjadi celah XSS.
+const escapeHtml = (teks) => {
+    const div = document.createElement('div');
+    div.textContent = teks;
+    return div.innerHTML;
+};
+
 const flash = document.getElementById('flash-toast');
 if (flash) {
     try {
         JSON.parse(flash.textContent).forEach(({ jenis, pesan }) => {
-            showToast(pesan, { variant: jenis, duration: 4000 });
+            new Notify({
+                status: jenis,
+                title: judulToast[jenis] ?? judulToast.info,
+                text: escapeHtml(pesan),
+                effect: 'slide',
+                autotimeout: 4000,
+                position: 'right top',
+            });
         });
     } catch {
         // JSON rusak tidak boleh menghentikan skrip halaman.
     }
 }
 
-// Form dengan data-confirm (mis. <x-admin.delete-button>) minta konfirmasi lewat modal.
+// Form dengan data-confirm (mis. <x-admin.delete-button>) minta konfirmasi lewat SweetAlert2.
 // Tanpa JavaScript form tetap terkirim, hanya tanpa konfirmasi.
-document.addEventListener('submit', (event) => {
+document.addEventListener('submit', async (event) => {
     const form = event.target;
     if (!(form instanceof HTMLFormElement) || !form.dataset.confirm) {
         return;
@@ -72,22 +91,27 @@ document.addEventListener('submit', (event) => {
 
     event.preventDefault();
 
-    const isi = document.createElement('p');
-    isi.style.margin = '0';
-    isi.textContent = form.dataset.confirm;
-
-    showModal({
-        title: form.dataset.confirmTitle || 'Lanjutkan?',
-        size: 'sm',
-        body: isi,
-        actions: [
-            { label: 'Batal', variant: 'ghost' },
-            {
-                label: form.dataset.confirmLabel || 'Ya, lanjutkan',
-                variant: 'danger',
-                // form.submit() tidak memicu event submit lagi, jadi tidak berulang.
-                action: () => form.submit(),
-            },
-        ],
+    // titleText & text dirender sebagai teks biasa (bukan HTML) oleh SweetAlert2.
+    const { isConfirmed } = await Swal.fire({
+        icon: 'warning',
+        titleText: form.dataset.confirmTitle || 'Lanjutkan?',
+        text: form.dataset.confirm,
+        showCancelButton: true,
+        confirmButtonText: form.dataset.confirmLabel || 'Ya, lanjutkan',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        // Fokus awal di Batal: menekan Enter tidak langsung menghapus data.
+        focusCancel: true,
+        // Tombol memakai kelas Gentelella agar warnanya sama dengan tombol di halaman.
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-danger',
+            cancelButton: 'btn btn-outline',
+        },
     });
+
+    if (isConfirmed) {
+        // form.submit() tidak memicu event submit lagi, jadi tidak berulang.
+        form.submit();
+    }
 });
