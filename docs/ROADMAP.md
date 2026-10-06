@@ -7,14 +7,14 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 ---
 
 ## Fase 0 — Fondasi Proyek
-- [ ] Instal Laravel 13 di repo `laravel-erp` (folder `C:\laragon\www\project\laravel-erp`), hubungkan remote GitHub
-- [ ] `.env`: MySQL `laravel_tkab`, `APP_LOCALE=id`, `APP_FAKER_LOCALE=id_ID`, `APP_TIMEZONE`/config `Asia/Jakarta`, `APP_URL=http://laravel-erp.test`
-- [ ] `.env.example` lengkap (tanpa nilai rahasia), termasuk `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
-- [ ] Pest, Larastan (level 5, dinaikkan bertahap), Pint; script composer `lint`, `analyse`, `test`, `check`
-- [ ] `phpunit.xml` memakai database `laravel_tkab_testing` (MySQL)
-- [ ] `lang/id/validation.php` dan pesan dasar berbahasa Indonesia
-- [ ] Kerangka folder sesuai CLAUDE.md §6 (`routes/admin.php`, `config/menu.php`, `app/Support`, `app/Services/Shared`)
-- [ ] `.editorconfig`, README singkat (cara instal lokal)
+- [x] Instal Laravel 13 di repo `laravel-erp` (folder `C:\laragon\www\project\laravel-erp`), hubungkan remote GitHub
+- [x] `.env`: MySQL `laravel_erp`, `APP_LOCALE=id`, `APP_FAKER_LOCALE=id_ID`, `APP_TIMEZONE`/config `Asia/Jakarta`, `APP_URL=http://localhost:8000`
+- [x] `.env.example` lengkap (tanpa nilai rahasia), termasuk `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+- [x] Pest, Larastan (level 5, dinaikkan bertahap), Pint; script composer `lint`, `analyse`, `test`, `check`
+- [x] `phpunit.xml` memakai database `laravel_erp_testing` (MySQL)
+- [x] `lang/id/validation.php` dan pesan dasar berbahasa Indonesia
+- [x] Kerangka folder sesuai CLAUDE.md §6 (`routes/admin.php`, `config/menu.php`, `app/Support`, `app/Services/Shared`)
+- [x] `.editorconfig`, README singkat (cara instal lokal)
 
 ## Fase 1 — Tampilan Dashboard Backend & Autentikasi
 - [ ] Instal Gentelella v4 via npm; `resources/scss/admin.scss` + `resources/js/admin.js` di Vite

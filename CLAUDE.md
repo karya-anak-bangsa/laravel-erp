@@ -46,10 +46,10 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 ## 3. Lingkungan Pengembangan
 
 - **OS**: Windows, dengan **Laragon 8.4.0** — Apache 2.4.62, PHP 8.3.28, MySQL 8.0.40, Node.js 24.12, Git 2.47.1, Composer 2.10.1.
-- **Lokasi proyek**: `C:\laragon\www\project\laravel-erp` → virtual host Laragon `http://laravel-erp.test`.
+- **Lokasi proyek**: `C:\laragon\www\project\laravel-erp`, dijalankan dengan `php artisan serve` → `http://localhost:8000` (tanpa virtual host Laragon; Laragon hanya dipakai untuk MySQL).
 - **Editor**: VS Code + Claude Code. Tulis perintah terminal yang berjalan di Git Bash maupun PowerShell (hindari sintaks khusus Linux seperti `sudo`, `&&` pada PowerShell lama).
 - **Perangkat**: laptop 16 GB RAM, layar 1920×1200 — target utama tampilan panel admin, tetapi wajib tetap responsif di tablet & ponsel.
-- **Database lokal**: MySQL `laravel_tkab` (user `root`, tanpa password — default Laragon). Database test: `laravel_tkab_testing`.
+- **Database lokal**: MySQL `laravel_erp` (user `root`, tanpa password — default Laragon). Database test: `laravel_erp_testing`.
 - Catatan: skeleton Laravel 13 default memakai SQLite — proyek ini **wajib MySQL** (`DB_CONNECTION=mysql`).
 
 ## 4. Tech Stack
@@ -76,7 +76,8 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 
 ```bash
 composer install && npm install        # instal dependensi
-npm run dev                             # Vite dev server (Apache Laragon melayani PHP)
+php artisan serve                       # server PHP di http://localhost:8000
+npm run dev                             # Vite dev server (jalankan bersamaan dengan artisan serve)
 npm run build                           # build aset produksi
 php artisan migrate --seed              # migrasi + seeder
 php artisan migrate:fresh --seed        # reset database lokal (JANGAN di produksi)
