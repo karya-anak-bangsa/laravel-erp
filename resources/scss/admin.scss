@@ -58,6 +58,38 @@ i.icon {
     font-size: 12px;
 }
 
+// Tombol warning/danger memakai warna Bootstrap bg-warning (#ffc107) & bg-danger
+// (#dc3545) yang saturasinya diturunkan 10% atas permintaan pemilik; hover & border
+// mengikuti Bootstrap dengan penurunan yang sama. Teks gelap di tombol kuning
+// mengikuti Bootstrap demi keterbacaan. Token --yellow/--red tetap dipakai chip & status.
+.btn-warning {
+    background: #f3bb13;
+    border-color: #f3bb13;
+    color: #000;
+
+    &:hover {
+        background: #f4c537;
+        border-color: #f4c12b;
+        color: #000;
+    }
+}
+
+.btn-danger {
+    background: #d0414f;
+    border-color: #d0414f;
+
+    &:hover {
+        background: #af3944;
+        border-color: #a53540;
+    }
+}
+
+// Tombol aksi form (Simpan, Batal) sama lebar agar barisnya rapi.
+.form-actions .btn {
+    min-width: 110px;
+    justify-content: center;
+}
+
 .alert .alert-icon {
     font-size: 14px;
 }
