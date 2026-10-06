@@ -135,6 +135,8 @@ describe('tambah', function () {
             ->get(route('admin.akun-kas.create'))
             ->assertOk()
             ->assertSee('Tambah Akun Kas')
+            ->assertSee('data-confirm-title="Simpan akun kas baru?"', false)
+            ->assertSee('data-confirm-variant="primary"', false)
             ->assertSee('name="status_aktif" value="1" checked', false)
             ->assertSee('value="'.today()->format('Y-m-d').'"', false);
     });
@@ -221,6 +223,8 @@ describe('ubah', function () {
             ->assertOk()
             ->assertSee('Ubah Akun Kas')
             ->assertSee('value="Rekening Mandiri"', false)
+            ->assertSee('data-confirm="Perubahan data akun “Rekening Mandiri” akan disimpan."', false)
+            ->assertSee('data-confirm-variant="primary"', false)
             ->assertSee('name="_method" value="PUT"', false);
     });
 

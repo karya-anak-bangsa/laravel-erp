@@ -73,7 +73,7 @@ if (flash) {
                 text: escapeHtml(pesan),
                 effect: 'slide',
                 autotimeout: 4000,
-                position: 'right top',
+                position: 'right bottom',
             });
         });
     } catch {
@@ -81,7 +81,8 @@ if (flash) {
     }
 }
 
-// Form dengan data-confirm (mis. <x-admin.delete-button>) minta konfirmasi lewat SweetAlert2.
+// Form dengan data-confirm minta konfirmasi lewat SweetAlert2: hapus (<x-admin.delete-button>,
+// varian danger) maupun simpan tambah/ubah (data-confirm-variant="primary").
 // Tanpa JavaScript form tetap terkirim, hanya tanpa konfirmasi.
 document.addEventListener('submit', async (event) => {
     const form = event.target;
@@ -91,21 +92,24 @@ document.addEventListener('submit', async (event) => {
 
     event.preventDefault();
 
+    const varian = form.dataset.confirmVariant || 'danger';
+    const berbahaya = varian === 'danger';
+
     // titleText & text dirender sebagai teks biasa (bukan HTML) oleh SweetAlert2.
     const { isConfirmed } = await Swal.fire({
-        icon: 'warning',
+        icon: berbahaya ? 'warning' : 'question',
         titleText: form.dataset.confirmTitle || 'Lanjutkan?',
         text: form.dataset.confirm,
         showCancelButton: true,
         confirmButtonText: form.dataset.confirmLabel || 'Ya, lanjutkan',
         cancelButtonText: 'Batal',
         reverseButtons: true,
-        // Fokus awal di Batal: menekan Enter tidak langsung menghapus data.
-        focusCancel: true,
+        // Untuk aksi berbahaya fokus awal di Batal agar Enter tidak langsung menghapus data.
+        focusCancel: berbahaya,
         // Tombol memakai kelas Gentelella agar warnanya sama dengan tombol di halaman.
         buttonsStyling: false,
         customClass: {
-            confirmButton: 'btn btn-danger',
+            confirmButton: `btn btn-${varian}`,
             cancelButton: 'btn btn-outline',
         },
     });

@@ -231,6 +231,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - `index`: pencarian (`?q=`), filter, `->latest()->paginate(15)->withQueryString()`, eager loading relasi (cegah N+1).
 - Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang ditampilkan sebagai toast.
 - Hapus = soft delete, dengan konfirmasi modal. Hapus permanen hanya bila fitur "sampah" dibuat.
+- **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="primary"` (lihat `admin/kas/akun-kas/create|edit`).
 - Modul singleton (`tb_identitas`) hanya punya `edit` & `update`.
 
 ### Upload File

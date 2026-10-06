@@ -123,11 +123,6 @@ a.btn:hover {
     }
 }
 
-// Topbar menutupi area paling atas; toast digeser ke bawahnya.
-.sn-notifications-container.sn-is-top {
-    padding-top: 72px;
-}
-
 // Modal SweetAlert2: latar, teks, dan sudut mengikuti token Gentelella sehingga
 // mode gelap otomatis; tombol memakai kelas .btn (lihat admin.js).
 :root {
