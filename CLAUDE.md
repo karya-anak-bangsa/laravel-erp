@@ -7,6 +7,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 |---|---|
 | `docs/DATABASE.md` | Membuat/mengubah migration, model, factory, seeder, relasi, validasi `exists`/`unique` |
 | `docs/ROADMAP.md` | Memulai sesi, memilih tugas berikutnya, atau menandai progres |
+| `docs/DEPLOY.md` | Menyusun catatan deploy, menambah paket/perintah yang harus jalan di server Hostinger |
 
 ---
 
@@ -239,7 +240,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 
 ### Tampilan
 - Semua halaman admin extend `layouts/admin`. Pakai Blade component untuk elemen berulang (header halaman, kartu, input form + pesan error, tombol hapus, empty state).
-  Komponen tersedia (anonymous, `resources/views/components/admin/`): `page-header`, `card` (slot `aksi`, `footer`, prop `flush`), `form-input`, `form-textarea`, `form-select` (`:options="[nilai => label]"`), `form-file` (`berkas-saat-ini`), `alert`, `empty-state`, `delete-button` (modal konfirmasi via atribut `data-confirm`, dipasang `admin.js`), `pagination` (`:paginator`), `icon` (Font Awesome solid, `name` tanpa awalan `fa-`, mis. `<x-admin.icon name="gauge" />`; ikon menu di `config/menu.php` memakai nama yang sama). Semua ikon memakai Font Awesome — jangan menambah SVG inline. Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
+  Komponen tersedia (anonymous, `resources/views/components/admin/`): `page-header`, `card` (slot `aksi`, `footer`, prop `flush`), `form-input`, `form-textarea`, `form-select` (`:options="[nilai => label]"`), `form-file` (`berkas-saat-ini`), `form-switch` (boolean; `text`, `:checked`, mengirim hidden `0`), `filter-bar` (pencarian `?q=` + slot filter tambahan, diletakkan di atas tabel dalam `card :flush`), `alert`, `empty-state`, `delete-button` (modal konfirmasi via atribut `data-confirm`, dipasang `admin.js`), `pagination` (`:paginator`), `icon` (Font Awesome solid, `name` tanpa awalan `fa-`, mis. `<x-admin.icon name="gauge" />`; ikon menu di `config/menu.php` memakai nama yang sama). Semua ikon memakai Font Awesome — jangan menambah SVG inline. Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
 - Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, file `lang/id/validation.php`).
 - Format: tanggal `translatedFormat('d F Y')` (zona `Asia/Jakarta`), uang `Rp 1.250.000` via `App\Support\FormatRupiah`.
 - Konten HTML (artikel) wajib disanitasi sebelum disimpan; tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi. Selain itu selalu `{{ }}`.

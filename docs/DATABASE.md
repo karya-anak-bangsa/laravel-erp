@@ -153,7 +153,7 @@ erDiagram
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_akun_kas | BIGINT UNSIGNED PK | |
-| nama_akun | VARCHAR(100) | mis. "Kas Tunai", "Rekening BCA Operasional" |
+| nama_akun | VARCHAR(100) | mis. "Kas Tunai", "Rekening BCA Operasional". Unik di antara akun yang tidak terhapus (divalidasi di Form Request) |
 | jenis_akun | VARCHAR(20) | enum `JenisAkunKas`: tunai, bank, e_wallet |
 | nama_bank | VARCHAR(100) NULL | |
 | nomor_rekening | VARCHAR(50) NULL | |
@@ -199,6 +199,7 @@ Indeks: `(tanggal_transaksi)`, `(id_akun_kas, tanggal_transaksi)`, `(jenis_trans
 
 Aturan bisnis (`App\Services\Kas\TransaksiKasService`):
 - Simpan/ubah dalam `DB::transaction()`. Penomoran mengambil nomor terakhir bulan berjalan dengan `lockForUpdate()` agar tidak bentrok.
+- Akun kas atau kategori transaksi yang sudah punya transaksi **tidak bisa dihapus**, dan `jenis_transaksi` kategori yang sudah dipakai **tidak bisa diubah** (agar laporan lama tetap konsisten).
 - Saldo **tidak disimpan**; dihitung: `saldo_awal + Σ pemasukan − Σ pengeluaran (+ transfer masuk − transfer keluar)` untuk transaksi yang tidak terhapus.
 - Saat relasi polimorfik mulai dipakai, daftarkan alias stabil dengan `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
 

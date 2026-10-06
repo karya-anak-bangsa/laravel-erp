@@ -36,8 +36,8 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e **opsional**, dikerjakan hanya bila dibutuhkan.
 
 ### 3a. Master
-- [ ] Enum `JenisAkunKas`, `JenisTransaksi`
-- [ ] CRUD Akun Kas
+- [ ] Enum `JenisAkunKas` (selesai), `JenisTransaksi`
+- [x] CRUD Akun Kas
 - [ ] CRUD Kategori Transaksi + `KategoriTransaksiSeeder`
 ### 3b. Transaksi
 - [ ] `TransaksiKasService` (penomoran, validasi kecocokan jenis, transaksi DB) + unit test

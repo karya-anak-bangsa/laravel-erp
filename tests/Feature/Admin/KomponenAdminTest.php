@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Pengguna;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 beforeEach(function () {
@@ -69,6 +70,35 @@ it('merender form-textarea dan form-file', function () {
         ->assertSee('type="file"', false)
         ->assertSee('accept=".pdf"', false)
         ->assertSee('Lihat file saat ini');
+});
+
+it('merender form-switch dengan hidden input bernilai 0 dan status tercentang', function () {
+    $this->blade('<x-admin.form-switch name="status_aktif" label="Status" text="Akun aktif" :checked="true" />')
+        ->assertSee('<input type="hidden" name="status_aktif" value="0">', false)
+        ->assertSee('name="status_aktif" value="1" checked', false)
+        ->assertSee('<span class="switch-label">Akun aktif</span>', false);
+});
+
+it('memakai nilai lama pada form-switch setelah validasi gagal', function () {
+    session()->flashInput(['status_aktif' => '0']);
+
+    $this->blade('<x-admin.form-switch name="status_aktif" :checked="true" />')
+        ->assertDontSee('checked', false);
+});
+
+it('merender filter-bar dengan kata kunci dan tombol reset saat filter aktif', function () {
+    $this->app->instance('request', Request::create('/admin/uji', 'GET', ['q' => 'bca', 'jenis' => 'bank', 'page' => '2']));
+
+    $this->blade('<x-admin.filter-bar action="/admin/uji" placeholder="Cari akun…"><select name="jenis"></select></x-admin.filter-bar>')
+        ->assertSee('method="GET" action="/admin/uji"', false)
+        ->assertSee('name="q" value="bca"', false)
+        ->assertSee('<select name="jenis"></select>', false)
+        ->assertSee('href="/admin/uji" class="btn btn-ghost"', false);
+});
+
+it('menyembunyikan tombol reset filter-bar bila tidak ada filter', function () {
+    $this->blade('<x-admin.filter-bar action="/admin/uji" />')
+        ->assertDontSee('Reset');
 });
 
 it('merender delete-button sebagai form DELETE dengan konfirmasi', function () {

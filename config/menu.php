@@ -26,4 +26,15 @@ return [
             ],
         ],
     ],
+    [
+        'judul' => 'Kas Perusahaan',
+        'item' => [
+            [
+                'label' => 'Akun Kas',
+                'ikon' => 'wallet',
+                'rute' => 'admin.akun-kas.index',
+                'aktif' => 'admin.akun-kas.*',
+            ],
+        ],
+    ],
 ];
