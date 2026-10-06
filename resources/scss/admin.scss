@@ -205,51 +205,41 @@ a.btn:hover {
     padding-inline-end: 38px;
 }
 
-// Tombol menu pengguna di topbar. Kelas .tb-avatar bawaan sengaja tidak dipakai
-// karena Gentelella mengikatnya ke menu demo.
-.tb-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-inline-start: 6px;
-    padding: 4px 8px 4px 4px;
+// .sidebar-user dijadikan <button> pembuka menu pengguna; gaya bawaan <button> direset
+// agar tampilannya tetap seperti blok profil Gentelella.
+.sidebar-user {
+    width: 100%;
     border: 0;
-    border-radius: var(--radius);
     background: transparent;
     font: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    transition: background 120ms;
+    text-align: start;
+    color: inherit;
 
-    &:hover,
     &[aria-expanded='true'] {
-        background: var(--bg-surface-secondary);
+        background: var(--sidebar-hover);
     }
 
     &:focus-visible {
         outline: 2px solid var(--primary);
-        outline-offset: 1px;
+        outline-offset: -2px;
+    }
+
+    .sidebar-user-info .name,
+    .sidebar-user-info .role {
+        display: block;
     }
 }
 
-.tb-user-caret {
+.sidebar-user-caret {
     font-size: 10px;
-    color: var(--text-muted);
+    color: var(--sidebar-text);
 }
 
-.tb-user-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dk));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
+// Mode rail (sidebar diciutkan) hanya menampilkan avatar.
+@media (min-width: 769px) {
+    body.sidebar-rail .sidebar-user-caret {
+        display: none;
+    }
 }
 
 // Popover menu pengguna (openPanel menambah .menu-panel yang terlalu lebar untuk menu pendek).
@@ -318,12 +308,6 @@ a.btn:hover {
     display: none;
 }
 
-@media (max-width: 768px) {
-    .tb-user-name {
-        display: none;
-    }
-}
-
 // Layar lebar (monitor 27" 1440p): konten dibatasi agar kartu & baris teks
 // tidak melebar tanpa batas. Footer tetap selebar layar supaya garis atasnya
 // utuh; hanya isinya disejajarkan dengan konten.
@@ -336,6 +320,18 @@ $lebar-konten-maks: 1600px;
 
 .footer {
     padding-inline: max(24px, calc((100% - #{$lebar-konten-maks}) / 2 + 24px));
+}
+
+// Footer selalu di dasar layar walau konten sedikit: .main sudah min-height 100vh,
+// jadi page-wrapper cukup mengisi sisa tinggi.
+.main {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    flex: 1 0 auto;
+    width: 100%;
 }
 
 // Gentelella baru memecah 4 kolom di 1200px; di laptop 1280–1399px kartu

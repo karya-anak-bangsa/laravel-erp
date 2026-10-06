@@ -17,12 +17,14 @@ it('menampilkan dashboard untuk pengguna yang login', function () {
         ->assertSee(route('logout'));
 });
 
-it('menampilkan menu pengguna berisi toggle tema dan logout di topbar', function () {
+it('menampilkan menu pengguna berisi toggle tema dan logout di sidebar, bukan di topbar', function () {
     $pengguna = Pengguna::factory()->create(['nama' => 'Aryajaya Alamsyah', 'email' => 'admin@karyaanakbangsa.co.id']);
 
     $this->actingAs($pengguna)
         ->get(route('admin.dashboard'))
-        ->assertSee('class="tb-user" type="button" data-menu="menu-pengguna"', false)
+        ->assertSee('class="sidebar-user" type="button" data-menu="menu-pengguna"', false)
+        ->assertDontSee('tb-user', false)
+        ->assertDontSee('topbar-right', false)
         ->assertSee('<template id="menu-pengguna">', false)
         ->assertSee('admin@karyaanakbangsa.co.id')
         ->assertSee('data-aksi="ganti-tema"', false)
