@@ -17,24 +17,20 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 - [x] `.editorconfig`, README singkat (cara instal lokal)
 
 ## Fase 1 — Tampilan Dashboard Backend & Autentikasi
-- [ ] Instal Gentelella v4 via npm; `resources/scss/admin.scss` + `resources/js/admin.js` di Vite
-- [ ] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, toggle dark mode, logout), breadcrumb, footer, toast flash message
-- [ ] `layouts/auth.blade.php` + halaman login
-- [ ] Komponen Blade admin dasar: page-header, card, form-input/textarea/select/file (dengan error), delete-button + modal konfirmasi, empty-state, pagination
-- [ ] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
-- [ ] Login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login
-- [ ] Dashboard placeholder (kartu ringkasan kosong, siap diisi Fase 3c)
-- [ ] Halaman error 403, 404, 419, 500 bergaya Gentelella
-- [ ] Feature test autentikasi & akses dashboard
+### 1a. Login & dashboard terlindungi (lalu deploy pertama)
+- [x] Instal Gentelella v4 via npm (ganti Tailwind bawaan); `resources/scss/admin.scss` + `resources/js/admin.js` di Vite
+- [x] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
+- [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`
+- [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, toggle dark mode, logout), breadcrumb, footer
+- [x] Dashboard placeholder (kartu ringkasan kosong, siap diisi Fase 3c)
+- [x] Feature test autentikasi & akses dashboard
+### 1b. Komponen & halaman error
+- [x] Komponen Blade admin dasar: page-header, card, form-input/textarea/select/file (dengan error), delete-button + modal konfirmasi, empty-state, pagination, toast flash message
+- [x] Halaman error 403, 404, 419, 500, 503 bergaya Gentelella
 
 ## Fase 2 — Deploy ke Hostinger
-Ikuti `docs/DEPLOYMENT.md`. Setelah fase ini, **setiap fitur yang selesai langsung di-deploy** agar progres bisa diakses online.
-- [ ] Persiapan hPanel: PHP 8.3+, database MySQL, SSH aktif, SSL aktif
-- [ ] Verifikasi `php`, `composer`, `node`, `npm` di SSH dan catat hasilnya
-- [ ] Deploy pertama (`.env`, composer, npm build, migrate, seed admin, storage:link, symlink `public_html`)
-- [ ] Skrip `deploy.sh` untuk deploy rutin
-- [ ] Cron scheduler Laravel di hPanel
-- [ ] Smoke test produksi: login, dashboard, halaman 404, HTTPS paksa
+Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap fitur yang selesai langsung di-deploy agar progres bisa diakses online.
+- [ ] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa
 
 ## Fase 3 — Kas Perusahaan
 Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e **opsional**, dikerjakan hanya bila dibutuhkan.

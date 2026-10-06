@@ -16,4 +16,6 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    // Aset Vite tidak di-build saat test; @vite dan @fonts dirender kosong.
+    ->beforeEach(fn () => $this->withoutVite())
     ->in('Feature');

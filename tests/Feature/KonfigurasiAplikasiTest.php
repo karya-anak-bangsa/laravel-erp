@@ -19,6 +19,6 @@ it('terhubung ke database MySQL', function () {
     expect(DB::connection()->getDriverName())->toBe('mysql');
 });
 
-it('menampilkan halaman utama', function () {
-    $this->get('/')->assertOk();
+it('mengarahkan halaman utama ke panel admin', function () {
+    $this->get('/')->assertRedirect('/admin');
 });

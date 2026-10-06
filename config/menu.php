@@ -5,23 +5,25 @@
 | Menu Sidebar Admin
 |--------------------------------------------------------------------------
 |
-| Dibaca oleh layouts/admin untuk merender sidebar (Fase 1). Setiap modul
-| menambah satu grup di sini, tanpa mengubah grup modul lain.
+| Dirender oleh layouts/partials/sidebar. Setiap modul menambah satu grup
+| di sini, tanpa mengubah grup modul lain.
 |
-| Bentuk entri:
-|
-| [
-|     'judul' => 'Kas Perusahaan',
-|     'item' => [
-|         [
-|             'label' => 'Transaksi Kas',
-|             'ikon' => 'wallet',
-|             'rute' => 'admin.transaksi-kas.index',
-|             'aktif' => 'admin.transaksi-kas.*',   // pola nama rute untuk menu aktif
-|         ],
-|     ],
-| ],
+| - label : teks menu
+| - ikon  : nama ikon di components/admin/icon.blade.php
+| - rute  : nama rute tujuan
+| - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
 |
 */
 
-return [];
+return [
+    [
+        'judul' => 'Umum',
+        'item' => [
+            [
+                'label' => 'Dashboard',
+                'ikon' => 'dashboard',
+                'rute' => 'admin.dashboard',
+            ],
+        ],
+    ],
+];

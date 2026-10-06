@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Models\Pengguna;
 
 return [
 
@@ -64,13 +64,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
+            'model' => env('AUTH_MODEL', Pengguna::class),
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
@@ -113,5 +108,21 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Akun Admin Awal
+    |--------------------------------------------------------------------------
+    |
+    | Dibaca PenggunaSeeder. Lewat config (bukan env() langsung) agar tetap
+    | terbaca saat konfigurasi di-cache di produksi.
+    |
+    */
+
+    'admin_awal' => [
+        'nama' => env('ADMIN_NAMA'),
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
 
 ];

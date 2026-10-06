@@ -7,7 +7,6 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 |---|---|
 | `docs/DATABASE.md` | Membuat/mengubah migration, model, factory, seeder, relasi, validasi `exists`/`unique` |
 | `docs/ROADMAP.md` | Memulai sesi, memilih tugas berikutnya, atau menandai progres |
-| `docs/DEPLOYMENT.md` | Apa pun yang menyangkut Hostinger, deploy, `.env` produksi, cron, atau saat menulis catatan deploy |
 
 ---
 
@@ -31,7 +30,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 3. **Patuhi skema**: jangan menambah/mengubah/menghapus kolom di luar `docs/DATABASE.md` tanpa persetujuan. Jika ada kebutuhan, usulkan dulu lalu perbarui `docs/DATABASE.md`.
 4. **Migration yang sudah jalan di produksi tidak boleh diedit** — buat migration baru untuk perubahan.
 5. **Paket baru** (composer/npm) harus diminta izin dulu, sebutkan alasannya dan pastikan kompatibel dengan Laravel 13 / PHP 8.3.
-6. **Git**: semua commit langsung ke `main` (developer tunggal). Deploy dilakukan **manual** oleh pemilik proyek (push ke GitHub → SSH ke Hostinger via PuTTY → `git pull` → perintah lanjutan), sehingga `main` harus selalu dalam kondisi siap dipakai di produksi:
+6. **Git**: semua commit langsung ke `main` (developer tunggal). Deploy ke Hostinger dilakukan **sendiri oleh pemilik proyek** (Claude tidak melakukan deploy), sehingga `main` harus selalu dalam kondisi siap dipakai di produksi:
    - Jangan commit atau push kecuali diminta.
    - Sebelum commit, wajib lulus `composer check` (lint + analisis statis + test).
    - Format pesan: Conventional Commits berbahasa Indonesia, scope = modul.
@@ -40,7 +39,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 7. **Rahasia**: jangan pernah menulis kredensial ke kode, docs, atau commit. `.env` tidak boleh di-commit.
 8. **Selesai berarti memenuhi Definition of Done** (§12), lalu centang item terkait di `docs/ROADMAP.md`.
 9. **Kecil dan sering online**: pemilik proyek ingin setiap kemajuan langsung bisa diakses di https://karyaanakbangsa.co.id. Pecah pekerjaan menjadi fitur kecil yang masing-masing utuh dan bisa di-deploy. Jangan meninggalkan `main` dalam kondisi setengah jadi (menu yang mengarah ke halaman rusak, migration tanpa fitur, dsb.).
-10. **Catatan deploy**: di akhir setiap fitur, tuliskan perintah yang perlu dijalankan di server setelah `git pull`, berdasarkan apa yang berubah (lihat `docs/DEPLOYMENT.md` bagian "Perintah Setelah git pull"). Sebutkan juga bila ada variabel `.env` baru atau seeder yang harus dijalankan.
+10. **Catatan deploy**: di akhir setiap fitur, sebutkan singkat apa yang berdampak ke server: migration baru, seeder yang perlu dijalankan sekali, variabel `.env` baru, paket composer/npm baru, dan apakah aset perlu di-build ulang.
 11. Jika instruksi pengguna bertentangan dengan file ini, ikuti pengguna lalu tawarkan untuk memperbarui file ini.
 
 ## 3. Lingkungan Pengembangan
@@ -63,11 +62,11 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 | Grafik | ECharts (bawaan Gentelella v4) |
 | Testing | Pest (di atas PHPUnit) |
 | Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
-| Frontend publik | Belum diputuskan (BootstrapMade vs Tailwind custom) — **jangan dikerjakan sebelum Fase 5** |
+| Frontend publik | Belum diputuskan: BootstrapMade (lisensi seluruh template sudah dibeli) vs Tailwind custom — **jangan dikerjakan sebelum Fase 5**. Tailwind bawaan skeleton sudah dihapus; dipasang lagi di Fase 5 bila dipilih, terpisah dari aset admin |
 
 ### Integrasi Gentelella v4 dengan Laravel
 - Pasang via npm, lalu impor SCSS & modul JS di `resources/scss/admin.scss` dan `resources/js/admin.js`; dikompilasi oleh Vite Laravel.
-- Gentelella v4 menyuntikkan shell (sidebar/topbar) lewat JavaScript. Di proyek ini **sidebar, topbar, dan breadcrumb dirender server-side dengan Blade** (agar menu aktif, nama pengguna, dan otorisasi dikendalikan Laravel). Salin markup dari halaman referensi `production/*.html`, jangan pakai `mountShell` untuk navigasi.
+- Gentelella v4 menyuntikkan shell (sidebar/topbar) lewat JavaScript. Di proyek ini **sidebar, topbar, dan breadcrumb dirender server-side dengan Blade** (agar menu aktif, nama pengguna, dan otorisasi dikendalikan Laravel). Salin markup dari halaman referensi `production/*.html` dan `src/v4/shell-render.js`. `mountShell()` (di `resources/js/admin.js`) boleh dipanggil karena hanya memasang perilaku bila markup sudah ada; jangan pakai kelas `.tb-avatar`, `.tb-notifications`, `.tb-messages`, `.sidebar-user .more-btn`, dan kotak pencarian karena Gentelella mengikatnya ke menu/data demo. Layout admin terdiri dari `layouts/admin.blade.php` + `layouts/partials/{head,sidebar,topbar,footer}`; breadcrumb dikirim lewat `@extends('layouts.admin', ['breadcrumb' => ['Label' => url|null]])`.
 - Komponen JS Gentelella (modal, toast, chart, dark mode) boleh dipakai langsung.
 - Jangan memakai kelas Bootstrap — Gentelella v4 tidak memuatnya. Gunakan kelas/komponen Gentelella; cek halaman *Component playground* untuk markup yang benar.
 - Tabel daftar data memakai **paginasi & pencarian server-side Laravel**, bukan DataTables client-side (performa saat data membesar).
@@ -240,6 +239,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 
 ### Tampilan
 - Semua halaman admin extend `layouts/admin`. Pakai Blade component untuk elemen berulang (header halaman, kartu, input form + pesan error, tombol hapus, empty state).
+  Komponen tersedia (anonymous, `resources/views/components/admin/`): `page-header`, `card` (slot `aksi`, `footer`, prop `flush`), `form-input`, `form-textarea`, `form-select` (`:options="[nilai => label]"`), `form-file` (`berkas-saat-ini`), `alert`, `empty-state`, `delete-button` (modal konfirmasi via atribut `data-confirm`, dipasang `admin.js`), `pagination` (`:paginator`), `icon`. Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
 - Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, file `lang/id/validation.php`).
 - Format: tanggal `translatedFormat('d F Y')` (zona `Asia/Jakarta`), uang `Rp 1.250.000` via `App\Support\FormatRupiah`.
 - Konten HTML (artikel) wajib disanitasi sebelum disimpan; tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi. Selain itu selalu `{{ }}`.
@@ -247,7 +247,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 ## 10. Keamanan
 
 - Tidak ada registrasi publik. Akun admin dibuat oleh `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-- Login: rate limit (5 percobaan/menit per email+IP), `session()->regenerate()` setelah login, invalidate saat logout.
+- Login: rate limit (5 percobaan/menit per email+IP) — **dinonaktifkan saat `APP_ENV=local`** agar tidak mengganggu development, aktif di produksi. `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (lihat `docs/DATABASE.md` bagian A). Jangan menambahkannya.
 - Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission direncanakan (lihat ROADMAP).
 - Form publik (kontak kami — Fase 5): rate limit + honeypot.

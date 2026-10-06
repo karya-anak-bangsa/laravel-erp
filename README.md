@@ -5,7 +5,7 @@ Sistem ERP berbasis web untuk PT. Teknologi Karya Anak Bangsa (TKAB): Company Pr
 - Produksi: https://karyaanakbangsa.co.id
 - Stack: Laravel 13 (PHP 8.3), MySQL 8, Gentelella v4 + Vite, Pest
 
-Panduan pengembangan ada di [CLAUDE.md](CLAUDE.md), skema database di [docs/DATABASE.md](docs/DATABASE.md), urutan pekerjaan di [docs/ROADMAP.md](docs/ROADMAP.md), dan deploy di [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Panduan pengembangan ada di [CLAUDE.md](CLAUDE.md), skema database di [docs/DATABASE.md](docs/DATABASE.md), dan urutan pekerjaan di [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Instalasi Lokal (Windows + Laragon)
 

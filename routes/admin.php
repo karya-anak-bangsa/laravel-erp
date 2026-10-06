@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Rute Admin
@@ -11,3 +14,5 @@
 | di bawah, mis. require __DIR__.'/admin/kas.php';
 |
 */
+
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
