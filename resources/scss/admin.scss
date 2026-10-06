@@ -1,4 +1,32 @@
 @use 'gentelella/scss/v4/main';
+// Hanya gaya solid yang dimuat agar ukuran aset tetap kecil. $font-path diset
+// relatif ke file ini karena Vite tidak me-rebase url() dari partial Sass paket.
+@use '@fortawesome/fontawesome-free/scss/variables' with (
+    $font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts'
+);
+@use '@fortawesome/fontawesome-free/scss/fontawesome';
+@use '@fortawesome/fontawesome-free/scss/solid';
+
+// Latar login hijau solid menggantikan gradasi bawaan Gentelella.
+// Mode gelap memakai varian lebih gelap agar tidak menyilaukan.
+.auth-page {
+    background: var(--primary);
+}
+
+[data-theme='dark'] .auth-page {
+    background: var(--primary-dk);
+}
+
+// Ukuran ikon Font Awesome menyesuaikan kotak ikon bawaan Gentelella.
+.brand-icon .fa-solid {
+    font-size: 14px;
+}
+
+.input-group i.input-icon {
+    font-size: 13px;
+    line-height: 14px;
+    text-align: center;
+}
 
 // Penanda pengguna di topbar. Kelas .tb-avatar bawaan sengaja tidak dipakai
 // karena Gentelella mengikatnya ke menu demo.

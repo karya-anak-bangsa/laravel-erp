@@ -8,7 +8,7 @@
     <div class="auth-page">
         <div class="auth-card">
             <div class="auth-brand">
-                <div class="brand-icon">T</div>
+                <div class="brand-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></div>
                 <div class="brand-name">ERP TKAB</div>
             </div>
 
