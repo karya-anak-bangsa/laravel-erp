@@ -8,7 +8,7 @@
 
 1. Di laptop: `composer check` lulus → commit → `git push origin main`.
 2. Buka PuTTY → SSH ke server Hostinger.
-3. `cd ~/domains/karyaanakbangsa.co.id/laravel-tkab` → `git pull origin main`.
+3. `cd ~/domains/karyaanakbangsa.co.id/laravel-erp` → `git pull origin main`.
 4. Jalankan perintah lanjutan sesuai perubahan (lihat tabel di bawah) — atau cukup `bash deploy.sh` untuk menjalankan semuanya.
 
 Tujuannya agar setiap fitur yang selesai **langsung dapat diakses** di https://karyaanakbangsa.co.id. Karena itu `main` harus selalu dalam kondisi siap produksi.
@@ -37,7 +37,7 @@ Menjalankan semua langkah sekaligus — aman dipakai setiap kali walau tidak sem
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-cd ~/domains/karyaanakbangsa.co.id/laravel-tkab
+cd ~/domains/karyaanakbangsa.co.id/laravel-erp
 
 php artisan down --retry=60
 trap 'php artisan up' EXIT          # situs selalu kembali online walau ada langkah gagal
@@ -50,7 +50,7 @@ php artisan migrate --force
 php artisan optimize:clear
 php artisan optimize
 ```
-Pemakaian di PuTTY: `bash ~/domains/karyaanakbangsa.co.id/laravel-tkab/deploy.sh`
+Pemakaian di PuTTY: `bash ~/domains/karyaanakbangsa.co.id/laravel-erp/deploy.sh`
 
 ## Persiapan Satu Kali
 
@@ -76,17 +76,17 @@ Hasil pengecekan:
 ### Struktur direktori
 ```
 ~/domains/karyaanakbangsa.co.id/
-├── laravel-tkab/          ← repo hasil clone
+├── laravel-erp/           ← repo hasil clone
 │   ├── public/
 │   ├── storage/
 │   └── .env               ← dibuat manual, chmod 600
-└── public_html  →  laravel-tkab/public   (symlink)
+└── public_html  →  laravel-erp/public   (symlink)
 ```
 `public_html` dijadikan symlink karena Hostinger tidak menyediakan opsi mengganti document root. Dengan cara ini `.env`, `vendor/`, `node_modules/`, dan `storage/` tidak dapat diakses publik.
 
 ### Deploy pertama
 ```bash
-cd ~/domains/karyaanakbangsa.co.id/laravel-tkab     # setelah git clone
+cd ~/domains/karyaanakbangsa.co.id/laravel-erp     # setelah git clone
 cp .env.example .env && nano .env
 # APP_ENV=production, APP_DEBUG=false, APP_URL=https://karyaanakbangsa.co.id,
 # DB_*, ADMIN_*, SESSION_SECURE_COOKIE=true, LOG_LEVEL=warning
@@ -102,11 +102,11 @@ php artisan optimize
 
 cd ~/domains/karyaanakbangsa.co.id
 mv public_html public_html_backup
-ln -s laravel-tkab/public public_html
+ln -s laravel-erp/public public_html
 ```
 
 ### Cron (hPanel → Cron Jobs), tiap menit
-`cd ~/domains/karyaanakbangsa.co.id/laravel-tkab && php artisan schedule:run >> /dev/null 2>&1` **[cek path PHP]**
+`cd ~/domains/karyaanakbangsa.co.id/laravel-erp && php artisan schedule:run >> /dev/null 2>&1` **[cek path PHP]**
 
 Queue: `QUEUE_CONNECTION=sync` dulu; bila nanti ada pekerjaan berat, pindah ke `database` + `queue:work --stop-when-empty` lewat scheduler.
 

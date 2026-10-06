@@ -7,8 +7,8 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 ---
 
 ## Fase 0 — Fondasi Proyek
-- [ ] Instal Laravel 13 di repo `laravel-tkab` (folder `C:\laragon\www\laravel-tkab`), hubungkan remote GitHub
-- [ ] `.env`: MySQL `laravel_tkab`, `APP_LOCALE=id`, `APP_FAKER_LOCALE=id_ID`, `APP_TIMEZONE`/config `Asia/Jakarta`, `APP_URL=http://laravel-tkab.test`
+- [ ] Instal Laravel 13 di repo `laravel-erp` (folder `C:\laragon\www\project\laravel-erp`), hubungkan remote GitHub
+- [ ] `.env`: MySQL `laravel_tkab`, `APP_LOCALE=id`, `APP_FAKER_LOCALE=id_ID`, `APP_TIMEZONE`/config `Asia/Jakarta`, `APP_URL=http://laravel-erp.test`
 - [ ] `.env.example` lengkap (tanpa nilai rahasia), termasuk `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
 - [ ] Pest, Larastan (level 5, dinaikkan bertahap), Pint; script composer `lint`, `analyse`, `test`, `check`
 - [ ] `phpunit.xml` memakai database `laravel_tkab_testing` (MySQL)
