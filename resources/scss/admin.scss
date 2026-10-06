@@ -111,16 +111,38 @@ i.icon {
     padding-inline-end: 38px;
 }
 
-// Penanda pengguna di topbar. Kelas .tb-avatar bawaan sengaja tidak dipakai
+// Tombol menu pengguna di topbar. Kelas .tb-avatar bawaan sengaja tidak dipakai
 // karena Gentelella mengikatnya ke menu demo.
 .tb-user {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-inline: 6px;
+    margin-inline-start: 6px;
+    padding: 4px 8px 4px 4px;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    font: inherit;
     font-size: 13px;
     font-weight: 500;
     color: var(--text);
+    cursor: pointer;
+    transition: background 120ms;
+
+    &:hover,
+    &[aria-expanded='true'] {
+        background: var(--bg-surface-secondary);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 1px;
+    }
+}
+
+.tb-user-caret {
+    font-size: 10px;
+    color: var(--text-muted);
 }
 
 .tb-user-avatar {
@@ -136,8 +158,70 @@ i.icon {
     color: #fff;
 }
 
-.tb-logout {
-    margin: 0;
+// Popover menu pengguna (openPanel menambah .menu-panel yang terlalu lebar untuk menu pendek).
+.menu-popover.menu-pengguna {
+    min-width: 220px;
+    max-width: 280px;
+    padding: 4px;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .menu-item .icon {
+        width: 16px;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .menu-item-keluar,
+    .menu-item-keluar .icon {
+        color: var(--red);
+    }
+}
+
+.menu-pengguna-header {
+    padding: 8px 10px 6px;
+    min-width: 0;
+}
+
+.menu-pengguna-nama {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.menu-pengguna-email {
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Label toggle tema mengikuti tema aktif tanpa JavaScript tambahan.
+.menu-pengguna .tema-gelap,
+.menu-pengguna .tema-terang {
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-pengguna .tema-gelap,
+[data-theme='dark'] .menu-pengguna .tema-terang {
+    display: flex;
+}
+
+.menu-pengguna .tema-terang,
+[data-theme='dark'] .menu-pengguna .tema-gelap {
+    display: none;
 }
 
 @media (max-width: 768px) {

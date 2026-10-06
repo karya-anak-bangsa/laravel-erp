@@ -21,7 +21,7 @@ return [
         'item' => [
             [
                 'label' => 'Dashboard',
-                'ikon' => 'gauge',
+                'ikon' => 'house',
                 'rute' => 'admin.dashboard',
             ],
         ],
