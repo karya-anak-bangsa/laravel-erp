@@ -5,7 +5,7 @@ import { bunny } from 'laravel-vite-plugin/fonts';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/scss/admin.scss', 'resources/js/admin.js'],
+            input: ['resources/scss/admin.scss', 'resources/js/admin.js', 'resources/js/auth.js'],
             refresh: true,
             // Font Inter dipakai Gentelella; di-host sendiri saat build agar tidak bergantung CDN font.
             fonts: [

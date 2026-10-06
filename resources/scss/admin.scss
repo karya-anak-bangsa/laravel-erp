@@ -7,14 +7,19 @@
 @use '@fortawesome/fontawesome-free/scss/fontawesome';
 @use '@fortawesome/fontawesome-free/scss/solid';
 
-// Latar login hijau solid menggantikan gradasi bawaan Gentelella.
-// Mode gelap memakai varian lebih gelap agar tidak menyilaukan.
+// Latar login solid menggantikan gradasi bawaan Gentelella.
+// Mode gelap kembali ke latar gelap bawaan agar tidak menyilaukan.
 .auth-page {
-    background: var(--primary);
+    background: #f0f5f9;
 }
 
 [data-theme='dark'] .auth-page {
-    background: var(--primary-dk);
+    background: var(--body-bg);
+}
+
+// Halaman auth tanpa .auth-subtitle, jadi jarak ke form dipindah ke judul.
+.auth-title {
+    margin-bottom: 24px;
 }
 
 // Ukuran ikon Font Awesome menyesuaikan kotak ikon bawaan Gentelella.
@@ -26,6 +31,43 @@
     font-size: 13px;
     line-height: 14px;
     text-align: center;
+}
+
+// Tombol tampil/sembunyikan kata sandi di sisi kanan input (resources/js/auth.js).
+.input-group .input-toggle {
+    position: absolute;
+    inset-inline-end: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &:hover {
+        color: var(--text);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: -2px;
+    }
+}
+
+.input-group:has(.input-toggle:not([hidden])) .form-control {
+    padding-inline-end: 38px;
 }
 
 // Penanda pengguna di topbar. Kelas .tb-avatar bawaan sengaja tidak dipakai
