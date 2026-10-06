@@ -11,7 +11,7 @@
     {{ $attributes }}>
     @csrf
     @method('DELETE')
-    <button type="submit" class="btn btn-sm btn-outline" title="{{ $label }}">
+    <button type="submit" class="btn btn-sm btn-danger" title="{{ $label }}">
         <x-admin.icon name="trash-can" />
         {{ $label }}
     </button>

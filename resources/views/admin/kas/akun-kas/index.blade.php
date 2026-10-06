@@ -46,8 +46,8 @@
                             <th>Jenis</th>
                             <th>Bank / No. Rekening</th>
                             <th style="text-align:end">Saldo Awal</th>
-                            <th>Status</th>
-                            <th style="text-align:end">Aksi</th>
+                            <th style="text-align:center">Status</th>
+                            <th style="text-align:center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,15 +67,15 @@
                                     <span class="cell-mono">{{ FormatRupiah::format($akun->saldo_awal) }}</span>
                                     <div class="card-subtitle">per {{ $akun->tanggal_saldo_awal->translatedFormat('d F Y') }}</div>
                                 </td>
-                                <td>
+                                <td style="text-align:center">
                                     @if ($akun->status_aktif)
                                         <span class="status status-green">Aktif</span>
                                     @else
                                         <span class="status status-red">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td style="text-align:end;white-space:nowrap">
-                                    <a href="{{ route('admin.akun-kas.edit', $akun) }}" class="btn btn-sm btn-outline">
+                                <td style="text-align:center;white-space:nowrap">
+                                    <a href="{{ route('admin.akun-kas.edit', $akun) }}" class="btn btn-sm btn-warning">
                                         <x-admin.icon name="pen-to-square" />
                                         Ubah
                                     </a>

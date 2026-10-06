@@ -106,6 +106,7 @@ it('merender delete-button sebagai form DELETE dengan konfirmasi', function () {
         ->assertSee('action="/admin/akun-kas/1"', false)
         ->assertSee('name="_method" value="DELETE"', false)
         ->assertSee('data-confirm=', false)
+        ->assertSee('btn btn-sm btn-danger', false)
         ->assertSee('Hapus');
 });
 

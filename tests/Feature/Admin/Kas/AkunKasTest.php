@@ -54,6 +54,16 @@ describe('daftar', function () {
             ->assertSee('class="nav-link active" href="'.route('admin.akun-kas.index').'"', false);
     });
 
+    it('mengurutkan akun kas berdasarkan abjad nama akun', function () {
+        AkunKas::factory()->create(['nama_akun' => 'Rekening BNI']);
+        AkunKas::factory()->tunai()->create(['nama_akun' => 'Kas Tunai']);
+        AkunKas::factory()->create(['nama_akun' => 'GoPay']);
+
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.akun-kas.index'))
+            ->assertSeeInOrder(['GoPay', 'Kas Tunai', 'Rekening BNI']);
+    });
+
     it('menampilkan empty state bila belum ada akun', function () {
         $this->actingAs($this->pengguna)
             ->get(route('admin.akun-kas.index'))

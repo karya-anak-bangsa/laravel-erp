@@ -27,7 +27,8 @@ class AkunKasController extends Controller
                 ->orWhere('nomor_rekening', 'like', "%{$q}%")))
             ->when($jenis, fn (Builder $query) => $query->where('jenis_akun', $jenis))
             ->when(in_array($status, ['aktif', 'nonaktif'], true), fn (Builder $query) => $query->where('status_aktif', $status === 'aktif'))
-            ->latest()
+            // Akun kas jumlahnya sedikit & dicari berdasarkan nama, jadi diurutkan abjad, bukan terbaru.
+            ->orderBy('nama_akun')
             ->paginate(15)
             ->withQueryString();
 

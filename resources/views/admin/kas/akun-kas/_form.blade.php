@@ -31,5 +31,8 @@
         <x-admin.icon name="floppy-disk" />
         Simpan
     </button>
-    <a href="{{ route('admin.akun-kas.index') }}" class="btn btn-outline">Batal</a>
+    <a href="{{ route('admin.akun-kas.index') }}" class="btn btn-outline">
+        <x-admin.icon name="xmark" />
+        Batal
+    </a>
 </div>
