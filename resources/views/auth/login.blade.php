@@ -1,7 +1,5 @@
 @extends('layouts.auth')
 
-@section('title', 'Masuk')
-
 @section('content')
     <div class="auth-title">Masuk ke Panel Admin</div>
 

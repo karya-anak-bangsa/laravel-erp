@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>@yield('code') · @yield('title') · {{ config('app.name') }}</title>
+    <title>PT. Teknologi Karya Anak Bangsa</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <script>(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',t||(d?'dark':'light'));}catch(e){}})();</script>
     @fonts
     @vite('resources/scss/admin.scss')
@@ -20,10 +22,13 @@
             <div class="error-actions">
                 @section('actions')
                     <a href="{{ url('/admin') }}" class="btn btn-primary">
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 2L2 7v7h12V7L8 2z"/><path d="M6 14V9h4v5"/></svg>
+                        <x-admin.icon name="house" />
                         Ke dashboard
                     </a>
-                    <a href="javascript:history.back()" class="btn btn-outline">← Kembali</a>
+                    <a href="javascript:history.back()" class="btn btn-outline">
+                        <x-admin.icon name="arrow-left" />
+                        Kembali
+                    </a>
                 @show
             </div>
         </div>

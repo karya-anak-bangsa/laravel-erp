@@ -9,7 +9,7 @@
 | di sini, tanpa mengubah grup modul lain.
 |
 | - label : teks menu
-| - ikon  : nama ikon di components/admin/icon.blade.php
+| - ikon  : nama ikon Font Awesome solid tanpa awalan "fa-" (mis. gauge)
 | - rute  : nama rute tujuan
 | - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
 |
@@ -21,7 +21,7 @@ return [
         'item' => [
             [
                 'label' => 'Dashboard',
-                'ikon' => 'dashboard',
+                'ikon' => 'gauge',
                 'rute' => 'admin.dashboard',
             ],
         ],

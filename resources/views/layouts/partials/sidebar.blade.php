@@ -3,7 +3,7 @@
 <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-brand">
         <div class="brand-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></div>
-        <div class="brand-name">ERP <small>TKAB</small></div>
+        <div class="brand-name">ERP TKAB</div>
     </div>
 
     <nav class="sidebar-nav">

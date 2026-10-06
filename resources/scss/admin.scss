@@ -27,6 +27,47 @@
     font-size: 14px;
 }
 
+// <x-admin.icon> menggantikan SVG; Gentelella hanya mengatur ukuran "svg",
+// jadi kotak & ukuran glyph disamakan per konteks. Properti display sengaja
+// tidak ditimpa di aturan konteks agar .theme-icon-light/-dark tetap berfungsi.
+i.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.nav-link .icon,
+.sidebar-toggle .icon,
+.tb-btn .icon {
+    width: 18px;
+    height: 18px;
+    font-size: 15px;
+}
+
+.stat-icon .icon {
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+}
+
+.btn .icon {
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+}
+
+.alert .alert-icon {
+    font-size: 14px;
+}
+
+.empty-state .empty-state-icon .icon {
+    width: 22px;
+    height: 22px;
+    font-size: 20px;
+}
+
 .input-group i.input-icon {
     font-size: 13px;
     line-height: 14px;
@@ -102,5 +143,28 @@
 @media (max-width: 768px) {
     .tb-user-name {
         display: none;
+    }
+}
+
+// Layar lebar (monitor 27" 1440p): konten dibatasi agar kartu & baris teks
+// tidak melebar tanpa batas. Footer tetap selebar layar supaya garis atasnya
+// utuh; hanya isinya disejajarkan dengan konten.
+$lebar-konten-maks: 1600px;
+
+.page-wrapper {
+    max-width: $lebar-konten-maks;
+    margin-inline: auto;
+}
+
+.footer {
+    padding-inline: max(24px, calc((100% - #{$lebar-konten-maks}) / 2 + 24px));
+}
+
+// Gentelella baru memecah 4 kolom di 1200px; di laptop 1280–1399px kartu
+// ringkasan terlalu sempit untuk nominal rupiah. Batas bawah 769px menjaga
+// aturan 1 kolom bawaan di ponsel.
+@media (min-width: 769px) and (max-width: 1399.98px) {
+    .col-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

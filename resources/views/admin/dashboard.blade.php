@@ -1,7 +1,5 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard')
-
 @section('content')
     @php
         $bulanIni = now()->translatedFormat('F Y');

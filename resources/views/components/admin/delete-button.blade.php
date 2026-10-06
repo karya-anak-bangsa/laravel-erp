@@ -12,7 +12,7 @@
     @csrf
     @method('DELETE')
     <button type="submit" class="btn btn-sm btn-outline" title="{{ $label }}">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>
+        <x-admin.icon name="trash-can" />
         {{ $label }}
     </button>
 </form>
