@@ -30,7 +30,7 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 
 ## Fase 2 — Deploy ke Hostinger
 Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap fitur yang selesai langsung di-deploy agar progres bisa diakses online.
-- [ ] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa
+- [x] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa (langkah & catatan server di `docs/DEPLOY.md`)
 
 ## Fase 3 — Kas Perusahaan
 Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e **opsional**, dikerjakan hanya bila dibutuhkan.
