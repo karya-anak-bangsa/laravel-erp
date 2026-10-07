@@ -62,6 +62,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 | Build aset | Vite (laravel-vite-plugin) |
 | Grafik | ECharts (bawaan Gentelella v4) |
 | Toast & konfirmasi | Simple Notify (toast) dan SweetAlert2 (dialog konfirmasi), npm |
+| Pemilih tanggal | flatpickr (npm, lokal `id`), format tampilan `dd/mm/yyyy` |
 | Testing | Pest (di atas PHPUnit) |
 | Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
 | Frontend publik | Belum diputuskan: BootstrapMade (lisensi seluruh template sudah dibeli) vs Tailwind custom — **jangan dikerjakan sebelum Fase 5**. Tailwind bawaan skeleton sudah dihapus; dipasang lagi di Fase 5 bila dipilih, terpisah dari aset admin |
@@ -247,6 +248,8 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, file `lang/id/validation.php`).
 - Format: tanggal `translatedFormat('d F Y')` (zona `Asia/Jakarta`), uang `Rp 1.250.000` via `App\Support\FormatRupiah`.
 - Input uang: `<x-admin.form-input ... data-rupiah inputmode="decimal" autocomplete="off">` (type teks, nilai awal mentah dari model). `admin.js` menampilkan titik ribuan saat diketik dan mengirim angka mentah (`1250000.5`) ke server, jadi validasi tetap `numeric|decimal:0,2`.
+- Input tanggal: tetap `type="date"` dengan nilai `Y-m-d` (atribut `min`/`max` ikut dipakai). `resources/js/admin/pemilih-tanggal.js` otomatis menggantinya dengan flatpickr bertampilan `dd/mm/yyyy` di semua browser (input bawaan browser berbeda format per bahasa browser), sedangkan nilai terkirim tetap `Y-m-d`. Jangan memakai input tanggal bawaan browser tanpa skrip ini.
+- Tabel yang hanya menampilkan informasi (mis. rincian laporan) diberi kelas `tabel-informasi` dan tanpa tautan per baris (pilihan pemilik).
 - Isian wajib (`:required="true"`) ditandai bintang **di depan** label: `*Nama Kategori` (pilihan pemilik).
 - Daftar data: 25 baris per halaman.
 - Tabel daftar: teks rata kiri, **nominal rata kanan** (judul & isi; pilihan pemilik), status di tengah. Nominal ditulis `<span class="cell-mono">{{ FormatRupiah::format(...) }}</span>` di `<th>`/`<td class="kolom-nominal">` (rata kanan, nowrap); nilai minus (saldo/selisih) diberi kelas `nominal-negatif` (merah). Kolom aksi memakai `<th class="kolom-aksi">` dan `<td class="kolom-aksi"><div class="aksi-tabel">…tombol…</div></td>` agar lebarnya pas dengan tombol (lihat `admin/kas/akun-kas/index`).

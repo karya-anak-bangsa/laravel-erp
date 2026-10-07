@@ -9,6 +9,8 @@
 // Toast (Simple Notify) & konfirmasi (SweetAlert2); dipakai di resources/js/admin.js.
 @use 'simple-notify/dist/simple-notify';
 @use 'sweetalert2/dist/sweetalert2';
+// Pemilih tanggal (flatpickr); dipasang di resources/js/admin/pemilih-tanggal.js.
+@use 'flatpickr/dist/flatpickr';
 
 // Latar login solid menggantikan gradasi bawaan Gentelella.
 .auth-page {
@@ -187,6 +189,12 @@ table.table .kolom-nominal {
     color: var(--green);
 }
 
+// Tabel yang hanya menampilkan informasi (rincian laporan): baris tidak menyala saat
+// disorot agar tidak terkesan bisa diklik.
+table.table.tabel-informasi tbody tr:hover {
+    background: transparent;
+}
+
 // Wadah grafik ECharts di dashboard; tinggi tetap agar tata letak tidak melompat saat dimuat.
 .grafik-kas {
     height: 300px;
@@ -300,6 +308,29 @@ table.table.tabel-detail tr:last-child th {
 .swal2-popup {
     font-family: inherit;
     font-size: 14px;
+}
+
+// Kalender flatpickr: huruf, sudut, dan warna pilihan mengikuti token Gentelella
+// (bawaannya biru) agar sama dengan tombol & tautan panel admin.
+.flatpickr-calendar {
+    font-family: inherit;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card), 0 8px 24px rgba(30, 38, 51, 0.12);
+}
+
+.flatpickr-day {
+    border-radius: var(--radius-sm);
+
+    &.today {
+        border-color: var(--primary);
+    }
+
+    &.selected,
+    &.selected:hover,
+    &.selected:focus {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
 }
 
 .swal2-title {

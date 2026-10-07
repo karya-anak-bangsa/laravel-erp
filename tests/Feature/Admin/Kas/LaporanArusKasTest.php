@@ -59,12 +59,14 @@ it('menampilkan ringkasan dan rincian per transaksi periode yang dipilih', funct
         ->assertDontSee('Rp 111.000');
 });
 
-it('menautkan kategori setiap baris ke detail transaksinya', function () {
+it('menampilkan rincian sebagai informasi tanpa tautan ke transaksi', function () {
     $transaksi = TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-09-06']);
 
     $this->actingAs($this->pengguna)
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
-        ->assertSee('href="'.route('admin.transaksi-kas.show', $transaksi).'"', false);
+        ->assertSee('<td class="cell-strong">Domain &amp; Hosting</td>', false)
+        ->assertDontSee(route('admin.transaksi-kas.show', $transaksi))
+        ->assertDontSee(route('admin.transaksi-kas.index').'?', false);
 });
 
 it('memfilter berdasarkan akun', function () {

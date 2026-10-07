@@ -7,7 +7,7 @@
             description="Belum ada transaksi jenis ini pada periode dan akun yang dipilih." />
     @else
         <div class="table-responsive">
-            <table class="table">
+            <table class="table tabel-informasi">
                 <thead>
                     <tr>
                         <th>Tanggal</th>
@@ -19,11 +19,8 @@
                     @foreach ($baris as $transaksi)
                         <tr>
                             <td style="white-space:nowrap">{{ $transaksi->tanggal_transaksi->translatedFormat('d F Y') }}</td>
-                            <td>
-                                {{-- Menuju detail transaksi agar angka bisa ditelusuri sampai buktinya. --}}
-                                <a href="{{ route('admin.transaksi-kas.show', $transaksi) }}" class="cell-strong"
-                                    title="Lihat transaksi {{ $transaksi->nomor_transaksi }}">{{ $transaksi->kategoriTransaksi->nama_kategori }}</a>
-                            </td>
+                            {{-- Hanya informasi, sengaja tanpa tautan (keputusan pemilik). --}}
+                            <td class="cell-strong">{{ $transaksi->kategoriTransaksi->nama_kategori }}</td>
                             <td class="kolom-nominal"><span class="cell-mono">{{ FormatRupiah::format($transaksi->jumlah) }}</span></td>
                         </tr>
                     @endforeach
