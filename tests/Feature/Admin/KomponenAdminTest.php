@@ -33,7 +33,7 @@ it('menampilkan pesan error dan nilai lama pada form-input', function () {
         ->assertSee('for="nama_akun"', false)
         ->assertSee('value="Kas Tunai"', false)
         ->assertSee('form-control is-invalid', false)
-        ->assertSee('<span class="required">*</span>', false)
+        ->assertSee('<span class="required">*</span>Nama Akun</label>', false)
         ->assertSee('Kolom nama akun wajib diisi.');
 });
 

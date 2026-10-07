@@ -98,6 +98,12 @@ a.btn:hover {
     justify-content: center;
 }
 
+// Tanda wajib diletakkan di depan label (*Nama Kategori, pilihan pemilik), jadi
+// jarak bawaan Gentelella yang ada di sisi kiri dipindah ke kanan.
+.form-label .required {
+    margin-inline: 0 2px;
+}
+
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
 // warna latar/teks memakai token Gentelella agar ikut mode gelap.
 .sn-notifications-container {

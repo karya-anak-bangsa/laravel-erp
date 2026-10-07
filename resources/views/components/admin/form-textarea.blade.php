@@ -7,7 +7,7 @@
 
 <div class="form-group">
     @if ($label)
-        <label class="form-label" for="{{ $id }}">{{ $label }}@if ($required)<span class="required">*</span>@endif</label>
+        <label class="form-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
     <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ $rows }}"

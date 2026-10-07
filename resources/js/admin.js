@@ -81,6 +81,58 @@ if (flash) {
     }
 }
 
+// Input nominal rupiah (atribut data-rupiah): tampil "1.250.000,5" saat diketik, tetapi
+// yang dikirim ke server angka mentah "1250000.5" agar validasi numeric & kolom DECIMAL
+// tidak berubah. Nilai awal dari server (model/old()) juga berformat mentah.
+const formatRibuan = (digit) => digit.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+const rapikanRupiah = (teks) => {
+    const [bulat = '', ...pecahan] = teks.replace(/[^\d,]/g, '').split(',');
+    const hasil = formatRibuan(bulat.replace(/^0+(?=\d)/, ''));
+
+    return pecahan.length ? `${hasil},${pecahan.join('').slice(0, 2)}` : hasil;
+};
+
+const keAngkaMentah = (teks) => teks.replace(/\./g, '').replace(',', '.');
+
+// Posisi kursor dihitung dari jumlah digit/koma di depannya, karena titik ribuan
+// yang disisipkan menggeser posisi karakter.
+const posisiKursor = (teks, jumlahKarakter) => {
+    let terhitung = 0;
+    for (let i = 0; i < teks.length; i++) {
+        if (terhitung === jumlahKarakter) {
+            return i;
+        }
+        if (/[\d,]/.test(teks[i])) {
+            terhitung++;
+        }
+    }
+
+    return teks.length;
+};
+
+document.querySelectorAll('input[data-rupiah]').forEach((input) => {
+    // "1250000.00" → "1.250.000"; desimal nol tidak perlu ditampilkan.
+    const [bulat, pecahan = ''] = input.value.split('.');
+    const pecahanBermakna = pecahan.replace(/0+$/, '');
+    input.value = rapikanRupiah(pecahanBermakna ? `${bulat},${pecahanBermakna}` : bulat);
+
+    input.addEventListener('input', () => {
+        const kursor = input.selectionStart ?? input.value.length;
+        const sebelumKursor = input.value.slice(0, kursor).replace(/[^\d,]/g, '').length;
+
+        input.value = rapikanRupiah(input.value);
+
+        const posisi = posisiKursor(input.value, sebelumKursor);
+        input.setSelectionRange(posisi, posisi);
+    });
+
+    // formdata juga terpicu oleh form.submit() setelah konfirmasi SweetAlert2.
+    input.form?.addEventListener('formdata', (event) => {
+        event.formData.set(input.name, keAngkaMentah(input.value));
+    });
+});
+
 // Form dengan data-confirm minta konfirmasi lewat SweetAlert2: hapus (<x-admin.delete-button>,
 // varian danger) maupun simpan tambah/ubah (data-confirm-variant="primary").
 // Tanpa JavaScript form tetap terkirim, hanya tanpa konfirmasi.

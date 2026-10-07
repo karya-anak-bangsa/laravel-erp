@@ -15,8 +15,9 @@
 </div>
 
 <div class="form-row">
-    <x-admin.form-input name="saldo_awal" type="number" label="Saldo Awal (Rp)" :value="$akunKas->saldo_awal" :required="true"
-        min="0" step="0.01" inputmode="decimal" hint="Tanpa titik pemisah ribuan, mis. 1250000." />
+    <x-admin.form-input name="saldo_awal" label="Saldo Awal (Rp)" :value="$akunKas->saldo_awal" :required="true"
+        data-rupiah inputmode="decimal" autocomplete="off" placeholder="0"
+        hint="Titik pemisah ribuan muncul otomatis; pakai koma untuk sen, mis. 1.250.000,50." />
     <x-admin.form-input name="tanggal_saldo_awal" type="date" label="Tanggal Saldo Awal" :value="$akunKas->tanggal_saldo_awal?->format('Y-m-d')"
         :required="true" :max="today()->format('Y-m-d')" hint="Tanggal saat saldo awal dihitung." />
 </div>

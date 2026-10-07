@@ -228,7 +228,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 
 ### Controller & Rute
 - Gunakan `Route::resource()` dan hanya aksi yang dibutuhkan (`->only()` / `->except()`).
-- `index`: pencarian (`?q=`), filter, `->latest()->paginate(15)->withQueryString()`, eager loading relasi (cegah N+1).
+- `index`: pencarian (`?q=`), filter, `->latest()->paginate(25)->withQueryString()` (25 data per halaman untuk semua modul — keputusan pemilik), eager loading relasi (cegah N+1).
 - Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang ditampilkan sebagai toast.
 - Hapus = soft delete, dengan konfirmasi modal. Hapus permanen hanya bila fitur "sampah" dibuat.
 - **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="primary"` (lihat `admin/kas/akun-kas/create|edit`).
@@ -245,6 +245,9 @@ Schema::create('tb_artikel', function (Blueprint $table) {
   Komponen tersedia (anonymous, `resources/views/components/admin/`): `page-header`, `card` (slot `aksi`, `footer`, prop `flush`), `form-input`, `form-textarea`, `form-select` (`:options="[nilai => label]"`), `form-file` (`berkas-saat-ini`), `form-switch` (boolean; `text`, `:checked`, mengirim hidden `0`), `filter-bar` (pencarian `?q=` + slot filter tambahan, diletakkan di atas tabel dalam `card :flush`), `alert`, `empty-state`, `delete-button` (modal konfirmasi via atribut `data-confirm`, dipasang `admin.js`), `pagination` (`:paginator`), `icon` (Font Awesome solid, `name` tanpa awalan `fa-`, mis. `<x-admin.icon name="gauge" />`; ikon menu di `config/menu.php` memakai nama yang sama). Semua ikon memakai Font Awesome — jangan menambah SVG inline. Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
 - Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, file `lang/id/validation.php`).
 - Format: tanggal `translatedFormat('d F Y')` (zona `Asia/Jakarta`), uang `Rp 1.250.000` via `App\Support\FormatRupiah`.
+- Input uang: `<x-admin.form-input ... data-rupiah inputmode="decimal" autocomplete="off">` (type teks, nilai awal mentah dari model). `admin.js` menampilkan titik ribuan saat diketik dan mengirim angka mentah (`1250000.5`) ke server, jadi validasi tetap `numeric|decimal:0,2`.
+- Isian wajib (`:required="true"`) ditandai bintang **di depan** label: `*Nama Kategori` (pilihan pemilik).
+- Daftar data: 25 baris per halaman.
 - Konten HTML (artikel) wajib disanitasi sebelum disimpan; tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi. Selain itu selalu `{{ }}`.
 
 ## 10. Keamanan

@@ -29,7 +29,7 @@ class AkunKasController extends Controller
             ->when(in_array($status, ['aktif', 'nonaktif'], true), fn (Builder $query) => $query->where('status_aktif', $status === 'aktif'))
             // Akun kas jumlahnya sedikit & dicari berdasarkan nama, jadi diurutkan abjad, bukan terbaru.
             ->orderBy('nama_akun')
-            ->paginate(15)
+            ->paginate(25)
             ->withQueryString();
 
         return view('admin.kas.akun-kas.index', compact('akunKas'));

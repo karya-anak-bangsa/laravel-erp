@@ -8,7 +8,7 @@
 
 <div class="form-group">
     @if ($label)
-        <label class="form-label" for="{{ $id }}">{{ $label }}@if ($required)<span class="required">*</span>@endif</label>
+        <label class="form-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
     <input type="file" id="{{ $id }}" name="{{ $name }}"

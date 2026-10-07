@@ -111,13 +111,13 @@ describe('daftar', function () {
             ->assertSee('Reset');
     });
 
-    it('membagi daftar menjadi 15 data per halaman', function () {
-        AkunKas::factory()->count(16)->create();
+    it('membagi daftar menjadi 25 data per halaman', function () {
+        AkunKas::factory()->count(26)->create();
 
         $this->actingAs($this->pengguna)
             ->get(route('admin.akun-kas.index'))
-            ->assertViewHas('akunKas', fn ($paginator) => $paginator->count() === 15 && $paginator->total() === 16)
-            ->assertSee('Menampilkan 1–15 dari 16 data');
+            ->assertViewHas('akunKas', fn ($paginator) => $paginator->count() === 25 && $paginator->total() === 26)
+            ->assertSee('Menampilkan 1–25 dari 26 data');
     });
 
     it('tidak menampilkan akun yang sudah dihapus', function () {
@@ -138,6 +138,8 @@ describe('tambah', function () {
             ->assertSee('data-confirm-title="Simpan akun kas baru?"', false)
             ->assertSee('data-confirm-variant="primary"', false)
             ->assertSee('name="status_aktif" value="1" checked', false)
+            ->assertSee('<span class="required">*</span>Nama Akun</label>', false)
+            ->assertSee('data-rupiah', false)
             ->assertSee('value="'.today()->format('Y-m-d').'"', false);
     });
 

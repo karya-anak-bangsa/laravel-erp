@@ -101,13 +101,13 @@ describe('daftar', function () {
             ->assertSee('Reset');
     });
 
-    it('membagi daftar menjadi 15 data per halaman', function () {
-        KategoriTransaksi::factory()->count(16)->create();
+    it('membagi daftar menjadi 25 data per halaman', function () {
+        KategoriTransaksi::factory()->count(26)->create();
 
         $this->actingAs($this->pengguna)
             ->get(route('admin.kategori-transaksi.index'))
-            ->assertViewHas('kategoriTransaksi', fn ($paginator) => $paginator->count() === 15 && $paginator->total() === 16)
-            ->assertSee('Menampilkan 1–15 dari 16 data');
+            ->assertViewHas('kategoriTransaksi', fn ($paginator) => $paginator->count() === 25 && $paginator->total() === 26)
+            ->assertSee('Menampilkan 1–25 dari 26 data');
     });
 
     it('tidak menampilkan kategori yang sudah dihapus', function () {

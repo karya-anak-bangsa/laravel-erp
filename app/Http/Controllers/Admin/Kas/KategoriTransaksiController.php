@@ -27,7 +27,7 @@ class KategoriTransaksiController extends Controller
             // Data master: dikelompokkan per jenis (pemasukan dulu) lalu abjad, bukan terbaru.
             ->orderBy('jenis_transaksi')
             ->orderBy('nama_kategori')
-            ->paginate(15)
+            ->paginate(25)
             ->withQueryString();
 
         return view('admin.kas.kategori-transaksi.index', compact('kategoriTransaksi'));
