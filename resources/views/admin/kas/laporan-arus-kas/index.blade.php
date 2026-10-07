@@ -39,29 +39,18 @@
         </x-admin.card>
     </div>
 
-    <div class="row col-4">
-        <x-admin.stat label="Saldo Awal" ikon="wallet" warna="teal"
-            :nilai="FormatRupiah::format($ringkasan['saldo_awal'])" :negatif="$ringkasan['saldo_awal'] < 0">
-            per {{ $dari->subDay()->translatedFormat('d F Y') }}
-        </x-admin.stat>
+    <div class="row col-3">
         <x-admin.stat label="Pemasukan" ikon="arrow-down" warna="green" :nilai="FormatRupiah::format($ringkasan['pemasukan'])">
-            {{ $rincian[JenisTransaksi::Pemasukan->value]->sum('jumlah_transaksi') }} transaksi
+            {{ $rincian[JenisTransaksi::Pemasukan->value]->count() }} transaksi
         </x-admin.stat>
         <x-admin.stat label="Pengeluaran" ikon="arrow-up" warna="red" :nilai="FormatRupiah::format($ringkasan['pengeluaran'])">
-            {{ $rincian[JenisTransaksi::Pengeluaran->value]->sum('jumlah_transaksi') }} transaksi
+            {{ $rincian[JenisTransaksi::Pengeluaran->value]->count() }} transaksi
         </x-admin.stat>
-        <x-admin.stat label="Saldo Akhir" ikon="scale-balanced" warna="blue"
-            :nilai="FormatRupiah::format($ringkasan['saldo_akhir'])" :negatif="$ringkasan['saldo_akhir'] < 0">
+        <x-admin.stat label="Total Saldo" ikon="wallet" warna="teal"
+            :nilai="FormatRupiah::format($ringkasan['total_saldo'])" :negatif="$ringkasan['total_saldo'] < 0">
             per {{ $sampai->translatedFormat('d F Y') }}
         </x-admin.stat>
     </div>
-
-    @if ($ringkasan['saldo_akun_baru'] != 0)
-        <x-admin.alert variant="info" style="margin-bottom:16px">
-            Saldo akhir sudah termasuk saldo awal {{ FormatRupiah::format($ringkasan['saldo_akun_baru']) }}
-            dari akun yang mulai dicatat di dalam periode ini.
-        </x-admin.alert>
-    @endif
 
     {{-- align-items:start: kartu setinggi isinya, agar baris Total tetap menjadi bagian paling bawah kartu. --}}
     <div class="row col-2" style="align-items:start">

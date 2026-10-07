@@ -21,7 +21,7 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 - [x] Instal Gentelella v4 via npm (ganti Tailwind bawaan); `resources/scss/admin.scss` + `resources/js/admin.js` di Vite
 - [x] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
 - [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`
-- [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, toggle dark mode, logout), breadcrumb, footer
+- [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, logout), breadcrumb, footer (toggle dark mode dihapus 2026-10-08 atas keputusan pemilik)
 - [x] Dashboard placeholder (kartu ringkasan kosong, siap diisi Fase 3c)
 - [x] Feature test autentikasi & akses dashboard
 ### 1b. Komponen & halaman error
@@ -45,7 +45,7 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [x] Akun/kategori yang sudah punya transaksi tidak bisa dihapus; jenis kategori yang sudah dipakai dikunci
 ### 3c. Laporan & Dashboard
 - [x] Saldo per akun (unit test perhitungan)
-- [x] Laporan arus kas per periode: total pemasukan, pengeluaran, selisih; rincian per kategori
+- [x] Laporan arus kas per periode (default satu bulan kalender penuh): total pemasukan, pengeluaran, selisih, total saldo per akhir periode (tanpa kartu saldo awal/akhir agar tidak rancu dengan saldo awal akun); rincian per transaksi (tanggal, kategori, jumlah)
 - [x] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik 12 bulan (ECharts), transaksi terbaru
 ### 3d. Transfer antar akun (opsional)
 - [ ] Migration & CRUD `tb_transfer_kas`, terintegrasi ke perhitungan saldo

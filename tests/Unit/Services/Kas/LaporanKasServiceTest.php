@@ -47,30 +47,27 @@ describe('ringkasan', function () {
         ]);
     });
 
-    it('menghitung saldo awal dan akhir periode yang seimbang dengan mutasinya', function () {
+    it('menghitung total saldo per akhir periode tanpa transaksi sesudahnya', function () {
         transaksiLaporan($this->akun, $this->jasaWeb, '2026-08-10', 400_000);
         transaksiLaporan($this->akun, $this->hosting, '2026-09-10', 700_000);
         transaksiLaporan($this->akun, $this->jasaWeb, '2026-10-05', 100_000);
 
         $ringkasan = $this->layanan->ringkasan(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
 
-        expect($ringkasan['saldo_awal'])->toBe('1400000.00')
-            ->and($ringkasan['selisih'])->toBe('-700000.00')
-            ->and($ringkasan['saldo_akhir'])->toBe('700000.00')
-            ->and($ringkasan['saldo_akun_baru'])->toBe('0.00');
+        // 1.000.000 + 400.000 − 700.000; pemasukan 5 Oktober belum dihitung.
+        expect($ringkasan['selisih'])->toBe('-700000.00')
+            ->and($ringkasan['total_saldo'])->toBe('700000.00');
     });
 
-    it('memisahkan saldo awal akun yang dibuka di dalam periode', function () {
+    it('menyertakan saldo awal akun yang dibuka di dalam periode ke total saldo', function () {
         $akunBaru = AkunKas::factory()->create(['saldo_awal' => 250_000, 'tanggal_saldo_awal' => '2026-09-20']);
         transaksiLaporan($akunBaru, $this->jasaWeb, '2026-09-25', 50_000);
 
         $ringkasan = $this->layanan->ringkasan(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
 
         // 1.000.000 + 250.000 (akun baru) + 50.000 (pemasukan) = 1.300.000
-        expect($ringkasan['saldo_awal'])->toBe('1000000.00')
-            ->and($ringkasan['saldo_akun_baru'])->toBe('250000.00')
-            ->and($ringkasan['pemasukan'])->toBe('50000.00')
-            ->and($ringkasan['saldo_akhir'])->toBe('1300000.00');
+        expect($ringkasan['pemasukan'])->toBe('50000.00')
+            ->and($ringkasan['total_saldo'])->toBe('1300000.00');
     });
 
     it('bisa dibatasi pada satu akun', function () {
@@ -81,8 +78,7 @@ describe('ringkasan', function () {
         $ringkasan = $this->layanan->ringkasan(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'), $this->akun->id_akun_kas);
 
         expect($ringkasan['pemasukan'])->toBe('100000.00')
-            ->and($ringkasan['saldo_awal'])->toBe('1000000.00')
-            ->and($ringkasan['saldo_akhir'])->toBe('1100000.00');
+            ->and($ringkasan['total_saldo'])->toBe('1100000.00');
     });
 
     it('mengabaikan transaksi yang sudah dihapus', function () {
@@ -103,35 +99,48 @@ describe('ringkasan', function () {
     });
 });
 
-describe('rincian per kategori', function () {
-    it('mengelompokkan per jenis dan mengurutkan dari nominal terbesar', function () {
-        transaksiLaporan($this->akun, $this->pelatihan, '2026-09-02', 300_000);
+describe('rincian transaksi', function () {
+    it('memisahkan per jenis dan mengurutkan menurut tanggal di dalam periode', function () {
+        transaksiLaporan($this->akun, $this->pelatihan, '2026-09-20', 300_000);
         transaksiLaporan($this->akun, $this->jasaWeb, '2026-09-03', 1_000_000);
-        transaksiLaporan($this->akun, $this->pelatihan, '2026-09-04', 200_000);
+        transaksiLaporan($this->akun, $this->pelatihan, '2026-09-10', 200_000);
         transaksiLaporan($this->akun, $this->hosting, '2026-09-05', 150_000);
+        transaksiLaporan($this->akun, $this->jasaWeb, '2026-10-01', 999_000);
 
-        $rincian = $this->layanan->rincianPerKategori(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
+        $rincian = $this->layanan->rincianTransaksi(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
 
-        expect($rincian['pemasukan']->map(fn ($baris) => [$baris->nama_kategori, $baris->jumlah_transaksi, $baris->total])->all())
+        expect($rincian['pemasukan']->map(fn ($t) => [$t->tanggal_transaksi->toDateString(), $t->kategoriTransaksi->nama_kategori, $t->jumlah])->all())
             ->toBe([
-                ['Jasa Pembuatan Website', 1, '1000000.00'],
-                ['Pelatihan IT', 2, '500000.00'],
+                ['2026-09-03', 'Jasa Pembuatan Website', '1000000.00'],
+                ['2026-09-10', 'Pelatihan IT', '200000.00'],
+                ['2026-09-20', 'Pelatihan IT', '300000.00'],
             ])
             ->and($rincian['pengeluaran'])->toHaveCount(1)
-            ->and($rincian['pengeluaran']->first()->nama_kategori)->toBe('Domain & Hosting');
+            ->and($rincian['pengeluaran']->first()->kategoriTransaksi->nama_kategori)->toBe('Domain & Hosting');
+    });
+
+    it('bisa dibatasi pada satu akun dan mengabaikan transaksi yang dihapus', function () {
+        $akunLain = AkunKas::factory()->create(['tanggal_saldo_awal' => '2026-01-01']);
+        transaksiLaporan($akunLain, $this->jasaWeb, '2026-09-10', 900_000);
+        transaksiLaporan($this->akun, $this->jasaWeb, '2026-09-11', 100_000)->delete();
+        transaksiLaporan($this->akun, $this->jasaWeb, '2026-09-12', 50_000);
+
+        $rincian = $this->layanan->rincianTransaksi(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'), $this->akun->id_akun_kas);
+
+        expect($rincian['pemasukan']->pluck('jumlah')->all())->toBe(['50000.00']);
     });
 
     it('tetap menampilkan kategori yang sudah dihapus', function () {
         transaksiLaporan($this->akun, $this->hosting, '2026-09-05', 150_000);
         $this->hosting->delete();
 
-        $rincian = $this->layanan->rincianPerKategori(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
+        $rincian = $this->layanan->rincianTransaksi(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
 
-        expect($rincian['pengeluaran']->first()->nama_kategori)->toBe('Domain & Hosting');
+        expect($rincian['pengeluaran']->first()->kategoriTransaksi->nama_kategori)->toBe('Domain & Hosting');
     });
 
     it('mengembalikan daftar kosong untuk jenis tanpa transaksi', function () {
-        $rincian = $this->layanan->rincianPerKategori(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
+        $rincian = $this->layanan->rincianTransaksi(tanggalUji('2026-09-01'), tanggalUji('2026-09-30'));
 
         expect($rincian['pemasukan'])->toBeEmpty()
             ->and($rincian['pengeluaran'])->toBeEmpty();

@@ -11,13 +11,8 @@
 @use 'sweetalert2/dist/sweetalert2';
 
 // Latar login solid menggantikan gradasi bawaan Gentelella.
-// Mode gelap kembali ke latar gelap bawaan agar tidak menyilaukan.
 .auth-page {
     background: #f0f5f9;
-}
-
-[data-theme='dark'] .auth-page {
-    background: var(--body-bg);
 }
 
 // Halaman auth tanpa .auth-subtitle, jadi jarak ke form dipindah ke judul.
@@ -31,8 +26,7 @@
 }
 
 // <x-admin.icon> menggantikan SVG; Gentelella hanya mengatur ukuran "svg",
-// jadi kotak & ukuran glyph disamakan per konteks. Properti display sengaja
-// tidak ditimpa di aturan konteks agar .theme-icon-light/-dark tetap berfungsi.
+// jadi kotak & ukuran glyph disamakan per konteks.
 i.icon {
     display: inline-flex;
     align-items: center;
@@ -269,7 +263,7 @@ table.table.tabel-detail tr:last-child th {
 }
 
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
-// warna latar/teks memakai token Gentelella agar ikut mode gelap.
+// warna latar/teks memakai token Gentelella agar seragam dengan panel admin.
 .sn-notifications-container {
     --sn-notify-radius: var(--radius);
     font-family: inherit;
@@ -293,8 +287,8 @@ table.table.tabel-detail tr:last-child th {
     }
 }
 
-// Modal SweetAlert2: latar, teks, dan sudut mengikuti token Gentelella sehingga
-// mode gelap otomatis; tombol memakai kelas .btn (lihat admin.js).
+// Modal SweetAlert2: latar, teks, dan sudut mengikuti token Gentelella;
+// tombol memakai kelas .btn (lihat admin.js).
 :root {
     --swal2-background: var(--bg-surface);
     --swal2-color: var(--text-secondary);
@@ -459,23 +453,6 @@ table.table.tabel-detail tr:last-child th {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-// Label toggle tema mengikuti tema aktif tanpa JavaScript tambahan.
-.menu-pengguna .tema-gelap,
-.menu-pengguna .tema-terang {
-    align-items: center;
-    gap: 10px;
-}
-
-.menu-pengguna .tema-gelap,
-[data-theme='dark'] .menu-pengguna .tema-terang {
-    display: flex;
-}
-
-.menu-pengguna .tema-terang,
-[data-theme='dark'] .menu-pengguna .tema-gelap {
-    display: none;
 }
 
 // Layar lebar (monitor 27" 1440p): konten dibatasi agar kartu & baris teks

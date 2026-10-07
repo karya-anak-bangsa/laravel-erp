@@ -24,7 +24,7 @@ describe('widget kas', function () {
             ->get(route('admin.dashboard'))
             ->assertOk()
             // 1.000.000 + 500.000 + 4.000.000 + 2.000.000 − 300.000
-            ->assertSeeInOrder(['Saldo Total', 'Rp 7.200.000', '1 akun kas aktif'])
+            ->assertSeeInOrder(['Total Saldo', 'Rp 7.200.000', '1 akun kas aktif'])
             ->assertSeeInOrder(['Pemasukan', 'Rp 2.000.000', 'Oktober 2026'])
             ->assertSeeInOrder(['Pengeluaran', 'Rp 300.000', 'Oktober 2026'])
             ->assertSeeInOrder(['Transaksi', '2', 'Oktober 2026']);
@@ -87,7 +87,7 @@ it('menampilkan dashboard untuk pengguna yang login', function () {
         ->assertSee(route('logout'));
 });
 
-it('menampilkan menu pengguna berisi toggle tema dan logout di sidebar, bukan di topbar', function () {
+it('menampilkan menu pengguna berisi logout di sidebar, bukan di topbar', function () {
     $pengguna = Pengguna::factory()->create(['nama' => 'Aryajaya Alamsyah', 'email' => 'admin@karyaanakbangsa.co.id']);
 
     $this->actingAs($pengguna)
@@ -97,9 +97,15 @@ it('menampilkan menu pengguna berisi toggle tema dan logout di sidebar, bukan di
         ->assertDontSee('topbar-right', false)
         ->assertSee('<template id="menu-pengguna">', false)
         ->assertSee('admin@karyaanakbangsa.co.id')
-        ->assertSee('data-aksi="ganti-tema"', false)
         ->assertSee('<form method="POST" action="'.route('logout').'">', false)
         ->assertDontSee('theme-toggle', false);
+});
+
+it('tidak menyediakan mode gelap', function () {
+    $this->actingAs(Pengguna::factory()->create())
+        ->get(route('admin.dashboard'))
+        ->assertDontSee('data-aksi="ganti-tema"', false)
+        ->assertDontSee('data-theme', false);
 });
 
 it('memakai ikon rumah untuk menu dashboard', function () {

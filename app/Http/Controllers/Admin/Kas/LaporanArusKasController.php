@@ -13,9 +13,13 @@ class LaporanArusKasController extends Controller
 {
     public function index(Request $request, LaporanKasService $laporanKas): View
     {
-        // Default: awal bulan s.d. hari ini, karena laporan paling sering dibuka untuk bulan berjalan.
-        $sampai = FilterTanggal::parse($request->string('sampai')->value()) ?? today()->toImmutable();
-        $dari = FilterTanggal::parse($request->string('dari')->value()) ?? $sampai->startOfMonth();
+        // Default satu bulan kalender penuh (1 – akhir bulan berjalan). Bila hanya satu ujung
+        // diisi, ujung lainnya mengikuti bulan tanggal tersebut.
+        $dari = FilterTanggal::parse($request->string('dari')->value());
+        $sampai = FilterTanggal::parse($request->string('sampai')->value());
+
+        $dari ??= ($sampai ?? today()->toImmutable())->startOfMonth();
+        $sampai ??= $dari->endOfMonth()->startOfDay();
 
         if ($dari->greaterThan($sampai)) {
             [$dari, $sampai] = [$sampai, $dari];
@@ -28,7 +32,7 @@ class LaporanArusKasController extends Controller
             'sampai' => $sampai,
             'akun' => $akun,
             'ringkasan' => $laporanKas->ringkasan($dari, $sampai, $akun),
-            'rincian' => $laporanKas->rincianPerKategori($dari, $sampai, $akun),
+            'rincian' => $laporanKas->rincianTransaksi($dari, $sampai, $akun),
             'opsiAkun' => AkunKas::query()->orderBy('nama_akun')->pluck('nama_akun', 'id_akun_kas'),
         ]);
     }

@@ -16,7 +16,7 @@ it('mengarahkan tamu ke halaman login', function () {
     $this->get(route('admin.laporan-arus-kas.index'))->assertRedirect(route('login'));
 });
 
-it('menampilkan periode bulan berjalan secara default dan menandai menu aktif', function () {
+it('menampilkan satu bulan kalender penuh secara default dan menandai menu aktif', function () {
     $this->travelTo('2026-10-07 10:00:00');
 
     $this->actingAs($this->pengguna)
@@ -24,13 +24,22 @@ it('menampilkan periode bulan berjalan secara default dan menandai menu aktif', 
         ->assertOk()
         ->assertSee('Laporan Arus Kas')
         ->assertSee('value="2026-10-01"', false)
-        ->assertSee('value="2026-10-07"', false)
-        ->assertSee('Periode 01 Oktober 2026 – 07 Oktober 2026')
-        ->assertSee('per 30 September 2026')
+        ->assertSee('value="2026-10-31"', false)
+        ->assertSee('Periode 01 Oktober 2026 – 31 Oktober 2026')
+        ->assertSeeInOrder(['Total Saldo', 'per 31 Oktober 2026'])
         ->assertSee('class="nav-link active" href="'.route('admin.laporan-arus-kas.index').'"', false);
 });
 
-it('menampilkan ringkasan dan rincian per kategori periode yang dipilih', function () {
+it('melengkapi ujung periode yang kosong mengikuti bulan tanggal yang diisi', function () {
+    $this->actingAs($this->pengguna)
+        ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-02-10']))
+        ->assertSee('Periode 10 Februari 2026 – 28 Februari 2026');
+
+    $this->get(route('admin.laporan-arus-kas.index', ['sampai' => '2026-09-15']))
+        ->assertSee('Periode 01 September 2026 – 15 September 2026');
+});
+
+it('menampilkan ringkasan dan rincian per transaksi periode yang dipilih', function () {
     TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->jasaWeb, 'tanggal_transaksi' => '2026-09-05', 'jumlah' => 2_000_000]);
     TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-09-06', 'jumlah' => 500_000]);
     TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-10-02', 'jumlah' => 111_000]);
@@ -38,40 +47,24 @@ it('menampilkan ringkasan dan rincian per kategori periode yang dipilih', functi
     $this->actingAs($this->pengguna)
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
         ->assertOk()
-        ->assertSeeInOrder(['Saldo Awal', 'Rp 1.000.000', 'Pemasukan', 'Rp 2.000.000', 'Pengeluaran', 'Rp 500.000', 'Saldo Akhir', 'Rp 2.500.000'])
+        ->assertSeeInOrder(['Pemasukan', 'Rp 2.000.000', 'Pengeluaran', 'Rp 500.000', 'Total Saldo', 'Rp 2.500.000'])
+        ->assertDontSee('Saldo Awal')
+        ->assertDontSee('Saldo Akhir')
         ->assertSee('<strong class="nilai-selisih nominal-positif">+Rp 1.500.000</strong>', false)
-        ->assertSee('<td>Total</td>', false)
-        ->assertSee('100,0%')
+        ->assertSee('<td colspan="2">Total</td>', false)
         ->assertSee('2 transaksi')
-        ->assertSee('Jasa Pembuatan Website')
-        ->assertSee('Domain &amp; Hosting', false)
+        ->assertSeeInOrder(['Rincian Pemasukan', '05 September 2026', 'Jasa Pembuatan Website', 'Rp 2.000.000'])
+        ->assertSeeInOrder(['Rincian Pengeluaran', '06 September 2026', 'Domain &amp; Hosting', 'Rp 500.000'], false)
+        ->assertDontSee('Porsi')
         ->assertDontSee('Rp 111.000');
 });
 
-it('menulis porsi yang sangat kecil sebagai kurang dari 0,1 persen', function () {
-    $lainLain = KategoriTransaksi::factory()->pemasukan()->create(['nama_kategori' => 'Pendapatan Lain-lain']);
-    TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->jasaWeb, 'tanggal_transaksi' => '2026-09-05', 'jumlah' => 50_000_000]);
-    TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $lainLain, 'tanggal_transaksi' => '2026-09-06', 'jumlah' => 12_000]);
+it('menautkan kategori setiap baris ke detail transaksinya', function () {
+    $transaksi = TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-09-06']);
 
     $this->actingAs($this->pengguna)
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
-        ->assertSee('&lt;0,1%', false)
-        ->assertSee('100,0%');
-});
-
-it('menautkan kategori ke daftar transaksi dengan filter yang sama', function () {
-    TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-09-06']);
-
-    $tautan = route('admin.transaksi-kas.index', [
-        'kategori' => $this->hosting->id_kategori_transaksi,
-        'akun' => $this->akun->id_akun_kas,
-        'dari' => '2026-09-01',
-        'sampai' => '2026-09-30',
-    ]);
-
-    $this->actingAs($this->pengguna)
-        ->get(route('admin.laporan-arus-kas.index', ['akun' => $this->akun->id_akun_kas, 'dari' => '2026-09-01', 'sampai' => '2026-09-30']))
-        ->assertSee('href="'.e($tautan).'"', false);
+        ->assertSee('href="'.route('admin.transaksi-kas.show', $transaksi).'"', false);
 });
 
 it('memfilter berdasarkan akun', function () {
@@ -95,18 +88,19 @@ it('menukar tanggal bila dari melewati sampai dan mengabaikan tanggal tidak vali
 
     $this->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-02-31', 'sampai' => 'besok']))
         ->assertOk()
-        ->assertSee('Periode 01 Oktober 2026 – 07 Oktober 2026');
+        ->assertSee('Periode 01 Oktober 2026 – 31 Oktober 2026');
 });
 
-it('menjelaskan saldo awal akun yang dibuka di dalam periode', function () {
+it('menghitung total saldo per akhir periode, termasuk akun yang dibuka di dalam periode', function () {
     AkunKas::factory()->create(['saldo_awal' => 250_000, 'tanggal_saldo_awal' => '2026-09-20']);
+    AkunKas::factory()->create(['saldo_awal' => 900_000, 'tanggal_saldo_awal' => '2026-10-01']);
 
     $this->actingAs($this->pengguna)
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
-        ->assertSee('Saldo akhir sudah termasuk saldo awal Rp 250.000');
+        ->assertSeeInOrder(['Total Saldo', 'Rp 1.250.000', 'per 30 September 2026']);
 });
 
-it('menampilkan saldo akhir minus dengan warna merah', function () {
+it('menampilkan total saldo minus dengan warna merah', function () {
     TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->hosting, 'tanggal_transaksi' => '2026-09-06', 'jumlah' => 1_500_000]);
 
     $this->actingAs($this->pengguna)

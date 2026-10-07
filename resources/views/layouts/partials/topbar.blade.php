@@ -26,5 +26,5 @@
         </nav>
     </div>
 
-    {{-- Menu pengguna (tema & logout) ada di sidebar-footer (layouts/partials/sidebar). --}}
+    {{-- Menu pengguna (logout) ada di sidebar-footer (layouts/partials/sidebar). --}}
 </header>

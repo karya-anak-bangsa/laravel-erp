@@ -3,12 +3,10 @@
 namespace App\Services\Kas;
 
 use App\Enums\Kas\JenisTransaksi;
-use App\Models\Kas\AkunKas;
 use App\Models\Kas\TransaksiKas;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use stdClass;
 
 // Semua penjumlahan uang dilakukan di MySQL agar hasilnya tetap DECIMAL, bukan float PHP.
 class LaporanKasService
@@ -16,13 +14,10 @@ class LaporanKasService
     public function __construct(private readonly SaldoKasService $saldoKas) {}
 
     /**
-     * Ringkasan arus kas periode beserta mutasi saldo:
-     * saldo_awal + saldo_akun_baru + pemasukan − pengeluaran = saldo_akhir.
+     * Ringkasan arus kas periode. total_saldo = saldo seluruh akun (atau satu akun) per
+     * akhir periode; sengaja satu angka saja agar tidak rancu dengan saldo awal akun.
      *
-     * saldo_akun_baru = saldo awal akun yang dibuka di dalam periode; dipisahkan agar
-     * tidak tercampur dengan pemasukan, tetapi tetap membuat mutasi saldo seimbang.
-     *
-     * @return array{saldo_awal: string, saldo_akun_baru: string, pemasukan: string, pengeluaran: string, selisih: string, saldo_akhir: string, jumlah_transaksi: int}
+     * @return array{pemasukan: string, pengeluaran: string, selisih: string, total_saldo: string, jumlah_transaksi: int}
      */
     public function ringkasan(CarbonInterface $dari, CarbonInterface $sampai, ?int $idAkun = null): array
     {
@@ -37,52 +32,33 @@ class LaporanKasService
             ->selectRaw('COUNT(*) as jumlah_transaksi')
             ->first();
 
-        $saldoAkunBaru = AkunKas::query()
-            ->when($idAkun, fn (Builder $q) => $q->whereKey($idAkun))
-            ->whereBetween('tanggal_saldo_awal', [$dari->toDateString(), $sampai->toDateString()])
-            ->toBase()
-            ->selectRaw('COALESCE(SUM(saldo_awal), 0) as total')
-            ->value('total');
-
         return [
-            'saldo_awal' => $this->saldoKas->saldoTotal($dari->toImmutable()->subDay(), $idAkun),
-            'saldo_akun_baru' => (string) $saldoAkunBaru,
             'pemasukan' => (string) $mutasi->pemasukan,
             'pengeluaran' => (string) $mutasi->pengeluaran,
             'selisih' => (string) $mutasi->selisih,
-            'saldo_akhir' => $this->saldoKas->saldoTotal($sampai, $idAkun),
+            'total_saldo' => $this->saldoKas->saldoTotal($sampai, $idAkun),
             'jumlah_transaksi' => (int) $mutasi->jumlah_transaksi,
         ];
     }
 
     /**
-     * Total per kategori, dikelompokkan per jenis dan diurutkan dari nominal terbesar.
-     * Kategori yang sudah dihapus tetap tampil karena transaksinya masih dihitung.
-     * Kunci = nilai JenisTransaksi; setiap baris berisi id_kategori_transaksi,
-     * nama_kategori, jumlah_transaksi, dan total (string desimal).
+     * Daftar transaksi periode per jenis, urut tanggal lalu nomor transaksi.
+     * Kunci = nilai JenisTransaksi. Kategori yang sudah dihapus tetap terbaca
+     * karena relasi kategoriTransaksi memakai withTrashed().
      *
-     * @return array<string, Collection<int, stdClass>>
+     * @return array<string, Collection<int, TransaksiKas>>
      */
-    public function rincianPerKategori(CarbonInterface $dari, CarbonInterface $sampai, ?int $idAkun = null): array
+    public function rincianTransaksi(CarbonInterface $dari, CarbonInterface $sampai, ?int $idAkun = null): array
     {
-        $baris = $this->transaksiPeriode($dari, $sampai, $idAkun)
-            ->join('tb_kategori_transaksi', 'tb_kategori_transaksi.id_kategori_transaksi', '=', 'tb_transaksi_kas.id_kategori_transaksi')
-            ->toBase()
-            ->select([
-                'tb_transaksi_kas.jenis_transaksi',
-                'tb_transaksi_kas.id_kategori_transaksi',
-                'tb_kategori_transaksi.nama_kategori',
-            ])
-            ->selectRaw('COUNT(*) as jumlah_transaksi')
-            ->selectRaw('SUM(tb_transaksi_kas.jumlah) as total')
-            ->groupBy('tb_transaksi_kas.jenis_transaksi', 'tb_transaksi_kas.id_kategori_transaksi', 'tb_kategori_transaksi.nama_kategori')
-            ->orderByDesc('total')
-            ->orderBy('tb_kategori_transaksi.nama_kategori')
-            ->get();
+        $transaksi = $this->transaksiPeriode($dari, $sampai, $idAkun)
+            ->with('kategoriTransaksi:id_kategori_transaksi,nama_kategori')
+            ->orderBy('tanggal_transaksi')
+            ->orderBy('nomor_transaksi')
+            ->get(['id_transaksi_kas', 'nomor_transaksi', 'id_kategori_transaksi', 'jenis_transaksi', 'tanggal_transaksi', 'jumlah']);
 
         return collect(JenisTransaksi::cases())
             ->mapWithKeys(fn (JenisTransaksi $jenis) => [
-                $jenis->value => $baris->where('jenis_transaksi', $jenis->value)->values(),
+                $jenis->value => $transaksi->where('jenis_transaksi', $jenis)->values(),
             ])
             ->all();
     }

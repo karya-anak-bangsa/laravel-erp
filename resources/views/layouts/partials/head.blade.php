@@ -4,6 +4,4 @@
 <title>PT. Teknologi Karya Anak Bangsa</title>
 <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-{{-- Terapkan tema tersimpan sebelum halaman dirender agar mode gelap tidak berkedip. --}}
-<script>(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',t||(d?'dark':'light'));}catch(e){}})();</script>
 @fonts

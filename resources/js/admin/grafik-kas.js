@@ -23,7 +23,7 @@ const ringkas = (nilai) => {
         : nilai.toLocaleString('id-ID');
 };
 
-// Warna dibaca dari token CSS Gentelella agar ikut mode terang/gelap.
+// Warna dibaca dari token CSS Gentelella agar sama dengan komponen lain.
 const warnaTema = () => {
     const css = getComputedStyle(document.documentElement);
     const ambil = (nama) => css.getPropertyValue(nama).trim();
@@ -104,15 +104,8 @@ export async function pasangGrafikKas() {
     const { default: echarts } = await import('./echarts.js');
 
     el.classList.remove('skeleton', 'chart-skeleton');
-    let grafik = echarts.init(el);
+    const grafik = echarts.init(el);
     grafik.setOption(opsiGrafik(data, warnaTema()));
 
     new ResizeObserver(() => grafik.resize()).observe(el);
-
-    // Warna diambil sekali saat init, jadi grafik dibangun ulang ketika tema berganti.
-    new MutationObserver(() => {
-        grafik.dispose();
-        grafik = echarts.init(el);
-        grafik.setOption(opsiGrafik(data, warnaTema()));
-    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 }

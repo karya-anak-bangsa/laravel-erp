@@ -7,7 +7,7 @@
     <x-admin.page-header title="Dashboard" :pretitle="'Selamat datang, '.auth()->user()->nama" />
 
     <div class="row col-4">
-        <x-admin.stat label="Saldo Total" ikon="wallet" warna="teal"
+        <x-admin.stat label="Total Saldo" ikon="wallet" warna="teal"
             :nilai="FormatRupiah::format($saldoTotal)" :negatif="$saldoTotal < 0">
             {{ $jumlahAkunAktif }} akun kas aktif
         </x-admin.stat>
