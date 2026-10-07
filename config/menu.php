@@ -36,6 +36,11 @@ return [
                 'aktif' => 'admin.transaksi-kas.*',
             ],
             [
+                'label' => 'Laporan Arus Kas',
+                'ikon' => 'chart-column',
+                'rute' => 'admin.laporan-arus-kas.index',
+            ],
+            [
                 'label' => 'Akun Kas',
                 'ikon' => 'wallet',
                 'rute' => 'admin.akun-kas.index',

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Kas\AkunKasController;
 use App\Http\Controllers\Admin\Kas\KategoriTransaksiController;
+use App\Http\Controllers\Admin\Kas\LaporanArusKasController;
 use App\Http\Controllers\Admin\Kas\TransaksiKasController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +27,6 @@ Route::resource('transaksi-kas', TransaksiKasController::class)
 // Bukti transaksi di disk privat hanya bisa diunduh lewat rute ber-auth ini.
 Route::get('transaksi-kas/{transaksiKas}/bukti', [TransaksiKasController::class, 'bukti'])
     ->name('transaksi-kas.bukti');
+
+Route::get('laporan-arus-kas', [LaporanArusKasController::class, 'index'])
+    ->name('laporan-arus-kas.index');

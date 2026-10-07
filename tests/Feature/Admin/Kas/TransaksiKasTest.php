@@ -157,6 +157,13 @@ describe('daftar', function () {
             ->assertDontSee('name="kategori"', false);
     });
 
+    it('menampilkan dan mempertahankan filter kategori dari tautan laporan', function () {
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.transaksi-kas.index', ['kategori' => $this->kategoriKeluar->id_kategori_transaksi]))
+            ->assertSee('<input type="hidden" name="kategori" value="'.$this->kategoriKeluar->id_kategori_transaksi.'">', false)
+            ->assertSee('Kategori: Domain &amp; Hosting', false);
+    });
+
     it('menampilkan pesan tidak ditemukan bila pencarian kosong', function () {
         TransaksiKas::factory()->create();
 

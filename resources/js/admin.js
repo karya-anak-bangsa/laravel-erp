@@ -6,8 +6,10 @@ import { openPanel } from 'gentelella/v4/menus';
 // komponen Gentelella. Build ESM tanpa CSS bawaan; CSS-nya dimuat di admin.scss.
 import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
+import { pasangGrafikKas } from './admin/grafik-kas.js';
 
 mountShell();
+pasangGrafikKas();
 
 // Menu pengguna di topbar: isinya <template> Blade (layouts/partials/topbar).
 document.querySelectorAll('[data-menu]').forEach((pemicu) => {

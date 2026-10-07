@@ -44,9 +44,9 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [x] CRUD Transaksi Kas: filter periode/akun/kategori/jenis, upload & lihat bukti (disk privat), `created_by/updated_by`
 - [x] Akun/kategori yang sudah punya transaksi tidak bisa dihapus; jenis kategori yang sudah dipakai dikunci
 ### 3c. Laporan & Dashboard
-- [ ] Saldo per akun (unit test perhitungan)
-- [ ] Laporan arus kas per periode: total pemasukan, pengeluaran, selisih; rincian per kategori
-- [ ] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik 12 bulan (ECharts), transaksi terbaru
+- [x] Saldo per akun (unit test perhitungan)
+- [x] Laporan arus kas per periode: total pemasukan, pengeluaran, selisih; rincian per kategori
+- [x] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik 12 bulan (ECharts), transaksi terbaru
 ### 3d. Transfer antar akun (opsional)
 - [ ] Migration & CRUD `tb_transfer_kas`, terintegrasi ke perhitungan saldo
 ### 3e. Ekspor (opsional)

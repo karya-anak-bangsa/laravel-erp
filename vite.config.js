@@ -15,6 +15,11 @@ export default defineConfig({
             ],
         }),
     ],
+    build: {
+        // Chunk ECharts (±520 kB, ±176 kB gzip) sudah minimal (hanya grafik batang) dan
+        // dimuat dinamis khusus di dashboard, jadi batas peringatan dinaikkan sedikit.
+        chunkSizeWarningLimit: 600,
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],

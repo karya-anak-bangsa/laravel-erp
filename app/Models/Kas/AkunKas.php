@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $tanggal_saldo_awal
  * @property bool $status_aktif
  * @property string|null $keterangan
+ * @property-read string|null $saldo hanya terisi bila query memakai SaldoKasService::denganSaldo()
  */
 class AkunKas extends Model
 {

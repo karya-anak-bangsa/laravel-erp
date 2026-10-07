@@ -203,7 +203,7 @@ Aturan bisnis (`App\Services\Kas\TransaksiKasService`):
 - Tanggal transaksi tidak boleh melewati hari ini dan tidak boleh sebelum `tanggal_saldo_awal` akun. Transaksi baru hanya memakai akun aktif; saat diubah, akun milik transaksi tetap boleh walau kini nonaktif.
 - Bukti transaksi disimpan di disk `local` folder `kas/bukti/` (nama UUID). Saat diganti/dihapus lewat form, berkas lama dibuang setelah perubahan tersimpan; saat transaksi dihapus (soft delete) berkas tetap disimpan.
 - Akun kas atau kategori transaksi yang sudah punya transaksi **tidak bisa dihapus**, dan `jenis_transaksi` kategori yang sudah dipakai **tidak bisa diubah** (agar laporan lama tetap konsisten).
-- Saldo **tidak disimpan**; dihitung: `saldo_awal + Σ pemasukan − Σ pengeluaran (+ transfer masuk − transfer keluar)` untuk transaksi yang tidak terhapus.
+- Saldo **tidak disimpan**; dihitung `App\Services\Kas\SaldoKasService` di MySQL (tetap DECIMAL): `saldo_awal + Σ pemasukan − Σ pengeluaran (+ transfer masuk − transfer keluar)` untuk transaksi yang tidak terhapus. Saldo per tanggal menganggap akun bernilai 0 sebelum `tanggal_saldo_awal`. Laporan arus kas (`LaporanKasService`) memisahkan saldo awal akun yang dibuka di dalam periode agar saldo awal + mutasi = saldo akhir.
 - Saat relasi polimorfik mulai dipakai, daftarkan alias stabil dengan `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
 
 ### tb_transfer_kas — (direncanakan, Fase 3d) pemindahan dana antar akun

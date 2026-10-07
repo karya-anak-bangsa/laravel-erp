@@ -183,6 +183,21 @@ table.table .kolom-nominal {
     white-space: nowrap;
 }
 
+// Saldo/selisih minus harus langsung terlihat, tidak cukup tanda "-" saja.
+// Positif dipakai untuk membedakan pemasukan di daftar campuran (transaksi terbaru).
+.nominal-negatif {
+    color: var(--red);
+}
+
+.nominal-positif {
+    color: var(--green);
+}
+
+// Wadah grafik ECharts di dashboard; tinggi tetap agar tata letak tidak melompat saat dimuat.
+.grafik-kas {
+    height: 300px;
+}
+
 // Tabel rincian (halaman detail): label di kiri, nilai di kanan. Label tidak
 // memakai gaya huruf kapital kecil milik judul kolom tabel daftar.
 table.table.tabel-detail th {

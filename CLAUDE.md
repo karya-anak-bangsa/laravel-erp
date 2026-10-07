@@ -231,7 +231,8 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - `index`: pencarian (`?q=`), filter, `->latest()->paginate(25)->withQueryString()` (25 data per halaman untuk semua modul — keputusan pemilik), eager loading relasi (cegah N+1).
 - Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang ditampilkan sebagai toast.
 - Hapus = soft delete, dengan konfirmasi modal. Hapus permanen hanya bila fitur "sampah" dibuat.
-- **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="primary"` (lihat `admin/kas/akun-kas/create|edit`).
+- **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="success"` (lihat `admin/kas/akun-kas/create|edit`).
+- Warna tombol (pilihan pemilik): Tambah & Simpan `btn-success`, Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` dengan ikon `rotate-left` (termasuk tombol Batal dialog SweetAlert2).
 - Modul singleton (`tb_identitas`) hanya punya `edit` & `update`.
 
 ### Upload File
@@ -248,7 +249,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Input uang: `<x-admin.form-input ... data-rupiah inputmode="decimal" autocomplete="off">` (type teks, nilai awal mentah dari model). `admin.js` menampilkan titik ribuan saat diketik dan mengirim angka mentah (`1250000.5`) ke server, jadi validasi tetap `numeric|decimal:0,2`.
 - Isian wajib (`:required="true"`) ditandai bintang **di depan** label: `*Nama Kategori` (pilihan pemilik).
 - Daftar data: 25 baris per halaman.
-- Tabel daftar: teks **dan nominal** rata kiri (judul & isi; pilihan pemilik), status di tengah. Nominal ditulis `<span class="cell-mono">{{ FormatRupiah::format(...) }}</span>` di `<td class="kolom-nominal">` (nowrap). Kolom aksi memakai `<th class="kolom-aksi">` dan `<td class="kolom-aksi"><div class="aksi-tabel">…tombol…</div></td>` agar lebarnya pas dengan tombol (lihat `admin/kas/akun-kas/index`).
+- Tabel daftar: teks rata kiri, **nominal rata kanan** (judul & isi; pilihan pemilik), status di tengah. Nominal ditulis `<span class="cell-mono">{{ FormatRupiah::format(...) }}</span>` di `<th>`/`<td class="kolom-nominal">` (rata kanan, nowrap); nilai minus (saldo/selisih) diberi kelas `nominal-negatif` (merah). Kolom aksi memakai `<th class="kolom-aksi">` dan `<td class="kolom-aksi"><div class="aksi-tabel">…tombol…</div></td>` agar lebarnya pas dengan tombol (lihat `admin/kas/akun-kas/index`).
 - Konten HTML (artikel) wajib disanitasi sebelum disimpan; tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi. Selain itu selalu `{{ }}`.
 
 ## 10. Keamanan

@@ -1,51 +1,72 @@
 @extends('layouts.admin')
 
-@section('content')
-    @php
-        $bulanIni = now()->translatedFormat('F Y');
-        // Placeholder; nilai diisi dari modul Kas Perusahaan (ROADMAP Fase 3c).
-        $ringkasan = [
-            ['label' => 'Saldo Total', 'ikon' => 'wallet', 'warna' => 'teal', 'keterangan' => 'Semua akun kas'],
-            ['label' => 'Pemasukan', 'ikon' => 'arrow-down', 'warna' => 'green', 'keterangan' => $bulanIni],
-            ['label' => 'Pengeluaran', 'ikon' => 'arrow-up', 'warna' => 'red', 'keterangan' => $bulanIni],
-            ['label' => 'Transaksi', 'ikon' => 'receipt', 'warna' => 'blue', 'keterangan' => $bulanIni],
-        ];
-    @endphp
+@use('App\Enums\Kas\JenisTransaksi')
+@use('App\Support\FormatRupiah')
 
-    <div class="page-header">
-        <div class="page-header-row">
-            <div>
-                <div class="page-pretitle">Ringkasan</div>
-                <h1 class="page-title">Dashboard</h1>
-            </div>
-        </div>
-    </div>
+@section('content')
+    <x-admin.page-header title="Dashboard" :pretitle="'Selamat datang, '.auth()->user()->nama" />
 
     <div class="row col-4">
-        @foreach ($ringkasan as $kartu)
-            <div class="card">
-                <div class="stat">
-                    <div class="stat-icon {{ $kartu['warna'] }}">
-                        <x-admin.icon :name="$kartu['ikon']" />
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">{{ $kartu['label'] }}</div>
-                        <div class="stat-value-row">
-                            <span class="stat-value">—</span>
-                        </div>
-                        <div class="stat-subtext">{{ $kartu['keterangan'] }}</div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
+        <x-admin.stat label="Saldo Total" ikon="wallet" warna="teal"
+            :nilai="FormatRupiah::format($saldoTotal)" :negatif="$saldoTotal < 0">
+            {{ $jumlahAkunAktif }} akun kas aktif
+        </x-admin.stat>
+        <x-admin.stat label="Pemasukan" ikon="arrow-down" warna="green" :nilai="FormatRupiah::format($bulanIni['pemasukan'])">
+            {{ $hariIni->translatedFormat('F Y') }}
+        </x-admin.stat>
+        <x-admin.stat label="Pengeluaran" ikon="arrow-up" warna="red" :nilai="FormatRupiah::format($bulanIni['pengeluaran'])">
+            {{ $hariIni->translatedFormat('F Y') }}
+        </x-admin.stat>
+        <x-admin.stat label="Transaksi" ikon="receipt" warna="blue" :nilai="$bulanIni['jumlah_transaksi']">
+            {{ $hariIni->translatedFormat('F Y') }}
+        </x-admin.stat>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Selamat datang, {{ auth()->user()->nama }}</div>
-        </div>
-        <div class="card-body">
-            Ringkasan kas akan tampil di halaman ini setelah modul Kas Perusahaan aktif.
-        </div>
+    <div class="row col-8-4">
+        <x-admin.card title="Arus Kas 12 Bulan Terakhir" subtitle="Pemasukan & pengeluaran per bulan">
+            <x-slot:aksi>
+                <a href="{{ route('admin.laporan-arus-kas.index') }}" class="btn btn-sm btn-outline">
+                    <x-admin.icon name="chart-column" />
+                    Laporan
+                </a>
+            </x-slot>
+
+            <div class="grafik-kas skeleton chart-skeleton" data-grafik-kas="{{ json_encode($grafik) }}"
+                role="img" aria-label="Grafik batang pemasukan dan pengeluaran 12 bulan terakhir"></div>
+        </x-admin.card>
+
+        <x-admin.card title="Transaksi Terbaru" :flush="true">
+            <x-slot:aksi>
+                <a href="{{ route('admin.transaksi-kas.index') }}" class="btn btn-sm btn-outline">Lihat semua</a>
+            </x-slot>
+
+            @if ($transaksiTerbaru->isEmpty())
+                <x-admin.empty-state title="Belum ada transaksi" description="Pemasukan dan pengeluaran yang dicatat akan tampil di sini.">
+                    <a href="{{ route('admin.transaksi-kas.create') }}" class="btn btn-success">
+                        <x-admin.icon name="plus" />
+                        Catat Transaksi
+                    </a>
+                </x-admin.empty-state>
+            @else
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            @foreach ($transaksiTerbaru as $transaksi)
+                                @php($masuk = $transaksi->jenis_transaksi === JenisTransaksi::Pemasukan)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('admin.transaksi-kas.show', $transaksi) }}" class="cell-strong">{{ $transaksi->kategoriTransaksi->nama_kategori }}</a>
+                                        <div class="card-subtitle">{{ $transaksi->tanggal_transaksi->translatedFormat('d M Y') }} · {{ $transaksi->akunKas->nama_akun }}</div>
+                                    </td>
+                                    <td class="kolom-nominal">
+                                        <span @class(['cell-mono', 'nominal-positif' => $masuk, 'nominal-negatif' => ! $masuk])>{{ $masuk ? '+' : '-' }}{{ FormatRupiah::format($transaksi->jumlah) }}</span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </x-admin.card>
     </div>
 @endsection

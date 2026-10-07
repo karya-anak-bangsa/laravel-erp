@@ -11,6 +11,7 @@ use App\Models\Kas\KategoriTransaksi;
 use App\Models\Kas\TransaksiKas;
 use App\Models\Pengguna;
 use App\Services\Kas\TransaksiKasService;
+use App\Support\FilterTanggal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,8 +29,8 @@ class TransaksiKasController extends Controller
         $jenis = JenisTransaksi::tryFrom($request->string('jenis')->value());
         $akun = $request->integer('akun');
         $kategori = $request->integer('kategori');
-        $dari = $this->tanggalFilter($request, 'dari');
-        $sampai = $this->tanggalFilter($request, 'sampai');
+        $dari = FilterTanggal::parse($request->string('dari')->value())?->toDateString();
+        $sampai = FilterTanggal::parse($request->string('sampai')->value())?->toDateString();
 
         $transaksiKas = TransaksiKas::query()
             ->with(['akunKas', 'kategoriTransaksi'])
@@ -50,6 +51,8 @@ class TransaksiKasController extends Controller
         return view('admin.kas.transaksi-kas.index', [
             'transaksiKas' => $transaksiKas,
             'opsiAkun' => AkunKas::query()->orderBy('nama_akun')->pluck('nama_akun', 'id_akun_kas'),
+            // Filter kategori datang dari tautan Laporan Arus Kas (tidak ada dropdown-nya di daftar).
+            'filterKategori' => $kategori > 0 ? KategoriTransaksi::withTrashed()->find($kategori) : null,
         ]);
     }
 
@@ -142,14 +145,6 @@ class TransaksiKasController extends Controller
             ->orderBy('nama_akun')
             ->pluck('nama_akun', 'id_akun_kas')
             ->all();
-    }
-
-    // Filter tanggal dari query string; format selain Y-m-d diabaikan, bukan error 500.
-    private function tanggalFilter(Request $request, string $kunci): ?string
-    {
-        $nilai = $request->string($kunci)->value();
-
-        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $nilai) === 1 && strtotime($nilai) !== false ? $nilai : null;
     }
 
     private function pengguna(Request $request): Pengguna

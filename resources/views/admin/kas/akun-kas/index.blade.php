@@ -46,6 +46,7 @@
                             <th>Jenis</th>
                             <th>Bank / No. Rekening</th>
                             <th class="kolom-nominal">Saldo Awal</th>
+                            <th class="kolom-nominal">Saldo Saat Ini</th>
                             <th style="text-align:center">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
@@ -66,6 +67,9 @@
                                 <td class="kolom-nominal">
                                     <span class="cell-mono">{{ FormatRupiah::format($akun->saldo_awal) }}</span>
                                     <div class="card-subtitle">per {{ $akun->tanggal_saldo_awal->translatedFormat('d F Y') }}</div>
+                                </td>
+                                <td class="kolom-nominal">
+                                    <span @class(['cell-mono', 'cell-strong', 'nominal-negatif' => $akun->saldo < 0])>{{ FormatRupiah::format($akun->saldo) }}</span>
                                 </td>
                                 <td style="text-align:center">
                                     @if ($akun->status_aktif)

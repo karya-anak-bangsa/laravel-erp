@@ -13,6 +13,12 @@
 
     <x-admin.card :flush="true">
         <x-admin.filter-bar :action="route('admin.transaksi-kas.index')">
+            @if ($filterKategori)
+                <input type="hidden" name="kategori" value="{{ $filterKategori->id_kategori_transaksi }}">
+                <span class="chip chip-{{ $filterKategori->jenis_transaksi->warna() }}" title="Filter dari Laporan Arus Kas">
+                    Kategori: {{ $filterKategori->nama_kategori }}
+                </span>
+            @endif
             <select name="jenis" class="form-control" style="width:150px;height:32px" aria-label="Filter jenis transaksi">
                 <option value="">Semua jenis</option>
                 @foreach (JenisTransaksi::opsi() as $nilai => $teks)

@@ -55,6 +55,26 @@ describe('daftar', function () {
             ->assertSee('class="nav-link active" href="'.route('admin.akun-kas.index').'"', false);
     });
 
+    it('menampilkan saldo saat ini dari saldo awal dan transaksi', function () {
+        $akun = AkunKas::factory()->create(['saldo_awal' => 1_000_000, 'tanggal_saldo_awal' => '2026-01-01']);
+        TransaksiKas::factory()->pemasukan()->create(['id_akun_kas' => $akun, 'jumlah' => 500_000]);
+        TransaksiKas::factory()->create(['id_akun_kas' => $akun, 'jumlah' => 200_000]);
+
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.akun-kas.index'))
+            ->assertSeeInOrder(['Saldo Awal', 'Saldo Saat Ini'])
+            ->assertSeeInOrder(['Rp 1.000.000', 'Rp 1.300.000']);
+    });
+
+    it('menandai saldo minus dengan warna merah', function () {
+        $akun = AkunKas::factory()->create(['saldo_awal' => 0, 'tanggal_saldo_awal' => '2026-01-01']);
+        TransaksiKas::factory()->create(['id_akun_kas' => $akun, 'jumlah' => 75_000]);
+
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.akun-kas.index'))
+            ->assertSee('<span class="cell-mono cell-strong nominal-negatif">-Rp 75.000</span>', false);
+    });
+
     it('mengurutkan akun kas berdasarkan abjad nama akun', function () {
         AkunKas::factory()->create(['nama_akun' => 'Rekening BNI']);
         AkunKas::factory()->tunai()->create(['nama_akun' => 'Kas Tunai']);

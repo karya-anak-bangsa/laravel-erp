@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Kas\StoreAkunKasRequest;
 use App\Http\Requests\Admin\Kas\UpdateAkunKasRequest;
 use App\Models\Kas\AkunKas;
+use App\Services\Kas\SaldoKasService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,13 +15,13 @@ use Illuminate\View\View;
 
 class AkunKasController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, SaldoKasService $saldoKas): View
     {
         $q = $request->string('q')->trim()->value();
         $jenis = JenisAkunKas::tryFrom($request->string('jenis')->value());
         $status = $request->string('status')->value();
 
-        $akunKas = AkunKas::query()
+        $akunKas = $saldoKas->denganSaldo(AkunKas::query())
             ->when($q !== '', fn (Builder $query) => $query->where(fn (Builder $query) => $query
                 ->where('nama_akun', 'like', "%{$q}%")
                 ->orWhere('nama_bank', 'like', "%{$q}%")
