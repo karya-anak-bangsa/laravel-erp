@@ -46,7 +46,7 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 ### 3c. Laporan & Dashboard
 - [x] Saldo per akun (unit test perhitungan)
 - [x] Laporan arus kas per periode (default satu bulan kalender penuh): total pemasukan, pengeluaran, selisih, total saldo per akhir periode (tanpa kartu saldo awal/akhir agar tidak rancu dengan saldo awal akun); rincian per transaksi (tanggal, kategori, jumlah)
-- [x] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik 12 bulan (ECharts), transaksi terbaru
+- [x] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik arus kas satu tahun kalender Jan–Des (ECharts), transaksi terbaru
 ### 3d. Transfer antar akun (opsional)
 - [ ] Migration & CRUD `tb_transfer_kas`, terintegrasi ke perhitungan saldo
 ### 3e. Ekspor (opsional)

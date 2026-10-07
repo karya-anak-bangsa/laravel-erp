@@ -30,19 +30,22 @@ describe('widget kas', function () {
             ->assertSeeInOrder(['Transaksi', '2', 'Oktober 2026']);
     });
 
-    it('mengirim data grafik 12 bulan ke halaman', function () {
+    it('mengirim data grafik Januari sampai Desember tahun berjalan ke halaman', function () {
         TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->jasaWeb, 'tanggal_transaksi' => '2026-10-02', 'jumlah' => 2_000_000]);
+        TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->jasaWeb, 'tanggal_transaksi' => '2025-12-15', 'jumlah' => 999_000]);
 
         $this->actingAs($this->pengguna)
             ->get(route('admin.dashboard'))
+            ->assertSee('Arus Kas Tahun 2026')
             ->assertSee('data-grafik-kas=', false)
-            ->assertViewHas('grafik', fn (array $grafik) => count($grafik['label']) === 12
-                && $grafik['label'][0] === "Nov\n2025"
-                && $grafik['label'][2] === "Jan\n2026"
-                && $grafik['label'][11] === 'Okt'
-                && $grafik['labelPanjang'][11] === 'Oktober 2026'
-                && $grafik['pemasukan'][11] === 2_000_000.0
-                && $grafik['pengeluaran'][11] === 0.0);
+            ->assertViewHas('grafik', fn (array $grafik) => $grafik['label'] === ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+                && $grafik['labelPanjang'][0] === 'Januari 2026'
+                && $grafik['labelPanjang'][11] === 'Desember 2026'
+                && $grafik['pemasukan'][9] === 2_000_000.0
+                && $grafik['pengeluaran'][9] === 0.0
+                // Desember 2025 di luar tahun berjalan; Nov–Des 2026 belum tiba.
+                && ! in_array(999_000.0, $grafik['pemasukan'], true)
+                && $grafik['pemasukan'][11] === 0.0);
     });
 
     it('menampilkan transaksi terbaru dengan tanda pemasukan dan pengeluaran', function () {

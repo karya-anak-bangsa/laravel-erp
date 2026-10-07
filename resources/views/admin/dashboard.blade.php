@@ -23,7 +23,7 @@
     </div>
 
     <div class="row col-8-4">
-        <x-admin.card title="Arus Kas 12 Bulan Terakhir" subtitle="Pemasukan & pengeluaran per bulan">
+        <x-admin.card :title="'Arus Kas Tahun '.$hariIni->year" subtitle="Pemasukan & pengeluaran per bulan, Januari–Desember">
             <x-slot:aksi>
                 <a href="{{ route('admin.laporan-arus-kas.index') }}" class="btn btn-sm btn-outline">
                     <x-admin.icon name="chart-column" />
@@ -32,7 +32,7 @@
             </x-slot>
 
             <div class="grafik-kas skeleton chart-skeleton" data-grafik-kas="{{ json_encode($grafik) }}"
-                role="img" aria-label="Grafik batang pemasukan dan pengeluaran 12 bulan terakhir"></div>
+                role="img" aria-label="Grafik batang pemasukan dan pengeluaran per bulan tahun {{ $hariIni->year }}"></div>
         </x-admin.card>
 
         <x-admin.card title="Transaksi Terbaru" :flush="true">
