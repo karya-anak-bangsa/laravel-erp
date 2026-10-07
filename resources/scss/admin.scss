@@ -104,6 +104,28 @@ a.btn:hover {
     margin-inline: 0 2px;
 }
 
+// Kolom aksi tabel selebar isinya ("autofit"): lebar 1% + nowrap membuat browser
+// memberi kolom ini lebar minimum, sehingga sisa lebar tabel jatuh ke kolom data
+// dan tombol tidak melayang di tengah ruang kosong. Jarak antartombol memakai gap,
+// bukan spasi antar-elemen inline yang lebarnya tergantung font.
+table.table .kolom-aksi {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.aksi-tabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+// Kolom nominal rata kiri seperti kolom teks (pilihan pemilik); nowrap menjaga
+// "Rp 1.250.000" dan keterangan tanggal di bawahnya tidak terpotong ke baris baru.
+table.table .kolom-nominal {
+    white-space: nowrap;
+}
+
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
 // warna latar/teks memakai token Gentelella agar ikut mode gelap.
 .sn-notifications-container {

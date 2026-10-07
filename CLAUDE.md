@@ -248,6 +248,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Input uang: `<x-admin.form-input ... data-rupiah inputmode="decimal" autocomplete="off">` (type teks, nilai awal mentah dari model). `admin.js` menampilkan titik ribuan saat diketik dan mengirim angka mentah (`1250000.5`) ke server, jadi validasi tetap `numeric|decimal:0,2`.
 - Isian wajib (`:required="true"`) ditandai bintang **di depan** label: `*Nama Kategori` (pilihan pemilik).
 - Daftar data: 25 baris per halaman.
+- Tabel daftar: teks **dan nominal** rata kiri (judul & isi; pilihan pemilik), status di tengah. Nominal ditulis `<span class="cell-mono">{{ FormatRupiah::format(...) }}</span>` di `<td class="kolom-nominal">` (nowrap). Kolom aksi memakai `<th class="kolom-aksi">` dan `<td class="kolom-aksi"><div class="aksi-tabel">…tombol…</div></td>` agar lebarnya pas dengan tombol (lihat `admin/kas/akun-kas/index`).
 - Konten HTML (artikel) wajib disanitasi sebelum disimpan; tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi. Selain itu selalu `{{ }}`.
 
 ## 10. Keamanan

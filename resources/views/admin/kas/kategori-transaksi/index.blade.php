@@ -39,7 +39,7 @@
                             <th>Nama Kategori</th>
                             <th>Jenis</th>
                             <th>Keterangan</th>
-                            <th style="text-align:center">Aksi</th>
+                            <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,14 +48,16 @@
                                 <td class="cell-strong">{{ $kategori->nama_kategori }}</td>
                                 <td><span class="chip chip-{{ $kategori->jenis_transaksi->warna() }}">{{ $kategori->jenis_transaksi->label() }}</span></td>
                                 <td>{{ Str::limit($kategori->keterangan ?? '—', 80) }}</td>
-                                <td style="text-align:center;white-space:nowrap">
-                                    <a href="{{ route('admin.kategori-transaksi.edit', $kategori) }}" class="btn btn-sm btn-warning">
-                                        <x-admin.icon name="pen-to-square" />
-                                        Ubah
-                                    </a>
-                                    <x-admin.delete-button :action="route('admin.kategori-transaksi.destroy', $kategori)"
-                                        title="Hapus kategori transaksi?"
-                                        :message="'Kategori “'.$kategori->nama_kategori.'” tidak akan tampil lagi di daftar.'" />
+                                <td class="kolom-aksi">
+                                    <div class="aksi-tabel">
+                                        <a href="{{ route('admin.kategori-transaksi.edit', $kategori) }}" class="btn btn-sm btn-warning">
+                                            <x-admin.icon name="pen-to-square" />
+                                            Ubah
+                                        </a>
+                                        <x-admin.delete-button :action="route('admin.kategori-transaksi.destroy', $kategori)"
+                                            title="Hapus kategori transaksi?"
+                                            :message="'Kategori “'.$kategori->nama_kategori.'” tidak akan tampil lagi di daftar.'" />
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

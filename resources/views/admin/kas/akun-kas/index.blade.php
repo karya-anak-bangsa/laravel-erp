@@ -45,9 +45,9 @@
                             <th>Nama Akun</th>
                             <th>Jenis</th>
                             <th>Bank / No. Rekening</th>
-                            <th style="text-align:end">Saldo Awal</th>
+                            <th class="kolom-nominal">Saldo Awal</th>
                             <th style="text-align:center">Status</th>
-                            <th style="text-align:center">Aksi</th>
+                            <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,7 +63,7 @@
                                         —
                                     @endif
                                 </td>
-                                <td style="text-align:end;white-space:nowrap">
+                                <td class="kolom-nominal">
                                     <span class="cell-mono">{{ FormatRupiah::format($akun->saldo_awal) }}</span>
                                     <div class="card-subtitle">per {{ $akun->tanggal_saldo_awal->translatedFormat('d F Y') }}</div>
                                 </td>
@@ -74,14 +74,16 @@
                                         <span class="status status-red">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td style="text-align:center;white-space:nowrap">
-                                    <a href="{{ route('admin.akun-kas.edit', $akun) }}" class="btn btn-sm btn-warning">
-                                        <x-admin.icon name="pen-to-square" />
-                                        Ubah
-                                    </a>
-                                    <x-admin.delete-button :action="route('admin.akun-kas.destroy', $akun)"
-                                        title="Hapus akun kas?"
-                                        :message="'Akun “'.$akun->nama_akun.'” tidak akan tampil lagi di daftar.'" />
+                                <td class="kolom-aksi">
+                                    <div class="aksi-tabel">
+                                        <a href="{{ route('admin.akun-kas.edit', $akun) }}" class="btn btn-sm btn-warning">
+                                            <x-admin.icon name="pen-to-square" />
+                                            Ubah
+                                        </a>
+                                        <x-admin.delete-button :action="route('admin.akun-kas.destroy', $akun)"
+                                            title="Hapus akun kas?"
+                                            :message="'Akun “'.$akun->nama_akun.'” tidak akan tampil lagi di daftar.'" />
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
