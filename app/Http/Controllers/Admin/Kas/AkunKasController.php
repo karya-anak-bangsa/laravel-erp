@@ -63,6 +63,12 @@ class AkunKasController extends Controller
 
     public function destroy(AkunKas $akunKas): RedirectResponse
     {
+        // Saldo & laporan bergantung pada akun ini; akun yang tak dipakai cukup dinonaktifkan.
+        if ($akunKas->transaksiKas()->exists()) {
+            return redirect()->route('admin.akun-kas.index')
+                ->with('error', "Akun “{$akunKas->nama_akun}” tidak dapat dihapus karena sudah memiliki transaksi. Nonaktifkan akun bila tidak dipakai lagi.");
+        }
+
         $akunKas->delete();
 
         return redirect()->route('admin.akun-kas.index')->with('success', 'Akun kas berhasil dihapus.');

@@ -30,6 +30,12 @@ return [
         'judul' => 'Kas Perusahaan',
         'item' => [
             [
+                'label' => 'Transaksi Kas',
+                'ikon' => 'money-bill-transfer',
+                'rute' => 'admin.transaksi-kas.index',
+                'aktif' => 'admin.transaksi-kas.*',
+            ],
+            [
                 'label' => 'Akun Kas',
                 'ikon' => 'wallet',
                 'rute' => 'admin.akun-kas.index',

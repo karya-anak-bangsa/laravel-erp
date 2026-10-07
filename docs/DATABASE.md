@@ -180,7 +180,7 @@ Seeder awal (`KategoriTransaksiSeeder`):
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_transaksi_kas | BIGINT UNSIGNED PK | |
-| nomor_transaksi | VARCHAR(30) UNIQUE | `KM-YYYYMM-0001` (pemasukan) / `KK-YYYYMM-0001` (pengeluaran), dibuat Service |
+| nomor_transaksi | VARCHAR(30) UNIQUE | `KM-YYYYMM-0001` (pemasukan) / `KK-YYYYMM-0001` (pengeluaran), dibuat Service; `YYYYMM` = bulan **tanggal transaksi** |
 | id_akun_kas | BIGINT UNSIGNED FK → tb_akun_kas | `restrictOnDelete` |
 | id_kategori_transaksi | BIGINT UNSIGNED FK → tb_kategori_transaksi | `restrictOnDelete` |
 | jenis_transaksi | VARCHAR(20) | enum `JenisTransaksi`; **harus sama** dengan jenis kategori (dijaga Service) |
@@ -198,7 +198,10 @@ Seeder awal (`KategoriTransaksiSeeder`):
 Indeks: `(tanggal_transaksi)`, `(id_akun_kas, tanggal_transaksi)`, `(jenis_transaksi, tanggal_transaksi)`.
 
 Aturan bisnis (`App\Services\Kas\TransaksiKasService`):
-- Simpan/ubah dalam `DB::transaction()`. Penomoran mengambil nomor terakhir bulan berjalan dengan `lockForUpdate()` agar tidak bentrok.
+- Simpan/ubah dalam `DB::transaction()`. Penomoran mengambil nomor terakhir per jenis pada bulan tanggal transaksi (termasuk yang terhapus) dengan `lockForUpdate()` agar tidak bentrok. Bila tanggal diubah ke bulan lain, transaksi mendapat nomor baru di bulan tersebut.
+- `jenis_transaksi` tidak diisi dari form, melainkan diambil dari jenis kategori. Saat diubah, kategori hanya boleh diganti dengan kategori berjenis sama (awalan nomor KM/KK tetap cocok).
+- Tanggal transaksi tidak boleh melewati hari ini dan tidak boleh sebelum `tanggal_saldo_awal` akun. Transaksi baru hanya memakai akun aktif; saat diubah, akun milik transaksi tetap boleh walau kini nonaktif.
+- Bukti transaksi disimpan di disk `local` folder `kas/bukti/` (nama UUID). Saat diganti/dihapus lewat form, berkas lama dibuang setelah perubahan tersimpan; saat transaksi dihapus (soft delete) berkas tetap disimpan.
 - Akun kas atau kategori transaksi yang sudah punya transaksi **tidak bisa dihapus**, dan `jenis_transaksi` kategori yang sudah dipakai **tidak bisa diubah** (agar laporan lama tetap konsisten).
 - Saldo **tidak disimpan**; dihitung: `saldo_awal + Σ pemasukan − Σ pengeluaran (+ transfer masuk − transfer keluar)` untuk transaksi yang tidak terhapus.
 - Saat relasi polimorfik mulai dipakai, daftarkan alias stabil dengan `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).

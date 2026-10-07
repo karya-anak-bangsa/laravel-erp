@@ -28,7 +28,16 @@
         @endif
 
         @foreach ($options as $nilai => $teks)
-            <option value="{{ $nilai }}" @selected((string) $terpilih === (string) $nilai)>{{ $teks }}</option>
+            {{-- Nilai berupa array = grup: ['Label grup' => [nilai => label]] → <optgroup>. --}}
+            @if (is_array($teks))
+                <optgroup label="{{ $nilai }}">
+                    @foreach ($teks as $nilaiAnak => $teksAnak)
+                        <option value="{{ $nilaiAnak }}" @selected((string) $terpilih === (string) $nilaiAnak)>{{ $teksAnak }}</option>
+                    @endforeach
+                </optgroup>
+            @else
+                <option value="{{ $nilai }}" @selected((string) $terpilih === (string) $nilai)>{{ $teks }}</option>
+            @endif
         @endforeach
     </select>
 

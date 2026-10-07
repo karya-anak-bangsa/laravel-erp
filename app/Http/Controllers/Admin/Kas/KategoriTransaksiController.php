@@ -52,7 +52,10 @@ class KategoriTransaksiController extends Controller
 
     public function edit(KategoriTransaksi $kategoriTransaksi): View
     {
-        return view('admin.kas.kategori-transaksi.edit', compact('kategoriTransaksi'));
+        return view('admin.kas.kategori-transaksi.edit', [
+            'kategoriTransaksi' => $kategoriTransaksi,
+            'jenisTerkunci' => $kategoriTransaksi->transaksiKas()->exists(),
+        ]);
     }
 
     public function update(UpdateKategoriTransaksiRequest $request, KategoriTransaksi $kategoriTransaksi): RedirectResponse
@@ -64,6 +67,12 @@ class KategoriTransaksiController extends Controller
 
     public function destroy(KategoriTransaksi $kategoriTransaksi): RedirectResponse
     {
+        // Laporan per kategori bergantung pada kategori yang sudah dipakai transaksi.
+        if ($kategoriTransaksi->transaksiKas()->exists()) {
+            return redirect()->route('admin.kategori-transaksi.index')
+                ->with('error', "Kategori “{$kategoriTransaksi->nama_kategori}” tidak dapat dihapus karena sudah dipakai transaksi.");
+        }
+
         $kategoriTransaksi->delete();
 
         return redirect()->route('admin.kategori-transaksi.index')->with('success', 'Kategori transaksi berhasil dihapus.');

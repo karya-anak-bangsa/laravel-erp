@@ -24,6 +24,15 @@ enum JenisTransaksi: string
         };
     }
 
+    // Awalan nomor transaksi: Kas Masuk / Kas Keluar.
+    public function awalanNomor(): string
+    {
+        return match ($this) {
+            self::Pemasukan => 'KM',
+            self::Pengeluaran => 'KK',
+        };
+    }
+
     /**
      * Pilihan untuk <x-admin.form-select>.
      *

@@ -126,6 +126,32 @@ table.table .kolom-nominal {
     white-space: nowrap;
 }
 
+// Tabel rincian (halaman detail): label di kiri, nilai di kanan. Label tidak
+// memakai gaya huruf kapital kecil milik judul kolom tabel daftar.
+table.table.tabel-detail th {
+    width: 180px;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    background: transparent;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+table.table.tabel-detail tr:last-child th {
+    border-bottom: none;
+}
+
+.bukti-pratinjau {
+    display: block;
+    max-width: 100%;
+    max-height: 480px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius);
+}
+
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
 // warna latar/teks memakai token Gentelella agar ikut mode gelap.
 .sn-notifications-container {

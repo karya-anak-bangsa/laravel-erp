@@ -19,3 +19,8 @@ pest()->extend(TestCase::class)
     // Aset Vite tidak di-build saat test; @vite dan @fonts dirender kosong.
     ->beforeEach(fn () => $this->withoutVite())
     ->in('Feature');
+
+// Unit test Service butuh container Laravel & database (transaksi DB, penomoran, storage).
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Unit/Services');

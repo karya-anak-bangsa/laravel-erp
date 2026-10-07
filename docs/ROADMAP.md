@@ -40,8 +40,9 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [x] CRUD Akun Kas
 - [x] CRUD Kategori Transaksi + `KategoriTransaksiSeeder`
 ### 3b. Transaksi
-- [ ] `TransaksiKasService` (penomoran, validasi kecocokan jenis, transaksi DB) + unit test
-- [ ] CRUD Transaksi Kas: filter periode/akun/kategori/jenis, upload & lihat bukti (disk privat), `created_by/updated_by`
+- [x] `TransaksiKasService` (penomoran, validasi kecocokan jenis, transaksi DB) + unit test
+- [x] CRUD Transaksi Kas: filter periode/akun/kategori/jenis, upload & lihat bukti (disk privat), `created_by/updated_by`
+- [x] Akun/kategori yang sudah punya transaksi tidak bisa dihapus; jenis kategori yang sudah dipakai dikunci
 ### 3c. Laporan & Dashboard
 - [ ] Saldo per akun (unit test perhitungan)
 - [ ] Laporan arus kas per periode: total pemasukan, pengeluaran, selisih; rincian per kategori

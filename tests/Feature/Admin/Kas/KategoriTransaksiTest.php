@@ -2,6 +2,7 @@
 
 use App\Enums\Kas\JenisTransaksi;
 use App\Models\Kas\KategoriTransaksi;
+use App\Models\Kas\TransaksiKas;
 use App\Models\Pengguna;
 
 function dataKategoriTransaksi(array $timpa = []): array
@@ -261,5 +262,49 @@ describe('hapus', function () {
             ->assertSessionHas('success', 'Kategori transaksi berhasil dihapus.');
 
         $this->assertSoftDeleted($kategori);
+    });
+
+    it('menolak menghapus kategori yang sudah dipakai transaksi', function () {
+        $kategori = KategoriTransaksi::factory()->create(['nama_kategori' => 'Pajak']);
+        TransaksiKas::factory()->create(['id_kategori_transaksi' => $kategori]);
+
+        $this->actingAs($this->pengguna)
+            ->delete(route('admin.kategori-transaksi.destroy', $kategori))
+            ->assertRedirect(route('admin.kategori-transaksi.index'))
+            ->assertSessionHas('error', 'Kategori “Pajak” tidak dapat dihapus karena sudah dipakai transaksi.');
+
+        $this->assertNotSoftDeleted($kategori);
+    });
+});
+
+describe('kunci jenis', function () {
+    it('mengunci jenis kategori yang sudah dipakai transaksi', function () {
+        $kategori = KategoriTransaksi::factory()->create(['nama_kategori' => 'Pajak']);
+        TransaksiKas::factory()->create(['id_kategori_transaksi' => $kategori]);
+
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.kategori-transaksi.edit', $kategori))
+            ->assertSee('Terkunci karena kategori sudah dipakai transaksi.')
+            ->assertDontSee('<option value="pemasukan"', false);
+
+        $this->put(route('admin.kategori-transaksi.update', $kategori), dataKategoriTransaksi([
+            'nama_kategori' => 'Pajak',
+            'jenis_transaksi' => 'pemasukan',
+        ]))->assertSessionHasErrors(['jenis_transaksi' => 'Jenis transaksi tidak dapat diubah karena kategori sudah dipakai transaksi.']);
+
+        $this->put(route('admin.kategori-transaksi.update', $kategori), dataKategoriTransaksi([
+            'nama_kategori' => 'Pajak & Retribusi',
+            'jenis_transaksi' => 'pengeluaran',
+        ]))->assertSessionHasNoErrors();
+
+        expect($kategori->refresh()->nama_kategori)->toBe('Pajak & Retribusi');
+    });
+
+    it('membiarkan jenis kategori yang belum dipakai diubah', function () {
+        $kategori = KategoriTransaksi::factory()->create();
+
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.kategori-transaksi.edit', $kategori))
+            ->assertSee('<option value="pemasukan"', false);
     });
 });

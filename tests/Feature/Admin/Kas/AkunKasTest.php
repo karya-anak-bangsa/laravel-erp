@@ -2,6 +2,7 @@
 
 use App\Enums\Kas\JenisAkunKas;
 use App\Models\Kas\AkunKas;
+use App\Models\Kas\TransaksiKas;
 use App\Models\Pengguna;
 
 function dataAkunKas(array $timpa = []): array
@@ -287,5 +288,17 @@ describe('hapus', function () {
             ->assertSessionHas('success', 'Akun kas berhasil dihapus.');
 
         $this->assertSoftDeleted($akun);
+    });
+
+    it('menolak menghapus akun yang sudah memiliki transaksi', function () {
+        $akun = AkunKas::factory()->create(['nama_akun' => 'Kas Tunai']);
+        TransaksiKas::factory()->create(['id_akun_kas' => $akun]);
+
+        $this->actingAs($this->pengguna)
+            ->delete(route('admin.akun-kas.destroy', $akun))
+            ->assertRedirect(route('admin.akun-kas.index'))
+            ->assertSessionHas('error', 'Akun “Kas Tunai” tidak dapat dihapus karena sudah memiliki transaksi. Nonaktifkan akun bila tidak dipakai lagi.');
+
+        $this->assertNotSoftDeleted($akun);
     });
 });
