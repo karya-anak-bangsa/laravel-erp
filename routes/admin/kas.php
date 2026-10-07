@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Kas\AkunKasController;
+use App\Http\Controllers\Admin\Kas\KategoriTransaksiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,3 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::resource('akun-kas', AkunKasController::class)
     ->except('show')
     ->parameters(['akun-kas' => 'akunKas']);
+
+Route::resource('kategori-transaksi', KategoriTransaksiController::class)
+    ->except('show')
+    ->parameters(['kategori-transaksi' => 'kategoriTransaksi']);

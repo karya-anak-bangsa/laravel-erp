@@ -35,6 +35,12 @@ return [
                 'rute' => 'admin.akun-kas.index',
                 'aktif' => 'admin.akun-kas.*',
             ],
+            [
+                'label' => 'Kategori Transaksi',
+                'ikon' => 'tags',
+                'rute' => 'admin.kategori-transaksi.index',
+                'aktif' => 'admin.kategori-transaksi.*',
+            ],
         ],
     ],
 ];
