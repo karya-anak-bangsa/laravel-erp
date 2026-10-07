@@ -7,11 +7,9 @@ import { openPanel } from 'gentelella/v4/menus';
 import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
 import { pasangGrafikKas } from './admin/grafik-kas.js';
-import { pasangPemilihTanggal } from './admin/pemilih-tanggal.js';
 
 mountShell();
 pasangGrafikKas();
-pasangPemilihTanggal();
 
 // Menu pengguna di topbar: isinya <template> Blade (layouts/partials/topbar).
 document.querySelectorAll('[data-menu]').forEach((pemicu) => {
