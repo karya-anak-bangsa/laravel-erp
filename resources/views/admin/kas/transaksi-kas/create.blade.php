@@ -10,7 +10,7 @@
     <x-admin.card>
         <form method="POST" action="{{ route('admin.transaksi-kas.store') }}" enctype="multipart/form-data" novalidate
             data-confirm="Pastikan tanggal, kategori, dan jumlah sudah benar. Nomor transaksi dibuat otomatis." data-confirm-title="Simpan transaksi baru?"
-            data-confirm-label="Ya, simpan" data-confirm-variant="primary">
+            data-confirm-label="Ya, simpan" data-confirm-variant="success">
             @csrf
             @include('admin.kas.transaksi-kas._form')
         </form>

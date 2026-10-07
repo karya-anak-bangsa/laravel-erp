@@ -28,12 +28,12 @@
     hint="Akun nonaktif tidak dapat dipilih saat mencatat transaksi baru." />
 
 <div class="form-actions">
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" class="btn btn-success">
         <x-admin.icon name="floppy-disk" />
         Simpan
     </button>
-    <a href="{{ route('admin.akun-kas.index') }}" class="btn btn-outline">
-        <x-admin.icon name="xmark" />
+    <a href="{{ route('admin.akun-kas.index') }}" class="btn btn-secondary">
+        <x-admin.icon name="rotate-left" />
         Batal
     </a>
 </div>

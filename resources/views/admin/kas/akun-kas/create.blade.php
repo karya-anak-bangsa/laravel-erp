@@ -10,7 +10,7 @@
     <x-admin.card>
         <form method="POST" action="{{ route('admin.akun-kas.store') }}" novalidate
             data-confirm="Pastikan data akun kas sudah benar sebelum disimpan." data-confirm-title="Simpan akun kas baru?"
-            data-confirm-label="Ya, simpan" data-confirm-variant="primary">
+            data-confirm-label="Ya, simpan" data-confirm-variant="success">
             @csrf
             @include('admin.kas.akun-kas._form')
         </form>

@@ -137,7 +137,10 @@ describe('tambah', function () {
             ->assertOk()
             ->assertSee('Tambah Akun Kas')
             ->assertSee('data-confirm-title="Simpan akun kas baru?"', false)
-            ->assertSee('data-confirm-variant="primary"', false)
+            ->assertSee('data-confirm-variant="success"', false)
+            ->assertSee('<button type="submit" class="btn btn-success">', false)
+            ->assertSee('class="btn btn-secondary"', false)
+            ->assertSee('fa-rotate-left', false)
             ->assertSee('name="status_aktif" value="1" checked', false)
             ->assertSee('<span class="required">*</span>Nama Akun</label>', false)
             ->assertSee('data-rupiah', false)
@@ -227,7 +230,7 @@ describe('ubah', function () {
             ->assertSee('Ubah Akun Kas')
             ->assertSee('value="Rekening Mandiri"', false)
             ->assertSee('data-confirm="Perubahan data akun “Rekening Mandiri” akan disimpan."', false)
-            ->assertSee('data-confirm-variant="primary"', false)
+            ->assertSee('data-confirm-variant="success"', false)
             ->assertSee('name="_method" value="PUT"', false);
     });
 

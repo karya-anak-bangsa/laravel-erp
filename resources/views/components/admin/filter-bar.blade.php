@@ -1,4 +1,4 @@
-@props(['action', 'placeholder' => 'Cari…'])
+@props(['action', 'placeholder' => 'Cari Data'])
 
 @php
     // Tombol reset hanya muncul bila ada pencarian/filter aktif (parameter page diabaikan).

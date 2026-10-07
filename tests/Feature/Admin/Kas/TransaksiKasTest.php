@@ -54,6 +54,7 @@ describe('daftar', function () {
             'tanggal_transaksi' => '2026-09-15',
             'jumlah' => 1250000,
             'nama_pihak' => 'Hostinger',
+            'keterangan' => 'Perpanjangan domain tahunan',
         ]);
 
         $this->actingAs($this->pengguna)
@@ -63,8 +64,11 @@ describe('daftar', function () {
             ->assertSee('15 September 2026')
             ->assertSee('Domain &amp; Hosting', false)
             ->assertSee('Rekening BCA Operasional')
-            ->assertSee('Hostinger')
             ->assertSee('Rp 1.250.000')
+            // Kolom keterangan (beserta nama pihak) tidak ditampilkan di daftar, hanya di detail.
+            ->assertDontSee('<th>Keterangan</th>', false)
+            ->assertDontSee('Perpanjangan domain tahunan')
+            ->assertDontSee('Hostinger')
             ->assertSee('<span class="chip chip-red">Pengeluaran</span>', false)
             ->assertSee('class="nav-link active" href="'.route('admin.transaksi-kas.index').'"', false);
     });
@@ -144,6 +148,13 @@ describe('daftar', function () {
         $this->get(route('admin.transaksi-kas.index', ['kategori' => $this->kategoriMasuk->id_kategori_transaksi]))
             ->assertSee('KM-202609-9001')
             ->assertDontSee('KK-202609-9001');
+    });
+
+    it('menyusun filter: cari, jenis, akun, periode, lalu tombol terapkan tanpa dropdown kategori', function () {
+        $this->actingAs($this->pengguna)
+            ->get(route('admin.transaksi-kas.index'))
+            ->assertSeeInOrder(['name="q"', 'name="jenis"', 'name="akun"', 'name="dari"', 'name="sampai"', 'Terapkan'], false)
+            ->assertDontSee('name="kategori"', false);
     });
 
     it('menampilkan pesan tidak ditemukan bila pencarian kosong', function () {

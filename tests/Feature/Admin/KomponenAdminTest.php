@@ -98,6 +98,7 @@ it('merender filter-bar dengan kata kunci dan tombol reset saat filter aktif', f
 
 it('menyembunyikan tombol reset filter-bar bila tidak ada filter', function () {
     $this->blade('<x-admin.filter-bar action="/admin/uji" />')
+        ->assertSee('placeholder="Cari Data"', false)
         ->assertDontSee('Reset');
 });
 

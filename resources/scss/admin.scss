@@ -61,10 +61,37 @@ i.icon {
     font-size: 12px;
 }
 
-// Tombol warning/danger memakai warna Bootstrap bg-warning (#ffc107) & bg-danger
-// (#dc3545) yang saturasinya diturunkan 10% atas permintaan pemilik; hover & border
-// mengikuti Bootstrap dengan penurunan yang sama. Teks gelap di tombol kuning
-// mengikuti Bootstrap demi keterbacaan. Token --yellow/--red tetap dipakai chip & status.
+// Tombol success/secondary/warning/danger memakai warna Bootstrap bg-success (#198754),
+// bg-secondary (#6c757d), bg-warning (#ffc107) & bg-danger (#dc3545) yang saturasinya
+// diturunkan 10% atas permintaan pemilik; hover & border mengikuti Bootstrap dengan
+// penurunan yang sama. Teks gelap di tombol kuning mengikuti Bootstrap demi
+// keterbacaan. Token --green/--yellow/--red tetap dipakai chip & status.
+// Success = Tambah & Simpan, secondary = Batal (termasuk tombol di dialog konfirmasi).
+.btn-success {
+    background: #217f53;
+    border-color: #217f53;
+    color: #fff;
+
+    &:hover {
+        background: #1c6c47;
+        border-color: #1a6643;
+        color: #fff;
+    }
+}
+
+// Saturasi #6c757d hanya 7%, jadi setelah diturunkan 10% menjadi abu-abu netral.
+.btn-secondary {
+    background: #747474;
+    border-color: #747474;
+    color: #fff;
+
+    &:hover {
+        background: #636363;
+        border-color: #5d5d5d;
+        color: #fff;
+    }
+}
+
 .btn-warning {
     background: #f3bb13;
     border-color: #f3bb13;
@@ -98,6 +125,34 @@ a.btn:hover {
     justify-content: center;
 }
 
+// Input file bergaya input group Bootstrap 5.3 (pilihan pemilik): tombol pilih berkas
+// menempel di sisi kiri setinggi input dan dipisah garis, bukan tombol kecil di dalam input.
+.form-control[type='file'] {
+    overflow: hidden;
+    padding-inline-start: 0;
+    line-height: 34px;
+    cursor: pointer;
+
+    &::file-selector-button {
+        height: 34px;
+        margin: 0;
+        margin-inline-end: 12px;
+        padding: 0 12px;
+        font: inherit;
+        color: var(--text);
+        background: var(--bg-surface-secondary);
+        border: 0;
+        border-inline-end: 1px solid var(--border-color);
+        border-radius: 0;
+        pointer-events: none;
+        transition: background 150ms;
+    }
+
+    &:hover::file-selector-button {
+        background: color-mix(in srgb, var(--bg-surface-secondary), var(--text) 8%);
+    }
+}
+
 // Tanda wajib diletakkan di depan label (*Nama Kategori, pilihan pemilik), jadi
 // jarak bawaan Gentelella yang ada di sisi kiri dipindah ke kanan.
 .form-label .required {
@@ -120,9 +175,11 @@ table.table .kolom-aksi {
     gap: 6px;
 }
 
-// Kolom nominal rata kiri seperti kolom teks (pilihan pemilik); nowrap menjaga
-// "Rp 1.250.000" dan keterangan tanggal di bawahnya tidak terpotong ke baris baru.
+// Kolom nominal (judul & isi) rata kanan agar digit sejajar dan mudah dibandingkan
+// (pilihan pemilik); nowrap menjaga "Rp 1.250.000" dan keterangan tanggal di bawahnya
+// tidak terpotong ke baris baru.
 table.table .kolom-nominal {
+    text-align: right;
     white-space: nowrap;
 }
 

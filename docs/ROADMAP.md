@@ -51,6 +51,8 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [ ] Migration & CRUD `tb_transfer_kas`, terintegrasi ke perhitungan saldo
 ### 3e. Ekspor (opsional)
 - [ ] Ekspor laporan ke Excel dan PDF (pilih paket setelah cek kompatibilitas Laravel 13)
+### Penutup Fase 3
+- [ ] Hapus data dummy: `KasDummySeeder` + `KasDummySeederTest`, lalu lokal `php artisan migrate:fresh --seed` dan hapus `storage/app/private/kas/bukti/dummy-*` (seeder dummy hanya lokal, untuk uji tampilan selama Fase 3)
 
 ## Fase 4 — Company Profile (Backend)
 - [ ] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`

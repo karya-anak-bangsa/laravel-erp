@@ -127,7 +127,7 @@ describe('tambah', function () {
             ->assertOk()
             ->assertSee('Tambah Kategori Transaksi')
             ->assertSee('data-confirm-title="Simpan kategori transaksi baru?"', false)
-            ->assertSee('data-confirm-variant="primary"', false);
+            ->assertSee('data-confirm-variant="success"', false);
     });
 
     it('memilih jenis transaksi otomatis dari parameter jenis', function () {
@@ -203,7 +203,7 @@ describe('ubah', function () {
             ->assertSee('value="Pemasaran"', false)
             ->assertSee('<option value="pengeluaran" selected', false)
             ->assertSee('data-confirm="Perubahan data kategori “Pemasaran” akan disimpan."', false)
-            ->assertSee('data-confirm-variant="primary"', false)
+            ->assertSee('data-confirm-variant="success"', false)
             ->assertSee('name="_method" value="PUT"', false);
     });
 

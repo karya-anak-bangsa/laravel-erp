@@ -4,14 +4,14 @@
 
 @section('content')
     <x-admin.page-header title="Kategori Transaksi" pretitle="Kas Perusahaan">
-        <a href="{{ route('admin.kategori-transaksi.create', request()->only('jenis')) }}" class="btn btn-primary">
+        <a href="{{ route('admin.kategori-transaksi.create', request()->only('jenis')) }}" class="btn btn-success">
             <x-admin.icon name="plus" />
             Tambah Kategori
         </a>
     </x-admin.page-header>
 
     <x-admin.card :flush="true">
-        <x-admin.filter-bar :action="route('admin.kategori-transaksi.index')" placeholder="Cari nama kategori atau keterangan…">
+        <x-admin.filter-bar :action="route('admin.kategori-transaksi.index')">
             <select name="jenis" class="form-control" style="width:150px;height:32px" aria-label="Filter jenis transaksi">
                 <option value="">Semua jenis</option>
                 @foreach (JenisTransaksi::opsi() as $nilai => $teks)
@@ -25,7 +25,7 @@
                 <x-admin.empty-state title="Kategori transaksi tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
                 <x-admin.empty-state title="Belum ada kategori transaksi" description="Kategori mengelompokkan pemasukan dan pengeluaran, mis. Jasa Pembuatan Website atau Domain & Hosting.">
-                    <a href="{{ route('admin.kategori-transaksi.create') }}" class="btn btn-primary">
+                    <a href="{{ route('admin.kategori-transaksi.create') }}" class="btn btn-success">
                         <x-admin.icon name="plus" />
                         Tambah Kategori Pertama
                     </a>

@@ -50,7 +50,6 @@ class TransaksiKasController extends Controller
         return view('admin.kas.transaksi-kas.index', [
             'transaksiKas' => $transaksiKas,
             'opsiAkun' => AkunKas::query()->orderBy('nama_akun')->pluck('nama_akun', 'id_akun_kas'),
-            'opsiKategori' => KategoriTransaksi::opsiPerJenis(),
         ]);
     }
 

@@ -134,7 +134,7 @@ document.querySelectorAll('input[data-rupiah]').forEach((input) => {
 });
 
 // Form dengan data-confirm minta konfirmasi lewat SweetAlert2: hapus (<x-admin.delete-button>,
-// varian danger) maupun simpan tambah/ubah (data-confirm-variant="primary").
+// varian danger) maupun simpan tambah/ubah (data-confirm-variant="success").
 // Tanpa JavaScript form tetap terkirim, hanya tanpa konfirmasi.
 document.addEventListener('submit', async (event) => {
     const form = event.target;
@@ -162,7 +162,7 @@ document.addEventListener('submit', async (event) => {
         buttonsStyling: false,
         customClass: {
             confirmButton: `btn btn-${varian}`,
-            cancelButton: 'btn btn-outline',
+            cancelButton: 'btn btn-secondary',
         },
     });
 

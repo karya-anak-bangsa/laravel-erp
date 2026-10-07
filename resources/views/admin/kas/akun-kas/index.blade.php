@@ -5,14 +5,14 @@
 
 @section('content')
     <x-admin.page-header title="Akun Kas" pretitle="Kas Perusahaan">
-        <a href="{{ route('admin.akun-kas.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.akun-kas.create') }}" class="btn btn-success">
             <x-admin.icon name="plus" />
             Tambah Akun
         </a>
     </x-admin.page-header>
 
     <x-admin.card :flush="true">
-        <x-admin.filter-bar :action="route('admin.akun-kas.index')" placeholder="Cari akun, bank, no. rekening…">
+        <x-admin.filter-bar :action="route('admin.akun-kas.index')">
             <select name="jenis" class="form-control" style="width:150px;height:32px" aria-label="Filter jenis akun">
                 <option value="">Semua jenis</option>
                 @foreach (JenisAkunKas::opsi() as $nilai => $teks)
@@ -31,7 +31,7 @@
                 <x-admin.empty-state title="Akun kas tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
                 <x-admin.empty-state title="Belum ada akun kas" description="Tambahkan tempat uang perusahaan disimpan: kas tunai, rekening bank, atau e-wallet.">
-                    <a href="{{ route('admin.akun-kas.create') }}" class="btn btn-primary">
+                    <a href="{{ route('admin.akun-kas.create') }}" class="btn btn-success">
                         <x-admin.icon name="plus" />
                         Tambah Akun Pertama
                     </a>
