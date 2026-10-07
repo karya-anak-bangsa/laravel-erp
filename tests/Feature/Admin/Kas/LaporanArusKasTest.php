@@ -39,11 +39,24 @@ it('menampilkan ringkasan dan rincian per kategori periode yang dipilih', functi
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
         ->assertOk()
         ->assertSeeInOrder(['Saldo Awal', 'Rp 1.000.000', 'Pemasukan', 'Rp 2.000.000', 'Pengeluaran', 'Rp 500.000', 'Saldo Akhir', 'Rp 2.500.000'])
-        ->assertSee('+Rp 1.500.000')
+        ->assertSee('<strong class="nilai-selisih nominal-positif">+Rp 1.500.000</strong>', false)
+        ->assertSee('<td>Total</td>', false)
+        ->assertSee('100,0%')
         ->assertSee('2 transaksi')
         ->assertSee('Jasa Pembuatan Website')
         ->assertSee('Domain &amp; Hosting', false)
         ->assertDontSee('Rp 111.000');
+});
+
+it('menulis porsi yang sangat kecil sebagai kurang dari 0,1 persen', function () {
+    $lainLain = KategoriTransaksi::factory()->pemasukan()->create(['nama_kategori' => 'Pendapatan Lain-lain']);
+    TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $this->jasaWeb, 'tanggal_transaksi' => '2026-09-05', 'jumlah' => 50_000_000]);
+    TransaksiKas::factory()->create(['id_akun_kas' => $this->akun, 'id_kategori_transaksi' => $lainLain, 'tanggal_transaksi' => '2026-09-06', 'jumlah' => 12_000]);
+
+    $this->actingAs($this->pengguna)
+        ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
+        ->assertSee('&lt;0,1%', false)
+        ->assertSee('100,0%');
 });
 
 it('menautkan kategori ke daftar transaksi dengan filter yang sama', function () {
@@ -99,5 +112,5 @@ it('menampilkan saldo akhir minus dengan warna merah', function () {
     $this->actingAs($this->pengguna)
         ->get(route('admin.laporan-arus-kas.index', ['dari' => '2026-09-01', 'sampai' => '2026-09-30']))
         ->assertSee('<span class="stat-value nominal-negatif">-Rp 500.000</span>', false)
-        ->assertSee('<span class="nominal-negatif">-Rp 1.500.000</span>', false);
+        ->assertSee('<strong class="nilai-selisih nominal-negatif">-Rp 1.500.000</strong>', false);
 });

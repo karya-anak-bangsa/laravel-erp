@@ -52,7 +52,13 @@ const opsiGrafik = (data, w) => ({
     tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
-        valueFormatter: (nilai) => rupiah.format(nilai),
+        // Judul tooltip memakai nama bulan lengkap; label sumbu X sengaja disingkat.
+        // Semua teks berasal dari server (nama bulan) atau tetap, bukan input pengguna.
+        formatter: (titik) =>
+            [
+                data.labelPanjang[titik[0].dataIndex],
+                ...titik.map((t) => `${t.marker} ${t.seriesName}: <b>${rupiah.format(t.value)}</b>`),
+            ].join('<br>'),
         backgroundColor: w.permukaan,
         borderColor: w.garis,
         textStyle: { color: w.teks, fontSize: 12 },
@@ -62,7 +68,8 @@ const opsiGrafik = (data, w) => ({
         data: data.label,
         axisLine: { lineStyle: { color: w.garis } },
         axisTick: { show: false },
-        axisLabel: { color: w.teksPudar },
+        // interval 0 = tampilkan semua bulan; hideOverlap menyembunyikan sebagian di layar sempit.
+        axisLabel: { color: w.teksPudar, interval: 0, hideOverlap: true, lineHeight: 14 },
     },
     yAxis: {
         type: 'value',

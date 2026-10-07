@@ -37,8 +37,10 @@ describe('widget kas', function () {
             ->get(route('admin.dashboard'))
             ->assertSee('data-grafik-kas=', false)
             ->assertViewHas('grafik', fn (array $grafik) => count($grafik['label']) === 12
-                && $grafik['label'][0] === 'Nov 2025'
-                && $grafik['label'][11] === 'Okt 2026'
+                && $grafik['label'][0] === "Nov\n2025"
+                && $grafik['label'][2] === "Jan\n2026"
+                && $grafik['label'][11] === 'Okt'
+                && $grafik['labelPanjang'][11] === 'Oktober 2026'
                 && $grafik['pemasukan'][11] === 2_000_000.0
                 && $grafik['pengeluaran'][11] === 0.0);
     });

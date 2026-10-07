@@ -37,7 +37,10 @@
 
         <x-admin.card title="Transaksi Terbaru" :flush="true">
             <x-slot:aksi>
-                <a href="{{ route('admin.transaksi-kas.index') }}" class="btn btn-sm btn-outline">Lihat semua</a>
+                <a href="{{ route('admin.transaksi-kas.index') }}" class="btn btn-sm btn-outline">
+                    <x-admin.icon name="list" />
+                    Lihat semua
+                </a>
             </x-slot>
 
             @if ($transaksiTerbaru->isEmpty())

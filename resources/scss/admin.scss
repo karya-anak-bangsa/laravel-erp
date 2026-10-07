@@ -198,6 +198,50 @@ table.table .kolom-nominal {
     height: 300px;
 }
 
+// Baris total (tfoot) dibedakan dari baris data: garis atas tegas & latar seperti judul kolom.
+table.table tfoot td {
+    border-top: 1px solid var(--border-color);
+    border-bottom: none;
+    background: var(--bg-surface-secondary);
+    color: var(--text);
+    font-weight: var(--font-weight-medium);
+}
+
+// Nilai kartu ringkasan tidak boleh patah baris di tengah angka.
+.stat-value {
+    white-space: nowrap;
+}
+
+.stat-value-panjang {
+    font-size: 18px;
+}
+
+// Empty state di dalam kartu berdampingan (mis. rincian laporan) dibuat lebih pendek
+// agar tinggi kartu tidak jauh berbeda dengan kartu tetangganya yang berisi tabel.
+.empty-state.empty-state-ringkas {
+    padding: 28px 24px;
+}
+
+// Baris keterangan di bawah filter laporan: info periode di kiri, selisih di kanan.
+.ringkasan-periode {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 16px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+// Warna netral hanya bila selisih 0; plus/minus memakai .nominal-positif/-negatif.
+.nilai-selisih {
+    font-weight: var(--font-weight-bold);
+
+    &:not(.nominal-positif, .nominal-negatif) {
+        color: var(--text);
+    }
+}
+
 // Tabel rincian (halaman detail): label di kiri, nilai di kanan. Label tidak
 // memakai gaya huruf kapital kecil milik judul kolom tabel daftar.
 table.table.tabel-detail th {
