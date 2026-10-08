@@ -180,8 +180,8 @@ return [
     | Nama Atribut
     |--------------------------------------------------------------------------
     |
-    | Kolom snake_case otomatis tampil sebagai teks berspasi (nama_akun →
-    | "nama akun"). Daftarkan di sini hanya yang perlu nama berbeda, terutama
+    | Kolom snake_case otomatis tampil sebagai teks berspasi (nama_kategori →
+    | "nama kategori"). Daftarkan di sini hanya yang perlu nama berbeda, terutama
     | foreign key agar tidak tampil sebagai "id kategori artikel".
     |
     */

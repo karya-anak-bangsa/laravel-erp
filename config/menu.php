@@ -26,32 +26,4 @@ return [
             ],
         ],
     ],
-    [
-        'judul' => 'Kas Perusahaan',
-        'item' => [
-            [
-                'label' => 'Transaksi Kas',
-                'ikon' => 'money-bill-transfer',
-                'rute' => 'admin.transaksi-kas.index',
-                'aktif' => 'admin.transaksi-kas.*',
-            ],
-            [
-                'label' => 'Laporan Arus Kas',
-                'ikon' => 'chart-column',
-                'rute' => 'admin.laporan-arus-kas.index',
-            ],
-            [
-                'label' => 'Akun Kas',
-                'ikon' => 'wallet',
-                'rute' => 'admin.akun-kas.index',
-                'aktif' => 'admin.akun-kas.*',
-            ],
-            [
-                'label' => 'Kategori Transaksi',
-                'ikon' => 'tags',
-                'rute' => 'admin.kategori-transaksi.index',
-                'aktif' => 'admin.kategori-transaksi.*',
-            ],
-        ],
-    ],
 ];

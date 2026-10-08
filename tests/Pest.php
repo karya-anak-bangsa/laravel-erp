@@ -20,7 +20,7 @@ pest()->extend(TestCase::class)
     ->beforeEach(fn () => $this->withoutVite())
     ->in('Feature');
 
-// Unit test Service butuh container Laravel & database (transaksi DB, penomoran, storage).
+// Unit test Service butuh container Laravel & database (mis. storage, transaksi DB).
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Unit/Services');

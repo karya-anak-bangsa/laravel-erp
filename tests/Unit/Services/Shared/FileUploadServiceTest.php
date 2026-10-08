@@ -10,25 +10,25 @@ beforeEach(function () {
 });
 
 it('menyimpan berkas dengan nama UUID dan ekstensi sesuai isi berkas', function () {
-    $path = $this->layanan->simpan(UploadedFile::fake()->create('nota asli.pdf', 10, 'application/pdf'), 'kas/bukti', 'local');
+    $path = $this->layanan->simpan(UploadedFile::fake()->create('dokumen asli.pdf', 10, 'application/pdf'), 'uji/dokumen', 'local');
 
-    expect($path)->toMatch('#^kas/bukti/[0-9a-f-]{36}\.pdf$#');
+    expect($path)->toMatch('#^uji/dokumen/[0-9a-f-]{36}\.pdf$#');
     Storage::disk('local')->assertExists($path);
 });
 
 it('menghapus berkas yang ada', function () {
-    Storage::disk('local')->put('kas/bukti/lama.pdf', 'isi');
+    Storage::disk('local')->put('uji/dokumen/lama.pdf', 'isi');
 
-    $this->layanan->hapus('kas/bukti/lama.pdf', 'local');
+    $this->layanan->hapus('uji/dokumen/lama.pdf', 'local');
 
-    Storage::disk('local')->assertMissing('kas/bukti/lama.pdf');
+    Storage::disk('local')->assertMissing('uji/dokumen/lama.pdf');
 });
 
 it('mengabaikan path kosong saat menghapus', function () {
-    Storage::disk('local')->put('kas/bukti/tetap.pdf', 'isi');
+    Storage::disk('local')->put('uji/dokumen/tetap.pdf', 'isi');
 
     $this->layanan->hapus(null, 'local');
     $this->layanan->hapus('', 'local');
 
-    Storage::disk('local')->assertExists('kas/bukti/tetap.pdf');
+    Storage::disk('local')->assertExists('uji/dokumen/tetap.pdf');
 });

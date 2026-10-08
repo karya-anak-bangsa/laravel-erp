@@ -21,7 +21,7 @@ Deploy dilakukan **manual oleh pemilik proyek** lewat SSH (PuTTY). Alamat, port,
 | Batasan | Dampak & solusi |
 |---|---|
 | `proc_open`, `exec`, `shell_exec`, `popen` dimatikan | Composer tidak bisa menjalankan script → pakai `--no-scripts` lalu `php artisan package:discover`. Paket yang menjalankan program eksternal (Browsershot, wkhtmltopdf, Snappy) tidak bisa dipakai — pilih paket PHP murni (mis. dompdf). |
-| `symlink` (fungsi PHP) dimatikan | `php artisan storage:link` gagal → pakai shell `ln -s` (lihat Fase 4 di bawah). |
+| `symlink` (fungsi PHP) dimatikan | `php artisan storage:link` gagal → pakai shell `ln -s` (lihat bagian Satu Kali per Fase di bawah). |
 | Tidak ada Node/npm | Aset Vite di-build di laptop lalu diunggah (`public/build` ada di `.gitignore`). |
 | `mail()` dimatikan | Email (bila nanti dibutuhkan) wajib lewat SMTP. |
 
@@ -111,7 +111,7 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
 
 ## Satu Kali per Fase
 
-- **Fase 4 (upload gambar Company Profile)** — buat symlink storage:
+- **Company Profile (sebelum upload gambar pertama)** — buat symlink storage:
   ```bash
   cd ~/domains/karyaanakbangsa.co.id/laravel-erp
   ln -s ../storage/app/public public/storage

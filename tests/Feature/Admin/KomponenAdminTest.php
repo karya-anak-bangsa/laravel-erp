@@ -4,6 +4,12 @@ use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+enum StatusUjiKomponen: string
+{
+    case Draf = 'draf';
+    case Terbit = 'terbit';
+}
+
 beforeEach(function () {
     $this->withViewErrors([]);
     // old() membaca input lama dari sesi milik request; di luar siklus HTTP sesi perlu dipasang manual.
@@ -11,9 +17,9 @@ beforeEach(function () {
 });
 
 it('merender page-header dengan judul dan tombol aksi', function () {
-    $this->blade('<x-admin.page-header title="Akun Kas" pretitle="Kas Perusahaan"><a href="#">Tambah</a></x-admin.page-header>')
-        ->assertSee('Kas Perusahaan')
-        ->assertSee('<h1 class="page-title">Akun Kas</h1>', false)
+    $this->blade('<x-admin.page-header title="Kategori Artikel" pretitle="Company Profile"><a href="#">Tambah</a></x-admin.page-header>')
+        ->assertSee('Company Profile')
+        ->assertSee('<h1 class="page-title">Kategori Artikel</h1>', false)
         ->assertSee('<div class="page-actions"><a href="#">Tambah</a></div>', false);
 });
 
@@ -26,15 +32,15 @@ it('merender card dengan judul, slot aksi, dan footer', function () {
 });
 
 it('menampilkan pesan error dan nilai lama pada form-input', function () {
-    $this->withViewErrors(['nama_akun' => 'Kolom nama akun wajib diisi.']);
-    session()->flashInput(['nama_akun' => 'Kas Tunai']);
+    $this->withViewErrors(['nama_kategori' => 'Kolom nama kategori wajib diisi.']);
+    session()->flashInput(['nama_kategori' => 'Teknologi']);
 
-    $this->blade('<x-admin.form-input name="nama_akun" label="Nama Akun" :required="true" />')
-        ->assertSee('for="nama_akun"', false)
-        ->assertSee('value="Kas Tunai"', false)
+    $this->blade('<x-admin.form-input name="nama_kategori" label="Nama Kategori" :required="true" />')
+        ->assertSee('for="nama_kategori"', false)
+        ->assertSee('value="Teknologi"', false)
         ->assertSee('form-control is-invalid', false)
-        ->assertSee('<span class="required">*</span>Nama Akun</label>', false)
-        ->assertSee('Kolom nama akun wajib diisi.');
+        ->assertSee('<span class="required">*</span>Nama Kategori</label>', false)
+        ->assertSee('Kolom nama kategori wajib diisi.');
 });
 
 it('tidak mengisi ulang nilai pada input password', function () {
@@ -54,29 +60,49 @@ it('memakai notasi titik untuk error pada nama input array', function () {
 
 it('memilih opsi sesuai nilai pada form-select', function () {
     $this->blade(
-        '<x-admin.form-select name="jenis_akun" label="Jenis" :options="$opsi" value="bank" />',
-        ['opsi' => ['tunai' => 'Tunai', 'bank' => 'Bank']],
+        '<x-admin.form-select name="jenis_layanan" label="Jenis" :options="$opsi" value="mobile" />',
+        ['opsi' => ['website' => 'Website', 'mobile' => 'Mobile Apps']],
     )
         ->assertSee('<option value="">— Pilih —</option>', false)
-        ->assertSee('<option value="bank" selected>Bank</option>', false)
-        ->assertSee('<option value="tunai" >Tunai</option>', false);
+        ->assertSee('<option value="mobile" selected>Mobile Apps</option>', false)
+        ->assertSee('<option value="website" >Website</option>', false);
+});
+
+it('mengelompokkan opsi form-select dengan optgroup', function () {
+    $this->blade(
+        '<x-admin.form-select name="layanan" label="Layanan" :options="$opsi" value="android" />',
+        ['opsi' => ['Website' => ['landing' => 'Landing Page'], 'Mobile' => ['android' => 'Android']]],
+    )
+        ->assertSee('<optgroup label="Website">', false)
+        ->assertSee('<optgroup label="Mobile">', false)
+        ->assertSee('<option value="android" selected>Android</option>', false)
+        ->assertSee('<option value="landing" >Landing Page</option>', false);
+});
+
+it('memilih opsi form-select dari nilai enum dan bisa tanpa placeholder', function () {
+    $this->blade(
+        '<x-admin.form-select name="status" label="Status" :options="$opsi" :value="$nilai" :placeholder="false" />',
+        ['opsi' => ['draf' => 'Draf', 'terbit' => 'Terbit'], 'nilai' => StatusUjiKomponen::Terbit],
+    )
+        ->assertSee('<option value="terbit" selected>Terbit</option>', false)
+        ->assertDontSee('— Pilih —');
 });
 
 it('merender form-textarea dan form-file', function () {
-    $this->blade('<x-admin.form-textarea name="keterangan" label="Keterangan" value="Catatan" />')
+    $this->blade('<x-admin.form-textarea name="deskripsi" label="Deskripsi" value="Catatan" />')
         ->assertSee('>Catatan</textarea>', false);
 
-    $this->blade('<x-admin.form-file name="bukti" label="Bukti" accept=".pdf" berkas-saat-ini="/berkas/1" />')
+    $this->blade('<x-admin.form-file name="gambar" label="Gambar" accept=".webp" berkas-saat-ini="/berkas/1" />')
         ->assertSee('type="file"', false)
-        ->assertSee('accept=".pdf"', false)
+        ->assertSee('accept=".webp"', false)
         ->assertSee('Lihat file saat ini');
 });
 
 it('merender form-switch dengan hidden input bernilai 0 dan status tercentang', function () {
-    $this->blade('<x-admin.form-switch name="status_aktif" label="Status" text="Akun aktif" :checked="true" />')
+    $this->blade('<x-admin.form-switch name="status_aktif" label="Status" text="Tampilkan di website" :checked="true" />')
         ->assertSee('<input type="hidden" name="status_aktif" value="0">', false)
         ->assertSee('name="status_aktif" value="1" checked', false)
-        ->assertSee('<span class="switch-label">Akun aktif</span>', false);
+        ->assertSee('<span class="switch-label">Tampilkan di website</span>', false);
 });
 
 it('memakai nilai lama pada form-switch setelah validasi gagal', function () {
@@ -87,12 +113,13 @@ it('memakai nilai lama pada form-switch setelah validasi gagal', function () {
 });
 
 it('merender filter-bar dengan kata kunci dan tombol reset saat filter aktif', function () {
-    $this->app->instance('request', Request::create('/admin/uji', 'GET', ['q' => 'bca', 'jenis' => 'bank', 'page' => '2']));
+    $this->app->instance('request', Request::create('/admin/uji', 'GET', ['q' => 'laravel', 'kategori' => 'web', 'page' => '2']));
 
-    $this->blade('<x-admin.filter-bar action="/admin/uji" placeholder="Cari akun…"><select name="jenis"></select></x-admin.filter-bar>')
+    $this->blade('<x-admin.filter-bar action="/admin/uji" placeholder="Cari artikel…"><select name="kategori"></select></x-admin.filter-bar>')
         ->assertSee('method="GET" action="/admin/uji"', false)
-        ->assertSee('name="q" value="bca"', false)
-        ->assertSee('<select name="jenis"></select>', false)
+        ->assertSee('name="q" value="laravel"', false)
+        ->assertSee('<select name="kategori"></select>', false)
+        ->assertSee('Terapkan')
         ->assertSee('href="/admin/uji" class="btn btn-ghost"', false);
 });
 
@@ -102,9 +129,16 @@ it('menyembunyikan tombol reset filter-bar bila tidak ada filter', function () {
         ->assertDontSee('Reset');
 });
 
+it('merender filter-bar tanpa kotak pencarian bila cari bernilai false', function () {
+    $this->blade('<x-admin.filter-bar action="/admin/uji" :cari="false"><select name="tahun"></select></x-admin.filter-bar>')
+        ->assertDontSee('name="q"', false)
+        ->assertSee('<select name="tahun"></select>', false)
+        ->assertSee('Terapkan');
+});
+
 it('merender delete-button sebagai form DELETE dengan konfirmasi', function () {
-    $this->blade('<x-admin.delete-button action="/admin/akun-kas/1" />')
-        ->assertSee('action="/admin/akun-kas/1"', false)
+    $this->blade('<x-admin.delete-button action="/admin/kategori-artikel/1" />')
+        ->assertSee('action="/admin/kategori-artikel/1"', false)
         ->assertSee('name="_method" value="DELETE"', false)
         ->assertSee('data-confirm=', false)
         ->assertSee('btn btn-sm btn-danger', false)
@@ -112,9 +146,9 @@ it('merender delete-button sebagai form DELETE dengan konfirmasi', function () {
 });
 
 it('merender empty-state dan alert', function () {
-    $this->blade('<x-admin.empty-state title="Belum ada akun kas" description="Tambahkan akun pertama." />')
-        ->assertSee('Belum ada akun kas')
-        ->assertSee('Tambahkan akun pertama.');
+    $this->blade('<x-admin.empty-state title="Belum ada kategori artikel" description="Tambahkan kategori pertama." />')
+        ->assertSee('Belum ada kategori artikel')
+        ->assertSee('Tambahkan kategori pertama.');
 
     $this->blade('<x-admin.alert variant="success">Berhasil disimpan.</x-admin.alert>')
         ->assertSee('alert alert-success', false)
@@ -132,10 +166,10 @@ it('merender paginasi dengan info jumlah data dan tautan halaman', function () {
 
 it('menampilkan flash message sebagai data toast', function () {
     $this->actingAs(Pengguna::factory()->create())
-        ->withSession(['success' => 'Akun kas berhasil disimpan.'])
+        ->withSession(['success' => 'Kategori artikel berhasil disimpan.'])
         ->get(route('admin.dashboard'))
         ->assertSee('id="flash-toast"', false)
-        ->assertSee('Akun kas berhasil disimpan.');
+        ->assertSee('Kategori artikel berhasil disimpan.');
 });
 
 it('tidak merender data toast bila tidak ada flash message', function () {

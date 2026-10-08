@@ -10,9 +10,9 @@ it('memakai bahasa Indonesia dan zona waktu Asia/Jakarta', function () {
 });
 
 it('menampilkan pesan validasi berbahasa Indonesia', function () {
-    $validator = Validator::make(['nama_akun' => ''], ['nama_akun' => 'required']);
+    $validator = Validator::make(['nama_kategori' => ''], ['nama_kategori' => 'required']);
 
-    expect($validator->errors()->first('nama_akun'))->toBe('Kolom nama akun wajib diisi.');
+    expect($validator->errors()->first('nama_kategori'))->toBe('Kolom nama kategori wajib diisi.');
 });
 
 it('terhubung ke database MySQL', function () {

@@ -43,12 +43,6 @@ i.icon {
     font-size: 15px;
 }
 
-.stat-icon .icon {
-    width: 20px;
-    height: 20px;
-    font-size: 18px;
-}
-
 .btn .icon {
     width: 14px;
     height: 14px;
@@ -169,103 +163,10 @@ table.table .kolom-aksi {
     gap: 6px;
 }
 
-// Kolom nominal (judul & isi) rata kanan agar digit sejajar dan mudah dibandingkan
-// (pilihan pemilik); nowrap menjaga "Rp 1.250.000" dan keterangan tanggal di bawahnya
-// tidak terpotong ke baris baru.
-table.table .kolom-nominal {
-    text-align: right;
-    white-space: nowrap;
-}
-
-// Saldo/selisih minus harus langsung terlihat, tidak cukup tanda "-" saja.
-// Positif dipakai untuk membedakan pemasukan di daftar campuran (transaksi terbaru).
-.nominal-negatif {
-    color: var(--red);
-}
-
-.nominal-positif {
-    color: var(--green);
-}
-
-// Tabel yang hanya menampilkan informasi (rincian laporan): baris tidak menyala saat
+// Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat
 // disorot agar tidak terkesan bisa diklik.
 table.table.tabel-informasi tbody tr:hover {
     background: transparent;
-}
-
-// Wadah grafik ECharts di dashboard; tinggi tetap agar tata letak tidak melompat saat dimuat.
-.grafik-kas {
-    height: 300px;
-}
-
-// Baris total (tfoot) dibedakan dari baris data: garis atas tegas & latar seperti judul kolom.
-table.table tfoot td {
-    border-top: 1px solid var(--border-color);
-    border-bottom: none;
-    background: var(--bg-surface-secondary);
-    color: var(--text);
-    font-weight: var(--font-weight-medium);
-}
-
-// Nilai kartu ringkasan tidak boleh patah baris di tengah angka.
-.stat-value {
-    white-space: nowrap;
-}
-
-.stat-value-panjang {
-    font-size: 18px;
-}
-
-// Empty state di dalam kartu berdampingan (mis. rincian laporan) dibuat lebih pendek
-// agar tinggi kartu tidak jauh berbeda dengan kartu tetangganya yang berisi tabel.
-.empty-state.empty-state-ringkas {
-    padding: 28px 24px;
-}
-
-// Baris keterangan di bawah filter laporan: info periode di kiri, selisih di kanan.
-.ringkasan-periode {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 4px 16px;
-    padding: 10px 16px;
-    font-size: 12px;
-    color: var(--text-muted);
-}
-
-// Warna netral hanya bila selisih 0; plus/minus memakai .nominal-positif/-negatif.
-.nilai-selisih {
-    font-weight: var(--font-weight-bold);
-
-    &:not(.nominal-positif, .nominal-negatif) {
-        color: var(--text);
-    }
-}
-
-// Tabel rincian (halaman detail): label di kiri, nilai di kanan. Label tidak
-// memakai gaya huruf kapital kecil milik judul kolom tabel daftar.
-table.table.tabel-detail th {
-    width: 180px;
-    text-transform: none;
-    letter-spacing: normal;
-    font-size: 13px;
-    font-weight: var(--font-weight-medium);
-    background: transparent;
-    vertical-align: top;
-    border-bottom: 1px solid var(--border-color-light);
-}
-
-table.table.tabel-detail tr:last-child th {
-    border-bottom: none;
-}
-
-.bukti-pratinjau {
-    display: block;
-    max-width: 100%;
-    max-height: 480px;
-    margin-bottom: 12px;
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--radius);
 }
 
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
@@ -485,13 +386,4 @@ $lebar-konten-maks: 1600px;
 .page-wrapper {
     flex: 1 0 auto;
     width: 100%;
-}
-
-// Gentelella baru memecah 4 kolom di 1200px; di laptop 1280–1399px kartu
-// ringkasan terlalu sempit untuk nominal rupiah. Batas bawah 769px menjaga
-// aturan 1 kolom bawaan di ponsel.
-@media (min-width: 769px) and (max-width: 1399.98px) {
-    .col-4 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 }

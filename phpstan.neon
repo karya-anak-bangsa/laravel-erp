@@ -8,5 +8,5 @@ parameters:
         - database/
         - routes/
 
-    # Dimulai dari 5, dinaikkan bertahap (ROADMAP Fase 6).
+    # Dimulai dari 5, dinaikkan bertahap (ROADMAP: Penguatan Kualitas).
     level: 5

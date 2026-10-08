@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
-// Frontend publik baru dibuat di Fase 5; sementara beranda diarahkan ke panel admin.
+// Frontend publik dibuat pada fase Frontend Publik (ROADMAP); sementara beranda diarahkan ke panel admin.
 Route::redirect('/', '/admin');
 
 Route::middleware('guest')->group(function () {

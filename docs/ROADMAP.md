@@ -2,7 +2,7 @@
 
 Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (CLAUDE.md §12).
 
-**Alasan urutan**: panel admin wajib terlindungi login sebelum online, jadi dashboard & autentikasi dikerjakan bersama. Deploy dilakukan sedini mungkin agar masalah server ketahuan saat aplikasi masih kecil. Kas Perusahaan didahulukan dari Company Profile karena langsung berguna (pengeluaran perizinan & domain sudah terjadi dan perlu dicatat), sedangkan data Company Profile baru bermanfaat setelah frontend publik ada.
+**Alasan urutan**: panel admin wajib terlindungi login sebelum online, jadi dashboard & autentikasi dikerjakan bersama. Deploy dilakukan sedini mungkin agar masalah server ketahuan saat aplikasi masih kecil. Backend Company Profile dikerjakan sebelum frontend publik karena frontend menampilkan datanya.
 
 ---
 
@@ -22,7 +22,7 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 - [x] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
 - [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`
 - [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, logout), breadcrumb, footer (toggle dark mode dihapus 2026-10-08 atas keputusan pemilik)
-- [x] Dashboard placeholder (kartu ringkasan kosong, siap diisi Fase 3c)
+- [x] Dashboard placeholder (kartu ringkasan kosong, diisi seiring modul ditambahkan)
 - [x] Feature test autentikasi & akses dashboard
 ### 1b. Komponen & halaman error
 - [x] Komponen Blade admin dasar: page-header, card, form-input/textarea/select/file (dengan error), delete-button + modal konfirmasi, empty-state, pagination, toast flash message
@@ -32,29 +32,7 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap fitur yang selesai langsung di-deploy agar progres bisa diakses online.
 - [x] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa (langkah & catatan server di `docs/DEPLOY.md`)
 
-## Fase 3 — Kas Perusahaan
-Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e **opsional**, dikerjakan hanya bila dibutuhkan.
-
-### 3a. Master
-- [x] Enum `JenisAkunKas`, `JenisTransaksi`
-- [x] CRUD Akun Kas
-- [x] CRUD Kategori Transaksi + `KategoriTransaksiSeeder`
-### 3b. Transaksi
-- [x] `TransaksiKasService` (penomoran, validasi kecocokan jenis, transaksi DB) + unit test
-- [x] CRUD Transaksi Kas: filter periode/akun/kategori/jenis, upload & lihat bukti (disk privat), `created_by/updated_by`
-- [x] Akun/kategori yang sudah punya transaksi tidak bisa dihapus; jenis kategori yang sudah dipakai dikunci
-### 3c. Laporan & Dashboard
-- [x] Saldo per akun (unit test perhitungan)
-- [x] Laporan arus kas per periode (default satu bulan kalender penuh): total pemasukan, pengeluaran, selisih, total saldo per akhir periode (tanpa kartu saldo awal/akhir agar tidak rancu dengan saldo awal akun); rincian per transaksi (tanggal, kategori, jumlah)
-- [x] Widget dashboard: saldo total, pemasukan & pengeluaran bulan ini, grafik arus kas satu tahun kalender Jan–Des (ECharts), transaksi terbaru
-### 3d. Transfer antar akun (opsional)
-- [ ] Migration & CRUD `tb_transfer_kas`, terintegrasi ke perhitungan saldo
-### 3e. Ekspor (opsional)
-- [ ] Ekspor laporan ke Excel dan PDF (pilih paket setelah cek kompatibilitas Laravel 13)
-### Penutup Fase 3
-- [ ] Hapus data dummy: `KasDummySeeder` + `KasDummySeederTest`, lalu lokal `php artisan migrate:fresh --seed` dan hapus `storage/app/private/kas/bukti/dummy-*` (seeder dummy hanya lokal, untuk uji tampilan selama Fase 3)
-
-## Fase 4 — Company Profile (Backend)
+## Fase 3 — Company Profile (Backend)
 - [ ] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
 - [ ] Kategori Artikel
 - [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
@@ -64,7 +42,7 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [ ] FAQ (urutan)
 - [ ] Kontak Kami (kotak masuk: filter, tandai dibaca/belum, hapus) + badge jumlah belum dibaca di sidebar
 
-## Fase 5 — Frontend Publik
+## Fase 4 — Frontend Publik
 - [ ] Putuskan template (BootstrapMade vs Tailwind custom) dan catat di CLAUDE.md §4
 - [ ] Layout publik terpisah dari admin (`layouts/web`), data identitas di-cache
 - [ ] Halaman: beranda (hero, layanan, portofolio, FAQ), portofolio, artikel + detail (slug), kontak
@@ -72,7 +50,7 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [ ] SEO: meta title/description dari identitas, Open Graph, `sitemap.xml`, `robots.txt`
 - [ ] Performa: lazy-load gambar, ukuran gambar dioptimalkan
 
-## Fase 6 — Penguatan Kualitas
+## Fase 5 — Penguatan Kualitas
 - [ ] Manajemen pengguna & role/permission (nama tabel mengikuti konvensi `tb_`)
 - [ ] Audit log aktivitas
 - [ ] Backup database terjadwal
@@ -80,7 +58,7 @@ Tujuan utama: pemasukan dan pengeluaran tercatat. 3a–3c adalah inti; 3d dan 3e
 - [ ] Naikkan level Larastan, tinjau cakupan test
 - [ ] (Opsional) GitHub Actions untuk menjalankan test otomatis setiap push
 
-## Fase 7+ — Ekspansi ERP (gambaran)
+## Fase 6+ — Ekspansi ERP (gambaran)
 - [ ] Peserta (master bersama)
-- [ ] Pelatihan, Sertifikasi, Bootcamp (+ pendaftaran, terhubung ke Kas via `referensi`)
+- [ ] Pelatihan, Sertifikasi, Bootcamp (+ pendaftaran)
 - [ ] Klien, Proyek, Invoice

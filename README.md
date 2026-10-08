@@ -1,6 +1,6 @@
 # ERP PT. Teknologi Karya Anak Bangsa
 
-Sistem ERP berbasis web untuk PT. Teknologi Karya Anak Bangsa (TKAB): Company Profile dan Kas Perusahaan, dikembangkan bertahap.
+Sistem ERP berbasis web untuk PT. Teknologi Karya Anak Bangsa (TKAB), dimulai dari modul Company Profile dan dikembangkan bertahap.
 
 - Produksi: https://karyaanakbangsa.co.id
 - Stack: Laravel 13 (PHP 8.3), MySQL 8, Gentelella v4 + Vite, Pest
