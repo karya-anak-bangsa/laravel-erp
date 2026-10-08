@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CompanyProfile\FaqController;
 use App\Http\Controllers\Admin\CompanyProfile\HeroController;
 use App\Http\Controllers\Admin\CompanyProfile\IdentitasController;
+use App\Http\Controllers\Admin\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
 use App\Http\Controllers\Admin\CompanyProfile\PortofolioController;
 use Illuminate\Support\Facades\Route;
@@ -23,3 +24,8 @@ Route::resource('layanan', LayananController::class)->except('show');
 Route::resource('portofolio', PortofolioController::class)->except('show');
 
 Route::resource('faq', FaqController::class)->except('show');
+
+// Pesan masuk dari form kontak publik: admin hanya membaca, menandai, dan menghapus.
+Route::resource('kontak-kami', KontakKamiController::class)->only(['index', 'destroy']);
+Route::patch('kontak-kami/{kontak_kami}/status-baca', [KontakKamiController::class, 'statusBaca'])
+    ->name('kontak-kami.status-baca');

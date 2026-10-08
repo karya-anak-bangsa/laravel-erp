@@ -17,6 +17,11 @@
                     <a @class(['nav-link', 'active' => $aktif]) href="{{ route($item['rute']) }}" @if ($aktif) aria-current="page" @endif>
                         <x-admin.icon :name="$item['ikon']" />
                         <span class="nav-text">{{ $item['label'] }}</span>
+                        @isset($item['badge'])
+                            @php($jumlah = $badgeMenu[$item['badge']] ?? 0)
+                            {{-- Tetap dirender saat 0 (hidden) agar admin.js bisa memperbarui angkanya. --}}
+                            <span class="badge badge-red" data-badge="{{ $item['badge'] }}" @if ($jumlah === 0) hidden @endif>{{ $jumlah }}</span>
+                        @endisset
                     </a>
                 @endforeach
             </div>

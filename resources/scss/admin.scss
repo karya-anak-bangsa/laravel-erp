@@ -494,6 +494,42 @@ table.table.tabel-informasi tbody tr:hover {
     background: transparent;
 }
 
+// Status netral (mis. pesan sudah dibaca); Gentelella hanya punya varian berwarna.
+.status-abu {
+    color: var(--text-muted);
+
+    &::before {
+        background: var(--text-muted);
+    }
+}
+
+// Kotak masuk Kontak Kami: seperti email, nama & subjek pesan yang belum dibaca ditebalkan.
+.tabel-kotak-masuk {
+    .teks-pesan {
+        color: var(--text-secondary);
+    }
+
+    tr.belum-dibaca .teks-pesan {
+        color: var(--text);
+        font-weight: 600;
+    }
+
+    .kolom-status,
+    .kolom-tanggal {
+        white-space: nowrap;
+    }
+}
+
+// Isi pesan dari form kontak adalah teks polos; baris barunya dipertahankan.
+.teks-pesan-lengkap {
+    white-space: pre-line;
+}
+
+// Badge menu sidebar (mis. jumlah pesan belum dibaca) disembunyikan saat 0.
+.nav-link .badge[hidden] {
+    display: none;
+}
+
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
 // warna latar/teks memakai token Gentelella agar seragam dengan panel admin.
 .sn-notifications-container {

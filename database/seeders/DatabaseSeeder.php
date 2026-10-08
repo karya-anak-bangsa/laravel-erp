@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             $this->call([
                 HeroDummySeeder::class,
                 PortofolioDummySeeder::class,
+                KontakKamiDummySeeder::class,
             ]);
         }
     }

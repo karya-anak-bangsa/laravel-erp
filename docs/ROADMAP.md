@@ -40,7 +40,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
 - [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder` (khusus lokal)
 - [x] FAQ (urutan, jawaban WYSIWYG) + `FaqSeeder` (5 FAQ awal)
-- [ ] Kontak Kami (kotak masuk: filter, tandai dibaca/belum, hapus) + badge jumlah belum dibaca di sidebar
+- [x] Kontak Kami (kotak masuk: filter, tandai dibaca/belum — otomatis saat modal detail dibuka, hapus) + badge jumlah belum dibaca di sidebar + `KontakKamiDummySeeder` (khusus lokal)
 
 ## Fase 4 — Frontend Publik
 - [ ] Putuskan template (BootstrapMade vs Tailwind custom) dan catat di CLAUDE.md §4
