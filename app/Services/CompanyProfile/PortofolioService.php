@@ -4,14 +4,14 @@ namespace App\Services\CompanyProfile;
 
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\Shared\FileUploadService;
-use Illuminate\Support\Str;
+use App\Services\Shared\SlugService;
 
 class PortofolioService
 {
-    // Disisakan ruang dari VARCHAR(220) untuk akhiran angka (-2, -3, ...).
-    private const PANJANG_SLUG_MAKS = 200;
-
-    public function __construct(private readonly FileUploadService $fileUpload) {}
+    public function __construct(
+        private readonly FileUploadService $fileUpload,
+        private readonly SlugService $slug,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data  hasil validasi StorePortofolioRequest
@@ -51,26 +51,6 @@ class PortofolioService
      */
     public function buatSlug(string $judul, ?Portofolio $kecuali = null): string
     {
-        $dasar = rtrim(Str::substr(Str::slug($judul), 0, self::PANJANG_SLUG_MAKS), '-');
-
-        if ($dasar === '') {
-            $dasar = 'portofolio';
-        }
-
-        $slug = $dasar;
-
-        for ($nomor = 2; $this->slugDipakai($slug, $kecuali); $nomor++) {
-            $slug = "{$dasar}-{$nomor}";
-        }
-
-        return $slug;
-    }
-
-    private function slugDipakai(string $slug, ?Portofolio $kecuali): bool
-    {
-        return Portofolio::withTrashed()
-            ->where('slug', $slug)
-            ->when($kecuali !== null, fn ($query) => $query->whereKeyNot($kecuali->getKey()))
-            ->exists();
+        return $this->slug->buat($judul, Portofolio::withTrashed(), $kecuali, 'portofolio');
     }
 }

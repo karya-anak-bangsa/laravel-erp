@@ -34,8 +34,8 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 
 ## Fase 3 — Company Profile (Backend)
 - [x] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
-- [ ] Kategori Artikel
-- [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
+- [x] Kategori Artikel (data master abjad, jumlah artikel, tolak hapus bila masih dipakai) + `KategoriArtikelSeeder` (4 kategori)
+- [x] Artikel (slug otomatis, sanitasi HTML, editor rich text dengan sub-judul H2/H3, status draf/terbit, filter kategori & status) + `ArtikelDummySeeder` (khusus lokal)
 - [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
 - [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder` (khusus lokal)

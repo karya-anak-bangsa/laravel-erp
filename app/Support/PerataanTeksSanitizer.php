@@ -6,7 +6,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HtmlSanitizer\Visitor\AttributeSanitizer\AttributeSanitizerInterface;
 
 /**
- * Atribut style paragraf hanya boleh berisi perataan teks dari toolbar editor; CSS lain
+ * Atribut style paragraf & sub-judul hanya boleh berisi perataan teks dari toolbar editor; CSS lain
  * (warna, posisi, url(), dsb. dari teks tempelan) membuang seluruh atribut style.
  * Rata kiri adalah bawaan, jadi tidak disimpan.
  */
@@ -16,7 +16,7 @@ class PerataanTeksSanitizer implements AttributeSanitizerInterface
 
     public function getSupportedElements(): ?array
     {
-        return ['p'];
+        return ['p', 'h2', 'h3'];
     }
 
     public function getSupportedAttributes(): ?array

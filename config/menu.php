@@ -57,6 +57,18 @@ return [
                 'aktif' => 'admin.portofolio.*',
             ],
             [
+                'label' => 'Artikel',
+                'ikon' => 'book',
+                'rute' => 'admin.artikel.index',
+                'aktif' => 'admin.artikel.*',
+            ],
+            [
+                'label' => 'Kategori Artikel',
+                'ikon' => 'book',
+                'rute' => 'admin.kategori-artikel.index',
+                'aktif' => 'admin.kategori-artikel.*',
+            ],
+            [
                 'label' => 'FAQ',
                 'ikon' => 'book',
                 'rute' => 'admin.faq.index',

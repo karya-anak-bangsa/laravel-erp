@@ -35,6 +35,15 @@ it('membuang style perataan pada elemen selain paragraf', function () {
     expect($this->sanitizer->bersihkan('<p><strong style="text-align: center">tebal</strong></p>'))->toBe('<p><strong>tebal</strong></p>');
 });
 
+it('melepas tag sub-judul di editor biasa tetapi mempertahankannya di isi artikel', function () {
+    $html = '<h2 style="text-align: center">Bagian</h2><h3>Sub</h3><p>isi</p>';
+
+    expect($this->sanitizer->bersihkan($html))->toBe('BagianSub<p>isi</p>')
+        ->and($this->sanitizer->bersihkan($html, judulBagian: true))->toBe($html)
+        // h1 & h4–h6 tidak tersedia di toolbar sehingga tetap dilepas tagnya.
+        ->and($this->sanitizer->bersihkan('<h1>A</h1><h4>B</h4>', judulBagian: true))->toBe('AB');
+});
+
 it('membuang skrip, style, gambar, iframe, dan atribut berbahaya', function () {
     $hasil = $this->sanitizer->bersihkan(
         '<script>alert(1)</script><style>p{}</style><p onclick="x()" style="color:red" class="a">Aman</p><img src=x onerror=alert(1)><iframe src="https://x.id"></iframe>',

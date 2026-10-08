@@ -7,14 +7,16 @@ import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
 // Sama dengan App\Support\PerataanTeksSanitizer::PERATAAN; rata kiri = bawaan, tidak disimpan.
 const PERATAAN = ['center', 'right', 'justify'];
 
-// Perataan teks per paragraf (termasuk paragraf di dalam butir daftar), disimpan sebagai
-// style="text-align: …" agar tampil sama di frontend tanpa kelas CSS khusus.
+// Perataan teks per paragraf (termasuk paragraf di dalam butir daftar) dan sub-judul, disimpan
+// sebagai style="text-align: …" agar tampil sama di frontend tanpa kelas CSS khusus.
+const BLOK_RATA = ['paragraph', 'heading'];
+
 const RataTeks = Extension.create({
     name: 'rataTeks',
 
     addGlobalAttributes() {
         return [{
-            types: ['paragraph'],
+            types: BLOK_RATA,
             attributes: {
                 rata: {
                     default: null,
@@ -27,18 +29,21 @@ const RataTeks = Extension.create({
 
     addCommands() {
         return {
-            aturRata: (rata) => ({ commands }) => commands.updateAttributes('paragraph', {
-                rata: PERATAAN.includes(rata) ? rata : null,
-            }),
+            // Sub-judul hanya ada di editor isi artikel, jadi jenis blok yang tidak ada di skema dilewati.
+            aturRata: (rata) => ({ commands }) => BLOK_RATA
+                .filter((jenis) => this.editor.schema.nodes[jenis])
+                .map((jenis) => commands.updateAttributes(jenis, { rata: PERATAAN.includes(rata) ? rata : null }))
+                .some(Boolean),
         };
     },
 });
 
 // Hanya format yang tersedia di toolbar; sisanya dimatikan agar teks tempelan (Word, web)
-// dinormalkan ke format yang sama dengan yang diizinkan HtmlSanitizerService.
-const ekstensi = [
+// dinormalkan ke format yang sama dengan yang diizinkan HtmlSanitizerService. Sub-judul
+// H2/H3 hanya untuk editor ber-data-judul-bagian (isi artikel); h1 & h4–h6 tempelan menjadi paragraf.
+const buatEkstensi = (judulBagian) => [
     StarterKit.configure({
-        heading: false,
+        heading: judulBagian ? { levels: [2, 3] } : false,
         blockquote: false,
         codeBlock: false,
         code: false,
@@ -58,6 +63,16 @@ const ekstensi = [
 
 // Tombol perataan toolbar → nilai atribut rata (null = rata kiri bawaan).
 const tombolRata = { rataKiri: null, rataTengah: 'center', rataKanan: 'right', rataKananKiri: 'justify' };
+
+// Status aktif tombol selain format tanda (tebal, daftar, dst. memakai editor.isActive(nama)).
+const statusAktif = {
+    judul2: (editor) => editor.isActive('heading', { level: 2 }),
+    judul3: (editor) => editor.isActive('heading', { level: 3 }),
+    ...Object.fromEntries(Object.entries(tombolRata).map(([nama, rata]) => [
+        nama, (editor) => (editor.state.selection.$from.parent.attrs.rata ?? null) === rata,
+    ])),
+    hapusFormat: () => false,
+};
 
 // Sama dengan App\Support\TeksHtml::polos(): teks terlihat, antarblok satu spasi.
 const panjangTeks = (editor) => editor.getText({ blockSeparator: ' ' }).replace(/\s+/g, ' ').trim().length;
@@ -92,6 +107,8 @@ const aturTautan = async (editor) => {
 };
 
 const perintah = {
+    judul2: (editor) => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    judul3: (editor) => editor.chain().focus().toggleHeading({ level: 3 }).run(),
     bold: (editor) => editor.chain().focus().toggleBold().run(),
     italic: (editor) => editor.chain().focus().toggleItalic().run(),
     underline: (editor) => editor.chain().focus().toggleUnderline().run(),
@@ -120,9 +137,7 @@ const pasangSatu = (wadah) => {
                 el.disabled = !editor.can()[nama]();
                 return;
             }
-            const aktif = nama in tombolRata
-                ? (editor.getAttributes('paragraph').rata ?? null) === tombolRata[nama]
-                : nama !== 'hapusFormat' && editor.isActive(nama);
+            const aktif = statusAktif[nama] ? statusAktif[nama](editor) : editor.isActive(nama);
             el.classList.toggle('aktif', aktif);
             el.setAttribute('aria-pressed', String(aktif));
         });
@@ -134,7 +149,7 @@ const pasangSatu = (wadah) => {
 
     const editor = new Editor({
         element: isi,
-        extensions: ekstensi,
+        extensions: buatEkstensi(wadah.hasAttribute('data-judul-bagian')),
         content: sumber.value,
         editorProps: {
             attributes: {

@@ -15,8 +15,8 @@ class TeksHtml
             return '';
         }
 
-        // Akhir paragraf/butir & <br> diberi spasi agar kata dari blok berbeda tidak menempel.
-        $teks = strip_tags((string) preg_replace('#</(p|li|ul|ol)>|<br\s*/?>#i', '$0 ', $html));
+        // Akhir paragraf/butir/sub-judul & <br> diberi spasi agar kata dari blok berbeda tidak menempel.
+        $teks = strip_tags((string) preg_replace('#</(p|li|ul|ol|h2|h3)>|<br\s*/?>#i', '$0 ', $html));
 
         return trim((string) preg_replace('/\s+/u', ' ', html_entity_decode($teks, ENT_QUOTES | ENT_HTML5, 'UTF-8')));
     }

@@ -1,11 +1,13 @@
-@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null])
+@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'judulBagian' => false, 'baris' => 5])
 
 @php
     $id = $attributes->get('id', $name);
     $error = $errors->has($name);
 
-    // [perintah, ikon, label]; null = pemisah grup. Perintah dijalankan resources/js/admin/editor.js.
+    // [perintah, ikon, label, teks?]; null = pemisah grup. Perintah dijalankan resources/js/admin/editor.js.
+    // Sub-judul (H2/H3) hanya untuk isi artikel; sanitasinya bersihkanHtml(..., judulBagian: true).
     $tombol = [
+        ...($judulBagian ? [['judul2', null, 'Sub-judul', 'H2'], ['judul3', null, 'Sub-judul kecil', 'H3'], null] : []),
         ['bold', 'bold', 'Tebal'],
         ['italic', 'italic', 'Miring'],
         ['underline', 'underline', 'Garis bawah'],
@@ -37,7 +39,8 @@
         <label class="form-label" id="{{ $id }}-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
-    <div @class(['editor', 'is-invalid' => $error]) data-editor>
+    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel 15 baris (pilihan pemilik). --}}
+    <div @class(['editor', 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}@if ((int) $baris !== 5) style="--editor-baris: {{ (int) $baris }}"@endif>
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)
                 @if ($item === null)
@@ -45,13 +48,17 @@
                 @else
                     <button type="button" class="editor-tombol" data-perintah="{{ $item[0] }}"
                         title="{{ $item[2] }}" aria-label="{{ $item[2] }}">
-                        <x-admin.icon :name="$item[1]" />
+                        @if ($item[1])
+                            <x-admin.icon :name="$item[1]" />
+                        @else
+                            <span class="editor-tombol-teks">{{ $item[3] }}</span>
+                        @endif
                     </button>
                 @endif
             @endforeach
         </div>
         <div class="editor-wadah" data-editor-isi></div>
-        <textarea id="{{ $id }}" name="{{ $name }}" rows="5" data-editor-sumber
+        <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ (int) $baris }}" data-editor-sumber
             @if ($label) data-label="{{ $id }}-label" @endif
             @required($required)
             {{ $attributes->except('id')->class(['form-control', 'is-invalid' => $error]) }}>{{ old($name, $value) }}</textarea>

@@ -252,6 +252,13 @@ a.btn:hover {
         font-size: 12px;
     }
 
+    // Tombol sub-judul memakai teks "H2"/"H3" karena Font Awesome tidak punya ikon per level.
+    .editor-tombol-teks {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
     &:hover:not(:disabled) {
         background: var(--border-color-light);
         color: var(--text);
@@ -280,11 +287,12 @@ a.btn:hover {
     background: var(--border-color);
 }
 
-// Semua editor setinggi 5 baris teks (20px per baris + padding), seperti textarea rows="5"
-// (pilihan pemilik). Isi lebih panjang digulir; tinggi bisa ditarik seperti textarea.
+// Editor setinggi 5 baris teks (20px per baris + padding), seperti textarea rows="5"
+// (pilihan pemilik); isi artikel 15 baris lewat --editor-baris (prop baris). Isi lebih
+// panjang digulir; tinggi bisa ditarik seperti textarea.
 .editor-konten {
-    height: calc(5 * 20px + 16px);
-    min-height: calc(5 * 20px + 16px);
+    height: calc(var(--editor-baris, 5) * 20px + 16px);
+    min-height: calc(var(--editor-baris, 5) * 20px + 16px);
     overflow-y: auto;
     resize: vertical;
     padding: 8px 12px;
@@ -314,6 +322,27 @@ a.btn:hover {
     ul,
     ol {
         margin: 0 0 8px;
+    }
+
+    // Sub-judul isi artikel: sedikit lebih besar dari teks, tanpa ukuran heading bawaan.
+    h2,
+    h3 {
+        margin: 12px 0 6px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--text);
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+
+    h3 {
+        font-size: 14px;
+    }
+
+    > :first-child {
+        margin-top: 0;
     }
 
     ul,

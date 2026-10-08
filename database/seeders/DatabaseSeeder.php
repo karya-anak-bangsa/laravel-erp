@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             HeroSeeder::class,
             LayananSeeder::class,
             FaqSeeder::class,
+            KategoriArtikelSeeder::class,
         ]);
 
         // Data contoh hanya untuk pengembangan; di produksi dijalankan manual bila perlu.
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             $this->call([
                 HeroDummySeeder::class,
                 PortofolioDummySeeder::class,
+                ArtikelDummySeeder::class,
                 KontakKamiDummySeeder::class,
             ]);
         }

@@ -12,7 +12,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
 - Unique pada tabel ber-soft-delete divalidasi di Form Request dengan `->withoutTrashed()`; constraint UNIQUE di database hanya untuk kolom yang tidak boleh berulang sama sekali (mis. nomor dokumen yang dibuat sistem).
 - Relasi polimorfik (bila kelak dipakai): `nullableMorphs('<nama>')` + alias stabil lewat `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
-- Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href]). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
+- Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href], serta `style="text-align: center|right|justify"` pada paragraf). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Pengecualian: isi artikel (LONGTEXT) boleh memuat sub-judul h2/h3 dan dibatasi 30.000 karakter terlihat / 100.000 karakter HTML. Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
 - Kolom bertanda **(+)** adalah tambahan di luar rancangan awal yang **sudah disetujui** pemilik proyek.
 
 ---
@@ -116,6 +116,8 @@ Catatan implementasi: slug dibuat sistem sehingga memakai constraint UNIQUE di d
 | tanggal | DATE | INDEX |
 | status_publikasi | VARCHAR(20) DEFAULT 'draf' | **(+)** enum `StatusPublikasi`: draf, terbit |
 | created_at, updated_at, deleted_at | | |
+
+Catatan implementasi: slug dibuat `SlugService` (dipakai bersama portofolio) dengan aturan sama seperti portofolio — UNIQUE di database, akhiran angka, ikut berubah saat judul diubah. `deskripsi` = isi artikel dari editor WYSIWYG dengan sub-judul H2/H3. Hanya artikel `terbit` yang tampil di frontend. Kategori yang masih dipakai artikel (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
 
 ### tb_faq
 | Kolom | Tipe | Keterangan |

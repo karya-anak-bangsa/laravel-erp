@@ -13,7 +13,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
  */
 class PanjangTeksHtml implements ValidationRule
 {
-    public function __construct(private readonly int $maks) {}
+    /**
+     * @param  int  $maksHtml  batas total HTML; isi artikel (LONGTEXT) memakai HtmlSanitizerService::PANJANG_HTML_ARTIKEL_MAKS
+     */
+    public function __construct(
+        private readonly int $maks,
+        private readonly int $maksHtml = HtmlSanitizerService::PANJANG_HTML_MAKS,
+    ) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -27,7 +33,7 @@ class PanjangTeksHtml implements ValidationRule
             return;
         }
 
-        if (mb_strlen($value) > HtmlSanitizerService::PANJANG_HTML_MAKS) {
+        if (mb_strlen($value) > $this->maksHtml) {
             $fail('Format kolom :attribute terlalu banyak; kurangi tautan atau format teks.');
         }
     }
