@@ -3,7 +3,7 @@
 <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-brand">
         <div class="brand-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></div>
-        <div class="brand-name">ERP TKAB</div>
+        <div class="brand-name">ERP System</div>
     </div>
 
     <nav class="sidebar-nav">
@@ -12,6 +12,31 @@
                 <div class="nav-label">{{ $grup['judul'] }}</div>
 
                 @foreach ($grup['item'] as $item)
+                    @isset($item['sub'])
+                        {{-- Submenu ala Gentelella (.nav-tree): buka-tutupnya dipasang mountShell(); grup yang
+                             memuat halaman aktif dirender terbuka. --}}
+                        @php($indukAktif = collect($item['sub'])->contains(fn ($anak) => request()->routeIs($anak['aktif'] ?? $anak['rute'])))
+
+                        <div @class(['nav-tree', 'open' => $indukAktif, 'has-active' => $indukAktif])>
+                            <button type="button" class="nav-link nav-toggle" aria-expanded="{{ $indukAktif ? 'true' : 'false' }}">
+                                <x-admin.icon :name="$item['ikon']" />
+                                <span class="nav-text">{{ $item['label'] }}</span>
+                                <x-admin.icon name="chevron-right" class="nav-chev" />
+                            </button>
+                            <div class="nav-sub">
+                                <div class="nav-sub-inner">
+                                    @foreach ($item['sub'] as $anak)
+                                        @php($aktif = request()->routeIs($anak['aktif'] ?? $anak['rute']))
+
+                                        <a @class(['nav-sublink', 'active' => $aktif]) href="{{ route($anak['rute']) }}" @if ($aktif) aria-current="page" @endif>{{ $anak['label'] }}</a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
+                        @continue
+                    @endisset
+
                     @php($aktif = request()->routeIs($item['aktif'] ?? $item['rute']))
 
                     <a @class(['nav-link', 'active' => $aktif]) href="{{ route($item['rute']) }}" @if ($aktif) aria-current="page" @endif>

@@ -15,6 +15,8 @@
 | - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
 | - badge : (opsional) kunci angka badge yang dihitung App\View\Composers\MenuComposer.
 |           Bukan closure, karena config harus bisa di-cache (php artisan optimize)
+| - sub   : (opsional) submenu .nav-sublink berisi label, rute, aktif (tanpa ikon);
+|           menu induknya hanya membuka/menutup submenu sehingga tidak punya rute
 |
 */
 
@@ -32,12 +34,6 @@ return [
     [
         'judul' => 'Company Profile',
         'item' => [
-            [
-                'label' => 'Identitas',
-                'ikon' => 'book',
-                'rute' => 'admin.identitas.edit',
-                'aktif' => 'admin.identitas.*',
-            ],
             [
                 'label' => 'Hero',
                 'ikon' => 'book',
@@ -59,14 +55,18 @@ return [
             [
                 'label' => 'Artikel',
                 'ikon' => 'book',
-                'rute' => 'admin.artikel.index',
-                'aktif' => 'admin.artikel.*',
-            ],
-            [
-                'label' => 'Kategori Artikel',
-                'ikon' => 'book',
-                'rute' => 'admin.kategori-artikel.index',
-                'aktif' => 'admin.kategori-artikel.*',
+                'sub' => [
+                    [
+                        'label' => 'Daftar Artikel',
+                        'rute' => 'admin.artikel.index',
+                        'aktif' => 'admin.artikel.*',
+                    ],
+                    [
+                        'label' => 'Kategori Artikel',
+                        'rute' => 'admin.kategori-artikel.index',
+                        'aktif' => 'admin.kategori-artikel.*',
+                    ],
+                ],
             ],
             [
                 'label' => 'FAQ',
@@ -80,6 +80,17 @@ return [
                 'rute' => 'admin.kontak-kami.index',
                 'aktif' => 'admin.kontak-kami.*',
                 'badge' => 'kontak-kami-belum-dibaca',
+            ],
+        ],
+    ],
+    [
+        'judul' => 'Pengaturan Sistem',
+        'item' => [
+            [
+                'label' => 'Identitas',
+                'ikon' => 'book',
+                'rute' => 'admin.identitas.edit',
+                'aktif' => 'admin.identitas.*',
             ],
         ],
     ],

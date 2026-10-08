@@ -29,7 +29,8 @@ it('menampilkan daftar kategori urut abjad', function () {
         ->get(route('admin.kategori-artikel.index'))
         ->assertOk()
         ->assertSeeInOrder(['Kabar Perusahaan', 'Teknologi', 'Tips &amp; Tutorial'], false)
-        ->assertSee('class="nav-link active" href="'.route('admin.kategori-artikel.index').'"', false);
+        ->assertSee('class="nav-sublink active" href="'.route('admin.kategori-artikel.index').'"', false)
+        ->assertSee('class="nav-tree open has-active"', false);
 });
 
 it('menyusun halaman daftar sesuai standar admin', function () {

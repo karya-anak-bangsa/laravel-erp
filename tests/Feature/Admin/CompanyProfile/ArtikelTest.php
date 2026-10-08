@@ -50,7 +50,8 @@ it('menampilkan artikel terbaru lebih dulu beserta kategori dan status', functio
             'Artikel terbaru', 'Teknologi', '09 Oktober 2026', 'status-yellow">Draf',
             'Artikel lama', 'Teknologi', '01 September 2026', 'status-green">Terbit',
         ], false)
-        ->assertSee('class="nav-link active" href="'.route('admin.artikel.index').'"', false);
+        ->assertSee('class="nav-sublink active" href="'.route('admin.artikel.index').'"', false)
+        ->assertSee('class="nav-tree open has-active"', false);
 });
 
 it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', function () {

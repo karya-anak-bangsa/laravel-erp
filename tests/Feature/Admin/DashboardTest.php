@@ -51,6 +51,31 @@ it('menandai menu dashboard sebagai menu aktif', function () {
         ->assertSee('class="nav-link active"', false);
 });
 
+it('menampilkan nama sistem di brand sidebar dan footer', function () {
+    $this->actingAs(Pengguna::factory()->create())
+        ->get(route('admin.dashboard'))
+        ->assertSee('<div class="brand-name">ERP System</div>', false)
+        ->assertSee('<span>ERP System v1.0</span>', false);
+});
+
+it('menyusun menu sidebar: artikel sebagai submenu dan identitas di pengaturan sistem', function () {
+    $this->actingAs(Pengguna::factory()->create())
+        ->get(route('admin.dashboard'))
+        ->assertSeeInOrder([
+            'Company Profile</div>',
+            'Hero', 'Layanan', 'Portofolio',
+            // Submenu tertutup karena halaman aktif (dashboard) tidak ada di dalamnya.
+            '<div class="nav-tree">',
+            '<button type="button" class="nav-link nav-toggle" aria-expanded="false">',
+            '<span class="nav-text">Artikel</span>',
+            'class="nav-sublink" href="'.route('admin.artikel.index').'" >Daftar Artikel</a>',
+            'class="nav-sublink" href="'.route('admin.kategori-artikel.index').'" >Kategori Artikel</a>',
+            'FAQ', 'Kontak Kami',
+            'Pengaturan Sistem</div>',
+            'href="'.route('admin.identitas.edit').'"',
+        ], false);
+});
+
 it('menandai menu aktif memakai pola rute pada kunci aktif', function () {
     // Menu modul aktif di semua halamannya (index, create, edit) lewat pola seperti admin.artikel.*.
     config(['menu' => [[
