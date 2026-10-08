@@ -2,6 +2,7 @@
 
 namespace App\Services\Shared;
 
+use App\Support\PerataanTeksSanitizer;
 use App\Support\TeksHtml;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
@@ -24,7 +25,9 @@ class HtmlSanitizerService
         // Hanya tag yang bisa dibuat toolbar editor (resources/js/admin/editor.js); sisanya
         // (skrip, style, atribut on*, gambar) dibuang sebelum disimpan dan ditampilkan apa adanya.
         $config = (new HtmlSanitizerConfig)
-            ->allowElement('p')
+            // style paragraf hanya untuk perataan teks; nilainya disaring PerataanTeksSanitizer.
+            ->allowElement('p', ['style'])
+            ->withAttributeSanitizer(new PerataanTeksSanitizer)
             ->allowElement('br')
             ->allowElement('strong')
             ->allowElement('em')
@@ -64,6 +67,6 @@ class HtmlSanitizerService
         }
 
         // Paragraf kosong di akhir (sisa baris baru di editor) tidak perlu disimpan.
-        return (string) preg_replace('#(?:<p>(?:\s|&nbsp;|<br\s*/?>)*</p>)+$#u', '', $bersih);
+        return (string) preg_replace('#(?:<p(?:\s[^>]*)?>(?:\s|&nbsp;|<br\s*/?>)*</p>)+$#u', '', $bersih);
     }
 }

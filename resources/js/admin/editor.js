@@ -1,8 +1,38 @@
 // Editor WYSIWYG (TipTap) untuk <x-admin.form-editor>. Dimuat terpisah (dynamic import di
 // admin.js) hanya di halaman yang memiliki [data-editor], agar halaman lain tetap ringan.
-import { Editor } from '@tiptap/core';
+import { Editor, Extension } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
+
+// Sama dengan App\Support\PerataanTeksSanitizer::PERATAAN; rata kiri = bawaan, tidak disimpan.
+const PERATAAN = ['center', 'right', 'justify'];
+
+// Perataan teks per paragraf (termasuk paragraf di dalam butir daftar), disimpan sebagai
+// style="text-align: …" agar tampil sama di frontend tanpa kelas CSS khusus.
+const RataTeks = Extension.create({
+    name: 'rataTeks',
+
+    addGlobalAttributes() {
+        return [{
+            types: ['paragraph'],
+            attributes: {
+                rata: {
+                    default: null,
+                    parseHTML: (el) => (PERATAAN.includes(el.style.textAlign) ? el.style.textAlign : null),
+                    renderHTML: ({ rata }) => (rata ? { style: `text-align: ${rata}` } : {}),
+                },
+            },
+        }];
+    },
+
+    addCommands() {
+        return {
+            aturRata: (rata) => ({ commands }) => commands.updateAttributes('paragraph', {
+                rata: PERATAAN.includes(rata) ? rata : null,
+            }),
+        };
+    },
+});
 
 // Hanya format yang tersedia di toolbar; sisanya dimatikan agar teks tempelan (Word, web)
 // dinormalkan ke format yang sama dengan yang diizinkan HtmlSanitizerService.
@@ -23,7 +53,11 @@ const ekstensi = [
             HTMLAttributes: { target: null, rel: null },
         },
     }),
+    RataTeks,
 ];
+
+// Tombol perataan toolbar → nilai atribut rata (null = rata kiri bawaan).
+const tombolRata = { rataKiri: null, rataTengah: 'center', rataKanan: 'right', rataKananKiri: 'justify' };
 
 // Sama dengan App\Support\TeksHtml::polos(): teks terlihat, antarblok satu spasi.
 const panjangTeks = (editor) => editor.getText({ blockSeparator: ' ' }).replace(/\s+/g, ' ').trim().length;
@@ -40,7 +74,6 @@ const aturTautan = async (editor) => {
         confirmButtonText: 'Simpan',
         denyButtonText: 'Hapus tautan',
         cancelButtonText: 'Batal',
-        reverseButtons: true,
         buttonsStyling: false,
         customClass: {
             confirmButton: 'btn btn-success',
@@ -64,8 +97,11 @@ const perintah = {
     underline: (editor) => editor.chain().focus().toggleUnderline().run(),
     bulletList: (editor) => editor.chain().focus().toggleBulletList().run(),
     orderedList: (editor) => editor.chain().focus().toggleOrderedList().run(),
+    ...Object.fromEntries(Object.entries(tombolRata).map(([nama, rata]) => [
+        nama, (editor) => editor.chain().focus().aturRata(rata).run(),
+    ])),
     link: aturTautan,
-    hapusFormat: (editor) => editor.chain().focus().unsetAllMarks().clearNodes().run(),
+    hapusFormat: (editor) => editor.chain().focus().unsetAllMarks().clearNodes().aturRata(null).run(),
     undo: (editor) => editor.chain().focus().undo().run(),
     redo: (editor) => editor.chain().focus().redo().run(),
 };
@@ -84,7 +120,9 @@ const pasangSatu = (wadah) => {
                 el.disabled = !editor.can()[nama]();
                 return;
             }
-            const aktif = nama !== 'hapusFormat' && editor.isActive(nama);
+            const aktif = nama in tombolRata
+                ? (editor.getAttributes('paragraph').rata ?? null) === tombolRata[nama]
+                : nama !== 'hapusFormat' && editor.isActive(nama);
             el.classList.toggle('aktif', aktif);
             el.setAttribute('aria-pressed', String(aktif));
         });

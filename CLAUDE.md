@@ -229,7 +229,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang ditampilkan sebagai toast.
 - Hapus = soft delete, dengan konfirmasi modal. Hapus permanen hanya bila fitur "sampah" dibuat.
 - **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="success"`, mis. `<form method="POST" action="…" novalidate data-confirm="Pastikan data sudah benar sebelum disimpan." data-confirm-title="Simpan kategori artikel baru?" data-confirm-label="Ya, simpan" data-confirm-variant="success">`.
-- Warna tombol (pilihan pemilik): Tambah & Simpan `btn-success`, Lihat `btn-info` (ikon `eye`), Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` dengan ikon `rotate-left` (termasuk tombol Batal dialog SweetAlert2).
+- Warna tombol (pilihan pemilik): Tambah & Simpan `btn-success`, Lihat `btn-info` (ikon `eye`), Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` dengan ikon `rotate-left` (termasuk tombol Batal dialog SweetAlert2). Urutan tombol selalu aksi utama di kiri lalu Batal di kanan, di form maupun dialog SweetAlert2 (jangan pakai `reverseButtons`).
 - Modul singleton (`tb_identitas`) hanya punya `edit` & `update`.
 
 ### Upload File

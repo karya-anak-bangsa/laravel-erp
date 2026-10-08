@@ -103,7 +103,7 @@ document.addEventListener('submit', async (event) => {
         showCancelButton: true,
         confirmButtonText: form.dataset.confirmLabel || 'Ya, lanjutkan',
         cancelButtonText: 'Batal',
-        reverseButtons: true,
+        // Tanpa reverseButtons: aksi di kiri & Batal di kanan, sama dengan urutan tombol form (pilihan pemilik).
         // Untuk aksi berbahaya fokus awal di Batal agar Enter tidak langsung menghapus data.
         focusCancel: berbahaya,
         // Tombol memakai kelas Gentelella agar warnanya sama dengan tombol di halaman.

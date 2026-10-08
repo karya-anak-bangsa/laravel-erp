@@ -50,7 +50,11 @@ it('menampilkan editor WYSIWYG di form tambah untuk teks yang tampil di frontend
     foreach (array_keys($kolom) as $nama) {
         $respons->assertSee('data-editor-sumber', false)
             ->assertSee('name="'.$nama.'"', false)
-            ->assertSee('data-perintah="bold"', false);
+            ->assertSee('data-perintah="bold"', false)
+            ->assertSeeInOrder([
+                'data-perintah="rataKiri"', 'data-perintah="rataTengah"',
+                'data-perintah="rataKanan"', 'data-perintah="rataKananKiri"',
+            ], false);
     }
 
     // Semua editor setinggi 5 baris (pilihan pemilik); textarea cadangannya ikut rows="5".

@@ -13,6 +13,28 @@ it('mempertahankan format yang tersedia di toolbar editor', function () {
     expect($this->sanitizer->bersihkan($html))->toBe(str_replace('<br>', '<br />', $html));
 });
 
+it('mempertahankan perataan teks paragraf dari toolbar editor', function () {
+    $html = '<p style="text-align: center">tengah</p><p style="text-align: right">kanan</p>'
+        .'<ul><li><p style="text-align: justify">rata kanan-kiri</p></li></ul>';
+
+    expect($this->sanitizer->bersihkan($html))->toBe($html)
+        // Penulisan lain dinormalkan agar tersimpan seragam.
+        ->and($this->sanitizer->bersihkan('<p style="TEXT-ALIGN:Justify;">isi</p>'))->toBe('<p style="text-align: justify">isi</p>');
+});
+
+it('membuang style selain perataan teks yang diizinkan', function (string $style) {
+    expect($this->sanitizer->bersihkan('<p style="'.$style.'">isi</p>'))->toBe('<p>isi</p>');
+})->with([
+    'rata kiri bawaan' => 'text-align: left',
+    'nilai tidak dikenal' => 'text-align: start',
+    'perataan bercampur CSS lain' => 'text-align: center; color: red',
+    'CSS lain' => 'background: url(https://x.id/a.png)',
+]);
+
+it('membuang style perataan pada elemen selain paragraf', function () {
+    expect($this->sanitizer->bersihkan('<p><strong style="text-align: center">tebal</strong></p>'))->toBe('<p><strong>tebal</strong></p>');
+});
+
 it('membuang skrip, style, gambar, iframe, dan atribut berbahaya', function () {
     $hasil = $this->sanitizer->bersihkan(
         '<script>alert(1)</script><style>p{}</style><p onclick="x()" style="color:red" class="a">Aman</p><img src=x onerror=alert(1)><iframe src="https://x.id"></iframe>',
@@ -45,7 +67,7 @@ it('mengosongkan isi tanpa teks terlihat', function (string $html) {
 })->with(['<p></p>', '<p><br></p>', '<p>   </p>', '<img src="x">']);
 
 it('membuang paragraf kosong di akhir isi', function () {
-    expect($this->sanitizer->bersihkan('<ul><li><p>poin</p></li></ul><p></p><p><br></p>'))->toBe('<ul><li><p>poin</p></li></ul>');
+    expect($this->sanitizer->bersihkan('<ul><li><p>poin</p></li></ul><p></p><p style="text-align: center"><br></p>'))->toBe('<ul><li><p>poin</p></li></ul>');
 });
 
 it('membiarkan null tetap null', function () {
