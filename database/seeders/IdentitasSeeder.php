@@ -3,14 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\CompanyProfile\Identitas;
+use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
-use Illuminate\Http\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use RuntimeException;
 
 class IdentitasSeeder extends Seeder
 {
+    use MenyalinBerkasAwal;
+
     /**
      * Membuat baris identitas tunggal; data lengkapnya diisi admin lewat panel.
      */
@@ -26,27 +25,12 @@ class IdentitasSeeder extends Seeder
             'judul_website' => 'PT. Teknologi Karya Anak Bangsa',
             'alamat_website' => 'https://karyaanakbangsa.co.id',
             // Kolom logo & favicon wajib berisi, jadi ikon bawaan aplikasi dipakai sebagai awal.
-            'logo_website' => $this->salinBerkasAwal('apple-touch-icon.png'),
-            'favicon_website' => $this->salinBerkasAwal('favicon.png'),
+            'logo_website' => $this->salinBerkasAwal('apple-touch-icon.png', Identitas::FOLDER, Identitas::DISK),
+            'favicon_website' => $this->salinBerkasAwal('favicon.png', Identitas::FOLDER, Identitas::DISK),
             // Dibiarkan kosong agar admin wajib melengkapinya saat pertama kali menyimpan.
             'email' => '',
             'telepon' => '',
             'alamat' => '',
         ]);
-    }
-
-    private function salinBerkasAwal(string $namaBerkas): string
-    {
-        $path = Storage::disk(Identitas::DISK)->putFileAs(
-            Identitas::FOLDER,
-            new File(public_path($namaBerkas)),
-            Str::uuid().'.'.pathinfo($namaBerkas, PATHINFO_EXTENSION),
-        );
-
-        if ($path === false) {
-            throw new RuntimeException("Berkas awal {$namaBerkas} gagal disalin.");
-        }
-
-        return $path;
     }
 }

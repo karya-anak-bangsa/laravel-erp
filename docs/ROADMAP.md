@@ -37,7 +37,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [ ] Kategori Artikel
 - [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
 - [ ] Layanan (urutan)
-- [ ] Hero (repeater keyword & CTA, status aktif)
+- [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
 - [ ] Portofolio (slug, kategori)
 - [ ] FAQ (urutan)
 - [ ] Kontak Kami (kotak masuk: filter, tandai dibaca/belum, hapus) + badge jumlah belum dibaca di sidebar

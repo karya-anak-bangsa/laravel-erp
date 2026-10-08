@@ -6,8 +6,10 @@ import { openPanel } from 'gentelella/v4/menus';
 // komponen Gentelella. Build ESM tanpa CSS bawaan; CSS-nya dimuat di admin.scss.
 import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
+import { pasangRepeater } from './admin/repeater.js';
 
 mountShell();
+pasangRepeater();
 
 // Menu dropdown data-menu (mis. menu pengguna di sidebar-footer): isinya <template> Blade (layouts/partials/sidebar).
 document.querySelectorAll('[data-menu]').forEach((pemicu) => {

@@ -161,6 +161,75 @@ a.btn:hover {
     }
 }
 
+// Gambar foto (mis. hero) butuh pratinjau lebih tinggi daripada logo.
+.pratinjau-gambar-lebar {
+    height: 180px;
+}
+
+// Gambar mini di tabel daftar, rasio 3:2 seperti gambar hero.
+.gambar-mini {
+    display: block;
+    width: 96px;
+    height: 64px;
+    object-fit: cover;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-sm);
+}
+
+// Kolom teks panjang (judul + deskripsi) diberi lebar minimum: di ponsel tabel
+// digeser horizontal (table-responsive) alih-alih memeras teks menjadi satu kata per baris.
+table.table .kolom-lebar {
+    min-width: 240px;
+}
+
+table.table .kolom-sedang {
+    min-width: 160px;
+}
+
+// Repeater (resources/js/admin/repeater.js): tiap baris = isian + tombol hapus di kanan.
+.repeater-daftar {
+    display: grid;
+    gap: 8px;
+}
+
+.repeater-baris {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.repeater-isian {
+    flex: 1;
+    min-width: 0;
+}
+
+// Baris CTA: label, URL (paling lebar), dan gaya; bertumpuk di ponsel.
+.repeater-isian-cta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 130px;
+    gap: 8px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+// Tombol hapus setinggi input agar sejajar dengan baris isian.
+.repeater-baris .btn-icon {
+    flex: none;
+    width: 36px;
+    height: 36px;
+}
+
+.repeater-tambah {
+    margin-top: 8px;
+}
+
+// .form-help mengatur display sendiri sehingga atribut hidden perlu ditegaskan.
+[data-repeater-kosong][hidden] {
+    display: none;
+}
+
 // Tanda wajib diletakkan di depan label (*Nama Kategori, pilihan pemilik), jadi
 // jarak bawaan Gentelella yang ada di sisi kiri dipindah ke kanan.
 .form-label .required {

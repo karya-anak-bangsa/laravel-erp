@@ -35,6 +35,12 @@ return [
                 'rute' => 'admin.identitas.edit',
                 'aktif' => 'admin.identitas.*',
             ],
+            [
+                'label' => 'Hero',
+                'ikon' => 'image',
+                'rute' => 'admin.hero.index',
+                'aktif' => 'admin.hero.*',
+            ],
         ],
     ],
 ];

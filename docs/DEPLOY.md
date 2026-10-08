@@ -122,6 +122,11 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   php artisan db:seed --class=IdentitasSeeder --force
   ```
   Aman dijalankan ulang (tidak menimpa isian admin). Tanpa langkah ini menu Identitas menampilkan 404.
+- **Company Profile — Hero** (setelah migration `tb_hero`) — buat satu hero awal yang aktif dengan gambar `public/img/hero.webp`:
+  ```bash
+  php artisan db:seed --class=HeroSeeder --force
+  ```
+  Aman dijalankan ulang. Opsional: tanpa langkah ini daftar hero kosong dan admin bisa menambah sendiri.
 
 ---
 
