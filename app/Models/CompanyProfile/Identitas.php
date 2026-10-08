@@ -34,7 +34,6 @@ class Identitas extends Model
         'email',
         'telepon',
         'alamat',
-        'link_gmap',
         'link_youtube',
         'link_instagram',
         'link_whatsapp',

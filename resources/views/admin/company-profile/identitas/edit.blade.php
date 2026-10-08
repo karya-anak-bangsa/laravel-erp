@@ -49,9 +49,6 @@
                 </div>
                 <x-admin.form-textarea name="alamat" label="Alamat" :value="$identitas->alamat" :required="true"
                     rows="3" maxlength="1000" />
-                <x-admin.form-textarea name="link_gmap" label="Link Google Maps" :value="$identitas->link_gmap" rows="3"
-                    placeholder="https://www.google.com/maps/embed?pb=…"
-                    hint="Di Google Maps: Bagikan → Sematkan peta → Salin HTML, lalu tempel di sini. URL peta diambil otomatis dari kode tersebut." />
             </x-admin.card>
 
             <x-admin.card title="Media Sosial" subtitle="Kosongkan akun yang tidak dimiliki.">

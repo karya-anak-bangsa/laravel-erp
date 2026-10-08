@@ -53,7 +53,6 @@ Catatan implementasi:
 | email | VARCHAR(150) | |
 | telepon | VARCHAR(30) | |
 | alamat | TEXT | |
-| link_gmap | TEXT NULL | URL embed Google Maps (bisa panjang) |
 | link_youtube | VARCHAR(255) NULL | |
 | link_instagram | VARCHAR(255) NULL | dikoreksi dari `link_instragram` |
 | link_whatsapp | VARCHAR(255) NULL | |

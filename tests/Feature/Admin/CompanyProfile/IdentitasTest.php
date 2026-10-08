@@ -4,6 +4,7 @@ use App\Models\CompanyProfile\Identitas;
 use App\Models\Pengguna;
 use Database\Seeders\IdentitasSeeder;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -22,7 +23,6 @@ function dataIdentitasValid(array $timpa = []): array
         'email' => 'info@karyaanakbangsa.co.id',
         'telepon' => '+62 812-3456-7890',
         'alamat' => 'Jl. Merdeka No. 1, Jakarta',
-        'link_gmap' => 'https://www.google.com/maps/embed?pb=!1m18!1m12',
         'link_youtube' => 'https://www.youtube.com/@karyaanakbangsa',
         'link_instagram' => 'https://www.instagram.com/karyaanakbangsa',
         'link_whatsapp' => 'https://wa.me/6281234567890',
@@ -101,15 +101,22 @@ it('mengganti logo dan favicon lalu menghapus berkas lama', function () {
     Storage::disk('public')->assertMissing(['company-profile/identitas/logo-lama.png', 'company-profile/identitas/favicon-lama.png']);
 });
 
-it('mengambil URL src saat kode iframe Google Maps ditempel utuh', function () {
+it('tidak lagi menyediakan link Google Maps karena peta frontend memakai Leaflet', function () {
     $identitas = Identitas::factory()->create();
-    $iframe = '<iframe src="https://www.google.com/maps/embed?pb=!1m18&amp;hl=id" width="600" height="450" loading="lazy"></iframe>';
 
     $this->actingAs($this->admin)
-        ->put(route('admin.identitas.update'), dataIdentitasValid(['link_gmap' => $iframe]))
+        ->get(route('admin.identitas.edit'))
+        ->assertOk()
+        ->assertDontSee('name="link_gmap"', false)
+        ->assertDontSee('Google Maps');
+
+    // Kiriman lama yang masih membawa link_gmap diabaikan, bukan menyebabkan galat SQL.
+    $this->actingAs($this->admin)
+        ->put(route('admin.identitas.update'), dataIdentitasValid(['link_gmap' => 'https://www.google.com/maps/embed?pb=x']))
         ->assertSessionHasNoErrors();
 
-    expect($identitas->refresh()->link_gmap)->toBe('https://www.google.com/maps/embed?pb=!1m18&hl=id');
+    expect(Schema::hasColumn('tb_identitas', 'link_gmap'))->toBeFalse()
+        ->and($identitas->refresh()->getAttributes())->not->toHaveKey('link_gmap');
 });
 
 it('memvalidasi isian identitas', function (array $data, string $kolom) {
@@ -127,7 +134,6 @@ it('memvalidasi isian identitas', function (array $data, string $kolom) {
     'email tidak valid' => [['email' => 'bukan-email'], 'email'],
     'telepon berisi huruf' => [['telepon' => '0812-ABC'], 'telepon'],
     'alamat kosong' => [['alamat' => ''], 'alamat'],
-    'gmap bukan URL sematan' => [['link_gmap' => 'https://maps.app.goo.gl/abc'], 'link_gmap'],
     'instagram bukan URL' => [['link_instagram' => '@karyaanakbangsa'], 'link_instagram'],
     'logo bukan gambar' => [['logo_website' => UploadedFile::fake()->create('logo.pdf', 10, 'application/pdf')], 'logo_website'],
     'logo lebih dari 2 MB' => [['logo_website' => UploadedFile::fake()->image('logo.png')->size(2049)], 'logo_website'],

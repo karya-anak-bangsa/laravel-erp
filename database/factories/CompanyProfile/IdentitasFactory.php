@@ -28,7 +28,6 @@ class IdentitasFactory extends Factory
             'email' => fake()->companyEmail(),
             'telepon' => '0812'.fake()->numerify('########'),
             'alamat' => fake()->address(),
-            'link_gmap' => 'https://www.google.com/maps/embed?pb='.fake()->sha1(),
             'link_youtube' => 'https://www.youtube.com/@'.fake()->userName(),
             'link_instagram' => 'https://www.instagram.com/'.fake()->userName(),
             'link_whatsapp' => 'https://wa.me/62812'.fake()->numerify('########'),
