@@ -13,8 +13,8 @@
     <x-admin.card title="Konten Hero" subtitle="Teks utama di bagian paling atas beranda.">
         <x-admin.form-input name="judul" label="Judul" :value="$hero->judul" :required="true" maxlength="200"
             placeholder="mis. Solusi Digital & Talenta IT untuk Indonesia" />
-        <x-admin.form-textarea name="deskripsi" label="Deskripsi" :value="$hero->deskripsi" :required="true"
-            rows="3" maxlength="1000" />
+        <x-admin.form-editor name="deskripsi" label="Deskripsi" :value="$hero->deskripsi" :required="true"
+            rows="3" :maks="1000" />
 
         <div class="form-group" data-repeater data-repeater-maks="{{ StoreHeroRequest::MAKS_KEYWORD }}">
             <div class="form-label"><span class="required">*</span>Keyword</div>

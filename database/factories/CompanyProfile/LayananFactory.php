@@ -19,9 +19,9 @@ class LayananFactory extends Factory
     {
         return [
             'judul' => fake()->unique()->sentence(3),
-            'deskripsi' => fake()->paragraph(),
+            'deskripsi' => '<p>'.fake()->paragraph().'</p>',
             'gambar' => Layanan::FOLDER.'/'.fake()->uuid().'.webp',
-            'keterangan' => fake()->optional()->paragraphs(2, true),
+            'keterangan' => fake()->optional()->passthrough('<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>'),
             'urutan_ke' => fake()->numberBetween(1, 20),
         ];
     }

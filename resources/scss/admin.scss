@@ -74,7 +74,9 @@ i.icon {
 // Kompensasi optik (pilihan pemilik): panah melingkar rotate-left menyentuh tepi
 // bidang (12x12) sehingga terasa lebih besar dari floppy-disk (10,4x10,6). Pada
 // 11px bentuk luarnya 11x11, setara dengan ikon Simpan di sebelahnya.
-.btn .icon.fa-rotate-left {
+.btn .icon.fa-rotate-left,
+.editor-tombol .icon.fa-rotate-left,
+.editor-tombol .icon.fa-rotate-right {
     font-size: 11px;
 }
 
@@ -180,6 +182,160 @@ a.btn:hover {
 
     &:hover::file-selector-button {
         background: color-mix(in srgb, var(--bg-surface-secondary), var(--text) 8%);
+    }
+}
+
+// Editor WYSIWYG (<x-admin.form-editor>): bingkai, hover, fokus, dan error meniru
+// .form-control Gentelella agar serasi dengan isian lain; toolbar menempel di atas area tulis.
+// Sebelum JS siap (atau tanpa JS) textarea asli tampil dengan bingkainya sendiri.
+.editor.editor-siap {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:hover:not(:focus-within) {
+        border-color: var(--text-muted);
+    }
+
+    &:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-lt);
+    }
+
+    &.is-invalid {
+        border-color: var(--red);
+    }
+
+    &.is-invalid:focus-within {
+        box-shadow: 0 0 0 3px var(--red-lt);
+    }
+
+    // Atribut hidden kalah oleh display:block .form-control Gentelella.
+    > textarea {
+        display: none;
+    }
+}
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    border-bottom: 1px solid var(--border-color-light);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: var(--bg-surface-secondary);
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.editor-tombol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+
+    .icon {
+        width: 14px;
+        height: 14px;
+        font-size: 12px;
+    }
+
+    &:hover:not(:disabled) {
+        background: var(--border-color-light);
+        color: var(--text);
+    }
+
+    &.aktif {
+        background: var(--primary-lt);
+        color: var(--primary);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: -2px;
+    }
+}
+
+.editor-pemisah {
+    width: 1px;
+    height: 18px;
+    margin-inline: 4px;
+    background: var(--border-color);
+}
+
+// Tinggi minimum mengikuti prop rows (20px per baris), seperti textarea yang digantikannya.
+.editor-konten {
+    min-height: calc(var(--editor-baris, 6) * 20px + 16px);
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text);
+    outline: none;
+    overflow-wrap: anywhere;
+}
+
+// Petunjuk di kiri, penghitung karakter (teks terlihat) di kanan.
+.editor-bantuan {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.editor-hitung {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+// Konten HTML hasil editor, di editor maupun tampilan detail: jarak paragraf dan daftar
+// dibuat ringkas, daftar diberi penanda yang di-reset Gentelella.
+.konten-html {
+    p,
+    ul,
+    ol {
+        margin: 0 0 8px;
+    }
+
+    ul,
+    ol {
+        padding-inline-start: 20px;
+    }
+
+    ul {
+        list-style: disc;
+    }
+
+    ol {
+        list-style: decimal;
+    }
+
+    li > p {
+        margin: 0;
+    }
+
+    > :last-child {
+        margin-bottom: 0;
+    }
+
+    a {
+        color: var(--primary);
+        text-decoration: underline;
     }
 }
 
@@ -379,6 +535,32 @@ table.table.tabel-informasi tbody tr:hover {
     color: var(--text);
 }
 
+// Isian dialog (mis. alamat tautan editor) bergaya .form-control Gentelella.
+.swal2-input-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.swal2-popup .swal2-input {
+    height: 36px;
+    margin: 8px 24px 0;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+
+    &:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-lt);
+    }
+
+    &::placeholder {
+        color: var(--text-disabled);
+    }
+}
+
 .swal2-actions {
     gap: 8px;
 
@@ -481,10 +663,6 @@ table.table.tabel-informasi tbody tr:hover {
     }
 }
 
-// Teks panjang (mis. deskripsi) tetap memakai baris baru yang diketik admin.
-.teks-panjang {
-    white-space: pre-line;
-}
 
 .alert .alert-icon {
     font-size: 14px;

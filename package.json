@@ -18,6 +18,9 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
+        "@tiptap/core": "^3.31.4",
+        "@tiptap/pm": "^3.31.4",
+        "@tiptap/starter-kit": "^3.31.4",
         "simple-notify": "^1.0.6",
         "sweetalert2": "^11.26.25"
     }

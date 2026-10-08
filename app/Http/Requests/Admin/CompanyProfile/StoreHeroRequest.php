@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin\CompanyProfile;
 
 use App\Enums\CompanyProfile\GayaCta;
+use App\Http\Requests\Concerns\MembersihkanHtml;
+use App\Rules\PanjangTeksHtml;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -10,6 +12,8 @@ use Illuminate\Validation\Rules\Enum;
 
 class StoreHeroRequest extends FormRequest
 {
+    use MembersihkanHtml;
+
     public const MAKS_KEYWORD = 10;
 
     public const MAKS_CTA = 3;
@@ -21,6 +25,8 @@ class StoreHeroRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $this->bersihkanHtml(['deskripsi']);
+
         $keyword = $this->input('keyword');
         $cta = $this->input('cta');
 
@@ -43,7 +49,7 @@ class StoreHeroRequest extends FormRequest
     {
         return [
             'judul' => ['required', 'string', 'max:200'],
-            'deskripsi' => ['required', 'string', 'max:1000'],
+            'deskripsi' => ['required', 'string', new PanjangTeksHtml(1000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'keyword' => ['required', 'array', 'min:1', 'max:'.self::MAKS_KEYWORD],
             'keyword.*' => ['required', 'string', 'max:50', 'distinct:ignore_case'],

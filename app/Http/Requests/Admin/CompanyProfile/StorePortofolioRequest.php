@@ -2,14 +2,23 @@
 
 namespace App\Http\Requests\Admin\CompanyProfile;
 
+use App\Http\Requests\Concerns\MembersihkanHtml;
+use App\Rules\PanjangTeksHtml;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePortofolioRequest extends FormRequest
 {
+    use MembersihkanHtml;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->bersihkanHtml(['deskripsi']);
     }
 
     /**
@@ -20,7 +29,7 @@ class StorePortofolioRequest extends FormRequest
         return [
             'judul' => ['required', 'string', 'max:200'],
             'kategori' => ['required', 'string', 'max:50'],
-            'deskripsi' => ['required', 'string', 'max:5000'],
+            'deskripsi' => ['required', 'string', new PanjangTeksHtml(5000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }

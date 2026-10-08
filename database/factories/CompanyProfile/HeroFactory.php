@@ -20,7 +20,7 @@ class HeroFactory extends Factory
     {
         return [
             'judul' => fake()->sentence(5),
-            'deskripsi' => fake()->paragraph(),
+            'deskripsi' => '<p>'.fake()->paragraph().'</p>',
             'gambar' => Hero::FOLDER.'/'.fake()->uuid().'.webp',
             'keyword' => fake()->words(3),
             'cta' => [

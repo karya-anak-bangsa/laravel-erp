@@ -1,3 +1,5 @@
+@use('App\Support\TeksHtml')
+
 @extends('layouts.admin', ['breadcrumb' => ['Company Profile' => null, 'Layanan' => null]])
 
 @section('content')
@@ -42,7 +44,7 @@
                                 <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit($item->deskripsi, 120) }}</div>
+                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
                                 </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
@@ -57,11 +59,11 @@
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Deskripsi</th>
-                                                                <td class="teks-panjang">{{ $item->deskripsi }}</td>
+                                                                <td class="konten-html">{!! $item->deskripsi !!}</td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Keterangan</th>
-                                                                <td class="teks-panjang">{{ $item->keterangan ?: '—' }}</td>
+                                                                <td class="konten-html">{!! $item->keterangan ?: '—' !!}</td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Urutan ke</th>

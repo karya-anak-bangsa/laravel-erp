@@ -1,4 +1,5 @@
 @use('App\Enums\CompanyProfile\GayaCta')
+@use('App\Support\TeksHtml')
 
 @extends('layouts.admin', ['breadcrumb' => ['Company Profile' => null, 'Hero' => null]])
 
@@ -50,7 +51,7 @@
                                 <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit($item->deskripsi, 90) }}</div>
+                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 90) }}</div>
                                 </td>
                                 <td>{{ implode(', ', $item->keyword) }}</td>
                                 <td style="text-align:center">
@@ -73,7 +74,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Deskripsi</th>
-                                                                <td class="teks-panjang">{{ $item->deskripsi }}</td>
+                                                                <td class="konten-html">{!! $item->deskripsi !!}</td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Keyword</th>

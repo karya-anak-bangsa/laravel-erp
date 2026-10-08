@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\CompanyProfile\GayaCta;
 use App\Models\CompanyProfile\Hero;
+use App\Support\TeksHtml;
 use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
 
@@ -23,7 +24,7 @@ class HeroSeeder extends Seeder
 
         Hero::create([
             'judul' => 'Solusi Digital & Talenta IT untuk Indonesia',
-            'deskripsi' => 'Kami membantu bisnis tumbuh lewat website dan aplikasi mobile, serta menyiapkan talenta IT melalui pelatihan, sertifikasi, dan bootcamp.',
+            'deskripsi' => TeksHtml::dariTeksPolos('Kami membantu bisnis tumbuh lewat website dan aplikasi mobile, serta menyiapkan talenta IT melalui pelatihan, sertifikasi, dan bootcamp.'),
             'gambar' => $this->salinBerkasAwal(public_path('img/hero.webp'), Hero::FOLDER, Hero::DISK),
             'keyword' => ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'],
             'cta' => [

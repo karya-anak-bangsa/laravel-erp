@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\CompanyProfile\GayaCta;
 use App\Models\CompanyProfile\Hero;
+use App\Support\TeksHtml;
 use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
 
@@ -25,6 +26,7 @@ class HeroDummySeeder extends Seeder
 
             Hero::create([
                 ...$hero,
+                'deskripsi' => TeksHtml::dariTeksPolos($hero['deskripsi']),
                 'gambar' => $this->salinBerkasAwal(database_path("seeders/berkas/hero/{$berkas}.webp"), Hero::FOLDER, Hero::DISK),
                 'status_aktif' => false,
             ]);

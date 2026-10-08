@@ -5,10 +5,10 @@
     <x-admin.card title="Konten Layanan" subtitle="Tampil sebagai kartu layanan di beranda website.">
         <x-admin.form-input name="judul" label="Judul" :value="$layanan->judul" :required="true" maxlength="150"
             placeholder="mis. Pembuatan Website" />
-        <x-admin.form-textarea name="deskripsi" label="Deskripsi" :value="$layanan->deskripsi" :required="true"
-            rows="3" maxlength="1000" hint="Ringkasan singkat yang tampil di kartu layanan." />
-        <x-admin.form-textarea name="keterangan" label="Keterangan" :value="$layanan->keterangan" rows="6"
-            maxlength="5000" hint="Penjelasan lengkap layanan, mis. cakupan pekerjaan atau keunggulan. Opsional." />
+        <x-admin.form-editor name="deskripsi" label="Deskripsi" :value="$layanan->deskripsi" :required="true"
+            rows="3" :maks="1000" hint="Ringkasan singkat yang tampil di kartu layanan." />
+        <x-admin.form-editor name="keterangan" label="Keterangan" :value="$layanan->keterangan" rows="6"
+            :maks="5000" hint="Penjelasan lengkap layanan, mis. cakupan pekerjaan atau keunggulan. Opsional." />
     </x-admin.card>
 
     <x-admin.card title="Gambar & Urutan">

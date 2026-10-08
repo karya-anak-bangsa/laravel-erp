@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\CompanyProfile\Layanan;
+use App\Support\TeksHtml;
 use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
 
@@ -23,8 +24,8 @@ class LayananSeeder extends Seeder
         foreach ($this->daftarLayanan() as $urutan => [$berkas, $judul, $deskripsi, $keterangan]) {
             Layanan::create([
                 'judul' => $judul,
-                'deskripsi' => $deskripsi,
-                'keterangan' => $keterangan,
+                'deskripsi' => TeksHtml::dariTeksPolos($deskripsi),
+                'keterangan' => TeksHtml::dariTeksPolos($keterangan),
                 'gambar' => $this->salinBerkasAwal(database_path("seeders/berkas/layanan/{$berkas}.webp"), Layanan::FOLDER, Layanan::DISK),
                 'urutan_ke' => $urutan + 1,
             ]);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\CompanyProfile;
 
+use App\Http\Requests\Concerns\MembersihkanHtml;
 use App\Models\CompanyProfile\Layanan;
+use App\Rules\PanjangTeksHtml;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -10,9 +12,16 @@ use Illuminate\Validation\Rules\Unique;
 
 class StoreLayananRequest extends FormRequest
 {
+    use MembersihkanHtml;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->bersihkanHtml(['deskripsi', 'keterangan']);
     }
 
     /**
@@ -22,8 +31,8 @@ class StoreLayananRequest extends FormRequest
     {
         return [
             'judul' => ['required', 'string', 'max:150', $this->aturanJudulUnik()],
-            'deskripsi' => ['required', 'string', 'max:1000'],
-            'keterangan' => ['nullable', 'string', 'max:5000'],
+            'deskripsi' => ['required', 'string', new PanjangTeksHtml(1000)],
+            'keterangan' => ['nullable', 'string', new PanjangTeksHtml(5000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'urutan_ke' => ['required', 'integer', 'min:0', 'max:'.Layanan::URUTAN_MAKS],
         ];

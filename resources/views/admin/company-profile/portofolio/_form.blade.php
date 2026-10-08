@@ -14,8 +14,8 @@
                 <option value="{{ $kategori }}"></option>
             @endforeach
         </datalist>
-        <x-admin.form-textarea name="deskripsi" label="Deskripsi" :value="$portofolio->deskripsi" :required="true"
-            rows="8" maxlength="5000" hint="Gambaran proyek, mis. klien, kebutuhan, fitur, dan teknologi yang dipakai." />
+        <x-admin.form-editor name="deskripsi" label="Deskripsi" :value="$portofolio->deskripsi" :required="true"
+            rows="8" :maks="5000" hint="Gambaran proyek, mis. klien, kebutuhan, fitur, dan teknologi yang dipakai." />
     </x-admin.card>
 
     <x-admin.card title="Gambar">

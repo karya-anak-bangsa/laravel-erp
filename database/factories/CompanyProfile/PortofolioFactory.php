@@ -23,7 +23,7 @@ class PortofolioFactory extends Factory
         return [
             'judul' => $judul,
             'slug' => Str::slug($judul),
-            'deskripsi' => fake()->paragraphs(2, true),
+            'deskripsi' => '<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>',
             'gambar' => Portofolio::FOLDER.'/'.fake()->uuid().'.webp',
             'kategori' => fake()->randomElement(['Website', 'Mobile Apps', 'Pelatihan IT']),
         ];

@@ -12,6 +12,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
 - Unique pada tabel ber-soft-delete divalidasi di Form Request dengan `->withoutTrashed()`; constraint UNIQUE di database hanya untuk kolom yang tidak boleh berulang sama sekali (mis. nomor dokumen yang dibuat sistem).
 - Relasi polimorfik (bila kelak dipakai): `nullableMorphs('<nama>')` + alias stabil lewat `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
+- Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href]). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
 - Kolom bertanda **(+)** adalah tambahan di luar rancangan awal yang **sudah disetujui** pemilik proyek.
 
 ---
@@ -63,7 +64,7 @@ Catatan implementasi:
 |---|---|---|
 | id_hero | BIGINT UNSIGNED PK | |
 | judul | VARCHAR(200) | |
-| deskripsi | TEXT | |
+| deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG (lihat Konvensi Umum) |
 | gambar | VARCHAR(255) | |
 | keyword | JSON | array string, mis. `["Website","Mobile Apps","Pelatihan IT","Sertifikasi IT","Bootcamp"]`; cast `array` |
 | cta | JSON | array objek, mis. `[{"label":"Hubungi Kami","url":"#kontak","gaya":"primary"},{"label":"Lihat Portofolio","url":"/portofolio","gaya":"secondary"}]`; cast `array` |
@@ -77,9 +78,9 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 |---|---|---|
 | id_layanan | BIGINT UNSIGNED PK | |
 | judul | VARCHAR(150) | |
-| deskripsi | TEXT | |
+| deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG |
 | gambar | VARCHAR(255) | |
-| keterangan | TEXT NULL | |
+| keterangan | TEXT NULL | HTML tersanitasi dari editor WYSIWYG |
 | urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | INDEX |
 | created_at, updated_at, deleted_at | | |
 
@@ -89,7 +90,7 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 | id_portofolio | BIGINT UNSIGNED PK | |
 | judul | VARCHAR(200) | |
 | slug | VARCHAR(220) UNIQUE | **(+)** URL detail di frontend. Dibuat otomatis dari judul oleh `PortofolioService` |
-| deskripsi | TEXT | |
+| deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG |
 | gambar | VARCHAR(255) | |
 | kategori | VARCHAR(50) | INDEX. Sementara teks bebas (mis. Website, Mobile Apps). Dinormalisasi ke tabel sendiri bila dibutuhkan |
 | created_at, updated_at, deleted_at | | |

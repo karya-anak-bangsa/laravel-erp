@@ -11,6 +11,11 @@ import { pasangRepeater } from './admin/repeater.js';
 mountShell();
 pasangRepeater();
 
+// Editor WYSIWYG cukup berat (TipTap + ProseMirror), jadi hanya dimuat di halaman form yang memakainya.
+if (document.querySelector('[data-editor]')) {
+    import('./admin/editor.js').then(({ pasangEditor }) => pasangEditor());
+}
+
 // Menu dropdown data-menu (mis. menu pengguna di sidebar-footer): isinya <template> Blade (layouts/partials/sidebar).
 document.querySelectorAll('[data-menu]').forEach((pemicu) => {
     const templat = document.getElementById(pemicu.dataset.menu);

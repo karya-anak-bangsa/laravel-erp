@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\CompanyProfile\PortofolioService;
+use App\Support\TeksHtml;
 use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
 
@@ -28,7 +29,7 @@ class PortofolioDummySeeder extends Seeder
                 'judul' => $judul,
                 'slug' => $portofolioService->buatSlug($judul),
                 'kategori' => $kategori,
-                'deskripsi' => $deskripsi,
+                'deskripsi' => TeksHtml::dariTeksPolos($deskripsi),
                 'gambar' => $this->salinBerkasAwal(database_path("seeders/berkas/layanan/{$berkas}.webp"), Portofolio::FOLDER, Portofolio::DISK),
             ]);
         }
