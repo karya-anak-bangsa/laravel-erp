@@ -42,6 +42,12 @@ return [
                 'rute' => 'admin.hero.index',
                 'aktif' => 'admin.hero.*',
             ],
+            [
+                'label' => 'Layanan',
+                'ikon' => 'book',
+                'rute' => 'admin.layanan.index',
+                'aktif' => 'admin.layanan.*',
+            ],
         ],
     ],
 ];

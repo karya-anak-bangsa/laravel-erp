@@ -36,7 +36,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [x] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
 - [ ] Kategori Artikel
 - [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
-- [ ] Layanan (urutan)
+- [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
 - [ ] Portofolio (slug, kategori)
 - [ ] FAQ (urutan)

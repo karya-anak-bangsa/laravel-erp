@@ -131,6 +131,11 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   ```bash
   php artisan db:seed --class=HeroDummySeeder --force
   ```
+- **Company Profile — Layanan** (setelah migration `tb_layanan`) — opsional, mengisi 5 layanan perusahaan beserta gambar ilustrasi:
+  ```bash
+  php artisan db:seed --class=LayananSeeder --force
+  ```
+  Dilewati bila tabel layanan sudah berisi, jadi aman dijalankan ulang.
 
 ---
 

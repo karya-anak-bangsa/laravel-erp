@@ -33,6 +33,16 @@ i.icon {
     justify-content: center;
     flex-shrink: 0;
     line-height: 1;
+
+    // Glyph Font Awesome berbeda lebar (mis. plus & trash-can 448 unit, filter &
+    // pen-to-square 512), jadi tiap glyph diberi bidang persegi 1em agar semua ikon
+    // dengan font-size sama tampil seukuran (permintaan pemilik).
+    &::before {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        text-align: center;
+    }
 }
 
 .nav-link .icon,
@@ -43,7 +53,10 @@ i.icon {
     font-size: 15px;
 }
 
-.btn .icon {
+// Ikon kontrol (tombol & kotak pencarian) seragam: glyph 12px dalam kotak 14x14.
+// Tanpa font-size, ikon pencarian mewarisi 14px sehingga tampak lebih besar.
+.btn .icon,
+.search-box .s-icon {
     width: 14px;
     height: 14px;
     font-size: 12px;
