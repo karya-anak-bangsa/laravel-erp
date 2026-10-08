@@ -157,8 +157,23 @@ it('membuat baris identitas awal beserta logo dan favicon dari seeder', function
 
     $identitas = Identitas::sole();
     expect($identitas->nama_perusahaan)->toBe('PT. Teknologi Karya Anak Bangsa')
-        ->and($identitas->alamat_website)->toBe('https://karyaanakbangsa.co.id');
+        ->and($identitas->alamat_website)->toBe('https://karyaanakbangsa.co.id')
+        ->and($identitas->email)->toBe('info@karyaanakbangsa.co.id')
+        ->and($identitas->link_whatsapp)->toBe('https://wa.me/6281234567890')
+        ->and($identitas->link_youtube)->toBeNull()
+        ->and($identitas->link_instagram)->toBeNull();
     Storage::disk('public')->assertExists([$identitas->logo_website, $identitas->favicon_website]);
+});
+
+it('menyimpan identitas dari seeder tanpa perlu dilengkapi admin lebih dulu', function () {
+    $this->seed(IdentitasSeeder::class);
+    $identitas = Identitas::sole();
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.identitas.update'), $identitas->only([
+            'nama_perusahaan', 'judul_website', 'alamat_website', 'email', 'telepon', 'alamat', 'link_whatsapp',
+        ]))
+        ->assertSessionHasNoErrors();
 });
 
 it('menjalankan seeder ulang tanpa menimpa isian admin', function () {

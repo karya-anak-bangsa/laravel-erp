@@ -16,22 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PenggunaSeeder::class,
-            IdentitasSeeder::class,
-            HeroSeeder::class,
-            LayananSeeder::class,
-            FaqSeeder::class,
-            KategoriArtikelSeeder::class,
+            CompanyProfileSeeder::class,
         ]);
-
-        // Data contoh hanya untuk pengembangan; di produksi dijalankan manual bila perlu.
-        // Wajib setelah HeroSeeder: HeroSeeder dilewati bila tabel hero sudah berisi.
-        if (app()->isLocal()) {
-            $this->call([
-                HeroDummySeeder::class,
-                PortofolioDummySeeder::class,
-                ArtikelDummySeeder::class,
-                KontakKamiDummySeeder::class,
-            ]);
-        }
     }
 }

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('email', 150);
             $table->string('telepon', 30);
             $table->text('alamat');
-            $table->text('link_gmap')->nullable();
             $table->string('link_youtube', 255)->nullable();
             $table->string('link_instagram', 255)->nullable();
             $table->string('link_whatsapp', 255)->nullable();

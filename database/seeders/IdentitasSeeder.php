@@ -11,7 +11,7 @@ class IdentitasSeeder extends Seeder
     use MenyalinBerkasAwal;
 
     /**
-     * Membuat baris identitas tunggal; data lengkapnya diisi admin lewat panel.
+     * Membuat baris identitas tunggal berisi data perusahaan; bisa diubah admin lewat panel.
      */
     public function run(): void
     {
@@ -27,10 +27,10 @@ class IdentitasSeeder extends Seeder
             // Kolom logo & favicon wajib berisi, jadi ikon bawaan aplikasi dipakai sebagai awal.
             'logo_website' => $this->salinBerkasAwal(public_path('apple-touch-icon.png'), Identitas::FOLDER, Identitas::DISK),
             'favicon_website' => $this->salinBerkasAwal(public_path('favicon.png'), Identitas::FOLDER, Identitas::DISK),
-            // Dibiarkan kosong agar admin wajib melengkapinya saat pertama kali menyimpan.
-            'email' => '',
-            'telepon' => '',
-            'alamat' => '',
+            'email' => 'info@karyaanakbangsa.co.id',
+            'telepon' => '0812-3456-7890',
+            'alamat' => 'Jl. Pipit 3 No 146, RT06 RW10, Depok Jaya, Pancoran Mas, Kota Depok 16432',
+            'link_whatsapp' => 'https://wa.me/6281234567890',
         ]);
     }
 }

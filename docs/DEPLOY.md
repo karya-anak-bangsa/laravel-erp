@@ -117,25 +117,17 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — Identitas** (setelah migration `tb_identitas`, setelah symlink di atas) — buat baris identitas tunggal beserta logo & favicon awal:
+- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 6 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel. Kotak masuk Kontak Kami sengaja kosong.
   ```bash
-  php artisan db:seed --class=IdentitasSeeder --force
+  php artisan db:seed --class=CompanyProfileSeeder --force
   ```
-  Aman dijalankan ulang (tidak menimpa isian admin). Tanpa langkah ini menu Identitas menampilkan 404.
-- **Company Profile — Hero** (setelah migration `tb_hero`) — buat satu hero awal yang aktif dengan gambar `public/img/hero.webp`:
-  ```bash
-  php artisan db:seed --class=HeroSeeder --force
+  Wajib: tanpa langkah ini menu Identitas menampilkan 404. Aman dijalankan ulang (tabel yang sudah berisi dilewati, isian admin tidak ditimpa). Jangan memakai `php artisan db:seed` tanpa `--class`: `PenggunaSeeder` di dalamnya gagal karena `ADMIN_PASSWORD` di server sudah dikosongkan.
+- **Bersihkan sisa modul Kas** (sekali, sebelum deploy Company Profile) — modul Kas sempat ter-deploy lalu dibatalkan; file migration-nya sudah dihapus dari repo, tetapi tabel dan catatan migration-nya masih ada di database produksi. Jalankan di hPanel → Databases → phpMyAdmin → database ERP → tab SQL:
+  ```sql
+  DROP TABLE IF EXISTS tb_transaksi_kas, tb_kategori_transaksi, tb_akun_kas;
+  DELETE FROM migrations WHERE migration LIKE '2026_10_07_%';
   ```
-  Aman dijalankan ulang. Opsional: tanpa langkah ini daftar hero kosong dan admin bisa menambah sendiri.
-  Data contoh (4 hero nonaktif bergambar ilustrasi) hanya otomatis di lokal; di server opsional, jalankan **setelah** `HeroSeeder`:
-  ```bash
-  php artisan db:seed --class=HeroDummySeeder --force
-  ```
-- **Company Profile — Layanan** (setelah migration `tb_layanan`) — opsional, mengisi 5 layanan perusahaan beserta gambar ilustrasi:
-  ```bash
-  php artisan db:seed --class=LayananSeeder --force
-  ```
-  Dilewati bila tabel layanan sudah berisi, jadi aman dijalankan ulang.
+  Cek dengan `php artisan migrate:status`: hanya migration milik repo yang tampil.
 
 ---
 

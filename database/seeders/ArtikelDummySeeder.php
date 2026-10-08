@@ -16,7 +16,7 @@ class ArtikelDummySeeder extends Seeder
 
     /**
      * Artikel contoh untuk mencoba daftar, filter kategori & status, dan sub-judul isi.
-     * Dijalankan otomatis hanya di lokal (lihat DatabaseSeeder), setelah KategoriArtikelSeeder.
+     * Bagian dari CompanyProfileSeeder (lokal & produksi), setelah KategoriArtikelSeeder.
      * Gambar memakai ilustrasi layanan agar tidak menambah berkas biner baru.
      */
     public function run(ArtikelService $artikelService): void

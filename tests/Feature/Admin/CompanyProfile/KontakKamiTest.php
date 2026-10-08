@@ -2,7 +2,6 @@
 
 use App\Models\CompanyProfile\KontakKami;
 use App\Models\Pengguna;
-use Database\Seeders\KontakKamiDummySeeder;
 
 beforeEach(function () {
     $this->admin = Pengguna::factory()->create();
@@ -204,12 +203,4 @@ it('menghapus pesan secara soft delete', function () {
         ->assertSessionHas('success', 'Pesan berhasil dihapus.');
 
     $this->assertSoftDeleted($pesan);
-});
-
-it('membuat pesan contoh dari seeder dummy tanpa menggandakan saat dijalankan ulang', function () {
-    $this->seed(KontakKamiDummySeeder::class);
-    $this->seed(KontakKamiDummySeeder::class);
-
-    expect(KontakKami::count())->toBe(30)
-        ->and(KontakKami::belumDibaca()->count())->toBeGreaterThanOrEqual(5);
 });

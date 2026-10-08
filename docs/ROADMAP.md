@@ -35,12 +35,13 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 ## Fase 3 — Company Profile (Backend)
 - [x] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
 - [x] Kategori Artikel (data master abjad, jumlah artikel, tolak hapus bila masih dipakai) + `KategoriArtikelSeeder` (4 kategori)
-- [x] Artikel (slug otomatis, sanitasi HTML, editor rich text dengan sub-judul H2/H3, status draf/terbit, filter kategori & status) + `ArtikelDummySeeder` (khusus lokal)
+- [x] Artikel (slug otomatis, sanitasi HTML, editor rich text dengan sub-judul H2/H3, status draf/terbit, filter kategori & status) + `ArtikelDummySeeder`
 - [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
-- [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder` (khusus lokal)
+- [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder`
 - [x] FAQ (urutan, jawaban WYSIWYG) + `FaqSeeder` (5 FAQ awal)
-- [x] Kontak Kami (kotak masuk: filter, tandai dibaca/belum — otomatis saat modal detail dibuka, hapus) + badge jumlah belum dibaca di sidebar + `KontakKamiDummySeeder` (khusus lokal)
+- [x] Kontak Kami (kotak masuk: filter, tandai dibaca/belum — otomatis saat modal detail dibuka, hapus) + badge jumlah belum dibaca di sidebar (kotak masuk awal kosong, diisi form kontak Fase 4)
+- [x] Data awal lokal & produksi seragam lewat `CompanyProfileSeeder`; migration Company Profile disusun ulang sebelum deploy pertama modul ini
 
 ## Fase 4 — Frontend Publik
 - [ ] Putuskan template (BootstrapMade vs Tailwind custom) dan catat di CLAUDE.md §4

@@ -14,7 +14,7 @@ class HeroDummySeeder extends Seeder
 
     /**
      * Hero contoh (nonaktif) untuk mencoba aturan "hanya satu hero aktif".
-     * Dijalankan otomatis hanya di lokal (lihat DatabaseSeeder).
+     * Bagian dari CompanyProfileSeeder (lokal & produksi), setelah HeroSeeder.
      */
     public function run(): void
     {

@@ -14,7 +14,7 @@ class PortofolioDummySeeder extends Seeder
 
     /**
      * Portofolio contoh untuk mencoba daftar, pencarian, dan filter kategori.
-     * Dijalankan otomatis hanya di lokal (lihat DatabaseSeeder). Gambar memakai
+     * Bagian dari CompanyProfileSeeder (lokal & produksi). Gambar memakai
      * ilustrasi layanan agar tidak menambah berkas biner baru.
      */
     public function run(PortofolioService $portofolioService): void
