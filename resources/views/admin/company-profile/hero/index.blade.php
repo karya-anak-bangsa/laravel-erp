@@ -1,3 +1,5 @@
+@use('App\Enums\CompanyProfile\GayaCta')
+
 @extends('layouts.admin', ['breadcrumb' => ['Company Profile' => null, 'Hero' => null]])
 
 @section('content')
@@ -60,11 +62,64 @@
                                 </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
-                                        <a href="{{ route('admin.hero.edit', $item) }}" class="btn btn-sm btn-warning">
+                                        <x-admin.detail-button title="Detail Hero" :ikon-saja="true">
+                                            <div class="detail-kolom">
+                                                <div class="tabel-detail">
+                                                    <table class="table tabel-informasi">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th scope="row">Judul</th>
+                                                                <td class="cell-strong">{{ $item->judul }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Deskripsi</th>
+                                                                <td class="teks-panjang">{{ $item->deskripsi }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Keyword</th>
+                                                                <td>{{ $item->keyword === [] ? '—' : implode(', ', $item->keyword) }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Tombol CTA</th>
+                                                                <td>
+                                                                    @forelse ($item->cta as $cta)
+                                                                        <div>{{ $cta['label'] }} → {{ $cta['url'] }} ({{ GayaCta::tryFrom($cta['gaya'])?->label() ?? $cta['gaya'] }})</div>
+                                                                    @empty
+                                                                        —
+                                                                    @endforelse
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Status</th>
+                                                                <td>
+                                                                    @if ($item->status_aktif)
+                                                                        <span class="status status-green">Aktif</span>
+                                                                    @else
+                                                                        <span class="status status-red">Nonaktif</span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Dibuat</th>
+                                                                <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Diperbarui</th>
+                                                                <td>{{ $item->updated_at->translatedFormat('d F Y, H:i') }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pratinjau-gambar pratinjau-gambar-lebar">
+                                                    <img src="{{ $item->gambar_url }}" alt="Gambar hero {{ $item->judul }}" loading="lazy">
+                                                </div>
+                                            </div>
+                                        </x-admin.detail-button>
+                                        <a href="{{ route('admin.hero.edit', $item) }}" class="btn btn-warning btn-ikon"
+                                            title="Ubah" aria-label="Ubah">
                                             <x-admin.icon name="pen-to-square" />
-                                            Ubah
                                         </a>
-                                        <x-admin.delete-button :action="route('admin.hero.destroy', $item)"
+                                        <x-admin.delete-button :action="route('admin.hero.destroy', $item)" :ikon-saja="true"
                                             title="Hapus hero?"
                                             :message="$item->status_aktif
                                                 ? 'Hero “'.$item->judul.'” sedang tampil di beranda. Setelah dihapus, beranda tidak menampilkan hero sampai hero lain diaktifkan.'

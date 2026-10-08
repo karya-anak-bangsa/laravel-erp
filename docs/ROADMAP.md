@@ -38,7 +38,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
 - [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
-- [ ] Portofolio (slug, kategori)
+- [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder` (khusus lokal)
 - [ ] FAQ (urutan)
 - [ ] Kontak Kami (kotak masuk: filter, tandai dibaca/belum, hapus) + badge jumlah belum dibaca di sidebar
 

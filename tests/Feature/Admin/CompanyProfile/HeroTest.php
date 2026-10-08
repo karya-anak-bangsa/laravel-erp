@@ -75,6 +75,35 @@ it('hanya menampilkan judul modul di page-header halaman tambah dan ubah', funct
     }
 });
 
+it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal', function () {
+    $hero = Hero::factory()->aktif()->create([
+        'judul' => 'Solusi Digital',
+        'deskripsi' => 'Website dan aplikasi.',
+        'keyword' => ['Laravel', 'Flutter'],
+        'cta' => [['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary']],
+        'created_at' => '2026-10-09 08:30:00',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.hero.index'))
+        ->assertSeeInOrder([
+            'aria-label="Lihat"',
+            'data-detail-title="Detail Hero"',
+            '<template id="detail-',
+            'Website dan aplikasi.',
+            'Laravel, Flutter',
+            'Hubungi Kami → #kontak (Utama)',
+            '<span class="status status-green">Aktif</span>',
+            '09 Oktober 2026, 08:30',
+            Storage::disk('public')->url($hero->gambar),
+            '</template>',
+            'href="'.route('admin.hero.edit', $hero).'"',
+            'aria-label="Ubah"',
+            'action="'.route('admin.hero.destroy', $hero).'"',
+            'aria-label="Hapus"',
+        ], false);
+});
+
 it('mencari hero berdasarkan judul dan memfilter status', function () {
     Hero::factory()->aktif()->create(['judul' => 'Promo Bootcamp']);
     Hero::factory()->create(['judul' => 'Jasa Website']);

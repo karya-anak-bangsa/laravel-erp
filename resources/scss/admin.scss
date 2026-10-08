@@ -36,12 +36,14 @@ i.icon {
 
     // Glyph Font Awesome berbeda lebar (mis. plus & trash-can 448 unit, filter &
     // pen-to-square 512), jadi tiap glyph diberi bidang persegi 1em agar semua ikon
-    // dengan font-size sama tampil seukuran (permintaan pemilik).
+    // dengan font-size sama tampil seukuran (permintaan pemilik). Glyph yang lebih
+    // lebar dari bidangnya (mis. eye 576 unit) dipusatkan flex agar luapannya terbagi
+    // rata kiri-kanan; text-align tidak memusatkan konten yang meluap.
     &::before {
-        display: inline-block;
+        display: inline-flex;
+        justify-content: center;
         width: 1em;
         height: 1em;
-        text-align: center;
     }
 }
 
@@ -76,12 +78,13 @@ i.icon {
     font-size: 11px;
 }
 
-// Tombol success/secondary/warning/danger memakai warna Bootstrap bg-success (#198754),
-// bg-secondary (#6c757d), bg-warning (#ffc107) & bg-danger (#dc3545) yang saturasinya
-// diturunkan 10% atas permintaan pemilik; hover & border mengikuti Bootstrap dengan
-// penurunan yang sama. Teks gelap di tombol kuning mengikuti Bootstrap demi
-// keterbacaan. Token --green/--yellow/--red tetap dipakai chip & status.
-// Success = Tambah & Simpan, secondary = Batal (termasuk tombol di dialog konfirmasi).
+// Tombol success/secondary/info/warning/danger memakai warna Bootstrap bg-success (#198754),
+// bg-secondary (#6c757d), bg-info (#0dcaf0), bg-warning (#ffc107) & bg-danger (#dc3545)
+// yang saturasinya diturunkan 10% atas permintaan pemilik; hover & border mengikuti
+// Bootstrap dengan penurunan yang sama. Teks gelap di tombol biru muda & kuning mengikuti
+// Bootstrap demi keterbacaan. Token --green/--yellow/--red tetap dipakai chip & status.
+// Success = Tambah & Simpan, secondary = Batal (termasuk tombol di dialog konfirmasi),
+// info = Lihat.
 .btn-success {
     background: #217f53;
     border-color: #217f53;
@@ -104,6 +107,18 @@ i.icon {
         background: #636363;
         border-color: #5d5d5d;
         color: #fff;
+    }
+}
+
+.btn-info {
+    background: #1ac2e3;
+    border-color: #1ac2e3;
+    color: #000;
+
+    &:hover {
+        background: #3ccbe7;
+        border-color: #31c7e6;
+        color: #000;
     }
 }
 
@@ -305,6 +320,14 @@ table.table .kolom-aksi {
     gap: 6px;
 }
 
+// Tombol ikon tanpa label (aksi tabel: Lihat, Ubah, Hapus): persegi setinggi tombolnya
+// dengan ikon di tengah; nama aksinya ada di title (tooltip) & aria-label.
+.btn-ikon {
+    aspect-ratio: 1;
+    padding-inline: 0;
+    justify-content: center;
+}
+
 // Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat
 // disorot agar tidak terkesan bisa diklik.
 table.table.tabel-informasi tbody tr:hover {
@@ -363,6 +386,104 @@ table.table.tabel-informasi tbody tr:hover {
         min-width: 110px;
         justify-content: center;
     }
+}
+
+// Modal detail (<x-admin.detail-button>) disusun seperti modal Bootstrap 5.3 (pilihan
+// pemilik): header (judul kiri, tombol × kanan), isi, footer (Tutup rata kanan).
+// Lebar mengikuti .modal-lg — 500px mulai 576px, 800px mulai 992px, selebar layar di bawahnya.
+.swal2-popup.swal-detail {
+    --swal2-width: 100%;
+    --swal2-padding: 0;
+    --swal2-close-button-position: absolute;
+    --swal2-close-button-inset: 11px 12px auto auto;
+    --swal2-actions-justify-content: flex-end;
+    --swal2-actions-width: 100%;
+    --swal2-actions-margin: 0;
+    --swal2-actions-padding: 12px 16px;
+
+    @media (min-width: 576px) {
+        --swal2-width: 500px;
+    }
+
+    @media (min-width: 992px) {
+        --swal2-width: 800px;
+    }
+
+    .swal2-title {
+        padding: 16px 56px 16px 16px;
+        border-bottom: 1px solid var(--border-color-light);
+        text-align: start;
+    }
+
+    .swal2-close {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        color: var(--text-muted);
+
+        &:hover {
+            color: var(--text);
+        }
+    }
+
+    .swal2-html-container {
+        padding: 16px;
+        font-size: 13px;
+        text-align: start;
+    }
+
+    .swal2-actions {
+        border-top: 1px solid var(--border-color-light);
+    }
+}
+
+// Isi modal detail: tabel rincian kiri & gambar kanan dengan rasio 8:4, sama dengan form
+// tambah/ubah; bertumpuk (tabel lebih dulu) saat modal belum selebar 800px.
+.detail-kolom {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+
+    .pratinjau-gambar {
+        margin-bottom: 0;
+    }
+
+    @media (min-width: 992px) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+}
+
+// Tabel rincian: label di kolom kiri selebar isinya, nilai di kanan; dibingkai agar
+// tampak sebagai satu tabel di dalam modal.
+.tabel-detail {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+
+    table.table {
+        th {
+            width: 1%;
+            white-space: nowrap;
+            vertical-align: top;
+            border-bottom-color: var(--border-color-light);
+        }
+
+        // Rata atas agar label sejajar baris pertama nilai yang panjang (mis. deskripsi).
+        td {
+            vertical-align: top;
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        tr:last-child th {
+            border-bottom: none;
+        }
+    }
+}
+
+// Teks panjang (mis. deskripsi) tetap memakai baris baru yang diketik admin.
+.teks-panjang {
+    white-space: pre-line;
 }
 
 .alert .alert-icon {

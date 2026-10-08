@@ -145,6 +145,38 @@ it('merender delete-button sebagai form DELETE dengan konfirmasi', function () {
         ->assertSee('Hapus');
 });
 
+it('merender detail-button dengan template rincian yang ter-escape', function () {
+    $html = (string) $this->blade(
+        '<x-admin.detail-button title="Detail Portofolio">{{ $isi }}</x-admin.detail-button>',
+        ['isi' => '<script>alert(1)</script>'],
+    );
+
+    preg_match('/data-detail="(detail-[A-Za-z0-9]+)"/', $html, $cocok);
+
+    expect($cocok)->not->toBeEmpty()
+        ->and($html)->toContain('type="button" class="btn btn-sm btn-info"')
+        ->toContain('data-detail-title="Detail Portofolio"')
+        ->toContain('fa-eye')
+        ->toContain('Lihat')
+        ->toContain('<template id="'.$cocok[1].'">')
+        ->toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
+        ->not->toContain('<script>alert(1)</script>');
+});
+
+it('merender detail-button dan delete-button sebagai tombol ikon tanpa teks', function () {
+    $this->blade('<x-admin.detail-button :ikon-saja="true">Isi</x-admin.detail-button>')
+        ->assertSee('class="btn btn-info btn-ikon"', false)
+        ->assertSee('title="Lihat"', false)
+        ->assertSee('aria-label="Lihat"', false)
+        ->assertDontSeeText('Lihat');
+
+    $this->blade('<x-admin.delete-button action="/admin/uji/1" :ikon-saja="true" />')
+        ->assertSee('class="btn btn-danger btn-ikon"', false)
+        ->assertSee('title="Hapus"', false)
+        ->assertSee('aria-label="Hapus"', false)
+        ->assertDontSeeText('Hapus');
+});
+
 it('merender empty-state dan alert', function () {
     $this->blade('<x-admin.empty-state title="Belum ada kategori artikel" description="Tambahkan kategori pertama." />')
         ->assertSee('Belum ada kategori artikel')

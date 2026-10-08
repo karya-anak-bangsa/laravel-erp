@@ -53,6 +53,29 @@ if (flash) {
     }
 }
 
+// Tombol Lihat (<x-admin.detail-button>) membuka rincian data dalam modal SweetAlert2.
+// Isinya disalin sebagai elemen DOM dari <template> Blade yang sudah di-escape, bukan
+// string HTML, sehingga input pengguna tidak pernah diparse ulang sebagai HTML di sini.
+document.addEventListener('click', (event) => {
+    const tombol = event.target instanceof Element ? event.target.closest('[data-detail]') : null;
+    const templat = tombol ? document.getElementById(tombol.dataset.detail) : null;
+    if (!(templat instanceof HTMLTemplateElement) || !templat.content.firstElementChild) {
+        return;
+    }
+
+    Swal.fire({
+        titleText: tombol.dataset.detailTitle || 'Detail data',
+        html: templat.content.firstElementChild.cloneNode(true),
+        showCloseButton: true,
+        confirmButtonText: 'Tutup',
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-detail',
+            confirmButton: 'btn btn-secondary',
+        },
+    });
+});
+
 // Form dengan data-confirm minta konfirmasi lewat SweetAlert2: hapus (<x-admin.delete-button>,
 // varian danger) maupun simpan tambah/ubah (data-confirm-variant="success").
 // Tanpa JavaScript form tetap terkirim, hanya tanpa konfirmasi.

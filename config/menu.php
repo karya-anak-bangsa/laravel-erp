@@ -48,6 +48,12 @@ return [
                 'rute' => 'admin.layanan.index',
                 'aktif' => 'admin.layanan.*',
             ],
+            [
+                'label' => 'Portofolio',
+                'ikon' => 'book',
+                'rute' => 'admin.portofolio.index',
+                'aktif' => 'admin.portofolio.*',
+            ],
         ],
     ],
 ];

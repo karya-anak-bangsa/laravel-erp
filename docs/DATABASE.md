@@ -88,11 +88,13 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 |---|---|---|
 | id_portofolio | BIGINT UNSIGNED PK | |
 | judul | VARCHAR(200) | |
-| slug | VARCHAR(220) | **(+)** URL detail di frontend |
+| slug | VARCHAR(220) UNIQUE | **(+)** URL detail di frontend. Dibuat otomatis dari judul oleh `PortofolioService` |
 | deskripsi | TEXT | |
 | gambar | VARCHAR(255) | |
 | kategori | VARCHAR(50) | INDEX. Sementara teks bebas (mis. Website, Mobile Apps). Dinormalisasi ke tabel sendiri bila dibutuhkan |
 | created_at, updated_at, deleted_at | | |
+
+Catatan implementasi: slug dibuat sistem sehingga memakai constraint UNIQUE di database (termasuk baris terhapus, agar tidak bentrok bila kelak dipulihkan). Slug yang sudah dipakai diberi akhiran angka (`-2`, `-3`, …); dasar slug dibatasi 200 karakter. Slug ikut berubah saat judul diubah — ditinjau ulang di Fase 4 begitu halaman detail tayang. Judul tidak wajib unik. Form memberi saran kategori yang sudah ada (`<datalist>`) agar penulisannya seragam.
 
 ### tb_kategori_artikel
 | Kolom | Tipe | Keterangan |

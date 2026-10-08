@@ -60,6 +60,35 @@ it('menyusun halaman daftar sesuai standar admin', function () {
         ], false);
 });
 
+it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal', function () {
+    $layanan = Layanan::factory()->create([
+        'judul' => 'Pelatihan IT',
+        'deskripsi' => 'Kelas pemrograman.',
+        'keterangan' => null,
+        'urutan_ke' => 3,
+        'created_at' => '2026-10-09 08:30:00',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.layanan.index'))
+        ->assertSeeInOrder([
+            'aria-label="Lihat"',
+            'data-detail-title="Detail Layanan"',
+            '<template id="detail-',
+            'Kelas pemrograman.',
+            'Keterangan</th>',
+            '—',
+            'Urutan ke</th>',
+            '09 Oktober 2026, 08:30',
+            Storage::disk('public')->url($layanan->gambar),
+            '</template>',
+            'href="'.route('admin.layanan.edit', $layanan).'"',
+            'aria-label="Ubah"',
+            'action="'.route('admin.layanan.destroy', $layanan).'"',
+            'aria-label="Hapus"',
+        ], false);
+});
+
 it('mencari layanan berdasarkan judul atau deskripsi', function () {
     Layanan::factory()->create(['judul' => 'Pelatihan IT', 'deskripsi' => 'Kelas pemrograman.']);
     Layanan::factory()->create(['judul' => 'Mobile Apps', 'deskripsi' => 'Aplikasi Android.']);
