@@ -111,6 +111,8 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
 
 ## Satu Kali per Fase
 
+Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai referensi bila server dibangun ulang.
+
 - **Company Profile (sebelum upload gambar pertama)** — buat symlink storage:
   ```bash
   cd ~/domains/karyaanakbangsa.co.id/laravel-erp
@@ -122,12 +124,6 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   php artisan db:seed --class=CompanyProfileSeeder --force
   ```
   Wajib: tanpa langkah ini menu Identitas menampilkan 404. Aman dijalankan ulang (tabel yang sudah berisi dilewati, isian admin tidak ditimpa). Jangan memakai `php artisan db:seed` tanpa `--class`: `PenggunaSeeder` di dalamnya gagal karena `ADMIN_PASSWORD` di server sudah dikosongkan.
-- **Bersihkan sisa modul Kas** (sekali, sebelum deploy Company Profile) — modul Kas sempat ter-deploy lalu dibatalkan; file migration-nya sudah dihapus dari repo, tetapi tabel dan catatan migration-nya masih ada di database produksi. Jalankan di hPanel → Databases → phpMyAdmin → database ERP → tab SQL:
-  ```sql
-  DROP TABLE IF EXISTS tb_transaksi_kas, tb_kategori_transaksi, tb_akun_kas;
-  DELETE FROM migrations WHERE migration LIKE '2026_10_07_%';
-  ```
-  Cek dengan `php artisan migrate:status`: hanya migration milik repo yang tampil.
 
 ---
 
