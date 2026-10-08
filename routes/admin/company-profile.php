@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CompanyProfile\FaqController;
 use App\Http\Controllers\Admin\CompanyProfile\HeroController;
 use App\Http\Controllers\Admin\CompanyProfile\IdentitasController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
@@ -20,3 +21,5 @@ Route::resource('hero', HeroController::class)->except('show');
 Route::resource('layanan', LayananController::class)->except('show');
 
 Route::resource('portofolio', PortofolioController::class)->except('show');
+
+Route::resource('faq', FaqController::class)->except('show');

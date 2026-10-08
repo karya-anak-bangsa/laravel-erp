@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\Layanan;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 /*
 | Editor WYSIWYG dipakai untuk teks yang tampil di frontend (deskripsi hero, layanan,
-| portofolio, serta keterangan layanan); teks internal (identitas) tetap textarea biasa.
+| portofolio, keterangan layanan, serta jawaban FAQ); teks internal (identitas) tetap textarea biasa.
 */
 
 beforeEach(function () {
@@ -37,6 +38,9 @@ function modulEditor(): array
         'portofolio' => ['admin.portofolio', fn () => [
             'judul' => 'Website Sekolah', 'kategori' => 'Website', 'gambar' => $gambar(),
         ], ['deskripsi' => 5000]],
+        'faq' => ['admin.faq', fn () => [
+            'pertanyaan' => 'Berapa lama pembuatan website?', 'urutan_ke' => 1,
+        ], ['jawaban' => 2000]],
     ];
 }
 
@@ -79,6 +83,7 @@ it('menyimpan HTML editor yang sudah disanitasi', function (string $rute, Closur
         'admin.hero' => Hero::sole(),
         'admin.layanan' => Layanan::sole(),
         'admin.portofolio' => Portofolio::sole(),
+        'admin.faq' => Faq::sole(),
     };
 
     foreach (array_keys($kolom) as $nama) {
@@ -101,10 +106,13 @@ it('menghitung batas panjang dari teks terlihat, bukan markup HTML', function (s
     }
 })->with(modulEditor());
 
-it('menganggap editor kosong sebagai belum diisi', function (string $rute, Closure $data) {
+it('menganggap editor kosong sebagai belum diisi', function (string $rute, Closure $data, array $kolom) {
+    // Kolom editor pertama di setiap modul adalah isian wajib.
+    $wajib = array_key_first($kolom);
+
     $this->actingAs($this->admin)
-        ->post(route("{$rute}.store"), [...$data(), 'deskripsi' => '<p></p>'])
-        ->assertSessionHasErrors(['deskripsi' => 'Kolom deskripsi wajib diisi.']);
+        ->post(route("{$rute}.store"), [...$data(), $wajib => '<p></p>'])
+        ->assertSessionHasErrors([$wajib => "Kolom {$wajib} wajib diisi."]);
 })->with(modulEditor());
 
 it('menyimpan keterangan layanan yang kosong di editor sebagai null', function () {

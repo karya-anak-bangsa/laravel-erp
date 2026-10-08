@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             IdentitasSeeder::class,
             HeroSeeder::class,
             LayananSeeder::class,
+            FaqSeeder::class,
         ]);
 
         // Data contoh hanya untuk pengembangan; di produksi dijalankan manual bila perlu.

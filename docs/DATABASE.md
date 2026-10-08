@@ -122,8 +122,8 @@ Catatan implementasi: slug dibuat sistem sehingga memakai constraint UNIQUE di d
 |---|---|---|
 | id_faq | BIGINT UNSIGNED PK | |
 | pertanyaan | VARCHAR(255) | |
-| jawaban | TEXT | |
-| urutan | UNSIGNED SMALLINT DEFAULT 0 | INDEX |
+| jawaban | TEXT | HTML tersanitasi dari editor WYSIWYG |
+| urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | INDEX. Diseragamkan dengan `tb_layanan` (sebelumnya `urutan`) |
 | created_at, updated_at, deleted_at | | |
 
 ### tb_kontak_kami

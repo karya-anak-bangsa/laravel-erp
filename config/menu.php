@@ -54,6 +54,12 @@ return [
                 'rute' => 'admin.portofolio.index',
                 'aktif' => 'admin.portofolio.*',
             ],
+            [
+                'label' => 'FAQ',
+                'ikon' => 'book',
+                'rute' => 'admin.faq.index',
+                'aktif' => 'admin.faq.*',
+            ],
         ],
     ],
 ];
