@@ -33,7 +33,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [x] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa (langkah & catatan server di `docs/DEPLOY.md`)
 
 ## Fase 3 — Company Profile (Backend)
-- [ ] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
+- [x] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
 - [ ] Kategori Artikel
 - [ ] Artikel (slug otomatis, sanitasi HTML, editor rich text, status draf/terbit)
 - [ ] Layanan (urutan)

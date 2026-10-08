@@ -141,6 +141,26 @@ a.btn:hover {
     }
 }
 
+// Pratinjau gambar tersimpan (mis. logo, favicon) di atas input file-nya. Latar
+// kotak-kotak memperlihatkan bagian transparan; gambar diskalakan tanpa terpotong.
+.pratinjau-gambar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 96px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius);
+    background: repeating-conic-gradient(var(--bg-surface-secondary) 0 25%, var(--bg-surface) 0 50%) 0 0 / 16px 16px;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+}
+
 // Tanda wajib diletakkan di depan label (*Nama Kategori, pilihan pemilik), jadi
 // jarak bawaan Gentelella yang ada di sisi kiri dipindah ke kanan.
 .form-label .required {

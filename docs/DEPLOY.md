@@ -117,6 +117,11 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
+- **Company Profile — Identitas** (setelah migration `tb_identitas`, setelah symlink di atas) — buat baris identitas tunggal beserta logo & favicon awal:
+  ```bash
+  php artisan db:seed --class=IdentitasSeeder --force
+  ```
+  Aman dijalankan ulang (tidak menimpa isian admin). Tanpa langkah ini menu Identitas menampilkan 404.
 
 ---
 

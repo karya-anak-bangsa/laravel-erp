@@ -26,4 +26,15 @@ return [
             ],
         ],
     ],
+    [
+        'judul' => 'Company Profile',
+        'item' => [
+            [
+                'label' => 'Identitas',
+                'ikon' => 'building',
+                'rute' => 'admin.identitas.edit',
+                'aktif' => 'admin.identitas.*',
+            ],
+        ],
+    ],
 ];
