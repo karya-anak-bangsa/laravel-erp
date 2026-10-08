@@ -280,9 +280,13 @@ a.btn:hover {
     background: var(--border-color);
 }
 
-// Tinggi minimum mengikuti prop rows (20px per baris), seperti textarea yang digantikannya.
+// Semua editor setinggi 5 baris teks (20px per baris + padding), seperti textarea rows="5"
+// (pilihan pemilik). Isi lebih panjang digulir; tinggi bisa ditarik seperti textarea.
 .editor-konten {
-    min-height: calc(var(--editor-baris, 6) * 20px + 16px);
+    height: calc(5 * 20px + 16px);
+    min-height: calc(5 * 20px + 16px);
+    overflow-y: auto;
+    resize: vertical;
     padding: 8px 12px;
     font-size: 13px;
     line-height: 20px;

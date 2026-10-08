@@ -49,7 +49,9 @@ it('menampilkan editor WYSIWYG di form tambah untuk teks yang tampil di frontend
             ->assertSee('data-perintah="bold"', false);
     }
 
-    expect(substr_count($respons->getContent(), 'data-editor '))->toBe(count($kolom));
+    // Semua editor setinggi 5 baris (pilihan pemilik); textarea cadangannya ikut rows="5".
+    expect(substr_count($respons->getContent(), 'data-editor>'))->toBe(count($kolom))
+        ->and(substr_count($respons->getContent(), 'rows="5" data-editor-sumber'))->toBe(count($kolom));
 })->with(modulEditor());
 
 it('tidak memakai editor WYSIWYG di form identitas', function () {

@@ -1,4 +1,4 @@
-@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'rows' => 6])
+@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null])
 
 @php
     $id = $attributes->get('id', $name);
@@ -32,7 +32,7 @@
         <label class="form-label" id="{{ $id }}-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
-    <div @class(['editor', 'is-invalid' => $error]) data-editor style="--editor-baris: {{ (int) $rows }}">
+    <div @class(['editor', 'is-invalid' => $error]) data-editor>
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)
                 @if ($item === null)
@@ -46,7 +46,7 @@
             @endforeach
         </div>
         <div class="editor-wadah" data-editor-isi></div>
-        <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ $rows }}" data-editor-sumber
+        <textarea id="{{ $id }}" name="{{ $name }}" rows="5" data-editor-sumber
             @if ($label) data-label="{{ $id }}-label" @endif
             @required($required)
             {{ $attributes->except('id')->class(['form-control', 'is-invalid' => $error]) }}>{{ old($name, $value) }}</textarea>
