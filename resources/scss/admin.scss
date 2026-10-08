@@ -62,6 +62,13 @@ i.icon {
     font-size: 12px;
 }
 
+// Kompensasi optik (pilihan pemilik): pen-to-square berupa kotak bergaris sehingga
+// tintanya hanya ±46% bidang dan berwarna gelap di tombol kuning, jadi terasa lebih
+// kecil dari ikon padat seperti trash-can (±53%). Pada 13px tintanya setara.
+.btn .icon.fa-pen-to-square {
+    font-size: 13px;
+}
+
 // Tombol success/secondary/warning/danger memakai warna Bootstrap bg-success (#198754),
 // bg-secondary (#6c757d), bg-warning (#ffc107) & bg-danger (#dc3545) yang saturasinya
 // diturunkan 10% atas permintaan pemilik; hover & border mengikuti Bootstrap dengan
