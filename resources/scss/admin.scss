@@ -69,6 +69,13 @@ i.icon {
     font-size: 13px;
 }
 
+// Kompensasi optik (pilihan pemilik): panah melingkar rotate-left menyentuh tepi
+// bidang (12x12) sehingga terasa lebih besar dari floppy-disk (10,4x10,6). Pada
+// 11px bentuk luarnya 11x11, setara dengan ikon Simpan di sebelahnya.
+.btn .icon.fa-rotate-left {
+    font-size: 11px;
+}
+
 // Tombol success/secondary/warning/danger memakai warna Bootstrap bg-success (#198754),
 // bg-secondary (#6c757d), bg-warning (#ffc107) & bg-danger (#dc3545) yang saturasinya
 // diturunkan 10% atas permintaan pemilik; hover & border mengikuti Bootstrap dengan
