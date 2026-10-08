@@ -127,6 +127,10 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
   php artisan db:seed --class=HeroSeeder --force
   ```
   Aman dijalankan ulang. Opsional: tanpa langkah ini daftar hero kosong dan admin bisa menambah sendiri.
+  Data contoh (4 hero nonaktif bergambar ilustrasi) hanya otomatis di lokal; di server opsional, jalankan **setelah** `HeroSeeder`:
+  ```bash
+  php artisan db:seed --class=HeroDummySeeder --force
+  ```
 
 ---
 

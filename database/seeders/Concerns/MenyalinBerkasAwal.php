@@ -10,19 +10,20 @@ use RuntimeException;
 trait MenyalinBerkasAwal
 {
     /**
-     * Menyalin berkas bawaan di folder public ke disk penyimpanan dengan nama UUID,
-     * agar data awal punya berkas yang bisa diganti/dihapus seperti unggahan biasa.
+     * Menyalin berkas bawaan (path lengkap, mis. public_path('favicon.png')) ke disk
+     * penyimpanan dengan nama UUID, agar data awal punya berkas yang bisa diganti/dihapus
+     * seperti unggahan biasa.
      */
-    protected function salinBerkasAwal(string $pathPublik, string $folder, string $disk): string
+    protected function salinBerkasAwal(string $pathSumber, string $folder, string $disk): string
     {
         $path = Storage::disk($disk)->putFileAs(
             $folder,
-            new File(public_path($pathPublik)),
-            Str::uuid().'.'.pathinfo($pathPublik, PATHINFO_EXTENSION),
+            new File($pathSumber),
+            Str::uuid().'.'.pathinfo($pathSumber, PATHINFO_EXTENSION),
         );
 
         if ($path === false) {
-            throw new RuntimeException("Berkas awal {$pathPublik} gagal disalin.");
+            throw new RuntimeException("Berkas awal {$pathSumber} gagal disalin.");
         }
 
         return $path;

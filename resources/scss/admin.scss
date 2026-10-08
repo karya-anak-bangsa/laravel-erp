@@ -176,6 +176,32 @@ a.btn:hover {
     border-radius: var(--radius-sm);
 }
 
+// Kartu filter (<x-admin.filter-bar>) berdiri sendiri di atas kartu tabel; jaraknya
+// disamakan dengan gap antarkartu .row Gentelella.
+.kartu-filter {
+    margin-bottom: var(--space-4);
+
+    .users-filters {
+        padding: 12px 16px;
+    }
+
+    // Kotak pencarian & dropdown filter selebar col-3 (pilihan pemilik); tombol
+    // Terapkan/Reset tetap selebar isinya. Di ponsel melebar penuh agar tidak sempit.
+    .kolom-filter {
+        flex: 0 0 calc(25% - var(--space-2));
+        width: auto;
+        min-width: 0;
+
+        @media (max-width: 768px) {
+            flex-basis: 100%;
+        }
+    }
+
+    select.kolom-filter {
+        height: 32px;
+    }
+}
+
 // Kolom teks panjang (judul + deskripsi) diberi lebar minimum: di ponsel tabel
 // digeser horizontal (table-responsive) alih-alih memeras teks menjadi satu kata per baris.
 table.table .kolom-lebar {

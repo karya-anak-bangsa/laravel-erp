@@ -9,7 +9,8 @@
 | di sini, tanpa mengubah grup modul lain.
 |
 | - label : teks menu
-| - ikon  : nama ikon Font Awesome solid tanpa awalan "fa-" (mis. gauge)
+| - ikon  : nama ikon Font Awesome solid tanpa awalan "fa-". Dashboard memakai
+|           landmark; semua menu modul memakai book (pilihan pemilik)
 | - rute  : nama rute tujuan
 | - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
 |
@@ -21,7 +22,7 @@ return [
         'item' => [
             [
                 'label' => 'Dashboard',
-                'ikon' => 'house',
+                'ikon' => 'landmark',
                 'rute' => 'admin.dashboard',
             ],
         ],
@@ -31,13 +32,13 @@ return [
         'item' => [
             [
                 'label' => 'Identitas',
-                'ikon' => 'building',
+                'ikon' => 'book',
                 'rute' => 'admin.identitas.edit',
                 'aktif' => 'admin.identitas.*',
             ],
             [
                 'label' => 'Hero',
-                'ikon' => 'image',
+                'ikon' => 'book',
                 'rute' => 'admin.hero.index',
                 'aktif' => 'admin.hero.*',
             ],

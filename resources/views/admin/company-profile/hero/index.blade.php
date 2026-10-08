@@ -1,21 +1,23 @@
 @extends('layouts.admin', ['breadcrumb' => ['Company Profile' => null, 'Hero' => null]])
 
 @section('content')
-    <x-admin.page-header title="Hero" pretitle="Company Profile">
-        <a href="{{ route('admin.hero.create') }}" class="btn btn-success">
-            <x-admin.icon name="plus" />
-            Tambah Hero
-        </a>
-    </x-admin.page-header>
+    <x-admin.page-header title="Company Profile" />
 
-    <x-admin.card :flush="true">
-        <x-admin.filter-bar :action="route('admin.hero.index')">
-            <select name="status" class="form-control" style="width:150px;height:32px" aria-label="Filter status hero">
-                <option value="">Semua status</option>
-                <option value="aktif" @selected(request('status') === 'aktif')>Aktif</option>
-                <option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option>
-            </select>
-        </x-admin.filter-bar>
+    <x-admin.filter-bar :action="route('admin.hero.index')">
+        <select name="status" class="form-control kolom-filter" aria-label="Filter status hero">
+            <option value="">Semua status</option>
+            <option value="aktif" @selected(request('status') === 'aktif')>Aktif</option>
+            <option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option>
+        </select>
+    </x-admin.filter-bar>
+
+    <x-admin.card title="Hero" :flush="true">
+        <x-slot:aksi>
+            <a href="{{ route('admin.hero.create') }}" class="btn btn-success">
+                <x-admin.icon name="plus" />
+                Tambah Hero
+            </a>
+        </x-slot>
 
         @if ($hero->isEmpty())
             @if (request()->anyFilled(['q', 'status']))

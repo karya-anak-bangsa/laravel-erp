@@ -2,6 +2,7 @@
 
 use App\Models\CompanyProfile\Hero;
 use App\Models\Pengguna;
+use Database\Seeders\HeroDummySeeder;
 use Database\Seeders\HeroSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -46,6 +47,32 @@ it('menampilkan daftar hero dengan hero aktif di baris pertama', function () {
         ->assertOk()
         ->assertSeeInOrder(['Hero Aktif Lama', 'Hero Nonaktif Baru'])
         ->assertSee('class="nav-link active" href="'.route('admin.hero.index').'"', false);
+});
+
+it('menyusun halaman daftar: judul modul, kartu filter, lalu kartu tabel bertombol tambah', function () {
+    Hero::factory()->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.hero.index'))
+        ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
+        ->assertDontSee('page-pretitle', false)
+        ->assertSeeInOrder([
+            'class="card kartu-filter"',
+            '<div class="card-title">Hero</div>',
+            'href="'.route('admin.hero.create').'"',
+            '<table class="table">',
+        ], false);
+});
+
+it('hanya menampilkan judul modul di page-header halaman tambah dan ubah', function () {
+    $hero = Hero::factory()->create();
+
+    foreach ([route('admin.hero.create'), route('admin.hero.edit', $hero)] as $url) {
+        $this->actingAs($this->admin)
+            ->get($url)
+            ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
+            ->assertDontSee('page-pretitle', false);
+    }
 });
 
 it('mencari hero berdasarkan judul dan memfilter status', function () {
@@ -254,6 +281,23 @@ it('membuat satu hero awal yang aktif beserta gambarnya dari seeder', function (
         ->and($hero->cta)->toHaveCount(2)
         ->and($hero->gambar)->toEndWith('.webp');
     Storage::disk('public')->assertExists($hero->gambar);
+});
+
+it('menambah hero dummy nonaktif sehingga tetap hanya satu hero aktif', function () {
+    $this->seed([HeroSeeder::class, HeroDummySeeder::class]);
+
+    expect(Hero::count())->toBe(5)
+        ->and(Hero::where('status_aktif', true)->count())->toBe(1)
+        ->and(Hero::where('status_aktif', true)->value('judul'))->toBe('Solusi Digital & Talenta IT untuk Indonesia');
+    Hero::all()->each(fn (Hero $hero) => Storage::disk('public')->assertExists($hero->gambar));
+});
+
+it('menjalankan seeder hero dummy ulang tanpa duplikasi data maupun gambar', function () {
+    $this->seed([HeroSeeder::class, HeroDummySeeder::class]);
+    $this->seed(HeroDummySeeder::class);
+
+    expect(Hero::count())->toBe(5)
+        ->and(Storage::disk('public')->allFiles(Hero::FOLDER))->toHaveCount(5);
 });
 
 it('menjalankan seeder hero ulang tanpa menimpa isian admin', function () {

@@ -5,7 +5,7 @@
 ]])
 
 @section('content')
-    <x-admin.page-header title="Tambah Hero" pretitle="Company Profile" />
+    <x-admin.page-header title="Company Profile" />
 
     <form method="POST" action="{{ route('admin.hero.store') }}" enctype="multipart/form-data" novalidate
         data-confirm="Pastikan data sudah benar sebelum disimpan." data-confirm-title="Simpan hero baru?"

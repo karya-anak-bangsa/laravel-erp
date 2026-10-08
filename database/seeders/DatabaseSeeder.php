@@ -19,5 +19,11 @@ class DatabaseSeeder extends Seeder
             IdentitasSeeder::class,
             HeroSeeder::class,
         ]);
+
+        // Data contoh hanya untuk pengembangan; di produksi dijalankan manual bila perlu.
+        // Wajib setelah HeroSeeder: HeroSeeder dilewati bila tabel hero sudah berisi.
+        if (app()->isLocal()) {
+            $this->call(HeroDummySeeder::class);
+        }
     }
 }

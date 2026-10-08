@@ -5,7 +5,7 @@
 ]])
 
 @section('content')
-    <x-admin.page-header title="Ubah Hero" :pretitle="$hero->judul" />
+    <x-admin.page-header title="Company Profile" />
 
     <form method="POST" action="{{ route('admin.hero.update', $hero) }}" enctype="multipart/form-data" novalidate
         data-confirm="Perubahan hero “{{ $hero->judul }}” akan disimpan." data-confirm-title="Simpan perubahan?"

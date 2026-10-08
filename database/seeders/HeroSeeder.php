@@ -24,7 +24,7 @@ class HeroSeeder extends Seeder
         Hero::create([
             'judul' => 'Solusi Digital & Talenta IT untuk Indonesia',
             'deskripsi' => 'Kami membantu bisnis tumbuh lewat website dan aplikasi mobile, serta menyiapkan talenta IT melalui pelatihan, sertifikasi, dan bootcamp.',
-            'gambar' => $this->salinBerkasAwal('img/hero.webp', Hero::FOLDER, Hero::DISK),
+            'gambar' => $this->salinBerkasAwal(public_path('img/hero.webp'), Hero::FOLDER, Hero::DISK),
             'keyword' => ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'],
             'cta' => [
                 ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => GayaCta::Primary->value],

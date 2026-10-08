@@ -25,8 +25,8 @@ class IdentitasSeeder extends Seeder
             'judul_website' => 'PT. Teknologi Karya Anak Bangsa',
             'alamat_website' => 'https://karyaanakbangsa.co.id',
             // Kolom logo & favicon wajib berisi, jadi ikon bawaan aplikasi dipakai sebagai awal.
-            'logo_website' => $this->salinBerkasAwal('apple-touch-icon.png', Identitas::FOLDER, Identitas::DISK),
-            'favicon_website' => $this->salinBerkasAwal('favicon.png', Identitas::FOLDER, Identitas::DISK),
+            'logo_website' => $this->salinBerkasAwal(public_path('apple-touch-icon.png'), Identitas::FOLDER, Identitas::DISK),
+            'favicon_website' => $this->salinBerkasAwal(public_path('favicon.png'), Identitas::FOLDER, Identitas::DISK),
             // Dibiarkan kosong agar admin wajib melengkapinya saat pertama kali menyimpan.
             'email' => '',
             'telepon' => '',

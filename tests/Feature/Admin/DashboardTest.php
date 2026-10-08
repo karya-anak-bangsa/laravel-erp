@@ -39,10 +39,10 @@ it('tidak menyediakan mode gelap', function () {
         ->assertDontSee('data-theme', false);
 });
 
-it('memakai ikon rumah untuk menu dashboard', function () {
+it('memakai ikon landmark untuk menu dashboard', function () {
     $this->actingAs(Pengguna::factory()->create())
         ->get(route('admin.dashboard'))
-        ->assertSee('fa-house', false);
+        ->assertSee('fa-landmark', false);
 });
 
 it('menandai menu dashboard sebagai menu aktif', function () {

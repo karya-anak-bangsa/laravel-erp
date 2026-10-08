@@ -6,15 +6,16 @@
 @endphp
 
 {{--
-    Pencarian (?q=) + filter server-side di bagian atas <x-admin.card :flush="true">.
-    Slot default = filter tambahan, mis. <select class="form-control" name="jenis">.
+    Pencarian (?q=) + filter server-side dalam kartu tersendiri, diletakkan tepat di bawah
+    page-header dan di atas kartu tabel (pilihan pemilik).
+    Slot default = filter tambahan, mis. <select class="form-control kolom-filter" name="jenis">
+    (kelas kolom-filter = selebar col-3, sama dengan kotak pencarian).
     :cari="false" = hanya filter, tanpa kotak pencarian (mis. laporan).
-    Inline style mengikuti markup demo Gentelella (users-filters) agar tidak perlu build aset.
 --}}
-<form method="GET" action="{{ $action }}" role="search" class="users-filters"
-    style="padding:12px 16px;border-bottom:1px solid var(--border-color-light)">
+<div class="card kartu-filter">
+<form method="GET" action="{{ $action }}" role="search" class="users-filters">
     @if ($cari)
-        <div class="search-box">
+        <div class="search-box kolom-filter">
             <x-admin.icon name="magnifying-glass" class="s-icon" />
             <input type="search" name="q" value="{{ request('q') }}" placeholder="{{ $placeholder }}" aria-label="{{ $placeholder }}">
         </div>
@@ -34,3 +35,4 @@
         </a>
     @endif
 </form>
+</div>

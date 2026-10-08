@@ -4,7 +4,7 @@
 ]])
 
 @section('content')
-    <x-admin.page-header title="Identitas Perusahaan" pretitle="Company Profile" />
+    <x-admin.page-header title="Company Profile" />
 
     <form method="POST" action="{{ route('admin.identitas.update') }}" enctype="multipart/form-data" novalidate
         data-confirm="Perubahan identitas perusahaan akan disimpan dan tampil di website." data-confirm-title="Simpan perubahan?"
