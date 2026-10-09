@@ -46,7 +46,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 ## Fase 4 — Frontend Publik
 Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — diterapkan bertahap (keputusan pemilik 2026-10-09).
 - [x] Putuskan template: Tailwind v4 + Basecoat UI, dua tema Full Color & Monochrome; dicatat di CLAUDE.md §4
-- [ ] Langkah 1 — Prototipe gabungan `tema-ganda.html` (di luar repo) disetujui pemilik
+- [x] Langkah 1 — Prototipe gabungan `tema-ganda.html` (di luar repo) disetujui pemilik (2026-10-09; Full Color memakai sudut sedang)
 - [ ] Langkah 2 — Layout publik terpisah dari admin (`layouts/web`, entri Vite sendiri) + beranda (hero, layanan, portofolio, artikel terbaru, FAQ, kontak) dengan dua template bawaan dan tombol ganti tema di navbar (bawaan Full Color, pilihan pengunjung disimpan di cookie); data identitas di-cache
 - [ ] Langkah 3 — Manajemen Template (Pengaturan Sistem): `tb_template`, tambah/ubah/hapus, aktivasi satu template per jenis, pratinjau; tema beranda diambil dari template aktif
 - [ ] Halaman: portofolio, artikel + detail (slug), kontak

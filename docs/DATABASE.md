@@ -164,7 +164,7 @@ Catatan implementasi:
 - Kolom yang tidak relevan dengan jenisnya disimpan NULL: `warna_*` untuk monochrome, `nada_dasar` untuk full_color.
 - Turunan keterbacaan tidak disimpan, tetapi dihitung saat render: warna teks yang dijamin kontras ≥ 4,5:1 di atas putih, dan warna teks di atas tombol aksen (putih atau gelap).
 - Template aktif tidak bisa dihapus, dinonaktifkan langsung, atau diubah jenisnya, agar frontend selalu punya tepat satu template per jenis.
-- Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Plus Jakarta Sans, bulat) dan "TKAB Monochrome" (netral, Geist, sedang).
+- Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Plus Jakarta Sans, sedang — pilihan pemilik) dan "TKAB Monochrome" (netral, Geist, sedang).
 
 ---
 
