@@ -329,6 +329,8 @@
 .kotak-sukses { @apply flex items-start gap-x-3 p-4 text-sm font-medium sm:order-1; border-radius: var(--sudut-isian); }
 [data-tema=full_color] .kotak-sukses { @apply bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200; }
 [data-tema=monochrome] .kotak-sukses { @apply border bg-muted text-foreground; }
+/* Kotak sukses/galat difokuskan skrip hanya agar diumumkan pembaca layar; bukan elemen interaktif, jadi tanpa garis fokus. */
+.kotak-sukses:focus, .kotak-galat:focus { outline: none; }
 /* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
 .kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
 

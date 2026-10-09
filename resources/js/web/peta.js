@@ -12,7 +12,7 @@ const buatPeta = (L, elPeta) => {
     const seluler = L.Browser.mobile;
     elPeta.hidden = false;
 
-    const peta = L.map(elPeta, { scrollWheelZoom: false, zoomControl: false, dragging: !seluler, tap: !seluler })
+    const peta = L.map(elPeta, { scrollWheelZoom: false, zoomControl: false, dragging: !seluler })
         .setView(titik, parseInt(d.zoom, 10) || 16);
     L.control.zoom({ position: 'bottomright', zoomInTitle: 'Perbesar', zoomOutTitle: 'Perkecil' }).addTo(peta);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {

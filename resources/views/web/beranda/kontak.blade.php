@@ -17,10 +17,11 @@
                 <li>
                     <div class="tautan-kontak">
                         <span class="ikon-kontak" data-jenis="alamat" aria-hidden="true"><x-web.ikon nama="lokasi" :tebal="1.75" /></span>
-                        <span class="isi-kontak">
+                        {{-- div, bukan span: <address> tidak boleh berada di dalam elemen frasa. --}}
+                        <div class="isi-kontak">
                             <span class="label-kontak">Alamat</span>
                             <address class="nilai-kontak not-italic">{{ $identitas->alamat }}</address>
-                        </span>
+                        </div>
                     </div>
                 </li>
                 <li>
@@ -67,7 +68,7 @@
                     @csrf
 
                     @error('formulir')
-                        <div class="kotak-galat" role="alert">
+                        <div class="kotak-galat" role="alert" tabindex="-1">
                             <x-web.ikon nama="peringatan" class="mt-px size-5 shrink-0" />
                             <span>{{ $message }}</span>
                         </div>
@@ -94,7 +95,7 @@
                         {{-- Wilayah role="status" selalu ada agar pesan sukses diumumkan pembaca layar. --}}
                         <div role="status" class="sm:order-1">
                             @if (session('kontak_terkirim'))
-                                <div id="kotak-sukses" class="kotak-sukses">
+                                <div id="kotak-sukses" class="kotak-sukses" tabindex="-1">
                                     <x-web.ikon nama="centang" class="mt-px size-5 shrink-0" />
                                     <span>{{ session('kontak_terkirim') }}</span>
                                 </div>

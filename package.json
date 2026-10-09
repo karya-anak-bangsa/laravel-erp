@@ -9,15 +9,11 @@
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^7.3.1",
         "@tailwindcss/vite": "^4.3.3",
-        "concurrently": "^10.0.3",
         "gentelella": "^4.2.0",
         "laravel-vite-plugin": "^3.1",
         "sass-embedded": "^1.105.1",
         "tailwindcss": "^4.3.3",
         "vite": "^8.0.0"
-    },
-    "optionalDependencies": {
-        "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
         "@tiptap/core": "^3.31.4",

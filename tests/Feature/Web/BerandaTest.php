@@ -164,6 +164,15 @@ describe('isi', function () {
             ->assertDontSee('data-filter="kategori-lama"', false);
     });
 
+    it('tidak merender tab filter bila portofolio hanya punya satu kategori', function () {
+        Portofolio::factory()->count(2)->create(['kategori' => 'Website']);
+
+        $this->get('/')
+            ->assertSee('id="panel-portofolio"', false)
+            ->assertDontSee('role="tablist"', false)
+            ->assertDontSee('role="tabpanel"', false);
+    });
+
     it('tetap tampil saat semua konten kosong dan menyembunyikan seksi tanpa data', function () {
         $this->get('/')
             ->assertOk()

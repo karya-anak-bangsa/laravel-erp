@@ -1,5 +1,6 @@
-// Formulir kontak divalidasi server. Setelah kembali dengan galat, fokus dipindah ke isian salah pertama;
-// tombol kirim dikunci saat mengirim agar pesan tidak terkirim dua kali.
+// Formulir kontak divalidasi server. Setelah kembali dari server, fokus dipindah ke isian salah pertama
+// (atau ke kotak galat/sukses) agar hasilnya diumumkan pembaca layar; pesan yang sudah ada sejak halaman
+// dimuat tidak diumumkan wilayah role=status/alert. Tombol kirim dikunci agar pesan tidak terkirim dua kali.
 export function pasangFormulirKontak() {
     const form = document.getElementById('form-kontak');
     const tombol = form?.querySelector('[type=submit]');
@@ -7,10 +8,10 @@ export function pasangFormulirKontak() {
         return;
     }
 
-    const galatPertama = form.querySelector('[aria-invalid=true]');
-    if (galatPertama) {
-        // Ditunda sampai browser selesai menggulir ke #kontak: langkah itu memindahkan fokus ke viewport.
-        window.addEventListener('load', () => setTimeout(() => galatPertama.focus()), { once: true });
+    const tujuanFokus = form.querySelector('[aria-invalid=true]') ?? form.querySelector('.kotak-galat, .kotak-sukses');
+    if (tujuanFokus) {
+        // Ditunda sampai browser selesai menggulir ke anchor formulir: langkah itu memindahkan fokus ke viewport.
+        window.addEventListener('load', () => setTimeout(() => tujuanFokus.focus()), { once: true });
     }
 
     const kunci = (ya) => {

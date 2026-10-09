@@ -23,7 +23,7 @@
                 </nav>
             @endif
 
-            <div role="tabpanel" id="panel-portofolio" @if ($kategoriTab->count() > 1) aria-labelledby="tab-portofolio-semua" tabindex="0" @else aria-labelledby="judul-portofolio" @endif>
+            <div id="panel-portofolio" @if ($kategoriTab->count() > 1) role="tabpanel" aria-labelledby="tab-portofolio-semua" tabindex="0" @endif>
                 <ul class="daftar-portofolio" data-jumlah="{{ $portofolio->count() }}">
                     @foreach ($portofolio as $item)
                         <li class="item-portofolio {{ AksenWarna::untuk($item->kategori) }}" data-kategori="{{ Str::slug($item->kategori) }}">
