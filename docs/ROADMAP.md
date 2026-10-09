@@ -44,9 +44,12 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [x] Data awal lokal & produksi seragam lewat `CompanyProfileSeeder`; migration Company Profile disusun ulang sebelum deploy pertama modul ini
 
 ## Fase 4 — Frontend Publik
-- [ ] Putuskan template (BootstrapMade vs Tailwind custom) dan catat di CLAUDE.md §4
-- [ ] Layout publik terpisah dari admin (`layouts/web`), data identitas di-cache
-- [ ] Halaman: beranda (hero, layanan, portofolio, FAQ), portofolio, artikel + detail (slug), kontak
+Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — diterapkan bertahap (keputusan pemilik 2026-10-09).
+- [x] Putuskan template: Tailwind v4 + Basecoat UI, dua tema Full Color & Monochrome; dicatat di CLAUDE.md §4
+- [ ] Langkah 1 — Prototipe gabungan `tema-ganda.html` (di luar repo) disetujui pemilik
+- [ ] Langkah 2 — Layout publik terpisah dari admin (`layouts/web`, entri Vite sendiri) + beranda (hero, layanan, portofolio, artikel terbaru, FAQ, kontak) dengan dua template bawaan dan tombol ganti tema di navbar (bawaan Full Color, pilihan pengunjung disimpan di cookie); data identitas di-cache
+- [ ] Langkah 3 — Manajemen Template (Pengaturan Sistem): `tb_template`, tambah/ubah/hapus, aktivasi satu template per jenis, pratinjau; tema beranda diambil dari template aktif
+- [ ] Halaman: portofolio, artikel + detail (slug), kontak
 - [ ] Form kontak → `tb_kontak_kami` (rate limit, honeypot, notifikasi email opsional)
 - [ ] SEO: meta title/description dari identitas, Open Graph, `sitemap.xml`, `robots.txt`
 - [ ] Performa: lazy-load gambar, ukuran gambar dioptimalkan

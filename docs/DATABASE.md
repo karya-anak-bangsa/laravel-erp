@@ -141,6 +141,31 @@ Catatan implementasi: slug dibuat `SlugService` (dipakai bersama portofolio) den
 
 Admin hanya: daftar (filter sudah/belum dibaca), lihat (otomatis tandai dibaca), tandai belum dibaca, hapus. Data masuk dari form publik (Fase 4).
 
+### tb_template **(+)**
+Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3. Berisi template tampilan frontend publik, dikelola lewat menu Pengaturan Sistem › Manajemen Template. Boleh banyak template, tetapi **hanya satu yang aktif per jenis** (satu Full Color, satu Monochrome). Aturan ini dijaga `TemplateService` dengan pola yang sama seperti Hero: mengaktifkan satu template otomatis menonaktifkan template lain yang sejenis.
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_template | BIGINT UNSIGNED PK | |
+| nama | VARCHAR(100) | mis. "TKAB Full Color". Unik di antara template yang belum dihapus (Form Request, `withoutTrashed`) |
+| jenis | VARCHAR(20) | enum `JenisTemplate`: full_color, monochrome |
+| warna_utama | CHAR(7) NULL | hex `#rrggbb`, wajib bila full_color: judul, band ajakan, footer |
+| warna_aksen | CHAR(7) NULL | hex `#rrggbb`, wajib bila full_color: tombol utama, label seksi, tautan |
+| nada_dasar | VARCHAR(20) NULL | enum `NadaDasar`: netral, zinc, stone, slate (skala abu-abu); wajib bila monochrome |
+| font | VARCHAR(50) | enum `FontTemplate`: plus_jakarta_sans, geist, inter, poppins, manrope, dm_sans |
+| sudut | VARCHAR(20) | enum `SudutTemplate`: tajam, sedang, bulat |
+| status_aktif | BOOLEAN DEFAULT false | |
+| created_at, updated_at, deleted_at | | |
+
+Indeks: `(jenis, status_aktif)`.
+
+Catatan implementasi:
+- Template hanya berisi pengaturan tampilan. Susunan halaman tiap jenis dibuat developer di kode. Admin tidak mengunggah berkas atau kode template, karena rawan keamanan dan server tidak bisa membangun aset.
+- Kolom yang tidak relevan dengan jenisnya disimpan NULL: `warna_*` untuk monochrome, `nada_dasar` untuk full_color.
+- Turunan keterbacaan tidak disimpan, tetapi dihitung saat render: warna teks yang dijamin kontras ≥ 4,5:1 di atas putih, dan warna teks di atas tombol aksen (putih atau gelap).
+- Template aktif tidak bisa dihapus, dinonaktifkan langsung, atau diubah jenisnya, agar frontend selalu punya tepat satu template per jenis.
+- Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Plus Jakarta Sans, bulat) dan "TKAB Monochrome" (netral, Geist, sedang).
+
 ---
 
 ## C. Modul Masa Depan (gambaran, belum dibuat)

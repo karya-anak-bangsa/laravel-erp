@@ -17,7 +17,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 - **Produk**: Sistem ERP berbasis web yang dikembangkan **bertahap dan konsisten**.
 - **Modul saat ini**: **Company Profile** — identitas, hero, layanan, portofolio, artikel + kategori, FAQ, kontak kami.
 - **Modul masa depan** (desain hari ini harus siap menampungnya): riwayat pelatihan, sertifikasi, bootcamp, klien/proyek, invoice.
-- **Fokus saat ini**: backend (panel admin). Frontend publik dikerjakan belakangan.
+- **Fokus saat ini**: Fase 4 — frontend publik dengan dua tema (Full Color & Monochrome), dikerjakan bertahap (lihat `docs/ROADMAP.md`).
 - **Standar kualitas**: ISO/IEC 25010 (lihat §11).
 - **Domain produksi**: https://karyaanakbangsa.co.id (Hostinger)
 - **Repositori**: https://github.com/karya-anak-bangsa/laravel-erp
@@ -63,7 +63,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 | Editor WYSIWYG | TipTap 3 (`@tiptap/core`, `@tiptap/starter-kit`), npm; sanitasi HTML di server dengan `symfony/html-sanitizer` ^7.4 (versi 8 butuh PHP 8.4) |
 | Testing | Pest (di atas PHPUnit) |
 | Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
-| Frontend publik | Belum diputuskan: BootstrapMade (lisensi seluruh template sudah dibeli) vs Tailwind custom — **jangan dikerjakan sebelum Fase 4**. Tailwind bawaan skeleton sudah dihapus; dipasang lagi di Fase 4 bila dipilih, terpisah dari aset admin |
+| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`, port shadcn/ui untuk HTML, MIT) dengan entri Vite terpisah dari aset admin; paket npm dipasang (dengan izin) di Fase 4 langkah 2. **Satu markup Blade, dua tema**: Full Color (bawaan) dan Monochrome, dipilih pengunjung lewat tombol di navbar. Warna, font, dan sudut tiap tema berasal dari template aktif per jenis di `tb_template` (Pengaturan Sistem › Manajemen Template). Prototipe acuan (di luar repo): `laravel-erp-prototipe/tema-ganda.html`. BootstrapMade dan Preline tidak dipakai (diputuskan pemilik 2026-10-09) |
 
 ### Integrasi Gentelella v4 dengan Laravel
 - Pasang via npm, lalu impor SCSS & modul JS di `resources/scss/admin.scss` dan `resources/js/admin.js`; dikompilasi oleh Vite Laravel.
