@@ -1,0 +1,61 @@
+/*
+ * Entri CSS frontend publik (Tailwind v4 + Basecoat UI), terpisah dari admin.scss.
+ * Satu markup, dua tema: <html data-tema="full_color|monochrome">. Acuan: prototipe tema-ganda.html.
+ *
+ * Semua @import di atas (wajib menurut spesifikasi CSS). Urutan berkas tak berlapis menentukan siapa yang
+ * menang: leaflet.css → token → struktur → komponen.
+ */
+@import "tailwindcss" source(none);
+@import "basecoat-css";
+@import "leaflet/dist/leaflet.css";
+@import "./web/token.css";
+@import "./web/struktur.css";
+@import "./web/komponen.css";
+
+/* Hanya berkas publik yang dipindai, agar kelas admin tidak ikut membengkakkan web.css. */
+@source "../views/layouts/web.blade.php";
+@source "../views/layouts/web";
+@source "../views/web";
+@source "../views/components/web";
+@source "../js/web.js";
+@source "../js/web";
+
+/*
+ * Varian dark Basecoat sengaja tidak dideklarasikan ulang: build 1.0.2 memakai :is(html.dark *), sama dengan
+ * prototipe yang disetujui. Seksi gelap (.dark) memetakan ulang tokennya sendiri di web/token.css.
+ */
+@theme inline {
+    --font-sans: var(--font-tema), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-teks: var(--teks);
+    --color-aksen: var(--aksen-teks);
+    --radius-kartu: var(--sudut-kartu);
+    --radius-dalam: var(--sudut-dalam);
+    --radius-tombol: var(--sudut-tombol);
+    --radius-lencana: var(--sudut-lencana);
+    --radius-isian: var(--sudut-isian);
+}
+
+/* Beda kecil antartema di markup: warna:kelas dan mono:kelas (cara kerjanya seperti dark:). */
+@custom-variant warna (&:where([data-tema=full_color], [data-tema=full_color] *));
+@custom-variant mono (&:where([data-tema=monochrome], [data-tema=monochrome] *));
+
+@layer base {
+    *, ::before, ::after, ::backdrop { border-color: var(--border); }
+    button:not(:disabled), [role="button"]:not(:disabled), summary { cursor: pointer; }
+}

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Identitas extends Model
@@ -18,6 +20,9 @@ class Identitas extends Model
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/identitas';
+
+    // Kunci cache identitas untuk frontend publik (IdentitasService::untukSitus).
+    public const KUNCI_CACHE = 'company-profile.identitas';
 
     protected $table = 'tb_identitas';
 
@@ -38,6 +43,17 @@ class Identitas extends Model
         'link_instagram',
         'link_whatsapp',
     ];
+
+    protected static function booted(): void
+    {
+        // Setiap perubahan (admin, seeder, kode lain) langsung tampil di frontend. Dibuang setelah commit
+        // agar request lain tidak sempat mengisi ulang cache dengan data lama selama transaksi berjalan.
+        $lupakanCache = fn () => DB::afterCommit(fn () => Cache::forget(self::KUNCI_CACHE));
+
+        static::saved($lupakanCache);
+        static::deleted($lupakanCache);
+        static::restored($lupakanCache);
+    }
 
     /**
      * Baris identitas satu-satunya (singleton, dibuat oleh IdentitasSeeder).

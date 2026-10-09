@@ -4,6 +4,7 @@ use App\Models\CompanyProfile\Identitas;
 use App\Services\CompanyProfile\IdentitasService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -48,4 +49,31 @@ it('membersihkan berkas baru dan mempertahankan berkas lama bila penyimpanan gag
         'company-profile/identitas/favicon-lama.png',
     ]);
     expect($this->identitas->fresh()->logo_website)->toBe('company-profile/identitas/logo-lama.png');
+});
+
+it('menyimpan identitas untuk situs di cache sebagai array atribut', function () {
+    $identitas = $this->layanan->untukSitus();
+
+    expect($identitas->nama_perusahaan)->toBe($this->identitas->nama_perusahaan)
+        ->and($identitas->exists)->toBeTrue()
+        ->and($identitas->logo_url)->toEndWith('company-profile/identitas/logo-lama.png')
+        ->and(Cache::get(Identitas::KUNCI_CACHE))->toBeArray()->toHaveKey('nama_perusahaan', $this->identitas->nama_perusahaan);
+});
+
+it('membuang cache identitas situs setelah identitas diperbarui', function () {
+    $this->layanan->untukSitus();
+
+    $this->layanan->perbarui($this->identitas, ['nama_perusahaan' => 'PT Sesudah Ubah']);
+
+    expect(Cache::has(Identitas::KUNCI_CACHE))->toBeFalse()
+        ->and($this->layanan->untukSitus()->nama_perusahaan)->toBe('PT Sesudah Ubah');
+});
+
+it('membuang cache identitas situs saat identitas dibuat ulang seeder', function () {
+    $this->layanan->untukSitus();
+    $this->identitas->forceDelete();
+
+    Identitas::factory()->create(['nama_perusahaan' => 'PT Dari Seeder']);
+
+    expect($this->layanan->untukSitus()->nama_perusahaan)->toBe('PT Dari Seeder');
 });

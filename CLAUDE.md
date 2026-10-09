@@ -63,7 +63,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 | Editor WYSIWYG | TipTap 3 (`@tiptap/core`, `@tiptap/starter-kit`), npm; sanitasi HTML di server dengan `symfony/html-sanitizer` ^7.4 (versi 8 butuh PHP 8.4) |
 | Testing | Pest (di atas PHPUnit) |
 | Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
-| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`, port shadcn/ui untuk HTML, MIT) dengan entri Vite terpisah dari aset admin; paket npm dipasang (dengan izin) di Fase 4 langkah 2. **Satu markup Blade, dua tema**: Full Color (bawaan) dan Monochrome, dipilih pengunjung lewat tombol di navbar. Warna, font, dan sudut tiap tema berasal dari template aktif per jenis di `tb_template` (Pengaturan Sistem › Manajemen Template). Prototipe acuan (di luar repo): `laravel-erp-prototipe/tema-ganda.html`. BootstrapMade dan Preline tidak dipakai (diputuskan pemilik 2026-10-09) |
+| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`, port shadcn/ui untuk HTML, MIT) dengan entri Vite terpisah dari aset admin; paket npm dipasang (dengan izin) di Fase 4 langkah 2. **Satu markup Blade, dua tema**: Full Color (bawaan) dan Monochrome, dipilih pengunjung lewat tombol di navbar. Warna, font, dan sudut tiap tema berasal dari template aktif per jenis di `tb_template` (Pengaturan Sistem › Manajemen Template); sampai Fase 4 langkah 3 selesai, nilainya dari `config/tema.php` dan selalu dibaca lewat `TemaService`. Prototipe acuan (di luar repo): `laravel-erp-prototipe/tema-ganda.html`. BootstrapMade dan Preline tidak dipakai (diputuskan pemilik 2026-10-09) |
 
 ### Integrasi Gentelella v4 dengan Laravel
 - Pasang via npm, lalu impor SCSS & modul JS di `resources/scss/admin.scss` dan `resources/js/admin.js`; dikompilasi oleh Vite Laravel.
@@ -108,26 +108,31 @@ app/
 │   │   ├── Auth/LoginController.php
 │   │   ├── Admin/DashboardController.php
 │   │   ├── Admin/CompanyProfile/   (IdentitasController, HeroController, ...)
-│   │   └── Web/                    (frontend publik — Fase 4)
-│   └── Requests/Admin/CompanyProfile/   (StoreXxxRequest, UpdateXxxRequest)
+│   │   └── Web/CompanyProfile/     (BerandaController, KontakKamiController — frontend publik)
+│   └── Requests/{Admin,Web}/CompanyProfile/   (StoreXxxRequest, UpdateXxxRequest)
 ├── Models/
 │   ├── Pengguna.php
 │   └── CompanyProfile/   (Identitas, Hero, Layanan, Portofolio, Artikel, KategoriArtikel, Faq, KontakKami)
 ├── Services/{CompanyProfile,Shared}/
 ├── Support/              (helper murni tanpa state)
-└── View/Components/Admin/
+└── View/Composers/       (MenuComposer; TemaComposer & SitusComposer untuk view publik)
 config/menu.php            (definisi menu sidebar per modul)
+config/tema.php            (dua template frontend bawaan; dibaca hanya lewat TemaService)
+config/perusahaan.php      (titik peta kantor, env opsional PETA_LAT/PETA_LNG/PETA_ZOOM)
 routes/
 ├── web.php                (rute publik + auth)
 ├── admin.php              (grup admin: prefix /admin, middleware web+auth, name admin.)
 └── admin/company-profile.php   (di-require oleh admin.php; satu file per modul)
+resources/css/web.css + resources/css/web/{token,struktur,komponen}.css   (Tailwind v4 + Basecoat, frontend publik)
+resources/js/web.js + resources/js/web/*.js                               (perilaku frontend publik)
 resources/views/
-├── layouts/{admin,auth}.blade.php
+├── layouts/{admin,auth,web}.blade.php   (+ layouts/web/{head,navbar,footer,tombol-wa})
 ├── components/admin/      (page-header, card, form-input, alert, delete-button, empty-state, ...)
+├── components/web/        (ikon, kepala-seksi, isian, tautan-luar)
 ├── auth/login.blade.php
 ├── admin/dashboard.blade.php
 ├── admin/company-profile/<entitas-kebab>/{index,create,edit,show}.blade.php
-└── web/                   (Fase 4)
+└── web/beranda.blade.php + web/beranda/*.blade.php   (seksi beranda publik)
 ```
 `routes/admin.php` didaftarkan di `bootstrap/app.php` (callback `then:` pada `withRouting`).
 
@@ -255,13 +260,23 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - **WYSIWYG hanya untuk teks yang tampil di frontend** (prinsip pemilik): deskripsi hero, layanan (deskripsi & keterangan), portofolio, dan kelak isi artikel memakai `<x-admin.form-editor>`. Teks yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap `<x-admin.form-textarea>`.
 - Konten HTML wajib disanitasi sebelum disimpan: Form Request memakai trait `App\Http\Requests\Concerns\MembersihkanHtml` (`$this->bersihkanHtml([...])` di `prepareForValidation()`) dan aturan `new App\Rules\PanjangTeksHtml(<maks>)` sebagai pengganti `max:`. Tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi (kelas `konten-html`); ringkasan di tabel memakai `Str::limit(App\Support\TeksHtml::polos(...))`. Selain itu selalu `{{ }}`. Data awal di seeder ditulis teks polos lalu dibungkus `TeksHtml::dariTeksPolos()`.
 
+### Frontend publik (Fase 4)
+- Layout `layouts/web` (bukan `layouts/admin`), entri Vite `resources/css/web.css` + `resources/js/web.js`. Satu markup, dua tema: `<html data-tema="full_color|monochrome">` dirender server dari cookie `tema` (ditulis `resources/js/web/tema.js`, dikecualikan dari enkripsi di `bootstrap/app.php`, divalidasi `JenisTemplate::dariCookie()`; bawaan Full Color).
+- Gaya per tema ditulis `[data-tema=full_color] .kelas { @apply … }` / `[data-tema=monochrome] .kelas { … }` di `resources/css/web/komponen.css`, di luar `@layer`. Beda kecil di markup memakai varian `warna:` / `mono:`. Komponen bersudut wajib memakai token `--sudut-*` (`rounded-kartu`, `rounded-tombol`, dst.), bukan `rounded-full`; bulat hanya untuk bentuk dekoratif (titik, blob, contoh warna, pin peta).
+- Nilai template (warna, nada, font, sudut) hanya lewat `App\Services\CompanyProfile\TemaService`; view tidak membaca `config('tema')` langsung. Turunan kontras dihitung `App\Support\KontrasWarna`. Font publik di `vite.config.js` (`preload: false`); font template baru wajib ditambahkan di sana sebelum bisa dipakai.
+- Identitas untuk frontend dibaca `IdentitasService::untukSitus()` (cache tanpa batas, dibuang event model `Identitas`), disediakan `SitusComposer` sebagai `$identitas` untuk `layouts.web*` dan `web.*`.
+- Ikon frontend: SVG Lucide lewat `<x-web.ikon nama="…">` (aturan Font Awesome di atas khusus panel admin). Tautan ke situs lain: `<x-web.tautan-luar>`.
+- Tautan menu memakai `{{ route('beranda') }}#seksi` agar tetap berfungsi dari halaman publik lain. Jangan menautkan ke halaman yang belum ada (mis. kartu artikel belum bertautan sampai halaman artikel dibuat).
+- Seksi beranda yang datanya kosong tidak dirender; teks WYSIWYG ditampilkan `{!! !!}` di `.konten-html`, ringkasan memakai `TeksHtml::polos()`.
+- Kelas Tailwind hanya dipindai dari berkas publik (`@source` di `web.css`), jadi **setiap perubahan Blade/JS publik wajib `npm run build`** sebelum deploy.
+
 ## 10. Keamanan
 
 - Tidak ada registrasi publik. Akun admin dibuat oleh `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
 - Login: rate limit (5 percobaan/menit per email+IP) — **dinonaktifkan saat `APP_ENV=local`** agar tidak mengganggu development, aktif di produksi. `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (lihat `docs/DATABASE.md` bagian A). Jangan menambahkannya.
 - Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission direncanakan (lihat ROADMAP).
-- Form publik (kontak kami — Fase 4): rate limit + honeypot.
+- Form publik (kontak kami): `throttle:kontak` 3 kiriman/menit per IP (dimatikan saat `APP_ENV=local` seperti login) + honeypot `website` (pesan bot tidak disimpan tetapi tetap dibalas sukses). Sesi habis (419) dan batas kiriman kembali ke formulir dengan isian utuh.
 - Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`, header keamanan via middleware.
 
 ## 11. ISO/IEC 25010 — Penerapan Praktis
@@ -284,6 +299,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - [ ] Form Request untuk store & update, pesan berbahasa Indonesia
 - [ ] Controller, rute bernama, entri menu `config/menu.php`
 - [ ] View memakai layout & komponen admin, responsif (desktop, tablet, ponsel)
+- [ ] Frontend publik: `npm run build`, lalu cek visual kedua tema (Full Color & Monochrome) di 1536 & 390 px
 - [ ] Feature test: akses tamu ditolak, validasi, create/read/update/delete berhasil
 - [ ] Unit test untuk setiap Service yang memuat logika
 - [ ] `composer check` lulus tanpa error

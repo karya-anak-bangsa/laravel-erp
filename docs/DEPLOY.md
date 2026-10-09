@@ -39,8 +39,11 @@ git push
 
 | Perubahan | Perlu build & unggah aset? |
 |---|---|
-| PHP, Blade, migration, route, config | Tidak |
-| `resources/js`, `resources/scss`, `vite.config.js`, paket npm | **Ya** |
+| PHP, Blade admin, migration, route, config | Tidak |
+| `resources/js`, `resources/scss`, `resources/css`, `vite.config.js`, paket npm | **Ya** |
+| Blade frontend publik (`layouts/web*`, `web/**`, `components/web/**`) | **Ya** — kelas Tailwind dipindai dari berkas ini saat build |
+
+Bila aset di-build ulang, unggah **seluruh** `public\build` dari commit yang sama dengan kode yang di-pull. Hash `admin-*.js` ikut berubah setiap ada perubahan JS publik (helper Vite bersama); itu normal.
 
 ### 2. Di server (PuTTY)
 
@@ -54,6 +57,8 @@ php artisan migrate --force
 ```
 
 ### 3. Unggah aset (bila perlu) — dari PowerShell di laptop
+
+Boleh (dan lebih aman) dilakukan **sebelum** `git pull`: manifest baru tetap memuat entri lama, sedangkan kode baru tanpa manifest baru menghasilkan error 500 di beranda. Paling lambat sebelum `php artisan up`.
 
 ```powershell
 cd C:\laragon\www\project\laravel-erp
@@ -127,6 +132,11 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 
 ---
 
+- **Fase 4 — Frontend publik (beranda)** — sekali saat beranda pertama kali tayang (`/` tidak lagi dialihkan ke `/admin`; panel admin tetap di `/admin` dan `/login`):
+  1. Admin › Company Profile › Hero: ubah URL CTA **semua** hero yang masih berupa path halaman yang belum ada (`/portofolio` → `#portofolio`; `/pelatihan`, `/sertifikasi`, `/bootcamp` → `#layanan`). Data seeder baru sudah memakai anchor, tetapi seeder tidak menimpa data yang ada.
+  2. Admin › Pengaturan Sistem › Identitas: unggah logo lebar berlatar **transparan** (mis. `database/seeders/berkas/identitas/logo-tkab.webp`). Logo persegi berlatar putih menjadi kotak hitam di tema Monochrome dan kotak putih di footer.
+  3. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
+
 ## Aturan & Pemecahan Masalah
 
 - **Setiap mengubah `.env`, jalankan `php artisan optimize`** — config yang di-cache tidak membaca `.env` lagi.
@@ -138,4 +148,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   - `No application encryption key has been specified` → `php artisan key:generate --force && php artisan optimize`
   - Error database → cek `DB_*` di `.env` (password berawalan `#` wajib dikutip)
 - **Tampilan polos tanpa CSS** → `public/build` belum diunggah atau tidak lengkap (`ls public/build` harus berisi `assets`, `manifest.json`, `fonts-manifest.json`).
+- **Beranda error 500 `Unable to locate file in Vite manifest: resources/css/web.css`** atau **`Font alias [...] is not defined`** → `public/build` yang terunggah berasal dari build lama. Build ulang dari commit yang sama lalu unggah seluruh `public\build`.
+- **Identitas diubah langsung di database** (bukan lewat admin) tidak langsung tampil di beranda karena di-cache → `php artisan cache:forget company-profile.identitas`. Perubahan lewat admin/seeder membuang cache otomatis; `php artisan optimize` tidak menghapus cache ini.
+- **Tema beranda tertukar antarpengunjung** → bila kelak LiteSpeed Cache diaktifkan di hPanel, kecualikan halaman publik dari cache (HTML berbeda per cookie `tema`).
 - **HTTPS**: pengalihan HTTP → HTTPS sudah ditangani Hostinger; `public/.htaccess` tidak perlu diubah.

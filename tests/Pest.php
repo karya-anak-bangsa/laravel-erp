@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Vite;
 use Tests\TestCase;
 
 /*
@@ -16,8 +17,13 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    // Aset Vite tidak di-build saat test; @vite dan @fonts dirender kosong.
-    ->beforeEach(fn () => $this->withoutVite())
+    // Aset Vite tidak di-build saat test, jadi @vite dirender kosong. withoutVite() tidak memalsukan @fonts,
+    // maka manifest font diarahkan ke berkas yang sengaja tidak ada agar @fonts juga kosong dan test tidak
+    // bergantung pada isi public/build. Kecocokan alias font diperiksa lewat npm run build.
+    ->beforeEach(function () {
+        $this->withoutVite();
+        app(Vite::class)->useFontsManifestFilename('fonts-manifest.testing.json');
+    })
     ->in('Feature');
 
 // Unit test Service butuh container Laravel & database (mis. storage, transaksi DB).

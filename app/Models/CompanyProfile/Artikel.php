@@ -4,6 +4,7 @@ namespace App\Models\CompanyProfile;
 
 use App\Enums\CompanyProfile\StatusPublikasi;
 use Database\Factories\CompanyProfile\ArtikelFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,16 @@ class Artikel extends Model
             'tanggal' => 'date',
             'status_publikasi' => StatusPublikasi::class,
         ];
+    }
+
+    /**
+     * Hanya artikel terbit yang tampil di frontend.
+     *
+     * @param  Builder<Artikel>  $query
+     */
+    public function scopeTerbit(Builder $query): void
+    {
+        $query->where('status_publikasi', StatusPublikasi::Terbit);
     }
 
     /**

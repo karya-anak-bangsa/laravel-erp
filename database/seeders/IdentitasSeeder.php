@@ -24,8 +24,8 @@ class IdentitasSeeder extends Seeder
             'nama_perusahaan' => 'PT. Teknologi Karya Anak Bangsa',
             'judul_website' => 'PT. Teknologi Karya Anak Bangsa',
             'alamat_website' => 'https://karyaanakbangsa.co.id',
-            // Kolom logo & favicon wajib berisi, jadi ikon bawaan aplikasi dipakai sebagai awal.
-            'logo_website' => $this->salinBerkasAwal(public_path('apple-touch-icon.png'), Identitas::FOLDER, Identitas::DISK),
+            // Logo lebar berlatar transparan: tema Monochrome menghitamkannya dan footer memutihkannya lewat filter CSS.
+            'logo_website' => $this->salinBerkasAwal(database_path('seeders/berkas/identitas/logo-tkab.webp'), Identitas::FOLDER, Identitas::DISK),
             'favicon_website' => $this->salinBerkasAwal(public_path('favicon.png'), Identitas::FOLDER, Identitas::DISK),
             'email' => 'info@karyaanakbangsa.co.id',
             'telepon' => '0812-3456-7890',

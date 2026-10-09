@@ -1,0 +1,235 @@
+/*
+ * Aturan struktural (grid, tata letak per tema, FAQ, dialog, peta, animasi). CSS biasa tanpa @apply,
+ * sengaja di luar @layer agar menang atas utilitas Tailwind, sama seperti prototipe yang disetujui.
+ */
+
+html { -webkit-font-smoothing: antialiased; }
+/* Basecoat memasang scroll-smooth tanpa syarat; gulir halus hanya bila pengunjung tidak memilih gerak dikurangi. */
+html { scroll-behavior: auto; }
+@media (prefers-reduced-motion: no-preference) { html:focus-within { scroll-behavior: smooth; } }
+body { background: var(--background); color: var(--teks); }
+[id] { scroll-margin-top: 5rem; }
+::selection { background: var(--foreground); color: var(--background); }
+
+/* Fokus keyboard seragam: garis 2px warna --ring (aksen di Full Color, hitam di Monochrome, putih di seksi gelap). */
+:where(a, button, summary, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.btn:focus-visible, .tabs [role=tab]:focus-visible { --tw-ring-color: transparent; }
+
+/* Gambar konten: berwarna di Full Color, grayscale di Monochrome. */
+.gambar-konten { transition: filter .3s ease, transform .5s ease; }
+[data-tema=monochrome] .gambar-konten { filter: grayscale(1) contrast(1.05); }
+.logo-putih { filter: brightness(0) invert(1); }
+
+/* Pola kisi tipis yang memudar */
+.pola-kisi {
+  background-image: linear-gradient(to right, var(--kisi) 1px, transparent 1px), linear-gradient(to bottom, var(--kisi) 1px, transparent 1px);
+  background-size: 56px 56px; background-position: center top;
+}
+.pola-pudar { -webkit-mask-image: radial-gradient(ellipse 70% 62% at 50% 0%, #000 35%, transparent 100%); mask-image: radial-gradient(ellipse 70% 62% at 50% 0%, #000 35%, transparent 100%); }
+.pola-pudar-tengah { -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 15%, transparent 100%); mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 15%, transparent 100%); }
+
+/* Isi WYSIWYG (sudah disanitasi server): preflight menghapus gaya list/paragraf, dikembalikan di sini. */
+.konten-html > * + * { margin-top: .75em; }
+.konten-html ul { list-style: disc; padding-inline-start: 1.25em; }
+.konten-html ol { list-style: decimal; padding-inline-start: 1.25em; }
+.konten-html li + li { margin-top: .25em; }
+.konten-html a { color: var(--aksen-teks); text-decoration: underline; text-underline-offset: 3px; }
+.konten-html strong { font-weight: 600; color: var(--foreground); }
+
+/* ---------- Grid layanan ----------
+   Full Color: 3 kolom, baris terakhir yang tidak penuh diletakkan di tengah (5 item → 3 + 2).
+   Monochrome: tanpa kartu yatim — 5 item → 2 kartu lebar + 3 kartu. */
+.grid-layanan { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+.isi-layanan-gambar { grid-area: gambar; }
+.isi-layanan-kepala { grid-area: kepala; }
+.isi-layanan-deskripsi { grid-area: deskripsi; }
+.isi-layanan-rinci { grid-area: rinci; }
+@media (min-width: 640px) { [data-tema=full_color] .grid-layanan { gap: 1.5rem; } }
+@media (min-width: 768px) {
+  [data-tema=full_color] .grid-layanan { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  [data-tema=full_color] .grid-layanan > * { grid-column: span 2; }
+  [data-tema=full_color] .grid-layanan > :nth-child(2n+1):last-child { grid-column: 2 / span 2; }
+  [data-tema=monochrome] .grid-layanan { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-tema=monochrome] .grid-layanan:has(> :last-child:nth-child(odd)) > :first-child { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+  [data-tema=full_color] .grid-layanan { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.75rem; }
+  [data-tema=full_color] .grid-layanan > :nth-child(2n+1):last-child { grid-column: span 2; }
+  [data-tema=full_color] .grid-layanan > :nth-child(3n+1):nth-last-child(2) { grid-column: 2 / span 2; }
+  [data-tema=full_color] .grid-layanan > :nth-child(3n+1):last-child { grid-column: 3 / span 2; }
+  [data-tema=monochrome] .grid-layanan { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  [data-tema=monochrome] .grid-layanan > *,
+  [data-tema=monochrome] .grid-layanan:has(> :last-child:nth-child(odd)) > :first-child { grid-column: span 2; }
+  [data-tema=monochrome] .grid-layanan:has(> :last-child:nth-child(3n+2)) > :nth-child(-n+2),
+  [data-tema=monochrome] .grid-layanan:has(> :last-child:nth-child(3n+1)) > :nth-child(-n+4) { grid-column: span 3; }
+}
+@media (min-width: 1280px) {
+  [data-tema=full_color] .grid-layanan:has(> :nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  [data-tema=full_color] .grid-layanan:has(> :nth-child(4):last-child) > * { grid-column: span 1; }
+}
+/* Isi kartu layanan Monochrome: gambar → judul → deskripsi → keterangan; ponsel: gambar jadi thumbnail;
+   kartu lebar (container ≥ 36rem): judul & deskripsi di kiri, gambar 4:3 di kanan. */
+[data-tema=monochrome] .kartu-layanan { container-type: inline-size; }
+[data-tema=monochrome] .isi-layanan { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-areas: "gambar" "kepala" "deskripsi" "rinci"; }
+[data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 16 / 10; }
+@media (max-width: 639.98px) {
+  [data-tema=monochrome] .isi-layanan { grid-template-columns: minmax(0, 1fr) 5.75rem; grid-template-areas: "kepala gambar" "deskripsi deskripsi" "rinci rinci"; }
+  [data-tema=monochrome] .isi-layanan-gambar { margin: .625rem .625rem 0 0; align-self: start; }
+  [data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
+}
+@container (min-width: 36rem) {
+  [data-tema=monochrome] .isi-layanan {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-rows: 1fr auto auto 1fr auto;
+    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" ". gambar" "rinci rinci";
+  }
+  [data-tema=monochrome] .isi-layanan-gambar { align-self: center; margin: 0; }
+  [data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
+  [data-tema=monochrome] .isi-layanan-kepala { padding: 0 1.5rem; }
+  [data-tema=monochrome] .isi-layanan-deskripsi { padding-inline: 1.5rem; }
+  [data-tema=monochrome] .isi-layanan-rinci { margin-inline: 1.5rem; margin-top: 1.25rem; }
+}
+
+/* ---------- Portofolio: ponsel = baris geser (scroll-snap), md+ = 2/3 kolom ---------- */
+.daftar-portofolio { display: flex; gap: 1rem; }
+.item-portofolio[hidden] { display: none !important; }
+@media (max-width: 767.98px) {
+  .daftar-portofolio {
+    overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin-inline: -1rem; padding: .25rem 1rem 1rem; scroll-padding-inline: 1rem; scrollbar-width: none;
+  }
+  .daftar-portofolio::-webkit-scrollbar { display: none; }
+  .daftar-portofolio > * { flex: 0 0 84%; scroll-snap-align: start; }
+  .daftar-portofolio[data-jumlah="1"] > * { flex-basis: 100%; }
+}
+@media (min-width: 640px) and (max-width: 767.98px) {
+  .daftar-portofolio { margin-inline: -1.5rem; padding-inline: 1.5rem; scroll-padding-inline: 1.5rem; }
+  .daftar-portofolio > * { flex-basis: 62%; }
+}
+@media (min-width: 768px) {
+  .daftar-portofolio { flex-wrap: wrap; gap: 1.5rem; }
+  .daftar-portofolio > * { width: calc(50% - .75rem); }
+  [data-tema=full_color] .daftar-portofolio { justify-content: center; }
+}
+@media (min-width: 1024px) { .daftar-portofolio > * { width: calc((100% - 3rem) / 3); } }
+
+/* ---------- Artikel ----------
+   Full Color: artikel pertama kartu utama (CSS :first-child, markup tiap item identik).
+   Monochrome: daftar editorial (meta · judul · ringkasan · thumbnail); .kartu-artikel-isi memakai
+   display: contents agar anak-anaknya menjadi sel grid kartu. */
+[data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+[data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
+@media (max-width: 767.98px) {
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 7.5rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .25rem .5rem .25rem 1rem; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-judul { margin-top: .5rem; font-size: 1rem; line-height: 1.4; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) :is(.kartu-artikel-ringkasan, .kartu-artikel-tautan) { display: none; }
+}
+@media (min-width: 768px) {
+  [data-tema=full_color] .daftar-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  [data-tema=full_color] .daftar-artikel > :first-child { grid-row: span 2; }
+  [data-tema=full_color] .daftar-artikel > :only-child { grid-column: 1 / -1; }
+  [data-tema=full_color] .daftar-artikel > :first-child .kartu-artikel-judul { font-size: 1.375rem; line-height: 1.3; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 40%; flex-shrink: 0; aspect-ratio: 4 / 3; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
+}
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-ringkasan { display: none; }
+}
+[data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan"; align-items: start; }
+[data-tema=monochrome] .kartu-artikel-isi { display: contents; }
+[data-tema=monochrome] .kartu-artikel-meta { grid-area: meta; }
+[data-tema=monochrome] .kartu-artikel-judul { grid-area: judul; }
+[data-tema=monochrome] .kartu-artikel-ringkasan { grid-area: ringkasan; }
+[data-tema=monochrome] .kartu-artikel-gambar { grid-area: gambar; }
+[data-tema=monochrome] .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
+@media (min-width: 640px) {
+  [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 11rem; grid-template-rows: auto auto 1fr; grid-template-areas: "meta gambar" "judul gambar" "ringkasan gambar"; }
+}
+@media (min-width: 1024px) {
+  [data-tema=monochrome] .kartu-artikel { grid-template-columns: 12rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
+}
+
+/* ---------- Kontak: susunan berbeda per tema lewat grid-template-areas (urutan DOM tetap) ---------- */
+.tata-kontak { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "info" "form" "peta"; }
+.info-kontak { grid-area: info; }
+.kartu-formulir { grid-area: form; }
+.wadah-peta { grid-area: peta; }
+@media (min-width: 1024px) {
+  [data-tema=full_color] .tata-kontak { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "info info" "form peta"; }
+}
+[data-tema=monochrome] .tata-kontak { gap: 2rem; grid-template-areas: "info" "peta" "form"; }
+@media (min-width: 768px) {
+  [data-tema=monochrome] .tata-kontak { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "info peta" "form form"; gap: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  [data-tema=monochrome] .tata-kontak { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto 1fr; grid-template-areas: "info form" "peta form"; column-gap: 2.5rem; }
+}
+
+/* ---------- FAQ: <details name="faq"> bawaan browser (satu terbuka sekaligus, tanpa JS) ---------- */
+.item-faq > summary { list-style: none; }
+.item-faq > summary::-webkit-details-marker { display: none; }
+.item-faq .ikon-minus, .item-faq[open] .ikon-plus { display: none; }
+.item-faq[open] .ikon-minus { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) and selector(::details-content) {
+    :root { interpolate-size: allow-keywords; }
+    .item-faq::details-content { height: 0; overflow: clip; transition: height .3s ease, content-visibility .3s allow-discrete; }
+    .item-faq[open]::details-content { height: auto; }
+  }
+}
+
+/* ---------- Modal layanan (dialog bawaan browser: kunci fokus, Esc, latar inert) ---------- */
+html:has(.dialog-layanan[open]) { overflow: hidden; }
+.dialog-layanan { margin: auto; padding: 0; border: 0; background: transparent; width: calc(100% - 1.5rem); max-width: 42rem; max-height: calc(100dvh - 1.5rem); overflow: visible; }
+.dialog-layanan::backdrop { background: rgb(11 21 38 / .6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+@media (prefers-reduced-motion: no-preference) {
+  .dialog-layanan[open] .dialog-layanan-isi { animation: naik-masuk .3s ease-out both; }
+}
+
+/* ---------- Peta (Leaflet) — penimpa gaya; leaflet.css diimpor lebih dulu di web.css ---------- */
+.penanda-peta { background: none; border: 0; display: flex; align-items: flex-end; justify-content: center; }
+.penanda-peta span {
+  display: grid; place-items: center; width: 40px; height: 40px;
+  border-radius: 9999px 9999px 9999px 0; transform: rotate(-45deg);
+  background: var(--primary); border: 3px solid #fff; box-shadow: 0 8px 20px -6px color-mix(in oklab, var(--primary) 60%, transparent);
+}
+.penanda-peta svg { transform: rotate(45deg); width: 18px; height: 18px; color: var(--primary-foreground); }
+[data-tema=monochrome] .penanda-peta span { width: 22px; height: 22px; margin-bottom: -11px; border-radius: 9999px; transform: none; box-shadow: 0 0 0 1px rgb(0 0 0 / .25), 0 4px 10px rgb(0 0 0 / .3); }
+[data-tema=monochrome] .penanda-peta svg { display: none; }
+.leaflet-container { font-family: inherit; background: var(--muted); }
+[data-tema=full_color] .leaflet-tile-pane { filter: grayscale(.65) saturate(.7) brightness(1.03) contrast(.96); }
+[data-tema=monochrome] .leaflet-tile-pane { filter: grayscale(1); }
+.leaflet-popup-content-wrapper { border-radius: var(--sudut-dalam); box-shadow: 0 12px 32px -12px rgb(15 23 42 / .35); }
+.leaflet-popup-content { margin: 14px 18px; font-size: 13px; line-height: 1.5; color: var(--teks); }
+.leaflet-popup-content strong { color: var(--foreground); }
+.leaflet-bar a { color: var(--foreground); }
+@media (pointer: coarse) {
+  .leaflet-touch .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; }
+  .leaflet-container a.leaflet-popup-close-button { width: 44px; height: 44px; font-size: 24px; line-height: 44px; }
+}
+
+/* Tombol WhatsApp melayang: disembunyikan saat ajakan kontak lain terlihat (hero, band ajakan, kontak, footer). */
+.tombol-wa { transition: opacity .2s ease, transform .2s ease, visibility .2s; }
+.tombol-wa[data-sembunyi] { opacity: 0; transform: translateY(1rem); visibility: hidden; pointer-events: none; }
+
+/* Monitor sangat lebar (≥2400px): perbesar skala rem sedikit */
+@media (min-width: 2400px) { html { font-size: 112.5%; } }
+
+/* Animasi: masuk di hero (CSS murni), kartu portofolio saat difilter, dan transisi silang saat ganti tema */
+@media (prefers-reduced-motion: no-preference) {
+  .muncul { animation: naik-masuk .7s cubic-bezier(.2, .7, .2, 1) both; }
+  .tunda-1 { animation-delay: .06s; }
+  .tunda-2 { animation-delay: .12s; }
+  .tunda-3 { animation-delay: .18s; }
+  .tunda-4 { animation-delay: .26s; }
+  .muncul-ulang { animation: muncul .35s ease-out both; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+@keyframes naik-masuk { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes muncul { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }

@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use Database\Factories\CompanyProfile\HeroFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,16 @@ class Hero extends Model
             'cta' => 'array',
             'status_aktif' => 'boolean',
         ];
+    }
+
+    /**
+     * Hero yang tampil di frontend (hanya satu yang aktif, dijaga HeroService).
+     *
+     * @param  Builder<Hero>  $query
+     */
+    public function scopeAktif(Builder $query): void
+    {
+        $query->where('status_aktif', true);
     }
 
     /**

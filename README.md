@@ -3,7 +3,7 @@
 Sistem ERP berbasis web untuk PT. Teknologi Karya Anak Bangsa (TKAB), dimulai dari modul Company Profile dan dikembangkan bertahap.
 
 - Produksi: https://karyaanakbangsa.co.id
-- Stack: Laravel 13 (PHP 8.3), MySQL 8, Gentelella v4 + Vite, Pest
+- Stack: Laravel 13 (PHP 8.3), MySQL 8, Vite, Pest; panel admin Gentelella v4, frontend publik Tailwind CSS v4 + Basecoat UI (dua tema)
 
 Panduan pengembangan ada di [CLAUDE.md](CLAUDE.md), skema database di [docs/DATABASE.md](docs/DATABASE.md), dan urutan pekerjaan di [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -32,7 +32,7 @@ Prasyarat: PHP 8.3+, Composer 2, Node.js 20+, MySQL 8 (Laragon).
    ```bash
    php artisan migrate --seed
    ```
-5. Jalankan di dua terminal terpisah, lalu buka http://localhost:8000:
+5. Jalankan di dua terminal terpisah, lalu buka http://localhost:8000 (beranda publik; panel admin di http://localhost:8000/admin):
    ```bash
    php artisan serve
    npm run dev

@@ -66,7 +66,7 @@ Catatan implementasi:
 | deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG (lihat Konvensi Umum) |
 | gambar | VARCHAR(255) | |
 | keyword | JSON | array string, mis. `["Website","Mobile Apps","Pelatihan IT","Sertifikasi IT","Bootcamp"]`; cast `array` |
-| cta | JSON | array objek, mis. `[{"label":"Hubungi Kami","url":"#kontak","gaya":"primary"},{"label":"Lihat Portofolio","url":"/portofolio","gaya":"secondary"}]`; cast `array` |
+| cta | JSON | array objek, mis. `[{"label":"Hubungi Kami","url":"#kontak","gaya":"primary"},{"label":"Lihat Portofolio","url":"#portofolio","gaya":"secondary"}]`; cast `array`. URL berupa anchor seksi beranda (`#…`) atau situs lain; jangan path halaman publik yang belum ada |
 | status_aktif | BOOLEAN DEFAULT true | **(+)** INDEX. Menentukan hero yang tampil di frontend. Boleh banyak hero, tetapi **hanya satu yang aktif** — dijaga `HeroService` (mengaktifkan satu hero menonaktifkan yang lain) |
 | created_at, updated_at, deleted_at | | |
 

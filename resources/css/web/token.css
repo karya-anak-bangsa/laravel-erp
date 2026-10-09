@@ -1,0 +1,81 @@
+/*
+ * Peta token semantik per tema. Nilai dasar (--warna-utama, --warna-aksen, --nada-*, --font-tema, --sudut-*)
+ * berasal dari template aktif dan dirender server ke <style id="token-template"> (TemaService).
+ */
+
+/* Full Color: warna merek dari template; warna netral (slate) tetap. */
+html[data-tema=full_color] {
+  --background: #ffffff; --foreground: var(--utama-teks);
+  --card: #ffffff; --card-foreground: var(--utama-teks);
+  --popover: #ffffff; --popover-foreground: var(--utama-teks);
+  --primary: var(--warna-aksen); --primary-foreground: var(--aksen-kontras);
+  --secondary: #f1f5f9; --secondary-foreground: var(--utama-teks);
+  --muted: #f1f5f9; --muted-foreground: #64748b;
+  --accent: #f1f5f9; --accent-foreground: var(--utama-teks);
+  --border: #e2e8f0; --input: #cbd5e1; --ring: var(--aksen-teks);
+  --teks: #475569; --latar-redup: #f8fafc;
+  --utama-50: color-mix(in oklab, var(--warna-utama) 6%, #fff);
+  --utama-100: color-mix(in oklab, var(--warna-utama) 12%, #fff);
+  --utama-gelap: color-mix(in oklab, var(--utama-teks) 58%, #000);
+  --aksen-tua: color-mix(in oklab, var(--warna-aksen) 80%, #000);
+  --aksen-lembut: color-mix(in oklab, var(--warna-aksen) 8%, #fff);
+  --kisi: color-mix(in oklab, var(--warna-utama) 7%, transparent);
+  --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3);
+}
+/* Monochrome: seluruh warna dari skala abu-abu (nada dasar) template. */
+html[data-tema=monochrome] {
+  --background: #ffffff; --foreground: var(--nada-950);
+  --card: #ffffff; --card-foreground: var(--nada-950);
+  --popover: #ffffff; --popover-foreground: var(--nada-950);
+  --primary: var(--nada-900); --primary-foreground: var(--nada-50);
+  --secondary: var(--nada-100); --secondary-foreground: var(--nada-900);
+  --muted: var(--nada-100); --muted-foreground: var(--nada-500);
+  --accent: var(--nada-100); --accent-foreground: var(--nada-900);
+  --border: var(--nada-200); --input: var(--nada-200); --ring: var(--nada-950);
+  --teks: color-mix(in oklab, var(--nada-950) 80%, #fff);
+  --latar-redup: color-mix(in oklab, var(--nada-100) 40%, #fff);
+  --aksen-teks: var(--nada-950); --kisi: var(--nada-200);
+  --corak: var(--nada-900); --corak-lembut: var(--nada-100); --corak-teks: var(--nada-900); --corak-cincin: var(--nada-200);
+}
+/* Seksi gelap (band ajakan, footer). Token --color-* Basecoat dihitung di :root, jadi dipetakan ulang di sini.
+   Semua token ditulis ulang karena aturan .dark bawaan Basecoat ikut menimpa nilai yang diwarisi (mis. --primary). */
+[data-tema=full_color] .dark {
+  --background: var(--utama-gelap); --foreground: #ffffff;
+  --card: color-mix(in oklab, var(--utama-gelap) 88%, #fff); --card-foreground: #ffffff;
+  --popover: var(--utama-gelap); --popover-foreground: #ffffff;
+  --primary: var(--warna-aksen); --primary-foreground: var(--aksen-kontras);
+  --secondary: rgb(255 255 255 / .1); --secondary-foreground: #ffffff;
+  --muted: rgb(255 255 255 / .08); --muted-foreground: #cbd5e1;
+  --accent: rgb(255 255 255 / .1); --accent-foreground: #ffffff;
+  --border: rgb(255 255 255 / .12); --input: rgb(255 255 255 / .3); --ring: #ffffff;
+  --teks: #cbd5e1;
+}
+[data-tema=monochrome] .dark {
+  --background: var(--nada-950); --foreground: var(--nada-50);
+  --card: var(--nada-900); --card-foreground: var(--nada-50);
+  --popover: var(--nada-900); --popover-foreground: var(--nada-50);
+  --primary: var(--nada-50); --primary-foreground: var(--nada-900);
+  --secondary: var(--nada-800); --secondary-foreground: var(--nada-50);
+  --muted: var(--nada-800); --muted-foreground: var(--nada-400);
+  --accent: var(--nada-800); --accent-foreground: var(--nada-50);
+  --border: rgb(255 255 255 / .1); --input: rgb(255 255 255 / .15); --ring: var(--nada-50);
+  --teks: var(--nada-300); --kisi: rgb(255 255 255 / .08);
+}
+.dark {
+  color-scheme: dark;
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-card: var(--card); --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring);
+}
+
+/* Warna aksen per item (layanan, kata kunci, portofolio) hanya di Full Color — selaras dengan latar ilustrasi. */
+[data-tema=full_color] :is(.corak-sky, .aksen-berputar > :nth-child(6n+1)) { --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3); }
+[data-tema=full_color] :is(.corak-indigo, .aksen-berputar > :nth-child(6n+2)) { --corak: #4f46e5; --corak-lembut: #e0e7ff; --corak-teks: #4338ca; --corak-cincin: rgb(79 70 229 / .3); }
+[data-tema=full_color] :is(.corak-teal, .aksen-berputar > :nth-child(6n+3)) { --corak: #0d9488; --corak-lembut: #ccfbf1; --corak-teks: #0f766e; --corak-cincin: rgb(13 148 136 / .3); }
+[data-tema=full_color] :is(.corak-violet, .aksen-berputar > :nth-child(6n+4)) { --corak: #7c3aed; --corak-lembut: #ede9fe; --corak-teks: #6d28d9; --corak-cincin: rgb(124 58 237 / .3); }
+[data-tema=full_color] :is(.corak-rose, .aksen-berputar > :nth-child(6n+5)) { --corak: #e11d48; --corak-lembut: #ffe4e6; --corak-teks: #be123c; --corak-cincin: rgb(225 29 72 / .3); }
+[data-tema=full_color] :is(.corak-amber, .aksen-berputar > :nth-child(6n+6)) { --corak: #d97706; --corak-lembut: #fef3c7; --corak-teks: #b45309; --corak-cincin: rgb(217 119 6 / .3); }

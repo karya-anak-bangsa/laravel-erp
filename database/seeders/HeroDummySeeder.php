@@ -44,7 +44,7 @@ class HeroDummySeeder extends Seeder
                 'deskripsi' => 'Kelas tatap muka dan daring yang disusun sesuai kebutuhan perusahaan, dibimbing instruktur berpengalaman industri.',
                 'keyword' => ['Laravel', 'Flutter', 'UI/UX', 'Data Analyst'],
                 'cta' => [
-                    ['label' => 'Lihat Jadwal', 'url' => '/pelatihan', 'gaya' => GayaCta::Primary->value],
+                    ['label' => 'Lihat Jadwal', 'url' => '#layanan', 'gaya' => GayaCta::Primary->value],
                     ['label' => 'Konsultasi', 'url' => '#kontak', 'gaya' => GayaCta::Secondary->value],
                 ],
             ],
@@ -53,7 +53,7 @@ class HeroDummySeeder extends Seeder
                 'deskripsi' => 'Persiapan dan uji kompetensi untuk membuktikan keahlian Anda dengan sertifikat yang diakui industri.',
                 'keyword' => ['Junior Web Developer', 'Network Administrator', 'Digital Marketing'],
                 'cta' => [
-                    ['label' => 'Daftar Sertifikasi', 'url' => '/sertifikasi', 'gaya' => GayaCta::Primary->value],
+                    ['label' => 'Daftar Sertifikasi', 'url' => '#layanan', 'gaya' => GayaCta::Primary->value],
                 ],
             ],
             'bootcamp' => [
@@ -61,7 +61,7 @@ class HeroDummySeeder extends Seeder
                 'deskripsi' => 'Program intensif berbasis proyek nyata agar mahasiswa siap masuk dunia kerja sebagai developer.',
                 'keyword' => ['Fullstack Web', 'Mobile Developer', 'Proyek Nyata'],
                 'cta' => [
-                    ['label' => 'Gabung Bootcamp', 'url' => '/bootcamp', 'gaya' => GayaCta::Primary->value],
+                    ['label' => 'Gabung Bootcamp', 'url' => '#layanan', 'gaya' => GayaCta::Primary->value],
                     ['label' => 'Tanya via WhatsApp', 'url' => 'https://wa.me/6281234567890', 'gaya' => GayaCta::Secondary->value],
                 ],
             ],
@@ -70,7 +70,7 @@ class HeroDummySeeder extends Seeder
                 'deskripsi' => 'Kami merancang dan membangun aplikasi Android & iOS yang cepat, aman, dan mudah digunakan pelanggan Anda.',
                 'keyword' => ['Android', 'iOS', 'Flutter'],
                 'cta' => [
-                    ['label' => 'Lihat Portofolio', 'url' => '/portofolio', 'gaya' => GayaCta::Primary->value],
+                    ['label' => 'Lihat Portofolio', 'url' => '#portofolio', 'gaya' => GayaCta::Primary->value],
                     ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => GayaCta::Secondary->value],
                 ],
             ],

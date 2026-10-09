@@ -31,6 +31,25 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
         ->and(KontakKami::count())->toBe(0);
 });
 
+it('tidak memberi CTA hero tautan ke halaman publik yang belum ada', function () {
+    $this->seed(CompanyProfileSeeder::class);
+
+    // Path internal (/portofolio dll.) menghasilkan 404; yang boleh hanya anchor beranda (#…) atau situs lain.
+    $url = Hero::all()->flatMap(fn (Hero $hero) => array_column($hero->cta, 'url'));
+
+    expect($url)->not->toBeEmpty()
+        ->each(fn ($item) => $item->toMatch('#^(\#[a-z-]+|https://)#'));
+});
+
+it('memakai logo lebar berlatar transparan untuk identitas awal', function () {
+    $this->seed(CompanyProfileSeeder::class);
+
+    $logo = Identitas::sole()->logo_website;
+
+    expect($logo)->toEndWith('.webp');
+    Storage::disk('public')->assertExists($logo);
+});
+
 it('menjalankan seeder company profile ulang tanpa duplikasi data maupun gambar', function () {
     $this->seed(CompanyProfileSeeder::class);
     $jumlahBerkas = count(Storage::disk('public')->allFiles());
