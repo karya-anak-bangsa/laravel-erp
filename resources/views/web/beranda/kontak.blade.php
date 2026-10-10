@@ -15,15 +15,18 @@
         {{-- Kedua tema: kiri atas daftar kontak, kiri bawah peta, kanan formulir (grid-template-areas; urutan DOM tetap). --}}
         <div class="tata-kontak">
             <ul class="info-kontak">
+                {{-- Alamat juga tautan (ke Google Maps) agar seragam dengan baris lain: panah & efek sorot (pilihan pemilik 2026-10-11).
+                     div, bukan span: <address> tidak boleh berada di dalam elemen frasa. --}}
                 <li>
-                    <div class="tautan-kontak">
+                    <a href="{{ $tautanPeta }}" target="_blank" rel="noopener" class="tautan-kontak">
                         <span class="ikon-kontak" data-jenis="alamat" aria-hidden="true"><x-web.ikon nama="lokasi" :tebal="1.75" /></span>
-                        {{-- div, bukan span: <address> tidak boleh berada di dalam elemen frasa. --}}
                         <div class="isi-kontak">
                             <span class="label-kontak">Alamat</span>
                             <address class="nilai-kontak not-italic">{{ $identitas->alamat }}</address>
+                            <span class="sr-only">(buka di Google Maps, membuka tab baru)</span>
                         </div>
-                    </div>
+                        <x-web.ikon nama="panah-keluar" class="panah-kontak" />
+                    </a>
                 </li>
                 <li>
                     <a href="mailto:{{ $identitas->email }}" class="tautan-kontak">

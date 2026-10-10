@@ -159,7 +159,8 @@ body { background: var(--background); color: var(--teks); }
 /* ---------- Kontak: susunan sama di kedua tema (pilihan pemilik 2026-10-11), urutan DOM tetap ----------
    ponsel: kontak → formulir → peta; tablet: kontak | peta, formulir di bawah; desktop: kontak & peta kiri, formulir kanan. */
 .tata-kontak { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "info" "form" "peta"; }
-.info-kontak { grid-area: info; }
+/* Semua baris kontak setinggi baris tertinggi (alamat bisa dua-tiga baris), seragam di kedua tema. */
+.info-kontak { grid-area: info; display: grid; grid-auto-rows: 1fr; }
 .kartu-formulir { grid-area: form; }
 .wadah-peta { grid-area: peta; }
 @media (min-width: 768px) {

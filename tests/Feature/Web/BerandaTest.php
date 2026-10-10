@@ -220,8 +220,9 @@ describe('isi', function () {
         $this->get('/')
             ->assertSee('<span class="label-kontak">WhatsApp</span>', false)
             ->assertDontSee('<span class="label-kontak">Telepon</span>', false)
-            // Popup Leaflet & tombol peta cadangan memakai tautan yang sama.
+            // Popup Leaflet, tombol peta cadangan, dan baris alamat memakai tautan yang sama.
             ->assertSee('data-tautan="https://www.google.com/maps/search/?api=1&amp;query=-6.5%2C106.75"', false)
+            ->assertSee('<a href="https://www.google.com/maps/search/?api=1&amp;query=-6.5%2C106.75" target="_blank" rel="noopener" class="tautan-kontak">', false)
             ->assertSee('Buka di Google Maps')
             ->assertDontSee('openstreetmap.org/?mlat', false)
             ->assertSee('<button type="submit" class="btn btn-besar">Kirim Pesan</button>', false);

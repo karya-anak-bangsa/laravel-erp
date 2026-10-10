@@ -292,14 +292,15 @@
 [data-tema=monochrome] .tata-kontak { @apply mt-12; }
 /* Daftar kontak satu kartu bergaris pemisah seperti Monochrome (list-group; pilihan pemilik 2026-10-11). */
 [data-tema=full_color] .info-kontak { @apply divide-y overflow-hidden rounded-kartu bg-card ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .tautan-kontak { @apply flex items-center gap-4 p-5 transition-colors; }
+[data-tema=full_color] .tautan-kontak { @apply flex h-full items-center gap-4 p-5 transition-colors; }
 [data-tema=full_color] a.tautan-kontak:hover { background-color: var(--latar-redup); }
 [data-tema=full_color] a.tautan-kontak:focus-visible { outline-offset: -3px; }
-[data-tema=full_color] .ikon-kontak { @apply flex size-11 shrink-0 items-center justify-center ring-1; border-radius: var(--sudut-dalam); }
-[data-tema=full_color] .ikon-kontak[data-jenis=alamat] { @apply bg-(--aksen-lembut) text-aksen ring-(--warna-aksen)/15; }
-[data-tema=full_color] .ikon-kontak[data-jenis=email] { @apply bg-(--utama-100) text-foreground ring-(--warna-utama)/15; }
-[data-tema=full_color] .ikon-kontak[data-jenis=telepon] { @apply bg-sky-50 text-sky-700 ring-sky-100; }
-[data-tema=full_color] .ikon-kontak[data-jenis=whatsapp] { @apply bg-emerald-50 text-emerald-700 ring-emerald-100; }
+/* Ikon berwarna padat + ikon putih (pilihan pemilik 2026-10-11: lebih berwarna); kontras putih ≥3:1 untuk ikon. */
+[data-tema=full_color] .ikon-kontak { @apply flex size-11 shrink-0 items-center justify-center text-white; border-radius: var(--sudut-dalam); box-shadow: 0 1px 2px rgb(15 23 42 / .12); }
+[data-tema=full_color] .ikon-kontak[data-jenis=alamat] { background-color: var(--warna-aksen); }
+[data-tema=full_color] .ikon-kontak[data-jenis=email] { @apply bg-sky-600; }
+[data-tema=full_color] .ikon-kontak[data-jenis=telepon] { @apply bg-violet-600; }
+[data-tema=full_color] .ikon-kontak[data-jenis=whatsapp] { @apply bg-emerald-600; }
 [data-tema=full_color] .ikon-kontak svg { @apply size-5; }
 [data-tema=full_color] .label-kontak { @apply block font-bold text-foreground; }
 [data-tema=full_color] .nilai-kontak { @apply mt-1 block text-[15px] leading-relaxed text-teks; }
@@ -307,7 +308,7 @@
 [data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
 [data-tema=full_color] .panah-kontak { @apply size-4 shrink-0 text-slate-400; }
 [data-tema=monochrome] .info-kontak { @apply divide-y overflow-hidden rounded-kartu border bg-card shadow-xs; }
-[data-tema=monochrome] .tautan-kontak { @apply flex items-center gap-4 p-5; }
+[data-tema=monochrome] .tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
 [data-tema=monochrome] a.tautan-kontak { @apply transition-colors hover:bg-muted/60; }
 [data-tema=monochrome] a.tautan-kontak:focus-visible { outline-offset: -3px; }
 [data-tema=monochrome] .ikon-kontak { @apply flex size-10 shrink-0 items-center justify-center rounded-dalam border bg-muted text-foreground; }
