@@ -133,9 +133,41 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 ---
 
 - **Fase 4 — Frontend publik (beranda)** — sekali saat beranda pertama kali tayang (`/` tidak lagi dialihkan ke `/admin`; panel admin tetap di `/admin` dan `/login`):
-  1. Admin › Company Profile › Hero: ubah URL CTA **semua** hero yang masih berupa path halaman yang belum ada (`/portofolio` → `#portofolio`; `/pelatihan`, `/sertifikasi`, `/bootcamp` → `#layanan`). Data seeder baru sudah memakai anchor, tetapi seeder tidak menimpa data yang ada.
-  2. Admin › Pengaturan Sistem › Identitas: unggah logo lebar berlatar **transparan** (mis. `database/seeders/berkas/identitas/logo-tkab.webp`). Logo persegi berlatar putih menjadi kotak hitam di tema Monochrome dan kotak putih di footer.
-  3. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
+  1. Data awal (logo lebar transparan, CTA hero ber-anchor) sudah disamakan dengan lokal lewat **Reset Data Produksi 2026-10-10** di bawah. Bila server dibangun ulang dari nol, cukup jalankan `CompanyProfileSeeder` seperti di atas.
+  2. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
+
+## Reset Data Produksi (pengecualian 2026-10-10)
+
+Produksi di-seed 2026-10-09 pagi, sebelum seeder diperbarui (logo lebar transparan, CTA hero ber-anchor), sehingga logo navbar tampil kecil dan tombol "Lihat Portofolio" mengarah ke `/portofolio` (404). Atas keputusan pemilik, database produksi dibuat ulang dari seeder agar **identik dengan lokal**. Ini melanggar aturan "migrasi produksi hanya maju" dan **tidak untuk diulang**: setelah data asli masuk, perubahan data dilakukan lewat admin.
+
+Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami dari pengunjung, akun admin, dan sesi login), lalu diisi ulang. Kerjakan setelah langkah 2 Deploy Rutin (`php artisan down` … `composer install` … `package:discover`), **sebelum** `php artisan migrate --force`:
+
+```bash
+cd ~/domains/karyaanakbangsa.co.id/laravel-erp
+
+# 1. Cadangan dulu (password DB ditanyakan; jangan ditulis di perintah)
+mysqldump -u <user-db> -p <nama-db> > ~/cadangan-sebelum-reset-2026-10-10.sql
+
+# 2. Buang berkas unggahan lama agar tidak tertinggal tanpa pemilik
+rm -rf storage/app/public/company-profile
+
+# 3. Buat ulang semua tabel
+php artisan migrate:fresh --force
+
+# 4. Akun admin: isi ADMIN_PASSWORD='...' sementara di .env (nano .env), lalu
+php artisan optimize          # config di-cache: tanpa ini .env baru tidak terbaca
+php artisan db:seed --class=PenggunaSeeder --force
+sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=/" .env
+
+# 5. Data Company Profile (sama persis dengan lokal)
+php artisan db:seed --class=CompanyProfileSeeder --force
+
+# 6. Selesai
+php artisan optimize
+php artisan up
+```
+
+Cek: logo navbar lebar (bukan persegi), tombol "Lihat Portofolio" turun ke seksi portofolio, login admin berhasil. Unggah aset (`public\build`) **tidak perlu** untuk perubahan ini. Simpan berkas cadangan (`~/cadangan-…sql`) sampai yakin tidak ada pesan Kontak Kami yang perlu diambil, lalu hapus.
 
 ## Aturan & Pemecahan Masalah
 

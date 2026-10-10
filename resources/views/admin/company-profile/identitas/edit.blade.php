@@ -31,7 +31,7 @@
                     <img src="{{ $identitas->logo_url }}" alt="Logo saat ini">
                 </div>
                 <x-admin.form-file name="logo_website" label="Logo" accept=".jpg,.jpeg,.png,.webp"
-                    hint="JPG, PNG, atau WEBP, maks. 2 MB. Disarankan berlatar transparan (PNG/WEBP)." />
+                    hint="Gunakan logo lebar (±8:3) berlatar transparan (PNG/WEBP), maks. 2 MB. Logo persegi akan tampil kecil di navbar." />
 
                 <div class="pratinjau-gambar">
                     <img src="{{ $identitas->favicon_url }}" alt="Favicon saat ini">
