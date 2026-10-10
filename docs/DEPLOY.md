@@ -140,34 +140,31 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 
 Produksi di-seed 2026-10-09 pagi, sebelum seeder diperbarui (logo lebar transparan, CTA hero ber-anchor), sehingga logo navbar tampil kecil dan tombol "Lihat Portofolio" mengarah ke `/portofolio` (404). Atas keputusan pemilik, database produksi dibuat ulang dari seeder agar **identik dengan lokal**. Ini melanggar aturan "migrasi produksi hanya maju" dan **tidak untuk diulang**: setelah data asli masuk, perubahan data dilakukan lewat admin.
 
-Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami dari pengunjung, akun admin, dan sesi login), lalu diisi ulang. Kerjakan setelah langkah 2 Deploy Rutin (`php artisan down` … `composer install` … `package:discover`), **sebelum** `php artisan migrate --force`:
+Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami, akun admin, dan sesi login), lalu diisi ulang. Tanpa cadangan karena produksi masih tahap uji coba dan datanya belum bernilai. Kerjakan setelah langkah 2 Deploy Rutin (`php artisan down` … `composer install` … `package:discover`), **sebelum** `php artisan migrate --force`:
 
 ```bash
 cd ~/domains/karyaanakbangsa.co.id/laravel-erp
 
-# 1. Cadangan dulu (password DB ditanyakan; jangan ditulis di perintah)
-mysqldump -u <user-db> -p <nama-db> > ~/cadangan-sebelum-reset-2026-10-10.sql
-
-# 2. Buang berkas unggahan lama agar tidak tertinggal tanpa pemilik
+# 1. Buang berkas unggahan lama agar tidak tertinggal tanpa pemilik
 rm -rf storage/app/public/company-profile
 
-# 3. Buat ulang semua tabel
+# 2. Buat ulang semua tabel
 php artisan migrate:fresh --force
 
-# 4. Akun admin: isi ADMIN_PASSWORD='...' sementara di .env (nano .env), lalu
+# 3. Akun admin: isi ADMIN_PASSWORD='...' sementara di .env (nano .env), lalu
 php artisan optimize          # config di-cache: tanpa ini .env baru tidak terbaca
 php artisan db:seed --class=PenggunaSeeder --force
 sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=/" .env
 
-# 5. Data Company Profile (sama persis dengan lokal)
+# 4. Data Company Profile (sama persis dengan lokal)
 php artisan db:seed --class=CompanyProfileSeeder --force
 
-# 6. Selesai
+# 5. Selesai
 php artisan optimize
 php artisan up
 ```
 
-Cek: logo navbar lebar (bukan persegi), tombol "Lihat Portofolio" turun ke seksi portofolio, login admin berhasil. Unggah aset (`public\build`) **tidak perlu** untuk perubahan ini. Simpan berkas cadangan (`~/cadangan-…sql`) sampai yakin tidak ada pesan Kontak Kami yang perlu diambil, lalu hapus.
+Cek: logo navbar lebar (bukan persegi), tombol "Lihat Portofolio" turun ke seksi portofolio, login admin berhasil. Unggah aset (`public\build`) **tidak perlu** untuk perubahan ini.
 
 ## Aturan & Pemecahan Masalah
 
