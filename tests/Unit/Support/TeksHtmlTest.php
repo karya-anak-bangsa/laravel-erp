@@ -17,6 +17,18 @@ it('membuang sub-judul dari ringkasan agar tidak menyambung dengan kalimat sesud
         ->and(TeksHtml::ringkasan(null))->toBe('');
 });
 
+it('memotong teks di akhir kata terdekat sebelum batas karakter', function (string $teks, int $maks, string $hasil) {
+    expect(TeksHtml::potongDiAkhirKata($teks, $maks))->toBe($hasil);
+})->with([
+    'tidak melewati batas' => ['Satu dua tiga', 13, 'Satu dua tiga'],
+    'batas di tengah kata' => ['Satu dua tiga empat', 11, 'Satu dua...'],
+    'batas tepat di akhir kata' => ['Satu dua tiga empat', 8, 'Satu dua...'],
+    'koma di ujung dibuang' => ['Satu dua, tiga empat', 12, 'Satu dua...'],
+    'titik di ujung dibuang' => ['Satu dua. Tiga empat', 12, 'Satu dua...'],
+    'satu kata panjang dipotong paksa' => ['Supercalifragilistik', 10, 'Supercalif...'],
+    'huruf multibita dihitung per karakter' => ['Café élan über', 10, 'Café élan...'],
+]);
+
 it('mengubah teks polos menjadi paragraf HTML yang aman', function () {
     expect(TeksHtml::dariTeksPolos("Baris satu\nBaris dua & <b>\n\nParagraf dua"))
         ->toBe('<p>Baris satu<br>Baris dua &amp; &lt;b&gt;</p><p>Paragraf dua</p>');

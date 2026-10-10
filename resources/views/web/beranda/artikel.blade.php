@@ -1,5 +1,4 @@
 @use('App\Support\TeksHtml')
-@use('Illuminate\Support\Str')
 
 <section id="artikel" class="seksi" aria-labelledby="judul-artikel">
     <div class="wadah">
@@ -25,8 +24,8 @@
                             <time class="tanggal-artikel" datetime="{{ $item->tanggal->toDateString() }}"><span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $item->tanggal->translatedFormat('j F Y') }}</span></time>
                         </div>
                         <h3 class="kartu-artikel-judul">{{ $item->judul }}</h3>
-                        {{-- 150 karakter termasuk spasi (pilihan pemilik 2026-10-11). --}}
-                        <p class="kartu-artikel-ringkasan">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 150) }}</p>
+                        {{-- Maksimal 150 karakter termasuk spasi, dipotong di akhir kata (pilihan pemilik 2026-10-11). --}}
+                        <p class="kartu-artikel-ringkasan">{{ TeksHtml::potongDiAkhirKata(TeksHtml::ringkasan($item->deskripsi), 150) }}</p>
                     </div>
                 </article>
             @endforeach

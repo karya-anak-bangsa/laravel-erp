@@ -142,11 +142,11 @@ describe('isi', function () {
         $this->get('/')->assertOk()->assertSee('Artikel Yatim')->assertDontSee('Kategori Terhapus');
     });
 
-    it('memotong ringkasan artikel menjadi 150 karakter termasuk spasi', function () {
-        $isi = str_repeat('abcdefg ', 25);
-        Artikel::factory()->terbit()->create(['deskripsi' => "<p>{$isi}</p>"]);
+    it('memotong ringkasan artikel di akhir kata sebelum 150 karakter', function () {
+        // Karakter ke-150 jatuh di tengah kata ke-19, jadi ringkasan berhenti setelah kata ke-18.
+        Artikel::factory()->terbit()->create(['deskripsi' => '<p>'.str_repeat('abcdefg ', 25).'</p>']);
 
-        $this->get('/')->assertSee('<p class="kartu-artikel-ringkasan">'.substr($isi, 0, 150).'...</p>', false);
+        $this->get('/')->assertSee('<p class="kartu-artikel-ringkasan">'.rtrim(str_repeat('abcdefg ', 18)).'...</p>', false);
     });
 
     it('menampilkan ringkasan artikel sebagai teks polos tanpa sub-judul', function () {

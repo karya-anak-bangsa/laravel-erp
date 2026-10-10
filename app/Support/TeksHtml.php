@@ -31,6 +31,25 @@ class TeksHtml
     }
 
     /**
+     * Potong teks polos di akhir kata terdekat sebelum $maks karakter (spasi ikut dihitung) lalu beri "...",
+     * agar kata terakhir tidak terpenggal (pilihan pemilik 2026-10-11). Tanda baca di ujung potongan dibuang
+     * supaya tidak menjadi ",..." atau "....". Satu kata yang lebih panjang dari $maks tetap dipotong paksa.
+     */
+    public static function potongDiAkhirKata(string $teks, int $maks): string
+    {
+        if (mb_strlen($teks) <= $maks) {
+            return $teks;
+        }
+
+        // Ambil satu karakter lebih: bila karakter ke-($maks + 1) spasi, potongan $maks karakter sudah utuh per kata.
+        $potongan = mb_substr($teks, 0, $maks + 1);
+        $spasiTerakhir = mb_strrpos($potongan, ' ');
+        $potongan = $spasiTerakhir === false ? mb_substr($teks, 0, $maks) : mb_substr($potongan, 0, $spasiTerakhir);
+
+        return rtrim($potongan, ' ,.;:-').'...';
+    }
+
+    /**
      * Teks polos (mis. data lama sebelum memakai editor) menjadi paragraf HTML yang aman:
      * baris kosong memisahkan paragraf, baris baru tunggal menjadi <br>.
      */
