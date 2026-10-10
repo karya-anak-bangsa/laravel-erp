@@ -156,20 +156,17 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=monochrome] .kartu-artikel { grid-template-columns: 14rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
 }
 
-/* ---------- Kontak: susunan berbeda per tema lewat grid-template-areas (urutan DOM tetap) ---------- */
-.tata-kontak { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "info" "form" "peta"; }
+/* ---------- Kontak: susunan sama di kedua tema (pilihan pemilik 2026-10-11), urutan DOM tetap ----------
+   ponsel: kontak → formulir → peta; tablet: kontak | peta, formulir di bawah; desktop: kontak & peta kiri, formulir kanan. */
+.tata-kontak { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "info" "form" "peta"; }
 .info-kontak { grid-area: info; }
 .kartu-formulir { grid-area: form; }
 .wadah-peta { grid-area: peta; }
-@media (min-width: 1024px) {
-  [data-tema=full_color] .tata-kontak { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "info info" "form peta"; }
-}
-[data-tema=monochrome] .tata-kontak { gap: 2rem; }
 @media (min-width: 768px) {
-  [data-tema=monochrome] .tata-kontak { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "info peta" "form form"; gap: 1.5rem; }
+  .tata-kontak { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "info peta" "form form"; gap: 1.5rem; }
 }
 @media (min-width: 1024px) {
-  [data-tema=monochrome] .tata-kontak { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto 1fr; grid-template-areas: "info form" "peta form"; column-gap: 2.5rem; }
+  .tata-kontak { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto 1fr; grid-template-areas: "info form" "peta form"; column-gap: 2.5rem; }
 }
 
 /* ---------- FAQ: <details name="faq"> bawaan browser (satu terbuka sekaligus, tanpa JS) ---------- */
@@ -207,12 +204,16 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 [data-tema=full_color] .leaflet-tile-pane { filter: grayscale(.65) saturate(.7) brightness(1.03) contrast(.96); }
 .leaflet-popup-content-wrapper { border-radius: var(--sudut-dalam); box-shadow: 0 12px 32px -12px rgb(15 23 42 / .35); }
 [data-tema=full_color] .leaflet-popup-content-wrapper { box-shadow: var(--bayangan-melayang); }
-.leaflet-popup-content { margin: 14px 18px; font-size: 13px; line-height: 1.5; color: var(--teks); }
+/* Sisi kanan diberi ruang selebar tombol tutup agar nama tidak tertimpa (×). */
+.leaflet-popup-content { margin: 14px 32px 14px 18px; font-size: 13px; line-height: 1.5; color: var(--teks); }
 .leaflet-popup-content strong { color: var(--foreground); }
+.leaflet-popup-content .tautan-peta { display: inline-block; margin-top: .25rem; font-weight: 600; color: var(--aksen-teks); text-decoration: underline; text-underline-offset: 3px; }
+[data-tema=monochrome] .leaflet-popup-content .tautan-peta { font-weight: 500; color: var(--foreground); }
 .leaflet-bar a { color: var(--foreground); }
 @media (pointer: coarse) {
   .leaflet-touch .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; }
   .leaflet-container a.leaflet-popup-close-button { width: 44px; height: 44px; font-size: 24px; line-height: 44px; }
+  .leaflet-popup-content { margin-right: 44px; }
 }
 
 /* Tombol WhatsApp melayang: disembunyikan saat ajakan kontak lain terlihat (hero, band ajakan, kontak, footer). */

@@ -22,18 +22,27 @@ const buatPeta = (L, elPeta) => {
 
     const ikon = L.divIcon({ className: 'penanda-peta', html: ikonGedung, iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] });
 
-    // Isi popup dirakit lewat DOM (textContent) agar data alamat tidak pernah ditafsirkan sebagai HTML.
+    // Popup: nama + tautan Google Maps untuk petunjuk arah (pilihan pemilik 2026-10-11; alamat lengkap sudah ada di
+    // daftar kontak). Dirakit lewat DOM (textContent) agar data tidak pernah ditafsirkan sebagai HTML.
     const isi = document.createElement('div');
     const nama = document.createElement('strong');
     nama.textContent = d.nama;
-    const alamat = document.createElement('span');
-    alamat.textContent = d.alamat;
-    isi.append(nama, document.createElement('br'), alamat);
+    const tautan = document.createElement('a');
+    tautan.href = d.tautan;
+    tautan.target = '_blank';
+    tautan.rel = 'noopener';
+    tautan.className = 'tautan-peta';
+    tautan.textContent = 'Buka di Google Maps';
+    const keterangan = document.createElement('span');
+    keterangan.className = 'sr-only';
+    keterangan.textContent = ' (membuka tab baru)';
+    tautan.append(keterangan);
+    isi.append(nama, document.createElement('br'), tautan);
 
-    const penanda = L.marker(titik, { icon: ikon, title: d.nama, alt: 'Lokasi ' + d.nama }).addTo(peta).bindPopup(isi);
-    if (matchMedia('(min-width: 640px)').matches) {
-        penanda.openPopup();
-    }
+    // Popup cukup ringkas (dua baris) untuk langsung dibuka di semua layar, agar tautan Google Maps terlihat tanpa
+    // mengetuk penanda. Lebar popup dihitung ulang setelah font tema termuat agar nama tidak patah baris.
+    const penanda = L.marker(titik, { icon: ikon, title: d.nama, alt: 'Lokasi ' + d.nama }).addTo(peta).bindPopup(isi).openPopup();
+    document.fonts?.ready.then(() => penanda.getPopup()?.update());
 };
 
 export function pasangPeta() {

@@ -290,21 +290,22 @@
 /* ---------- Kontak ---------- */
 [data-tema=full_color] .tata-kontak { @apply mt-10 sm:mt-14; }
 [data-tema=monochrome] .tata-kontak { @apply mt-12; }
-/* 2×2 (bukan 4 kolom): di 4 kolom email patah dua baris dan kartu alamat jauh lebih tinggi dari yang lain. */
-[data-tema=full_color] .info-kontak { @apply grid gap-4 md:grid-cols-2 lg:gap-6; }
-[data-tema=full_color] .tautan-kontak { @apply flex h-full gap-x-4 rounded-dalam p-5 ring-1 ring-border transition sm:p-6; background-color: var(--latar-redup); }
-[data-tema=full_color] a.tautan-kontak:hover { @apply ring-(--warna-aksen)/40; }
-[data-tema=full_color] .ikon-kontak { @apply flex size-12 shrink-0 items-center justify-center ring-1; border-radius: var(--sudut-dalam); }
+/* Daftar kontak satu kartu bergaris pemisah seperti Monochrome (list-group; pilihan pemilik 2026-10-11). */
+[data-tema=full_color] .info-kontak { @apply divide-y overflow-hidden rounded-kartu bg-card ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .tautan-kontak { @apply flex items-center gap-4 p-5 transition-colors; }
+[data-tema=full_color] a.tautan-kontak:hover { background-color: var(--latar-redup); }
+[data-tema=full_color] a.tautan-kontak:focus-visible { outline-offset: -3px; }
+[data-tema=full_color] .ikon-kontak { @apply flex size-11 shrink-0 items-center justify-center ring-1; border-radius: var(--sudut-dalam); }
 [data-tema=full_color] .ikon-kontak[data-jenis=alamat] { @apply bg-(--aksen-lembut) text-aksen ring-(--warna-aksen)/15; }
 [data-tema=full_color] .ikon-kontak[data-jenis=email] { @apply bg-(--utama-100) text-foreground ring-(--warna-utama)/15; }
 [data-tema=full_color] .ikon-kontak[data-jenis=telepon] { @apply bg-sky-50 text-sky-700 ring-sky-100; }
 [data-tema=full_color] .ikon-kontak[data-jenis=whatsapp] { @apply bg-emerald-50 text-emerald-700 ring-emerald-100; }
-[data-tema=full_color] .ikon-kontak svg { @apply size-6; }
+[data-tema=full_color] .ikon-kontak svg { @apply size-5; }
 [data-tema=full_color] .label-kontak { @apply block font-bold text-foreground; }
 [data-tema=full_color] .nilai-kontak { @apply mt-1 block text-[15px] leading-relaxed text-teks; }
 [data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply font-medium text-slate-700 underline decoration-slate-300 underline-offset-4; }
 [data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
-[data-tema=full_color] .panah-kontak { @apply hidden; }
+[data-tema=full_color] .panah-kontak { @apply size-4 shrink-0 text-slate-400; }
 [data-tema=monochrome] .info-kontak { @apply divide-y overflow-hidden rounded-kartu border bg-card shadow-xs; }
 [data-tema=monochrome] .tautan-kontak { @apply flex items-center gap-4 p-5; }
 [data-tema=monochrome] a.tautan-kontak { @apply transition-colors hover:bg-muted/60; }
@@ -318,7 +319,8 @@
 [data-tema=monochrome] .panah-kontak { @apply size-4 shrink-0 text-muted-foreground; }
 .isi-kontak { @apply min-w-0 flex-1; }
 
-[data-tema=full_color] .kartu-formulir { @apply rounded-kartu bg-card p-6 ring-1 ring-border sm:p-8 lg:p-10; --tw-shadow: var(--bayangan-kartu); }
+/* Formulir mengisi tinggi kolom kanan (daftar kontak + peta di kiri); kotak pesan yang memanjang. */
+[data-tema=full_color] .kartu-formulir { @apply flex flex-col rounded-kartu bg-card p-6 ring-1 ring-border sm:p-8; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=monochrome] .kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6 shadow-sm; }
 .judul-formulir { @apply tracking-tight text-foreground; }
 [data-tema=full_color] .judul-formulir { @apply text-xl font-bold; }
@@ -326,13 +328,13 @@
 .catatan-formulir { @apply mt-1.5 text-sm text-muted-foreground; }
 .tanda-wajib { @apply text-aksen; }
 [data-tema=monochrome] .tanda-wajib { @apply text-muted-foreground; }
-.form-kontak { @apply mt-7; }
-[data-tema=monochrome] .form-kontak { @apply mt-6 flex flex-1 flex-col; }
-[data-tema=monochrome] .form-kontak .isian-pesan { @apply flex flex-1 flex-col; }
+.form-kontak { @apply mt-7 flex flex-1 flex-col; }
+[data-tema=monochrome] .form-kontak { @apply mt-6; }
+.form-kontak .isian-pesan { @apply flex flex-1 flex-col; }
 [data-tema=full_color] .field > label { @apply mb-1 text-sm font-semibold text-foreground; }
 .field > :is(input, textarea) { border-radius: var(--sudut-isian); }
 [data-tema=full_color] .field > input { @apply min-h-12 px-4 text-[15px]; }
-[data-tema=full_color] .field > textarea { @apply min-h-36 px-4 py-3 text-[15px] leading-relaxed; }
+[data-tema=full_color] .field > textarea { @apply min-h-36 flex-1 px-4 py-3 text-[15px] leading-relaxed; }
 [data-tema=full_color] .field > :is(input, textarea) { border-color: var(--input); }
 [data-tema=full_color] .field > :is(input, textarea)::placeholder { color: #64748b; }
 [data-tema=monochrome] .field > input { @apply h-11 sm:h-10; }
@@ -348,7 +350,7 @@
 /* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
 .kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
 
-[data-tema=full_color] .wadah-peta { @apply relative isolate z-0 min-h-80 overflow-hidden rounded-kartu bg-muted ring-1 ring-border lg:min-h-0; }
+[data-tema=full_color] .wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu bg-muted ring-1 ring-border lg:min-h-72; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=monochrome] .wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border bg-muted/50 shadow-xs lg:min-h-72; }
 .peta-cadangan { @apply absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center; }
 .pin-peta { @apply flex size-12 items-center justify-center; }

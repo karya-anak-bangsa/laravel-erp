@@ -209,7 +209,22 @@ describe('isi', function () {
             ->assertDontSee('wa.me')
             ->assertSee('data-wa=""', false)
             // Ajakan tetap punya tombol: cadangan ke formulir kontak.
-            ->assertSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
+            ->assertSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
+            // Kartu telepon jadi cadangan kontak WhatsApp di seksi kontak.
+            ->assertSee('<span class="label-kontak">Telepon</span>', false);
+    });
+
+    it('menampilkan kontak WhatsApp tanpa kartu telepon dan menautkan peta ke Google Maps', function () {
+        config(['perusahaan.peta.lat' => -6.5, 'perusahaan.peta.lng' => 106.75]);
+
+        $this->get('/')
+            ->assertSee('<span class="label-kontak">WhatsApp</span>', false)
+            ->assertDontSee('<span class="label-kontak">Telepon</span>', false)
+            // Popup Leaflet & tombol peta cadangan memakai tautan yang sama.
+            ->assertSee('data-tautan="https://www.google.com/maps/search/?api=1&amp;query=-6.5%2C106.75"', false)
+            ->assertSee('Buka di Google Maps')
+            ->assertDontSee('openstreetmap.org/?mlat', false)
+            ->assertSee('<button type="submit" class="btn btn-besar">Kirim Pesan</button>', false);
     });
 
     it('hanya menampilkan tombol WhatsApp di band ajakan bila link WhatsApp tersedia', function () {

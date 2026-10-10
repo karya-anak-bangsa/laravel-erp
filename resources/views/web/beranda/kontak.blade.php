@@ -2,7 +2,8 @@
 
 @php
     $peta = config('perusahaan.peta');
-    $tautanPeta = "https://www.openstreetmap.org/?mlat={$peta['lat']}&mlon={$peta['lng']}#map=17/{$peta['lat']}/{$peta['lng']}";
+    // Peta di halaman memakai Leaflet + OpenStreetMap (gratis); tautan "Buka di Google Maps" untuk petunjuk arah.
+    $tautanPeta = 'https://www.google.com/maps/search/?'.http_build_query(['api' => 1, 'query' => "{$peta['lat']},{$peta['lng']}"]);
 @endphp
 
 <section id="kontak" class="seksi" aria-labelledby="judul-kontak" data-sembunyikan-wa>
@@ -11,7 +12,7 @@
             Kirim pesan melalui formulir di bawah ini, atau hubungi kami langsung lewat WhatsApp dan email.
         </x-web.kepala-seksi>
 
-        {{-- Susunan berbeda per tema lewat grid-template-areas; urutan DOM tetap. --}}
+        {{-- Kedua tema: kiri atas daftar kontak, kiri bawah peta, kanan formulir (grid-template-areas; urutan DOM tetap). --}}
         <div class="tata-kontak">
             <ul class="info-kontak">
                 <li>
@@ -34,16 +35,7 @@
                         <x-web.ikon nama="panah-keluar" class="panah-kontak" />
                     </a>
                 </li>
-                <li>
-                    <a href="{{ TautanKontak::telepon($identitas->telepon) }}" class="tautan-kontak">
-                        <span class="ikon-kontak" data-jenis="telepon" aria-hidden="true"><x-web.ikon nama="telepon" :tebal="1.75" /></span>
-                        <span class="isi-kontak">
-                            <span class="label-kontak">Telepon</span>
-                            <span class="nilai-kontak">{{ $identitas->telepon }}</span>
-                        </span>
-                        <x-web.ikon nama="panah-keluar" class="panah-kontak" />
-                    </a>
-                </li>
+                {{-- Telepon sudah diwakili WhatsApp (pilihan pemilik 2026-10-11); kartunya hanya cadangan bila link WhatsApp kosong. --}}
                 @if (filled($identitas->link_whatsapp))
                     <li>
                         <a href="{{ $identitas->link_whatsapp }}" target="_blank" rel="noopener" class="tautan-kontak">
@@ -52,6 +44,17 @@
                                 <span class="label-kontak">WhatsApp</span>
                                 <span class="nilai-kontak">{{ TautanKontak::tampilanWhatsapp($identitas->link_whatsapp) }}</span>
                                 <span class="sr-only">(membuka tab baru)</span>
+                            </span>
+                            <x-web.ikon nama="panah-keluar" class="panah-kontak" />
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ TautanKontak::telepon($identitas->telepon) }}" class="tautan-kontak">
+                            <span class="ikon-kontak" data-jenis="telepon" aria-hidden="true"><x-web.ikon nama="telepon" :tebal="1.75" /></span>
+                            <span class="isi-kontak">
+                                <span class="label-kontak">Telepon</span>
+                                <span class="nilai-kontak">{{ $identitas->telepon }}</span>
                             </span>
                             <x-web.ikon nama="panah-keluar" class="panah-kontak" />
                         </a>
@@ -88,10 +91,7 @@
                     </div>
 
                     <div class="aksi-formulir">
-                        <button type="submit" class="btn btn-besar">
-                            Kirim Pesan
-                            <x-web.ikon nama="kirim" class="size-[18px]" />
-                        </button>
+                        <button type="submit" class="btn btn-besar">Kirim Pesan</button>
                         {{-- Wilayah role="status" selalu ada agar pesan sukses diumumkan pembaca layar. --}}
                         <div role="status" class="sm:order-1">
                             @if (session('kontak_terkirim'))
@@ -126,15 +126,12 @@
                     <span class="pin-peta" aria-hidden="true"><x-web.ikon nama="lokasi" :tebal="2.25" class="size-5" /></span>
                     <div class="kartu-pin">
                         <p class="nama-pin">{{ $identitas->nama_perusahaan }}</p>
-                        <x-web.tautan-luar :href="$tautanPeta" class="btn btn-sedang" data-variant="outline">
-                            Buka peta
-                            <x-web.ikon nama="panah-keluar" class="size-4" />
-                        </x-web.tautan-luar>
+                        <x-web.tautan-luar :href="$tautanPeta" class="btn btn-sedang" data-variant="outline">Buka di Google Maps</x-web.tautan-luar>
                     </div>
                 </div>
                 <div id="peta-lokasi" class="absolute inset-0" hidden role="region" aria-label="Peta lokasi kantor {{ $identitas->nama_perusahaan }}"
                      data-lat="{{ $peta['lat'] }}" data-lng="{{ $peta['lng'] }}" data-zoom="{{ $peta['zoom'] }}"
-                     data-nama="{{ $identitas->nama_perusahaan }}" data-alamat="{{ $identitas->alamat }}"></div>
+                     data-nama="{{ $identitas->nama_perusahaan }}" data-tautan="{{ $tautanPeta }}"></div>
             </div>
         </div>
     </div>
