@@ -291,7 +291,7 @@
 [data-tema=full_color] .tata-kontak { @apply mt-10 sm:mt-14; }
 [data-tema=monochrome] .tata-kontak { @apply mt-12; }
 /* Daftar kontak satu kartu bergaris pemisah seperti Monochrome (list-group; pilihan pemilik 2026-10-11). */
-[data-tema=full_color] .info-kontak { @apply divide-y overflow-hidden rounded-kartu bg-card ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .info-kontak { @apply overflow-hidden rounded-kartu bg-card ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=full_color] .tautan-kontak { @apply flex h-full items-center gap-4 p-5 transition-colors; }
 [data-tema=full_color] a.tautan-kontak:hover { background-color: var(--latar-redup); }
 [data-tema=full_color] a.tautan-kontak:focus-visible { outline-offset: -3px; }
@@ -307,7 +307,7 @@
 [data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply font-medium text-slate-700 underline decoration-slate-300 underline-offset-4; }
 [data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
 [data-tema=full_color] .panah-kontak { @apply size-4 shrink-0 text-slate-400; }
-[data-tema=monochrome] .info-kontak { @apply divide-y overflow-hidden rounded-kartu border bg-card shadow-xs; }
+[data-tema=monochrome] .info-kontak { @apply overflow-hidden rounded-kartu border bg-card shadow-xs; }
 [data-tema=monochrome] .tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
 [data-tema=monochrome] a.tautan-kontak { @apply transition-colors hover:bg-muted/60; }
 [data-tema=monochrome] a.tautan-kontak:focus-visible { outline-offset: -3px; }
