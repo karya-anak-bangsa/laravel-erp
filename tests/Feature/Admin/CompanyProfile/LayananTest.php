@@ -244,7 +244,7 @@ it('membuat lima layanan perusahaan beserta gambarnya dari seeder', function () 
     $this->seed(LayananSeeder::class);
 
     expect(Layanan::berurutan()->pluck('judul')->all())->toBe([
-        'Pembuatan Website', 'Pembuatan Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp Mahasiswa',
+        'Pembuatan Website', 'Pembuatan Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp',
     ]);
     Layanan::all()->each(fn (Layanan $layanan) => Storage::disk('public')->assertExists($layanan->gambar));
 });

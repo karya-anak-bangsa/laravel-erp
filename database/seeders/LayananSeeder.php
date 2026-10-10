@@ -64,7 +64,7 @@ class LayananSeeder extends Seeder
             ],
             [
                 'bootcamp',
-                'Bootcamp Mahasiswa',
+                'Bootcamp',
                 'Program intensif berbasis proyek nyata yang menyiapkan mahasiswa menjadi talenta IT siap kerja.',
                 'Selama bootcamp, mahasiswa belajar dalam tim, mengerjakan proyek seperti di dunia kerja, dan mendapat bimbingan mentor. Di akhir program, peserta memiliki portofolio yang dapat ditunjukkan kepada calon pemberi kerja.',
             ],

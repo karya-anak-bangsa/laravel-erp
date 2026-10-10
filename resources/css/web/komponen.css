@@ -383,6 +383,10 @@
 [data-tema=monochrome] .tautan-kaki { @apply text-sm text-foreground/85 sm:min-h-9; }
 .kontak-kaki svg { @apply size-5 shrink-0; color: color-mix(in oklab, var(--warna-aksen) 70%, #fff); }
 [data-tema=monochrome] .kontak-kaki svg { @apply size-4 text-muted-foreground; }
+/* Logo WhatsApp padat memenuhi kotak 24 unit, ikon garis lain hanya ±20 unit: diperkecil agar tampak sama besar;
+   margin menjaga teks tetap sejajar dengan baris lain. */
+.kontak-kaki .logo-wa { width: 17px; height: 17px; margin-inline: 1.5px; }
+[data-tema=monochrome] .kontak-kaki .logo-wa { width: 14px; height: 14px; margin-inline: 1px; }
 .kaki-bawah { @apply mt-12 flex flex-col-reverse gap-3 border-t pt-6 text-sm sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:pt-8; }
 [data-tema=monochrome] .kaki-bawah { @apply text-xs; }
 

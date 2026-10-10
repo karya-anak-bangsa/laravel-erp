@@ -210,8 +210,18 @@ describe('isi', function () {
             ->assertSee('data-wa=""', false)
             // Ajakan tetap punya tombol: cadangan ke formulir kontak.
             ->assertSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
-            // Kartu telepon jadi cadangan kontak WhatsApp di seksi kontak.
-            ->assertSee('<span class="label-kontak">Telepon</span>', false);
+            // Kartu telepon jadi cadangan kontak WhatsApp di seksi kontak dan footer.
+            ->assertSee('<span class="label-kontak">Telepon</span>', false)
+            ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon).'</a>', false);
+    });
+
+    it('menampilkan nomor WhatsApp berlogo di footer tanpa baris telepon dan tulisan WhatsApp terpisah', function () {
+        $html = $this->get('/')->getContent();
+
+        expect($html)
+            ->toContain('<span class="sr-only">WhatsApp </span>0812-0000-0000')
+            ->not->toContain('class="tautan-kaki">'.e($this->identitas->telepon).'</a>')
+            ->not->toMatch('#class="tautan-kaki">WhatsApp<#');
     });
 
     it('menampilkan kontak WhatsApp tanpa kartu telepon dan menautkan peta ke Google Maps', function () {
