@@ -4,9 +4,11 @@
  */
 
 html { -webkit-font-smoothing: antialiased; }
-/* Basecoat memasang scroll-smooth tanpa syarat; gulir halus hanya bila pengunjung tidak memilih gerak dikurangi. */
+/* Gulir halus untuk tautan menu (#seksi), kecuali pengunjung memilih gerak dikurangi di sistemnya. Basecoat memasang
+   scroll-smooth tanpa syarat, jadi ditimpa. Bukan html:focus-within: klik mouse pada tautan tidak memberi fokus di
+   Chrome, sehingga gulir tetap melompat (temuan 2026-10-11). */
 html { scroll-behavior: auto; }
-@media (prefers-reduced-motion: no-preference) { html:focus-within { scroll-behavior: smooth; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body { background: var(--background); color: var(--teks); }
 [id] { scroll-margin-top: 5rem; }
 ::selection { background: var(--foreground); color: var(--background); }

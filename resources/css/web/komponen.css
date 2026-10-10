@@ -392,9 +392,9 @@
 
 /* ---------- Tombol WhatsApp melayang ---------- */
 /* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel ala Monochrome di kedua tema (pilihan pemilik 2026-10-11).
-   Full Color: warna utama (navy) dan bayangan lewat token. */
+   Full Color tetap hijau WhatsApp (kontras teks putih ≥4,5:1) dengan bayangan lewat token. */
 .tombol-wa { @apply fixed right-4 bottom-4 z-40 inline-flex h-12 items-center justify-center gap-2 bg-foreground px-4 text-sm font-medium text-background ring-1 ring-white/30 transition-colors hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .tombol-wa { @apply font-semibold; --tw-shadow: var(--bayangan-melayang); }
+[data-tema=full_color] .tombol-wa { @apply bg-[#15803D] font-semibold text-white hover:bg-[#166534]; --tw-shadow: var(--bayangan-melayang); }
 [data-tema=monochrome] .tombol-wa { @apply shadow-lg; }
 .tombol-wa .ikon-wa { @apply size-5; }
 /* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
