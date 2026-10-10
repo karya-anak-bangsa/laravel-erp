@@ -19,7 +19,6 @@
                             <div class="isi-layanan-aksi">
                                 <button type="button" class="tombol-selengkapnya" data-buka-layanan aria-haspopup="dialog">
                                     Selengkapnya<span class="sr-only"> tentang {{ $item->judul }}</span>
-                                    <x-web.ikon nama="panah-kanan" class="size-4" />
                                 </button>
                             </div>
                         @endif

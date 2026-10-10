@@ -165,6 +165,7 @@ class TemaService
             '--teks-menu' => $nilai['menu'],
             '--tinggi-tombol' => $nilai['tombol'],
             '--teks-tombol' => $nilai['teks-tombol'],
+            '--teks-judul-seksi' => $nilai['judul-seksi'],
         ];
     }
 

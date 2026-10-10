@@ -127,8 +127,9 @@
 [data-tema=monochrome] .label-nomor { @apply text-foreground; }
 [data-tema=monochrome] .label-nomor::after { content: "\00a0/\00a0"; color: var(--muted-foreground); }
 .judul-seksi { @apply mt-4 text-3xl tracking-tight text-balance text-foreground sm:text-4xl; }
-[data-tema=full_color] .judul-seksi { @apply font-extrabold lg:text-[2.75rem] lg:leading-tight; }
-[data-tema=monochrome] .judul-seksi { @apply font-semibold; }
+/* Ukuran desktop dari skala template (--teks-judul-seksi). */
+[data-tema=full_color] .judul-seksi { @apply font-extrabold lg:text-(length:--teks-judul-seksi) lg:leading-tight; }
+[data-tema=monochrome] .judul-seksi { @apply font-semibold lg:text-(length:--teks-judul-seksi); }
 .deskripsi-seksi { @apply text-lg text-pretty; }
 [data-tema=full_color] .deskripsi-seksi { @apply mt-5 leading-relaxed text-teks; }
 [data-tema=monochrome] .deskripsi-seksi { @apply mt-4 leading-8 text-muted-foreground; }
@@ -139,7 +140,8 @@
 /* ---------- Layanan ---------- */
 [data-tema=full_color] .kartu-layanan { @apply relative flex flex-col rounded-kartu bg-card p-3 shadow-sm ring-1 shadow-slate-900/5 ring-border transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10 hover:ring-(--corak-cincin); }
 [data-tema=full_color] .isi-layanan { @apply flex flex-1 flex-col; }
-[data-tema=full_color] .isi-layanan-gambar { @apply aspect-4/3 overflow-hidden rounded-dalam bg-(--corak-lembut); }
+/* 16:9 di ponsel agar seksi tidak terlalu panjang, 16:10 di kartu biasa seperti Monochrome; kartu lebar 4:3 (struktur.css). */
+[data-tema=full_color] .isi-layanan-gambar { @apply aspect-video overflow-hidden rounded-dalam bg-(--corak-lembut) sm:aspect-16/10; }
 [data-tema=full_color] .isi-layanan-gambar img { @apply size-full object-cover; }
 @media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover .isi-layanan-gambar img { transform: scale(1.03); } }
 [data-tema=full_color] .isi-layanan-kepala { @apply px-3 pt-5 sm:pt-6; }
@@ -147,19 +149,19 @@
 [data-tema=full_color] .judul-layanan { @apply mt-3.5 text-xl font-bold tracking-tight text-foreground; }
 [data-tema=full_color] .isi-layanan-deskripsi { @apply mt-2.5 px-3 leading-relaxed text-teks; }
 [data-tema=full_color] .isi-layanan-rinci { @apply hidden; }
-[data-tema=full_color] .isi-layanan-aksi { @apply mt-auto px-3 pt-4 pb-2; }
-.tombol-selengkapnya { @apply inline-flex min-h-11 items-center gap-x-1.5 text-sm font-semibold text-(--corak-teks) transition-all; }
+[data-tema=full_color] .isi-layanan-aksi { @apply mt-auto px-3 pt-5 pb-3; }
+/* Selengkapnya berbentuk tombol tanpa ikon (pilihan pemilik 2026-10-11); ::after merentang agar seluruh kartu tetap bisa diklik. */
+.tombol-selengkapnya { @apply inline-flex min-h-11 items-center justify-center bg-(--corak-lembut) px-4 text-sm font-semibold text-(--corak-teks) ring-1 ring-(--corak-cincin) transition lg:min-h-10; border-radius: var(--sudut-tombol); }
 .tombol-selengkapnya::after { content: ""; @apply absolute inset-0 rounded-kartu; }
-.tombol-selengkapnya:focus-visible { outline: none; }
-.tombol-selengkapnya:focus-visible::after { outline: 2px solid var(--corak); outline-offset: 2px; }
-@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply gap-x-2.5; } }
+.tombol-selengkapnya:focus-visible { outline: 2px solid var(--corak); outline-offset: 2px; }
+@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply shadow-xs ring-(--corak); } }
 [data-tema=monochrome] .kartu-layanan { @apply rounded-kartu border bg-card p-1.5 shadow-xs; }
 [data-tema=monochrome] .isi-layanan-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=monochrome] .isi-layanan-gambar img { @apply block w-full object-cover; }
 [data-tema=monochrome] .isi-layanan-kepala { @apply px-4 pt-4 sm:px-5 sm:pt-5; }
 [data-tema=monochrome] .nomor-layanan { @apply block font-mono text-xs text-muted-foreground; }
 [data-tema=monochrome] .judul-layanan { @apply mt-2 text-lg font-semibold tracking-tight text-balance text-foreground sm:mt-3; }
-[data-tema=monochrome] .isi-layanan-deskripsi { @apply px-4 pt-2 text-[15px]/7 text-teks sm:px-5; }
+[data-tema=monochrome] .isi-layanan-deskripsi { @apply px-4 pt-2 text-[15px]/[1.65] text-teks sm:px-5; }
 [data-tema=monochrome] .isi-layanan-rinci { @apply mx-4 mt-4 mb-4 border-t pt-4 text-sm/6 text-muted-foreground sm:mx-5 sm:mb-5; }
 [data-tema=monochrome] .isi-layanan-aksi { @apply hidden; }
 

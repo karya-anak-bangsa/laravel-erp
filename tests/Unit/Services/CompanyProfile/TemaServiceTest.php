@@ -50,7 +50,7 @@ it('merender token lengkap kedua template', function () {
     $css = (new TemaService)->tokenCss();
 
     expect($css)
-        ->toContain('html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: "Plus Jakarta Sans"; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; --tinggi-navbar: 4rem; --tinggi-logo: 2.25rem; --teks-menu: .875rem; --tinggi-tombol: 2.75rem; --teks-tombol: .9375rem; --lebar-konten: 80rem; }')
+        ->toContain('html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: "Plus Jakarta Sans"; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; --tinggi-navbar: 4rem; --tinggi-logo: 2.25rem; --teks-menu: .875rem; --tinggi-tombol: 2.75rem; --teks-tombol: .9375rem; --teks-judul-seksi: 2.375rem; --lebar-konten: 80rem; }')
         ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);')
         ->toContain('--nada-950: oklch(14.5% 0 0); --font-tema: "Geist"; --sudut-kartu: .75rem;')
         ->and(substr_count($css, '--nada-'))->toBe(11);
@@ -58,7 +58,7 @@ it('merender token lengkap kedua template', function () {
 
 it('merender skala per jenis dan menaikkannya satu tingkat di layar 1920px ke atas', function () {
     expect((new TemaService)->tokenCss())
-        ->toContain('--tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --lebar-konten: 80rem; }')
+        ->toContain('--tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.25rem; --lebar-konten: 80rem; }')
         ->toContain('@media (min-width: 1920px) { html[data-tema=full_color] { --tinggi-navbar: 4.5rem;')
         ->toContain('html[data-tema=monochrome] { --tinggi-navbar: 4.25rem;');
 });
@@ -67,8 +67,8 @@ it('melebarkan konten di layar 1920px ke atas sesuai pilihan template', function
     config(['tema.template.monochrome.lebar_konten' => 'standar']);
 
     expect((new TemaService)->tokenCss())
-        ->toContain('--teks-tombol: .9375rem; --lebar-konten: 90rem; } html[data-tema=monochrome]')
-        ->toContain('--teks-tombol: .875rem; --lebar-konten: 80rem; } }');
+        ->toContain('--teks-judul-seksi: 2.5rem; --lebar-konten: 90rem; } html[data-tema=monochrome]')
+        ->toContain('--teks-judul-seksi: 2.375rem; --lebar-konten: 80rem; } }');
 });
 
 it('membatasi kenaikan skala pada tingkat terbesar', function () {

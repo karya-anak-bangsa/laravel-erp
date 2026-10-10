@@ -154,7 +154,7 @@ Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3. Berisi
 | nada_dasar | VARCHAR(20) NULL | enum `NadaDasar`: netral, zinc, stone, slate (skala abu-abu); wajib bila monochrome |
 | font | VARCHAR(50) | enum `FontTemplate`: plus_jakarta_sans, geist, inter, poppins, manrope, dm_sans |
 | sudut | VARCHAR(20) | enum `SudutTemplate`: tajam, sedang, bulat |
-| skala | VARCHAR(20) | enum `SkalaTemplate`: ringkas, standar, lega. Ukuran desktop (≥1024px) tinggi navbar, logo, teks menu, dan tombol besar; nilai per jenis di enum, naik satu tingkat otomatis di layar ≥1920px. Jarak antarseksi menyusul saat review seksi (disetujui pemilik 2026-10-11) |
+| skala | VARCHAR(20) | enum `SkalaTemplate`: ringkas, standar, lega. Ukuran desktop (≥1024px) tinggi navbar, logo, teks menu, tombol besar, dan judul seksi; nilai per jenis di enum, naik satu tingkat otomatis di layar ≥1920px. Jarak antarseksi menyusul saat review seksi (disetujui pemilik 2026-10-11) |
 | lebar_konten | VARCHAR(20) | enum `LebarKonten`: standar (1280px), lebar (1440px). Lebar maksimum isi halaman di monitor ≥1920px; di bawahnya selalu 1280px (disetujui pemilik 2026-10-11) |
 | ketebalan_judul | VARCHAR(20) | enum `KetebalanJudul`: semibold, bold, extrabold — judul hero & judul seksi (disetujui pemilik 2026-10-11) |
 | bayangan | VARCHAR(20) | enum `BayanganTemplate`: tanpa, halus, tegas — bayangan tombol, kartu, dan gambar hero (disetujui pemilik 2026-10-11) |
