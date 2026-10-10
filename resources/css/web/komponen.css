@@ -198,7 +198,7 @@
 [data-tema=monochrome] .kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=monochrome] .kartu-portofolio-gambar img { display: block; aspect-ratio: 16 / 10; }
 [data-tema=monochrome] .kartu-portofolio-isi { @apply flex flex-col px-4 py-4 sm:px-5 sm:py-5; }
-[data-tema=monochrome] .lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-xs text-foreground; }
+[data-tema=monochrome] .lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
 [data-tema=monochrome] .lencana-kategori .titik { @apply hidden; }
 [data-tema=monochrome] .judul-portofolio { @apply mt-3 text-lg font-semibold tracking-tight text-balance text-foreground; }
 [data-tema=monochrome] .deskripsi-portofolio { @apply mt-2 text-[15px]/[1.65] text-teks; }
@@ -236,12 +236,14 @@
 [data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-3 pt-5 pb-3; }
 .kartu-artikel-gambar img { @apply size-full object-cover; }
 .kartu-artikel-meta { @apply flex flex-wrap items-center text-sm; }
-[data-tema=full_color] .kartu-artikel-meta { @apply gap-x-3 gap-y-1.5; }
-[data-tema=full_color] .lencana-artikel { @apply inline-flex items-center rounded-lencana bg-(--utama-50) px-2.5 py-1 text-xs font-bold text-foreground ring-1 ring-(--utama-100) ring-inset; }
-[data-tema=full_color] .tanggal-artikel { @apply inline-flex items-center gap-x-1.5 text-muted-foreground; }
-[data-tema=full_color] .kartu-artikel-judul { @apply mt-3.5 text-lg leading-snug font-bold tracking-tight text-foreground transition; }
+/* Tanggal di bawah ringkasan (pilihan pemilik 2026-10-11): meta dilebur agar lencana & tanggal menjadi anak kolom isi
+   yang bisa diurutkan; markup tetap satu untuk kedua tema. Ukuran teks sama dengan kartu layanan & portofolio. */
+[data-tema=full_color] .kartu-artikel-meta { display: contents; }
+[data-tema=full_color] .lencana-artikel { @apply inline-flex w-fit items-center self-start rounded-lencana bg-(--utama-50) px-2.5 py-1 text-xs font-bold text-foreground ring-1 ring-(--utama-100) ring-inset; }
+[data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3 text-sm text-muted-foreground; }
+[data-tema=full_color] .kartu-artikel-judul { @apply mt-3.5 text-xl font-bold tracking-tight text-balance text-foreground transition; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { color: var(--aksen-teks); } }
-[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2.5 line-clamp-4 text-[15px] leading-relaxed text-teks; }
+[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2.5 line-clamp-4 text-base leading-relaxed text-teks; }
 [data-tema=full_color] .kartu-artikel-tautan { @apply mt-auto inline-flex items-center gap-x-1.5 pt-4 text-sm font-semibold text-aksen; }
 .tautan-rentang::after { content: ""; @apply absolute inset-0; }
 [data-tema=full_color] .tautan-rentang::after { border-radius: var(--sudut-kartu); }
@@ -252,11 +254,11 @@
 [data-tema=monochrome] .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=monochrome] .kartu-artikel-gambar img { @apply block aspect-4/3; }
 [data-tema=monochrome] .kartu-artikel-meta { @apply gap-x-3 gap-y-2 lg:flex-col lg:items-start lg:gap-3 lg:pt-1; }
-[data-tema=monochrome] .lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[11px] text-foreground; }
-[data-tema=monochrome] .tanggal-artikel { @apply -order-1 font-mono text-xs text-muted-foreground; }
-[data-tema=monochrome] .ikon-tanggal { @apply hidden; }
-[data-tema=monochrome] .kartu-artikel-judul { @apply text-lg leading-snug font-semibold tracking-tight text-pretty text-foreground underline-offset-4 sm:text-xl; }
-[data-tema=monochrome] .kartu-artikel-ringkasan { @apply line-clamp-3 text-sm/6 text-muted-foreground sm:max-w-2xl sm:text-[15px]/7; }
+/* Tanggal & lencana 13px (pilihan pemilik 2026-10-11); judul & ringkasan sama dengan kartu layanan & portofolio. */
+[data-tema=monochrome] .lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
+[data-tema=monochrome] .tanggal-artikel { @apply -order-1 font-mono text-[13px] text-muted-foreground; }
+[data-tema=monochrome] .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground underline-offset-4; }
+[data-tema=monochrome] .kartu-artikel-ringkasan { @apply line-clamp-3 text-[15px]/[1.65] text-teks sm:max-w-2xl; }
 [data-tema=monochrome] .kartu-artikel-tautan { @apply hidden; }
 @media (hover: hover) {
   [data-tema=monochrome] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { @apply underline; }

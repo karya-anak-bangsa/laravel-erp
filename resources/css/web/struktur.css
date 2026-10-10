@@ -121,8 +121,6 @@ body { background: var(--background); color: var(--teks); }
    display: contents agar anak-anaknya menjadi sel grid kartu. */
 [data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
-/* Kartu samping sempit: lencana & tanggal selalu bertumpuk agar tidak kadang sebaris, kadang turun (kategori panjang). */
-[data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-meta { flex-direction: column; align-items: flex-start; }
 @media (max-width: 767.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 7.5rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
@@ -134,12 +132,13 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=full_color] .daftar-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
   [data-tema=full_color] .daftar-artikel > :first-child { grid-row: span 2; }
   [data-tema=full_color] .daftar-artikel > :only-child { grid-column: 1 / -1; }
-  [data-tema=full_color] .daftar-artikel > :first-child .kartu-artikel-judul { font-size: 1.375rem; line-height: 1.3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 40%; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
 }
+/* Kartu samping tablet tanpa ringkasan, kolom teksnya sempit (±175px): judul 18px; 20px mulai 1280px saat ringkasan tampil. */
 @media (min-width: 768px) and (max-width: 1279.98px) {
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-judul { font-size: 1.125rem; line-height: 1.4; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-ringkasan { display: none; }
 }
 [data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan"; align-items: start; }
@@ -153,7 +152,8 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 11rem; grid-template-rows: auto auto 1fr; grid-template-areas: "meta gambar" "judul gambar" "ringkasan gambar"; }
 }
 @media (min-width: 1024px) {
-  [data-tema=monochrome] .kartu-artikel { grid-template-columns: 12rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
+  /* Kolom meta 14rem: lencana 13px seperti "Pelatihan & Sertifikasi" tetap satu baris. */
+  [data-tema=monochrome] .kartu-artikel { grid-template-columns: 14rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
 }
 
 /* ---------- Kontak: susunan berbeda per tema lewat grid-template-areas (urutan DOM tetap) ---------- */

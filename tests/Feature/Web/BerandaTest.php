@@ -128,7 +128,7 @@ describe('isi', function () {
         $this->get('/')
             ->assertSeeInOrder(['Artikel Empat', 'Artikel Tiga', 'Artikel Dua'])
             ->assertSee('Kategori Uji')
-            ->assertSee('4 Oktober 2026')
+            ->assertSee('<span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
             ->assertDontSee('04 Oktober 2026')
             ->assertDontSee('Artikel Satu')
             ->assertDontSee('Artikel Draf');
@@ -200,7 +200,16 @@ describe('isi', function () {
         $this->get('/')
             ->assertDontSee('id="tombol-wa"', false)
             ->assertDontSee('wa.me')
-            ->assertSee('data-wa=""', false);
+            ->assertSee('data-wa=""', false)
+            // Ajakan tetap punya tombol: cadangan ke formulir kontak.
+            ->assertSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
+    });
+
+    it('hanya menampilkan tombol WhatsApp di band ajakan bila link WhatsApp tersedia', function () {
+        // Tombol kirim formulir kontak juga berlabel "Kirim Pesan", jadi yang diperiksa tautan ajakannya.
+        $this->get('/')
+            ->assertSee('Chat via WhatsApp')
+            ->assertDontSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
     });
 
     it('merender HTML editor yang sudah disanitasi dan meng-escape teks biasa', function () {

@@ -11,14 +11,16 @@
                 <h2 id="judul-ajakan" class="judul-ajakan">Punya ide proyek atau rencana pelatihan untuk tim Anda?</h2>
                 <p class="deskripsi-ajakan">Ceritakan kebutuhan Anda, kami bantu menyusun solusi yang sesuai.</p>
             </div>
+            {{-- Cukup satu ajakan WhatsApp (pilihan pemilik 2026-10-11); Kirim Pesan hanya cadangan bila link WhatsApp di Identitas kosong. --}}
             <div class="aksi-ajakan">
                 @if (filled($identitas->link_whatsapp))
                     <x-web.tautan-luar :href="$identitas->link_whatsapp" class="btn btn-besar">
                         <x-web.ikon nama="whatsapp" class="size-5" />
                         Chat via WhatsApp
                     </x-web.tautan-luar>
+                @else
+                    <a href="#kontak" class="btn btn-besar">Kirim Pesan</a>
                 @endif
-                <a href="#kontak" class="btn btn-besar" data-variant="outline">Kirim Pesan</a>
             </div>
         </div>
     </div>
