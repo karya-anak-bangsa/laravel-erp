@@ -14,4 +14,4 @@
 @vite(['resources/css/web.css', 'resources/js/web.js'])
 
 {{-- Tanpa JavaScript: menu ponsel tetap terbaca; tombol tema & tab portofolio disembunyikan karena tidak berfungsi. --}}
-<noscript><style>.menu-ponsel[hidden]{display:block!important;position:static!important;box-shadow:none!important}.pilih-tema,.filter-portofolio>[role=tablist]{display:none!important}</style></noscript>
+<noscript><style>.menu-ponsel[hidden]{display:block!important;position:static!important;box-shadow:none!important}.pilih-tema,.tema-ponsel,.filter-portofolio>[role=tablist]{display:none!important}</style></noscript>

@@ -51,7 +51,27 @@
                     <li><a href="{{ route('beranda') }}#{{ $anchor }}">{{ $label }}</a></li>
                 @endforeach
             </ul>
-            <a href="{{ route('beranda') }}#kontak" class="btn">Hubungi Kami</a>
+
+            {{-- Versi berlabel dari tombol tema di navbar; keduanya dikendalikan resources/js/web/tema.js. --}}
+            <div class="tema-ponsel">
+                <span class="tema-ponsel-label" id="label-tema-ponsel">Tema</span>
+                <div class="pilih-tema" role="group" aria-labelledby="label-tema-ponsel">
+                    @foreach (App\Enums\CompanyProfile\JenisTemplate::cases() as $jenis)
+                        <button type="button" class="opsi-tema" data-pilih-tema="{{ $jenis->value }}" aria-pressed="{{ $tema === $jenis ? 'true' : 'false' }}">
+                            <span @class(['contoh-warna', 'contoh-warna-penuh' => $jenis === App\Enums\CompanyProfile\JenisTemplate::FullColor, 'contoh-warna-mono' => $jenis === App\Enums\CompanyProfile\JenisTemplate::Monochrome]) aria-hidden="true"></span>
+                            {{ $jenis->label() }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
+            <a href="{{ route('beranda') }}#kontak" class="btn">
+                Hubungi Kami
+                <x-web.ikon nama="panah-kanan" class="size-4" />
+            </a>
         </nav>
     </div>
 </header>
+
+{{-- Di luar <header>: backdrop-filter header menjadikannya acuan posisi fixed, jadi latar tidak bisa menutup halaman dari dalam. --}}
+<div id="latar-menu" class="latar-menu" hidden></div>

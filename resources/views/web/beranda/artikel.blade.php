@@ -5,7 +5,7 @@
     <div class="wadah">
         {{-- Tombol "Lihat semua artikel" & tautan kartu ditambahkan begitu halaman artikel tersedia. --}}
         <div class="kepala-artikel">
-            <x-web.kepala-seksi id="judul-artikel" :nomor="$nomorSeksi('artikel')" label="Artikel" judul="Wawasan & kabar terbaru">
+            <x-web.kepala-seksi id="judul-artikel" :nomor="$nomorSeksi('artikel')" label="Artikel" judul="Wawasan & kabar terbaru" rata="tengah">
                 Tips, panduan, dan cerita seputar teknologi, pengembangan aplikasi, serta pelatihan IT.
             </x-web.kepala-seksi>
         </div>
@@ -21,11 +21,12 @@
                                 <span class="lencana-artikel">{{ $item->kategoriArtikel->nama_kategori }}</span>
                             @endif
                             <time class="tanggal-artikel" datetime="{{ $item->tanggal->toDateString() }}">
-                                <x-web.ikon nama="kalender" :tebal="1.75" class="ikon-tanggal size-4" />{{ $item->tanggal->translatedFormat('d F Y') }}
+                                {{-- Halaman publik tanpa nol di depan tanggal ("9 Oktober"); admin tetap d F Y. --}}
+                                <x-web.ikon nama="kalender" :tebal="1.75" class="ikon-tanggal size-4" />{{ $item->tanggal->translatedFormat('j F Y') }}
                             </time>
                         </div>
                         <h3 class="kartu-artikel-judul">{{ $item->judul }}</h3>
-                        <p class="kartu-artikel-ringkasan">{{ Str::limit(TeksHtml::polos($item->deskripsi), 160) }}</p>
+                        <p class="kartu-artikel-ringkasan">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 160) }}</p>
                     </div>
                 </article>
             @endforeach

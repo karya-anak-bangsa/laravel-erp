@@ -47,7 +47,7 @@
 
 /* Pilihan tema (dua tombol aria-pressed) */
 .pilih-tema { @apply inline-flex items-center gap-0.5 border bg-muted p-[3px]; border-radius: var(--sudut-tombol); }
-.opsi-tema { @apply inline-flex size-9 items-center justify-center transition; border-radius: max(calc(var(--sudut-tombol) - 3px), 2px); }
+.opsi-tema { @apply inline-flex size-11 items-center lg:size-9 justify-center transition; border-radius: max(calc(var(--sudut-tombol) - 3px), 2px); }
 .opsi-tema[aria-pressed=true] { @apply bg-background shadow-sm; }
 .contoh-warna { @apply block size-[18px] rounded-full transition; }
 .opsi-tema[aria-pressed=false] .contoh-warna { opacity: .5; }
@@ -60,6 +60,14 @@
 .menu-ponsel ul { @apply grid; }
 .menu-ponsel li a { @apply flex min-h-12 items-center border-b text-[15px] font-medium text-foreground; }
 .menu-ponsel .btn { @apply mt-4 h-11 w-full; }
+/* Latar redup di bawah menu ponsel: halaman di belakang tidak terbaca sebagai bagian menu. */
+.latar-menu { @apply fixed inset-0 z-45 bg-slate-950/40 lg:hidden; }
+[data-tema=monochrome] .latar-menu { @apply bg-black/40; }
+@media (prefers-reduced-motion: no-preference) { .latar-menu:not([hidden]) { animation: muncul-pudar .2s ease-out both; } }
+/* Baris tema berlabel di menu ponsel: ikon contoh warna di navbar saja sulit ditebak artinya. */
+.tema-ponsel { @apply flex items-center justify-between gap-3 border-b py-3; }
+.tema-ponsel-label { @apply text-[15px] font-medium text-foreground; }
+.tema-ponsel .pilih-tema .opsi-tema { @apply h-10 w-auto gap-2 px-3 text-sm font-medium text-foreground; }
 
 /* ---------- Hero ---------- */
 [data-tema=full_color] .hero { background-image: linear-gradient(to bottom, var(--utama-50), #fff 72%); }
@@ -174,9 +182,11 @@
 [data-tema=monochrome] .filter-portofolio > [role=tablist] { border-radius: var(--sudut-tombol); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 0 0 auto; padding-inline: .75rem; border-radius: max(calc(var(--sudut-tombol) - 3px), 2px); color: color-mix(in oklab, var(--foreground) 72%, transparent); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab][aria-selected=true] { color: var(--foreground); }
+/* Ponsel: kontrol segmen tetap satu baris dan bisa digeser (tab terakhir terpotong sebagai petunjuk), bukan terpecah 3+2. */
 @media (max-width: 639.98px) {
-  [data-tema=monochrome] .filter-portofolio > [role=tablist] { display: flex; flex-wrap: wrap; width: 100%; height: auto; }
-  [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 1 1 auto; min-height: 2.75rem; }
+  [data-tema=monochrome] .filter-portofolio > [role=tablist] { display: flex; width: 100%; max-width: 100%; height: auto; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  [data-tema=monochrome] .filter-portofolio > [role=tablist]::-webkit-scrollbar { display: none; }
+  [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 0 0 auto; min-height: 2.75rem; }
 }
 [data-tema=full_color] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu bg-card p-3 shadow-sm ring-1 shadow-slate-900/5 ring-border; }
 [data-tema=full_color] .kartu-portofolio-gambar { @apply aspect-4/3 overflow-hidden rounded-dalam bg-(--corak-lembut); }
@@ -277,7 +287,8 @@
 /* ---------- Kontak ---------- */
 [data-tema=full_color] .tata-kontak { @apply mt-10 sm:mt-14; }
 [data-tema=monochrome] .tata-kontak { @apply mt-12; }
-[data-tema=full_color] .info-kontak { @apply grid gap-4 md:grid-cols-2 lg:gap-6 xl:grid-cols-4; }
+/* 2×2 (bukan 4 kolom): di 4 kolom email patah dua baris dan kartu alamat jauh lebih tinggi dari yang lain. */
+[data-tema=full_color] .info-kontak { @apply grid gap-4 md:grid-cols-2 lg:gap-6; }
 [data-tema=full_color] .tautan-kontak { @apply flex h-full gap-x-4 rounded-dalam p-5 ring-1 ring-border transition sm:p-6; background-color: var(--latar-redup); }
 [data-tema=full_color] a.tautan-kontak:hover { @apply ring-(--warna-aksen)/40; }
 [data-tema=full_color] .ikon-kontak { @apply flex size-12 shrink-0 items-center justify-center ring-1; border-radius: var(--sudut-dalam); }
@@ -351,12 +362,12 @@
 .kaki-situs { @apply relative bg-background text-muted-foreground; }
 .garis-merek { @apply h-1; background-image: linear-gradient(to right, var(--warna-utama), var(--warna-aksen), var(--warna-utama)); }
 .kaki-isi { @apply pt-14 pb-8 sm:pt-16 sm:pb-10 lg:pt-20; }
-.kaki-grid { @apply grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(17rem,1.3fr)] lg:grid-cols-12 lg:gap-y-12; }
+.kaki-grid { @apply grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-6 gap-y-10 sm:gap-x-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(17rem,1.3fr)] lg:grid-cols-12 lg:gap-y-12; }
 .kaki-merek { @apply col-span-2 md:col-span-3 lg:col-span-4; }
 .kaki-merek img { @apply h-10 w-auto; }
 [data-tema=monochrome] .kaki-merek img { @apply h-8; }
 .kaki-nama { @apply mt-5 font-semibold text-foreground; }
-[data-tema=monochrome] .kaki-nama { @apply hidden; }
+[data-tema=monochrome] .kaki-nama { @apply mt-4 text-sm font-medium tracking-tight; }
 .kaki-deskripsi { @apply mt-2 max-w-sm text-[15px] leading-relaxed; }
 [data-tema=monochrome] .kaki-deskripsi { @apply mt-4 text-sm/6; }
 .judul-kaki { @apply text-foreground; }

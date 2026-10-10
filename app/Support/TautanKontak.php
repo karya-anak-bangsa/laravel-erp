@@ -25,11 +25,22 @@ class TautanKontak
     }
 
     /**
-     * Teks tautan WhatsApp tanpa skema, mis. 'https://wa.me/62812…' → 'wa.me/62812…'.
+     * Nomor dari tautan WhatsApp dalam format lokal yang mudah dibaca, mis. 'https://wa.me/6281234567890'
+     * (atau api.whatsapp.com/send?phone=…) → '0812-3456-7890'. Bila nomor tidak terbaca, tautan tanpa skema.
      */
     public static function tampilanWhatsapp(string $url): string
     {
-        return rtrim(Str::after($url, '://'), '/');
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $kueri);
+        $sumber = is_string($kueri['phone'] ?? null) ? $kueri['phone'] : (string) parse_url($url, PHP_URL_PATH);
+        $angka = (string) preg_replace('/\D+/', '', $sumber);
+
+        if (strlen($angka) < 8) {
+            return rtrim(Str::after($url, '://'), '/');
+        }
+
+        $lokal = str_starts_with($angka, '62') ? '0'.substr($angka, 2) : $angka;
+
+        return implode('-', array_filter([substr($lokal, 0, 4), substr($lokal, 4, 4), substr($lokal, 8)], fn (string $bagian) => $bagian !== ''));
     }
 
     /**

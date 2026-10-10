@@ -2,12 +2,16 @@
 export function pasangMenu() {
     const tombol = document.getElementById('tombol-menu');
     const panel = document.getElementById('menu-ponsel');
+    const latar = document.getElementById('latar-menu');
     if (!tombol || !panel) {
         return;
     }
 
     const atur = (buka) => {
         panel.hidden = !buka;
+        if (latar) {
+            latar.hidden = !buka;
+        }
         tombol.setAttribute('aria-expanded', String(buka));
         tombol.setAttribute('aria-label', buka ? 'Tutup menu' : 'Buka menu');
         tombol.querySelector('.ikon-buka')?.classList.toggle('hidden', buka);

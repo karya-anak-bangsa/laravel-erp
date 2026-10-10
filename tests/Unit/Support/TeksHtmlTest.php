@@ -11,6 +11,12 @@ it('mengembalikan string kosong untuk HTML tanpa teks', function (?string $html)
     expect(TeksHtml::polos($html))->toBe('');
 })->with([null, '', '<p></p>', '<p><br></p>']);
 
+it('membuang sub-judul dari ringkasan agar tidak menyambung dengan kalimat sesudahnya', function () {
+    expect(TeksHtml::ringkasan('<p>Pembuka.</p><h2>Sub <strong>judul</strong></h2><p>Isi satu.</p><h3 class="x">Lagi</h3><p>Isi dua.</p>'))
+        ->toBe('Pembuka. Isi satu. Isi dua.')
+        ->and(TeksHtml::ringkasan(null))->toBe('');
+});
+
 it('mengubah teks polos menjadi paragraf HTML yang aman', function () {
     expect(TeksHtml::dariTeksPolos("Baris satu\nBaris dua & <b>\n\nParagraf dua"))
         ->toBe('<p>Baris satu<br>Baris dua &amp; &lt;b&gt;</p><p>Paragraf dua</p>');

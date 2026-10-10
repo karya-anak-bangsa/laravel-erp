@@ -119,6 +119,8 @@ body { background: var(--background); color: var(--teks); }
    display: contents agar anak-anaknya menjadi sel grid kartu. */
 [data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
+/* Kartu samping sempit: lencana & tanggal selalu bertumpuk agar tidak kadang sebaris, kadang turun (kategori panjang). */
+[data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-meta { flex-direction: column; align-items: flex-start; }
 @media (max-width: 767.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 7.5rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
@@ -160,7 +162,7 @@ body { background: var(--background); color: var(--teks); }
 @media (min-width: 1024px) {
   [data-tema=full_color] .tata-kontak { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "info info" "form peta"; }
 }
-[data-tema=monochrome] .tata-kontak { gap: 2rem; grid-template-areas: "info" "peta" "form"; }
+[data-tema=monochrome] .tata-kontak { gap: 2rem; }
 @media (min-width: 768px) {
   [data-tema=monochrome] .tata-kontak { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "info peta" "form form"; gap: 1.5rem; }
 }
@@ -233,3 +235,4 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 }
 @keyframes naik-masuk { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes muncul { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes muncul-pudar { from { opacity: 0; } to { opacity: 1; } }

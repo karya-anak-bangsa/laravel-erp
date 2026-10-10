@@ -22,6 +22,15 @@ class TeksHtml
     }
 
     /**
+     * Teks polos untuk ringkasan kartu: sub-judul (h2/h3) dibuang agar tidak menyambung dengan
+     * kalimat paragraf sesudahnya, mis. "…kendalikan. Dipercaya calon pelanggan Pelanggan cenderung…".
+     */
+    public static function ringkasan(?string $html): string
+    {
+        return self::polos(preg_replace('#<(h2|h3)\b[^>]*>.*?</\1>#is', ' ', (string) $html));
+    }
+
+    /**
      * Teks polos (mis. data lama sebelum memakai editor) menjadi paragraf HTML yang aman:
      * baris kosong memisahkan paragraf, baris baru tunggal menjadi <br>.
      */

@@ -128,7 +128,8 @@ describe('isi', function () {
         $this->get('/')
             ->assertSeeInOrder(['Artikel Empat', 'Artikel Tiga', 'Artikel Dua'])
             ->assertSee('Kategori Uji')
-            ->assertSee('04 Oktober 2026')
+            ->assertSee('4 Oktober 2026')
+            ->assertDontSee('04 Oktober 2026')
             ->assertDontSee('Artikel Satu')
             ->assertDontSee('Artikel Draf');
     });
@@ -141,12 +142,12 @@ describe('isi', function () {
         $this->get('/')->assertOk()->assertSee('Artikel Yatim')->assertDontSee('Kategori Terhapus');
     });
 
-    it('menampilkan ringkasan artikel sebagai teks polos', function () {
-        Artikel::factory()->terbit()->create(['deskripsi' => '<h2>Sub-judul</h2><p>Isi <strong>tebal</strong> artikel.</p>']);
+    it('menampilkan ringkasan artikel sebagai teks polos tanpa sub-judul', function () {
+        Artikel::factory()->terbit()->create(['deskripsi' => '<p>Pembuka.</p><h2>Sub-judul</h2><p>Isi <strong>tebal</strong> artikel.</p>']);
 
         $this->get('/')
-            ->assertSee('<p class="kartu-artikel-ringkasan">Sub-judul Isi tebal artikel.</p>', false)
-            ->assertDontSee('<h2>Sub-judul</h2>', false);
+            ->assertSee('<p class="kartu-artikel-ringkasan">Pembuka. Isi tebal artikel.</p>', false)
+            ->assertDontSee('Sub-judul');
     });
 
     it('menampilkan enam portofolio terbaru dengan tab dari kategori yang tampil saja', function () {
