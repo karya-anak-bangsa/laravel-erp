@@ -21,6 +21,13 @@ html[data-tema=full_color] {
   --aksen-lembut: color-mix(in oklab, var(--warna-aksen) 8%, #fff);
   --kisi: color-mix(in oklab, var(--warna-utama) 7%, transparent);
   --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3);
+  /* Bayangan Full Color: tipis & pendek (pemilik 2026-10-11, putaran 2 — kekuatan ±separuh putaran 1). */
+  --bayangan-kartu: 0 1px 2px rgb(15 23 42 / .03), 0 6px 16px -10px rgb(15 23 42 / .07);
+  --bayangan-kartu-sorot: 0 1px 2px rgb(15 23 42 / .03), 0 12px 24px -14px rgb(15 23 42 / .11);
+  --bayangan-tombol: 0 1px 2px rgb(15 23 42 / .06), 0 2px 6px -3px rgb(15 23 42 / .10);
+  --bayangan-melayang: 0 1px 2px rgb(15 23 42 / .03), 0 16px 32px -18px rgb(15 23 42 / .15);
+  --bayangan-gambar: 0 1px 2px rgb(15 23 42 / .03), 0 10px 28px -16px rgb(15 23 42 / .14);
+  --bayangan-navbar: 0 1px 0 rgb(15 23 42 / .03), 0 6px 18px -12px rgb(15 23 42 / .08);
 }
 /* Monochrome: seluruh warna dari skala abu-abu (nada dasar) template. */
 html[data-tema=monochrome] {
@@ -36,6 +43,7 @@ html[data-tema=monochrome] {
   --latar-redup: color-mix(in oklab, var(--nada-100) 40%, #fff);
   --aksen-teks: var(--nada-950); --kisi: var(--nada-200);
   --corak: var(--nada-900); --corak-lembut: var(--nada-100); --corak-teks: var(--nada-900); --corak-cincin: var(--nada-200);
+  --garis-kartu: color-mix(in oklab, var(--nada-200), var(--nada-300));
 }
 /* Seksi gelap (band ajakan, footer). Token --color-* Basecoat dihitung di :root, jadi dipetakan ulang di sini.
    Semua token ditulis ulang karena aturan .dark bawaan Basecoat ikut menimpa nilai yang diwarisi (mis. --primary). */

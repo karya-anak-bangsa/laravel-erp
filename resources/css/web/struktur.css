@@ -199,7 +199,7 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 .penanda-peta span {
   display: grid; place-items: center; width: 40px; height: 40px;
   border-radius: 9999px 9999px 9999px 0; transform: rotate(-45deg);
-  background: var(--primary); border: 3px solid #fff; box-shadow: 0 8px 20px -6px color-mix(in oklab, var(--primary) 60%, transparent);
+  background: var(--primary); border: 3px solid #fff; box-shadow: 0 4px 10px -5px color-mix(in oklab, var(--primary) 30%, transparent);
 }
 .penanda-peta svg { transform: rotate(45deg); width: 18px; height: 18px; color: var(--primary-foreground); }
 [data-tema=monochrome] .penanda-peta span { width: 22px; height: 22px; margin-bottom: -11px; border-radius: 9999px; transform: none; box-shadow: 0 0 0 1px rgb(0 0 0 / .25), 0 4px 10px rgb(0 0 0 / .3); }
@@ -207,6 +207,7 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 .leaflet-container { font-family: inherit; background: var(--muted); }
 [data-tema=full_color] .leaflet-tile-pane { filter: grayscale(.65) saturate(.7) brightness(1.03) contrast(.96); }
 .leaflet-popup-content-wrapper { border-radius: var(--sudut-dalam); box-shadow: 0 12px 32px -12px rgb(15 23 42 / .35); }
+[data-tema=full_color] .leaflet-popup-content-wrapper { box-shadow: var(--bayangan-melayang); }
 .leaflet-popup-content { margin: 14px 18px; font-size: 13px; line-height: 1.5; color: var(--teks); }
 .leaflet-popup-content strong { color: var(--foreground); }
 .leaflet-bar a { color: var(--foreground); }

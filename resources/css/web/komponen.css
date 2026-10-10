@@ -7,7 +7,7 @@
 .btn { border-radius: var(--sudut-tombol); }
 [data-tema=full_color] .btn { @apply font-semibold; }
 /* Bayangan tombol netral & tipis (pilihan pemilik 2026-10-10; sebelumnya bayangan merah pekat). */
-[data-tema=full_color] .btn:not([data-variant]) { box-shadow: 0 1px 2px rgb(15 23 42 / .08), 0 4px 10px -4px rgb(15 23 42 / .16); }
+[data-tema=full_color] .btn:not([data-variant]) { box-shadow: var(--bayangan-tombol); }
 [data-tema=full_color] .btn[data-variant=outline] { border-color: var(--input); background-color: var(--card); color: var(--foreground); }
 [data-tema=full_color] .dark .btn[data-variant=outline] { border-color: rgb(255 255 255 / .3); background-color: transparent; color: #fff; }
 [data-tema=monochrome] .dark .btn[data-variant=outline] { border-color: color-mix(in oklab, var(--foreground) 25%, transparent); background-color: color-mix(in oklab, var(--input) 30%, transparent); }
@@ -25,7 +25,7 @@
 
 /* ---------- Navbar ---------- */
 .kepala-situs { @apply sticky top-0 z-50 border-b bg-background; }
-[data-tema=full_color] .kepala-situs { @apply bg-background/95 shadow-[0_1px_0_rgb(15_23_42/0.03),0_8px_24px_-12px_rgb(15_23_42/0.12)] backdrop-blur-lg; }
+[data-tema=full_color] .kepala-situs { @apply bg-background/95 backdrop-blur-lg; box-shadow: var(--bayangan-navbar); }
 /* Tinggi navbar, logo, dan teks menu desktop dari skala template (--tinggi-navbar, --tinggi-logo, --teks-menu). */
 .bilah-navigasi { @apply mx-auto flex h-16 max-w-(--lebar-konten) items-center gap-4 px-4 sm:px-6 lg:h-(--tinggi-navbar) lg:px-8; }
 .logo-situs { @apply flex min-h-11 shrink-0 items-center gap-3 rounded-lg; }
@@ -60,6 +60,7 @@
 .contoh-warna-mono { background: linear-gradient(135deg, #0a0a0a 50%, #fff 50%); box-shadow: inset 0 0 0 1.5px #0a0a0a; }
 
 .menu-ponsel { @apply absolute inset-x-0 top-full border-b bg-background shadow-xl shadow-slate-900/10 lg:hidden; }
+[data-tema=full_color] .menu-ponsel { --tw-shadow: var(--bayangan-melayang); }
 .menu-ponsel nav { @apply mx-auto max-w-(--lebar-konten) px-4 pt-2 pb-5 sm:px-6; }
 .menu-ponsel ul { @apply grid; }
 .menu-ponsel li a { @apply flex min-h-12 items-center border-b text-[15px] font-medium text-foreground; }
@@ -105,7 +106,7 @@
 .hero-media { @apply relative; }
 [data-tema=full_color] .hero-pendar { @apply absolute -inset-3 -z-10 blur-2xl sm:-inset-5; border-radius: 2rem; background-image: linear-gradient(to top right, color-mix(in oklab, var(--warna-aksen) 12%, transparent), rgb(139 92 246 / .08), rgb(56 189 248 / .15)); }
 [data-tema=full_color] .hero-titik { @apply absolute -bottom-6 -left-6 -z-10 hidden size-28 sm:block; background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); background-size: 14px 14px; }
-[data-tema=full_color] .hero-bingkai { @apply aspect-video overflow-hidden bg-(--utama-teks) shadow-lg shadow-slate-900/10 ring-1 ring-slate-900/10 lg:aspect-3/2; border-radius: calc(var(--sudut-kartu) + .25rem); }
+[data-tema=full_color] .hero-bingkai { @apply aspect-video overflow-hidden bg-(--utama-teks) ring-1 ring-slate-900/10 lg:aspect-3/2; --tw-shadow: var(--bayangan-gambar); border-radius: calc(var(--sudut-kartu) + .25rem); }
 [data-tema=full_color] .hero-bingkai img { @apply size-full object-cover; }
 [data-tema=monochrome] .hero-bingkai { @apply border bg-muted/60 p-1.5 shadow-sm sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); }
 [data-tema=monochrome] .hero-bingkai img { @apply block h-auto w-full border; border-radius: var(--sudut-kartu); }
@@ -138,7 +139,10 @@
 [data-tema=monochrome] .tautan-teks { @apply font-medium text-foreground underline underline-offset-4; }
 
 /* ---------- Layanan ---------- */
-[data-tema=full_color] .kartu-layanan { @apply relative flex flex-col rounded-kartu bg-card p-3 shadow-sm ring-1 shadow-slate-900/5 ring-border transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10 hover:ring-(--corak-cincin); }
+/* Bayangan lembut menyebar seperti navbar (pilihan pemilik 2026-10-11; sebelumnya shadow-sm, saat sorot shadow-xl). */
+[data-tema=full_color] .kartu-layanan { @apply relative flex flex-col rounded-kartu bg-card p-3 ring-1 ring-border transition duration-300 hover:-translate-y-1 hover:ring-(--corak-cincin); --tw-shadow: var(--bayangan-kartu); }
+/* Lewat --tw-shadow agar digabung dengan garis ring-1 (Tailwind menyusun keduanya dalam satu box-shadow). */
+@media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover { --tw-shadow: var(--bayangan-kartu-sorot); } }
 [data-tema=full_color] .isi-layanan { @apply flex flex-1 flex-col; }
 /* 16:9 di ponsel agar seksi tidak terlalu panjang, 16:10 di kartu biasa seperti Monochrome; kartu lebar 4:3 (struktur.css). */
 [data-tema=full_color] .isi-layanan-gambar { @apply aspect-video overflow-hidden rounded-dalam bg-(--corak-lembut) sm:aspect-16/10; }
@@ -155,7 +159,8 @@
 .tombol-selengkapnya::after { content: ""; @apply absolute inset-0 rounded-kartu; }
 .tombol-selengkapnya:focus-visible { outline: 2px solid var(--corak); outline-offset: 2px; }
 @media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply shadow-xs ring-(--corak); } }
-[data-tema=monochrome] .kartu-layanan { @apply rounded-kartu border bg-card p-1.5 shadow-xs; }
+/* Garis tepi satu tingkat lebih tegas dari --border agar kartu tidak tampak pudar tanpa bantuan bayangan. */
+[data-tema=monochrome] .kartu-layanan { @apply rounded-kartu border bg-card p-1.5 shadow-xs; border-color: var(--garis-kartu); }
 [data-tema=monochrome] .isi-layanan-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=monochrome] .isi-layanan-gambar img { @apply block w-full object-cover; }
 [data-tema=monochrome] .isi-layanan-kepala { @apply px-4 pt-4 sm:px-5 sm:pt-5; }
@@ -166,9 +171,9 @@
 [data-tema=monochrome] .isi-layanan-aksi { @apply hidden; }
 
 /* Modal layanan (Full Color) */
-.dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card shadow-2xl; border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
+.dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card; box-shadow: var(--bayangan-melayang, 0 24px 48px -16px rgb(0 0 0 / .2)); border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
 .dialog-layanan-kepala { @apply flex items-center gap-4 bg-(--corak-lembut) p-4 pe-16 sm:gap-6 sm:p-6 sm:pe-20; }
-.dialog-layanan-gambar { @apply aspect-4/3 w-28 shrink-0 overflow-hidden rounded-dalam shadow-lg shadow-slate-900/15 ring-1 ring-black/5 sm:w-40; }
+.dialog-layanan-gambar { @apply aspect-4/3 w-28 shrink-0 overflow-hidden rounded-dalam ring-1 ring-black/5 sm:w-40; --tw-shadow: var(--bayangan-kartu); }
 .dialog-layanan-gambar img { @apply size-full object-cover; }
 .dialog-layanan-nomor { @apply inline-flex w-fit items-center rounded-lencana bg-white px-2.5 py-1 text-xs font-bold tracking-wider text-(--corak-teks) shadow-2xs; }
 .dialog-layanan-judul { @apply mt-2.5 text-xl font-extrabold tracking-tight text-balance text-foreground sm:text-2xl; }
@@ -176,7 +181,7 @@
 .dialog-layanan-deskripsi { @apply leading-relaxed font-medium text-foreground; }
 .dialog-layanan-rinci { @apply mt-3 leading-relaxed text-teks; }
 .dialog-layanan-aksi { @apply mt-7 flex flex-col gap-3 sm:flex-row; }
-.dialog-layanan-tutup { @apply absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md ring-1 ring-slate-200 backdrop-blur transition hover:bg-white; }
+.dialog-layanan-tutup { @apply absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-xs ring-1 ring-slate-200 backdrop-blur transition hover:bg-white; }
 [data-tema=full_color] .dialog-layanan-tutup { border-radius: var(--sudut-tombol); }
 
 /* ---------- Portofolio ---------- */
@@ -185,7 +190,7 @@
 [data-tema=full_color] .filter-portofolio > [role=tabpanel]:focus-visible { border-radius: var(--sudut-kartu); }
 [data-tema=full_color] .filter-portofolio > [role=tablist] { @apply mx-auto flex h-auto w-full flex-wrap justify-center gap-2 bg-transparent p-0; }
 [data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab] { @apply inline-flex h-auto min-h-11 flex-none items-center border-0 bg-card px-5 text-sm font-semibold text-teks shadow-2xs ring-1 ring-border transition hover:text-foreground; border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab][aria-selected=true] { @apply bg-(--utama-teks) text-white shadow-md shadow-slate-900/20 ring-(--utama-teks); }
+[data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab][aria-selected=true] { @apply bg-(--utama-teks) text-white ring-(--utama-teks); --tw-shadow: var(--bayangan-tombol); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] { border-radius: var(--sudut-tombol); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 0 0 auto; padding-inline: .75rem; border-radius: max(calc(var(--sudut-tombol) - 3px), 2px); color: color-mix(in oklab, var(--foreground) 72%, transparent); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab][aria-selected=true] { color: var(--foreground); }
@@ -195,7 +200,7 @@
   [data-tema=monochrome] .filter-portofolio > [role=tablist]::-webkit-scrollbar { display: none; }
   [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 0 0 auto; min-height: 2.75rem; }
 }
-[data-tema=full_color] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu bg-card p-3 shadow-sm ring-1 shadow-slate-900/5 ring-border; }
+[data-tema=full_color] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu bg-card p-3 ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=full_color] .kartu-portofolio-gambar { @apply aspect-4/3 overflow-hidden rounded-dalam bg-(--corak-lembut); }
 [data-tema=full_color] .kartu-portofolio-isi { @apply flex flex-1 flex-col px-3 pt-5 pb-3; }
 [data-tema=full_color] .lencana-kategori { @apply inline-flex w-fit items-center gap-x-1.5 rounded-lencana bg-(--corak-lembut) px-2.5 py-1 text-xs font-bold text-(--corak-teks); }
@@ -218,7 +223,7 @@
 .seksi-ajakan { @apply relative overflow-hidden; }
 [data-tema=full_color] .seksi-ajakan { @apply pb-14 sm:pb-24 lg:pb-28; background-color: var(--latar-redup); }
 [data-tema=monochrome] .seksi-ajakan { @apply bg-background text-foreground; }
-[data-tema=full_color] .kotak-ajakan { @apply relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-20; border-radius: calc(var(--sudut-kartu) + .5rem); background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--utama-teks) 30%, transparent); }
+[data-tema=full_color] .kotak-ajakan { @apply relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-20; border-radius: calc(var(--sudut-kartu) + .5rem); background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 18px 36px -24px color-mix(in oklab, var(--utama-teks) 16%, transparent); }
 [data-tema=monochrome] .kotak-ajakan { @apply relative flex flex-col gap-10 py-20 lg:flex-row lg:items-end lg:justify-between lg:py-24; }
 [data-tema=full_color] .ajakan-blob { @apply pointer-events-none absolute -z-10 rounded-full blur-3xl; }
 [data-tema=full_color] .ajakan-titik { @apply pointer-events-none absolute inset-0 -z-10; background-image: radial-gradient(rgb(255 255 255 / .09) 1px, transparent 1px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(to right, transparent, #000 40%, #000); mask-image: linear-gradient(to right, transparent, #000 40%, #000); }
@@ -235,9 +240,10 @@
 .kepala-artikel { @apply flex flex-col gap-6 md:flex-row md:items-end md:justify-between; }
 .kepala-artikel .btn { @apply self-start md:self-auto; }
 [data-tema=full_color] .daftar-artikel { @apply mt-10 lg:mt-14; }
-[data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu bg-card p-3 shadow-sm ring-1 shadow-slate-900/5 ring-border transition duration-300; }
+[data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu bg-card p-3 ring-1 ring-border transition duration-300; --tw-shadow: var(--bayangan-kartu); }
 /* Efek sorot hanya untuk kartu yang bisa diklik (bertautan); halaman artikel belum ada di Fase 4 langkah 2. */
-[data-tema=full_color] .kartu-artikel:has(.tautan-rentang) { @apply hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10; }
+[data-tema=full_color] .kartu-artikel:has(.tautan-rentang) { @apply hover:-translate-y-1; }
+@media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover { --tw-shadow: var(--bayangan-kartu-sorot); } }
 [data-tema=full_color] .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam bg-muted; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-gambar img { transform: scale(1.03); } }
 [data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-3 pt-5 pb-3; }
@@ -277,7 +283,7 @@
 [data-tema=full_color] .daftar-faq { @apply space-y-3; }
 [data-tema=monochrome] .daftar-faq { @apply border-t; }
 [data-tema=full_color] .item-faq { @apply rounded-dalam bg-card ring-1 ring-border transition; }
-[data-tema=full_color] .item-faq[open] { @apply shadow-lg shadow-slate-900/5 ring-(--warna-aksen)/25; }
+[data-tema=full_color] .item-faq[open] { @apply ring-(--warna-aksen)/25; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=full_color] .tanya-faq { @apply flex w-full items-center justify-between gap-x-4 rounded-dalam px-5 py-5 text-start text-base font-semibold text-foreground transition hover:text-aksen sm:px-6 sm:text-lg; }
 [data-tema=full_color] .ikon-faq { @apply flex size-9 shrink-0 items-center justify-center bg-muted text-teks transition; border-radius: var(--sudut-dalam); }
 [data-tema=full_color] .item-faq[open] .ikon-faq { @apply bg-primary text-primary-foreground; }
@@ -321,7 +327,7 @@
 [data-tema=monochrome] .panah-kontak { @apply size-4 shrink-0 text-muted-foreground; }
 .isi-kontak { @apply min-w-0 flex-1; }
 
-[data-tema=full_color] .kartu-formulir { @apply rounded-kartu bg-card p-6 shadow-xl ring-1 shadow-slate-900/5 ring-border sm:p-8 lg:p-10; }
+[data-tema=full_color] .kartu-formulir { @apply rounded-kartu bg-card p-6 ring-1 ring-border sm:p-8 lg:p-10; --tw-shadow: var(--bayangan-kartu); }
 [data-tema=monochrome] .kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6 shadow-sm; }
 .judul-formulir { @apply tracking-tight text-foreground; }
 [data-tema=full_color] .judul-formulir { @apply text-xl font-bold; }
@@ -355,10 +361,10 @@
 [data-tema=monochrome] .wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border bg-muted/50 shadow-xs lg:min-h-72; }
 .peta-cadangan { @apply absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center; }
 .pin-peta { @apply flex size-12 items-center justify-center; }
-[data-tema=full_color] .pin-peta { @apply -rotate-45 rounded-full rounded-bl-none border-[3px] border-white bg-primary text-primary-foreground shadow-lg; }
+[data-tema=full_color] .pin-peta { @apply -rotate-45 rounded-full rounded-bl-none border-[3px] border-white bg-primary text-primary-foreground shadow-md; }
 [data-tema=full_color] .pin-peta svg { @apply rotate-45; }
 [data-tema=monochrome] .pin-peta { @apply rounded-full bg-foreground text-background shadow-md ring-8 ring-foreground/10; }
-[data-tema=full_color] .kartu-pin { @apply rounded-dalam bg-white/95 px-5 py-4 shadow-xl shadow-slate-900/10 ring-1 ring-border backdrop-blur; }
+[data-tema=full_color] .kartu-pin { @apply rounded-dalam bg-white/95 px-5 py-4 ring-1 ring-border backdrop-blur; --tw-shadow: var(--bayangan-melayang); }
 [data-tema=monochrome] .kartu-pin { @apply flex flex-col items-center gap-4; }
 [data-tema=full_color] .nama-pin { @apply font-bold text-foreground; }
 [data-tema=monochrome] .nama-pin { @apply font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase; }
@@ -388,7 +394,7 @@
 
 /* ---------- Tombol WhatsApp melayang ---------- */
 .tombol-wa { @apply fixed z-40 inline-flex items-center justify-center; }
-[data-tema=full_color] .tombol-wa { @apply right-3 bottom-3 size-12 bg-[#1DA851] text-white shadow-xl shadow-emerald-900/25 ring-4 ring-white hover:bg-[#178F45] sm:right-6 sm:bottom-6 sm:size-14; }
+[data-tema=full_color] .tombol-wa { @apply right-3 bottom-3 size-12 bg-[#1DA851] text-white ring-4 ring-white hover:bg-[#178F45] sm:right-6 sm:bottom-6 sm:size-14; --tw-shadow: 0 1px 2px rgb(15 23 42 / .05), 0 6px 16px -8px rgb(6 78 59 / .22); }
 [data-tema=full_color] .tombol-wa { border-radius: var(--sudut-tombol); }
 [data-tema=full_color] .tombol-wa .ikon-wa { @apply size-6 sm:size-7; }
 [data-tema=full_color] .label-wa { @apply sr-only; }
