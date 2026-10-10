@@ -10,6 +10,7 @@ export function pasangPortofolio() {
 
     const kartu = [...panel.querySelectorAll('[data-kategori]')];
     const info = document.getElementById('info-filter');
+    const kosong = document.getElementById('portofolio-kosong');
     const petunjuk = document.getElementById('petunjuk-geser');
     let filterSebelumnya = null;
 
@@ -38,6 +39,11 @@ export function pasangPortofolio() {
         panel.setAttribute('aria-labelledby', aktif.id);
         panel.hidden = false;
         daftar.dataset.jumlah = String(jumlah);
+        // Tab kategori utama tanpa data: daftar disembunyikan agar jarak bawaannya tidak menggeser pesan kosong.
+        daftar.hidden = jumlah === 0;
+        if (kosong) {
+            kosong.hidden = jumlah > 0;
+        }
         if (petunjuk) {
             petunjuk.hidden = jumlah < 2;
         }
@@ -46,7 +52,8 @@ export function pasangPortofolio() {
         if (filterSebelumnya !== null) {
             daftar.scrollLeft = 0;
             if (info) {
-                info.textContent = `Menampilkan ${jumlah} portofolio${filter === 'semua' ? '' : ' kategori ' + aktif.textContent.trim()}.`;
+                const kategori = filter === 'semua' ? '' : ' kategori ' + aktif.textContent.trim();
+                info.textContent = jumlah > 0 ? `Menampilkan ${jumlah} portofolio${kategori}.` : `Belum ada portofolio${kategori}.`;
             }
         }
 

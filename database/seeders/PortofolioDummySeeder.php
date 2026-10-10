@@ -77,6 +77,13 @@ class PortofolioDummySeeder extends Seeder
                 'Bootcamp',
                 'Program tiga bulan bagi mahasiswa tingkat akhir. Peserta bekerja dalam tim membangun aplikasi nyata dan mempresentasikannya di depan perwakilan industri.',
             ],
+            // Ditambahkan 2026-10-11 agar tab Sertifikasi IT di beranda berisi; tetap di akhir agar urutan id lama tidak bergeser.
+            [
+                'sertifikasi-it',
+                'Sertifikasi Junior Web Developer Lulusan SMK',
+                'Sertifikasi IT',
+                'Pendampingan uji kompetensi bagi lulusan SMK, mulai dari pembekalan materi dan simulasi uji hingga pelaksanaan asesmen, sehingga peserta memperoleh sertifikat keahlian yang diakui industri.',
+            ],
         ];
     }
 }

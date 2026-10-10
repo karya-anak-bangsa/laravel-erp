@@ -16,8 +16,11 @@ class BerandaController extends Controller
     {
         $hero = Hero::query()->aktif()->latest('id_hero')->first();
         $layanan = Layanan::query()->berurutan()->get();
-        // Proyek terbaru di depan; id memecah created_at kembar dari seeder.
-        $portofolio = Portofolio::query()->latest()->latest('id_portofolio')->limit(6)->get();
+        // Enam proyek terbaru (id memecah created_at kembar dari seeder), tampil menurut urutan kategori utama;
+        // sortBy stabil, jadi dalam satu kategori yang terbaru tetap di depan.
+        $portofolio = Portofolio::query()->latest()->latest('id_portofolio')->limit(6)->get()
+            ->sortBy(fn (Portofolio $item): array => Portofolio::kunciUrutKategori($item->kategori))
+            ->values();
         $artikel = Artikel::query()
             ->terbit()
             ->with('kategoriArtikel:id_kategori_artikel,nama_kategori')

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Portofolio extends Model
 {
@@ -17,6 +18,12 @@ class Portofolio extends Model
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/portofolio';
+
+    /**
+     * Kategori layanan utama, sekaligus urutan tab dan kartu portofolio di beranda. Tabnya selalu tampil
+     * walau belum ada portofolio (keputusan pemilik 2026-10-11).
+     */
+    public const KATEGORI_UTAMA = ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'];
 
     protected $table = 'tb_portofolio';
 
@@ -32,6 +39,20 @@ class Portofolio extends Model
     public static function daftarKategori(): array
     {
         return static::query()->distinct()->orderBy('kategori')->pluck('kategori')->all();
+    }
+
+    /**
+     * Kunci urut kategori untuk sortBy(): kategori utama menurut KATEGORI_UTAMA, kategori lain sesudahnya
+     * menurut abjad. Dicocokkan lewat slug karena kategori ditulis bebas (mis. "pelatihan it").
+     *
+     * @return array{int, string}
+     */
+    public static function kunciUrutKategori(string $kategori): array
+    {
+        $slug = Str::slug($kategori);
+        $posisi = array_search($slug, array_map(Str::slug(...), self::KATEGORI_UTAMA), true);
+
+        return $posisi === false ? [count(self::KATEGORI_UTAMA), $slug] : [$posisi, ''];
     }
 
     /**

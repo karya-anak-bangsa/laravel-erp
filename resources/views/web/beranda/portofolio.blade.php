@@ -1,9 +1,14 @@
+@use('App\Models\CompanyProfile\Portofolio')
 @use('App\Support\AksenWarna')
 @use('Illuminate\Support\Str')
 
 @php
-    // Tab hanya dari kategori item yang tampil, agar tidak ada tab kosong.
-    $kategoriTab = $portofolio->pluck('kategori')->unique(fn (string $kategori) => Str::slug($kategori))->values();
+    // Kategori utama selalu jadi tab (tanpa data: "Belum ada portofolio"); kategori lain hanya bila itemnya tampil.
+    $kategoriTab = collect(Portofolio::KATEGORI_UTAMA)
+        ->merge($portofolio->pluck('kategori'))
+        ->unique(fn (string $kategori) => Str::slug($kategori))
+        ->sortBy(fn (string $kategori) => Portofolio::kunciUrutKategori($kategori))
+        ->values();
 @endphp
 
 <section id="portofolio" class="seksi seksi-redup" aria-labelledby="judul-portofolio">
@@ -14,16 +19,14 @@
 
         {{-- Tabs Basecoat: semua tab mengendalikan satu panel; resources/js/web/portofolio.js menyaring kartu. --}}
         <div class="tabs filter-portofolio" id="filter-portofolio">
-            @if ($kategoriTab->count() > 1)
-                <nav role="tablist" aria-orientation="horizontal" aria-label="Filter kategori portofolio">
-                    <button type="button" role="tab" id="tab-portofolio-semua" aria-controls="panel-portofolio" aria-selected="true" tabindex="0" data-filter="semua">Semua</button>
-                    @foreach ($kategoriTab as $kategori)
-                        <button type="button" role="tab" id="tab-portofolio-{{ Str::slug($kategori) }}" aria-controls="panel-portofolio" aria-selected="false" tabindex="-1" data-filter="{{ Str::slug($kategori) }}">{{ $kategori }}</button>
-                    @endforeach
-                </nav>
-            @endif
+            <nav role="tablist" aria-orientation="horizontal" aria-label="Filter kategori portofolio">
+                <button type="button" role="tab" id="tab-portofolio-semua" aria-controls="panel-portofolio" aria-selected="true" tabindex="0" data-filter="semua">Semua</button>
+                @foreach ($kategoriTab as $kategori)
+                    <button type="button" role="tab" id="tab-portofolio-{{ Str::slug($kategori) }}" aria-controls="panel-portofolio" aria-selected="false" tabindex="-1" data-filter="{{ Str::slug($kategori) }}">{{ $kategori }}</button>
+                @endforeach
+            </nav>
 
-            <div id="panel-portofolio" @if ($kategoriTab->count() > 1) role="tabpanel" aria-labelledby="tab-portofolio-semua" tabindex="0" @endif>
+            <div id="panel-portofolio" role="tabpanel" aria-labelledby="tab-portofolio-semua" tabindex="0">
                 <ul class="daftar-portofolio" data-jumlah="{{ $portofolio->count() }}">
                     @foreach ($portofolio as $item)
                         <li class="item-portofolio {{ AksenWarna::untuk($item->kategori) }}" data-kategori="{{ Str::slug($item->kategori) }}">
@@ -38,6 +41,7 @@
                         </li>
                     @endforeach
                 </ul>
+                <p id="portofolio-kosong" class="portofolio-kosong" hidden>Belum ada portofolio</p>
                 @if ($portofolio->count() > 1)
                     <p id="petunjuk-geser" class="petunjuk-geser" aria-hidden="true">
                         Geser untuk melihat lainnya

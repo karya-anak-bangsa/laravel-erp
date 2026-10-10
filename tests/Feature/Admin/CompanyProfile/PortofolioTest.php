@@ -246,7 +246,7 @@ it('membuat portofolio contoh dari seeder dummy tanpa duplikat saat dijalankan u
     $this->seed(PortofolioDummySeeder::class);
     $this->seed(PortofolioDummySeeder::class);
 
-    expect(Portofolio::count())->toBe(6)
-        ->and(Portofolio::pluck('slug')->unique())->toHaveCount(6);
+    expect(Portofolio::count())->toBe(7)
+        ->and(Portofolio::pluck('slug')->unique())->toHaveCount(7);
     Portofolio::all()->each(fn (Portofolio $portofolio) => Storage::disk('public')->assertExists($portofolio->gambar));
 });

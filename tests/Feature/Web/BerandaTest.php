@@ -150,28 +150,41 @@ describe('isi', function () {
             ->assertDontSee('Sub-judul');
     });
 
-    it('menampilkan enam portofolio terbaru dengan tab dari kategori yang tampil saja', function () {
+    it('menampilkan enam portofolio terbaru menurut urutan kategori utama', function () {
         Portofolio::factory()->create(['judul' => 'Portofolio Terlama', 'kategori' => 'Kategori Lama', 'created_at' => now()->subDays(10)]);
-        foreach (range(1, 6) as $i) {
-            Portofolio::factory()->create(['judul' => "Portofolio Baru {$i}", 'kategori' => $i % 2 ? 'Website' : 'Mobile Apps', 'created_at' => now()->subDays(6 - $i)]);
+        foreach ([
+            ['Proyek Bootcamp', 'Bootcamp'],
+            ['Proyek Website Baru', 'Website'],
+            ['Proyek Lain', 'Kategori Lain'],
+            ['Proyek Mobile', 'Mobile Apps'],
+            ['Proyek Website Lama', 'Website'],
+            // Kategori ditulis bebas: dikenali sebagai kategori utama lewat slug.
+            ['Proyek Pelatihan', 'pelatihan it'],
+        ] as $hari => [$judul, $kategori]) {
+            Portofolio::factory()->create(['judul' => $judul, 'kategori' => $kategori, 'created_at' => now()->subDays($hari + 1)]);
         }
 
         $this->get('/')
-            ->assertSeeInOrder(['Portofolio Baru 6', 'Portofolio Baru 1'])
-            ->assertSee('data-filter="mobile-apps"', false)
-            ->assertSee('data-filter="website"', false)
+            ->assertSeeInOrder(['Proyek Website Baru', 'Proyek Website Lama', 'Proyek Mobile', 'Proyek Pelatihan', 'Proyek Bootcamp', 'Proyek Lain'])
             ->assertSee('class="item-portofolio corak-indigo" data-kategori="mobile-apps"', false)
-            ->assertDontSee('Portofolio Terlama')
-            ->assertDontSee('data-filter="kategori-lama"', false);
+            ->assertDontSee('Portofolio Terlama');
     });
 
-    it('tidak merender tab filter bila portofolio hanya punya satu kategori', function () {
-        Portofolio::factory()->count(2)->create(['kategori' => 'Website']);
+    it('selalu menampilkan tab kategori utama berurutan, lalu kategori lain yang tampil', function () {
+        Portofolio::factory()->create(['kategori' => 'Kategori Lain']);
+        Portofolio::factory()->create(['kategori' => 'pelatihan it']);
+        Portofolio::factory()->create(['kategori' => 'Website']);
 
         $this->get('/')
-            ->assertSee('id="panel-portofolio"', false)
-            ->assertDontSee('role="tablist"', false)
-            ->assertDontSee('role="tabpanel"', false);
+            ->assertSee('role="tablist"', false)
+            ->assertSee('role="tabpanel"', false)
+            ->assertSeeInOrder(array_map(fn (string $slug) => "data-filter=\"{$slug}\"", [
+                'semua', 'website', 'mobile-apps', 'pelatihan-it', 'sertifikasi-it', 'bootcamp', 'kategori-lain',
+            ]), false)
+            // Label tab memakai penulisan baku, bukan isian bebas.
+            ->assertSee('data-filter="pelatihan-it">Pelatihan IT</button>', false)
+            // Tab tanpa data menampilkan pesan ini lewat resources/js/web/portofolio.js.
+            ->assertSee('<p id="portofolio-kosong" class="portofolio-kosong" hidden>Belum ada portofolio</p>', false);
     });
 
     it('tetap tampil saat semua konten kosong dan menyembunyikan seksi tanpa data', function () {

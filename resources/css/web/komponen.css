@@ -189,7 +189,8 @@
 .filter-portofolio > [role=tabpanel]:focus-visible { outline-offset: 6px; border-radius: .75rem; }
 [data-tema=full_color] .filter-portofolio > [role=tabpanel]:focus-visible { border-radius: var(--sudut-kartu); }
 [data-tema=full_color] .filter-portofolio > [role=tablist] { @apply mx-auto flex h-auto w-full flex-wrap justify-center gap-2 bg-transparent p-0; }
-[data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab] { @apply inline-flex h-auto min-h-11 flex-none items-center border-0 bg-card px-5 text-sm font-semibold text-teks shadow-2xs ring-1 ring-border transition hover:text-foreground; border-radius: var(--sudut-tombol); }
+/* Ponsel px-4 agar enam tab tersusun 3+3 di 390px, tanpa satu tab tersisa sendirian di baris ketiga. */
+[data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab] { @apply inline-flex h-auto min-h-11 flex-none items-center border-0 bg-card px-4 text-sm font-semibold text-teks shadow-2xs ring-1 ring-border transition hover:text-foreground sm:px-5; border-radius: var(--sudut-tombol); }
 [data-tema=full_color] .filter-portofolio > [role=tablist] > [role=tab][aria-selected=true] { @apply bg-(--utama-teks) text-white ring-(--utama-teks); --tw-shadow: var(--bayangan-tombol); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] { border-radius: var(--sudut-tombol); }
 [data-tema=monochrome] .filter-portofolio > [role=tablist] > [role=tab] { flex: 0 0 auto; padding-inline: .75rem; border-radius: max(calc(var(--sudut-tombol) - 3px), 2px); color: color-mix(in oklab, var(--foreground) 72%, transparent); }
@@ -205,17 +206,23 @@
 [data-tema=full_color] .kartu-portofolio-isi { @apply flex flex-1 flex-col px-3 pt-5 pb-3; }
 [data-tema=full_color] .lencana-kategori { @apply inline-flex w-fit items-center gap-x-1.5 rounded-lencana bg-(--corak-lembut) px-2.5 py-1 text-xs font-bold text-(--corak-teks); }
 [data-tema=full_color] .lencana-kategori .titik { @apply size-1.5 rounded-full bg-(--corak); }
-[data-tema=full_color] .judul-portofolio { @apply mt-3.5 text-lg leading-snug font-bold tracking-tight text-foreground; }
-[data-tema=full_color] .deskripsi-portofolio { @apply mt-2 text-[15px] leading-relaxed text-teks; }
-[data-tema=monochrome] .kartu-portofolio { @apply flex h-full flex-col gap-4 overflow-hidden rounded-kartu border bg-card pb-5 shadow-sm; }
-[data-tema=monochrome] .kartu-portofolio-gambar { @apply border-b; }
-[data-tema=monochrome] .kartu-portofolio-gambar img { aspect-ratio: 16 / 10; }
-[data-tema=monochrome] .kartu-portofolio-isi { @apply flex flex-col gap-2 px-5; }
-[data-tema=monochrome] .lencana-kategori { @apply mb-1 inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[11px] text-foreground; }
+/* Ukuran teks kartu sama dengan kartu layanan di masing-masing tema (pilihan pemilik 2026-10-11). */
+[data-tema=full_color] .judul-portofolio { @apply mt-3.5 text-xl font-bold tracking-tight text-balance text-foreground; }
+[data-tema=full_color] .deskripsi-portofolio { @apply mt-2.5 text-base leading-relaxed text-teks; }
+/* Bingkai kartu Monochrome seperti kartu layanan: gambar berjarak dari tepi, garis --garis-kartu. */
+[data-tema=monochrome] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5 shadow-xs; border-color: var(--garis-kartu); }
+[data-tema=monochrome] .kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
+[data-tema=monochrome] .kartu-portofolio-gambar img { display: block; aspect-ratio: 16 / 10; }
+[data-tema=monochrome] .kartu-portofolio-isi { @apply flex flex-col px-4 py-4 sm:px-5 sm:py-5; }
+[data-tema=monochrome] .lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-xs text-foreground; }
 [data-tema=monochrome] .lencana-kategori .titik { @apply hidden; }
-[data-tema=monochrome] .judul-portofolio { @apply text-base font-semibold tracking-tight text-foreground; }
-[data-tema=monochrome] .deskripsi-portofolio { @apply text-sm/6 text-muted-foreground; }
+[data-tema=monochrome] .judul-portofolio { @apply mt-3 text-lg font-semibold tracking-tight text-balance text-foreground; }
+[data-tema=monochrome] .deskripsi-portofolio { @apply mt-2 text-[15px]/[1.65] text-teks; }
 .kartu-portofolio-gambar img { @apply size-full object-cover; }
+/* Tab kategori utama yang belum punya portofolio. */
+.portofolio-kosong { @apply rounded-kartu border border-dashed px-6 py-14 text-center sm:py-16; }
+[data-tema=full_color] .portofolio-kosong { @apply border-slate-300 bg-card text-base font-medium text-teks; }
+[data-tema=monochrome] .portofolio-kosong { @apply bg-card text-[15px] text-muted-foreground; border-color: var(--garis-kartu); }
 .petunjuk-geser { @apply mt-2 flex items-center gap-2 text-xs text-muted-foreground md:hidden; }
 [data-tema=monochrome] .petunjuk-geser { @apply font-mono; }
 

@@ -24,7 +24,7 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
     expect(Identitas::count())->toBe(1)
         ->and(Hero::count())->toBe(5)
         ->and(Layanan::count())->toBe(5)
-        ->and(Portofolio::count())->toBe(6)
+        ->and(Portofolio::count())->toBe(7)
         ->and(Faq::count())->toBe(5)
         ->and(KategoriArtikel::count())->toBe(4)
         ->and(Artikel::count())->toBe(6)
@@ -57,7 +57,7 @@ it('menjalankan seeder company profile ulang tanpa duplikasi data maupun gambar'
     $this->seed(CompanyProfileSeeder::class);
 
     expect(Hero::count())->toBe(5)
-        ->and(Portofolio::count())->toBe(6)
+        ->and(Portofolio::count())->toBe(7)
         ->and(Artikel::count())->toBe(6)
         ->and(Storage::disk('public')->allFiles())->toHaveCount($jumlahBerkas);
 });
