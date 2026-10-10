@@ -122,7 +122,7 @@ body { background: var(--background); color: var(--teks); }
 [data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
 @media (max-width: 767.98px) {
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: flex-start; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 7.5rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .25rem .5rem .25rem 1rem; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-judul { margin-top: .5rem; font-size: 1rem; line-height: 1.4; }
@@ -132,7 +132,7 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=full_color] .daftar-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
   [data-tema=full_color] .daftar-artikel > :first-child { grid-row: span 2; }
   [data-tema=full_color] .daftar-artikel > :only-child { grid-column: 1 / -1; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: center; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: flex-start; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 40%; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
 }

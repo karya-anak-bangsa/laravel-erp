@@ -25,7 +25,8 @@
                             <time class="tanggal-artikel" datetime="{{ $item->tanggal->toDateString() }}"><span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $item->tanggal->translatedFormat('j F Y') }}</span></time>
                         </div>
                         <h3 class="kartu-artikel-judul">{{ $item->judul }}</h3>
-                        <p class="kartu-artikel-ringkasan">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 160) }}</p>
+                        {{-- 150 karakter termasuk spasi (pilihan pemilik 2026-10-11). --}}
+                        <p class="kartu-artikel-ringkasan">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 150) }}</p>
                     </div>
                 </article>
             @endforeach

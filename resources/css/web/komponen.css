@@ -211,7 +211,8 @@
 [data-tema=full_color] .seksi-ajakan { @apply pb-14 sm:pb-24 lg:pb-28; background-color: var(--latar-redup); }
 [data-tema=monochrome] .seksi-ajakan { @apply bg-background text-foreground; }
 [data-tema=full_color] .kotak-ajakan { @apply relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-20; border-radius: calc(var(--sudut-kartu) + .5rem); background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 18px 36px -24px color-mix(in oklab, var(--utama-teks) 16%, transparent); }
-[data-tema=monochrome] .kotak-ajakan { @apply relative flex flex-col gap-10 py-20 lg:flex-row lg:items-end lg:justify-between lg:py-24; }
+/* Tombol sejajar tengah blok teks (pilihan pemilik 2026-10-11; sebelumnya rata bawah). */
+[data-tema=monochrome] .kotak-ajakan { @apply relative flex flex-col gap-10 py-20 lg:flex-row lg:items-center lg:justify-between lg:py-24; }
 [data-tema=full_color] .ajakan-blob { @apply pointer-events-none absolute -z-10 rounded-full blur-3xl; }
 [data-tema=full_color] .ajakan-titik { @apply pointer-events-none absolute inset-0 -z-10; background-image: radial-gradient(rgb(255 255 255 / .09) 1px, transparent 1px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(to right, transparent, #000 40%, #000); mask-image: linear-gradient(to right, transparent, #000 40%, #000); }
 .label-ajakan { @apply hidden; }
@@ -243,7 +244,8 @@
 [data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3 text-sm text-muted-foreground; }
 [data-tema=full_color] .kartu-artikel-judul { @apply mt-3.5 text-xl font-bold tracking-tight text-balance text-foreground transition; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { color: var(--aksen-teks); } }
-[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2.5 line-clamp-4 text-base leading-relaxed text-teks; }
+/* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh. */
+[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2.5 text-base leading-relaxed text-teks; }
 [data-tema=full_color] .kartu-artikel-tautan { @apply mt-auto inline-flex items-center gap-x-1.5 pt-4 text-sm font-semibold text-aksen; }
 .tautan-rentang::after { content: ""; @apply absolute inset-0; }
 [data-tema=full_color] .tautan-rentang::after { border-radius: var(--sudut-kartu); }
@@ -258,7 +260,7 @@
 [data-tema=monochrome] .lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
 [data-tema=monochrome] .tanggal-artikel { @apply -order-1 font-mono text-[13px] text-muted-foreground; }
 [data-tema=monochrome] .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground underline-offset-4; }
-[data-tema=monochrome] .kartu-artikel-ringkasan { @apply line-clamp-3 text-[15px]/[1.65] text-teks sm:max-w-2xl; }
+[data-tema=monochrome] .kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-teks sm:max-w-2xl; }
 [data-tema=monochrome] .kartu-artikel-tautan { @apply hidden; }
 @media (hover: hover) {
   [data-tema=monochrome] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { @apply underline; }

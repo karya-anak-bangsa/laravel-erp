@@ -142,6 +142,13 @@ describe('isi', function () {
         $this->get('/')->assertOk()->assertSee('Artikel Yatim')->assertDontSee('Kategori Terhapus');
     });
 
+    it('memotong ringkasan artikel menjadi 150 karakter termasuk spasi', function () {
+        $isi = str_repeat('abcdefg ', 25);
+        Artikel::factory()->terbit()->create(['deskripsi' => "<p>{$isi}</p>"]);
+
+        $this->get('/')->assertSee('<p class="kartu-artikel-ringkasan">'.substr($isi, 0, 150).'...</p>', false);
+    });
+
     it('menampilkan ringkasan artikel sebagai teks polos tanpa sub-judul', function () {
         Artikel::factory()->terbit()->create(['deskripsi' => '<p>Pembuka.</p><h2>Sub-judul</h2><p>Isi <strong>tebal</strong> artikel.</p>']);
 
