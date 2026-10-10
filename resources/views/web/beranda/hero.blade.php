@@ -3,7 +3,7 @@
     $ctaHero = $hero?->cta ?: [['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary']];
 @endphp
 
-<section id="beranda" class="hero relative isolate overflow-hidden" aria-labelledby="judul-hero" data-sembunyikan-wa>
+<section id="beranda" class="hero relative isolate overflow-hidden" aria-labelledby="judul-hero">
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <div class="pola-kisi pola-pudar absolute inset-0"></div>
         <div class="absolute inset-x-0 top-0 mx-auto h-full max-w-(--lebar-konten) mono:hidden">

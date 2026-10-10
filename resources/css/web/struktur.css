@@ -220,9 +220,6 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
   .leaflet-popup-content { margin-right: 44px; }
 }
 
-/* Tombol WhatsApp melayang: disembunyikan saat ajakan kontak lain terlihat (hero, band ajakan, kontak, footer). */
-.tombol-wa { transition: opacity .2s ease, transform .2s ease, visibility .2s; }
-.tombol-wa[data-sembunyi] { opacity: 0; transform: translateY(1rem); visibility: hidden; pointer-events: none; }
 
 /* Monitor sangat lebar (≥2400px): perbesar skala rem sedikit */
 @media (min-width: 2400px) { html { font-size: 112.5%; } }

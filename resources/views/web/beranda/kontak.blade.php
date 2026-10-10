@@ -6,7 +6,7 @@
     $tautanPeta = 'https://www.google.com/maps/search/?'.http_build_query(['api' => 1, 'query' => "{$peta['lat']},{$peta['lng']}"]);
 @endphp
 
-<section id="kontak" class="seksi" aria-labelledby="judul-kontak" data-sembunyikan-wa>
+<section id="kontak" class="seksi" aria-labelledby="judul-kontak">
     <div class="wadah">
         <x-web.kepala-seksi id="judul-kontak" :nomor="$nomorSeksi('kontak')" label="Kontak" judul="Mari diskusikan kebutuhan Anda" rata="tengah">
             Kirim pesan melalui formulir di bawah ini, atau hubungi kami langsung lewat WhatsApp dan email.

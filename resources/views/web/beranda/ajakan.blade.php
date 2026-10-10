@@ -1,4 +1,4 @@
-<section id="ajakan" class="seksi-ajakan dark" aria-labelledby="judul-ajakan" data-sembunyikan-wa>
+<section id="ajakan" class="seksi-ajakan dark" aria-labelledby="judul-ajakan">
     <div class="pola-kisi pola-pudar pointer-events-none absolute inset-0 hidden opacity-70 mono:block" aria-hidden="true"></div>
     <div class="wadah">
         <div class="kotak-ajakan">

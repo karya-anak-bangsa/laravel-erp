@@ -1,7 +1,7 @@
 @use('App\Support\TautanKontak')
 @use('App\Support\TeksHtml')
 
-<footer class="kaki-situs dark" data-sembunyikan-wa>
+<footer class="kaki-situs dark">
     <div class="garis-merek mono:hidden" aria-hidden="true"></div>
     <div class="wadah kaki-isi">
         <div class="kaki-grid">
@@ -77,7 +77,7 @@
         </div>
 
         <div class="kaki-bawah">
-            <p class="pe-16 sm:pe-0">© {{ now()->year }} {{ $identitas->nama_perusahaan }}. Hak cipta dilindungi.</p>
+            <p>© {{ now()->year }} {{ $identitas->nama_perusahaan }}. Hak cipta dilindungi.</p>
             <a href="{{ route('beranda') }}#beranda" class="tautan-kaki w-fit gap-x-2 font-semibold">
                 Kembali ke atas
                 <x-web.ikon nama="panah-atas" class="size-4" />

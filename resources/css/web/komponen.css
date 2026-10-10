@@ -40,8 +40,8 @@
 [data-tema=monochrome] .pemisah-navbar { @apply h-5; }
 [data-tema=monochrome] .nama-navbar { @apply text-sm font-medium; }
 .menu-utama { @apply hidden flex-1 lg:block; }
-/* Menu rata kiri, tepat setelah logo & nama (kedua tema). */
-.menu-utama ul { @apply flex items-center justify-start gap-0.5 lg:ps-4 xl:ps-6; }
+/* Menu rata kanan, tepat sebelum pilihan tema (kedua tema; pilihan pemilik 2026-10-11, sebelumnya rata kiri). */
+.menu-utama ul { @apply flex items-center justify-end gap-0.5 lg:pe-3 xl:pe-4; }
 [data-tema=full_color] .menu-utama ul { @apply gap-1; }
 .tautan-menu { @apply inline-flex min-h-11 items-center rounded-lg px-3 text-(length:--teks-menu) font-medium transition-colors; }
 [data-tema=full_color] .tautan-menu { @apply text-slate-700 hover:text-aksen; border-radius: var(--sudut-tombol); }
@@ -391,10 +391,11 @@
 [data-tema=monochrome] .kaki-bawah { @apply text-xs; }
 
 /* ---------- Tombol WhatsApp melayang ---------- */
-.tombol-wa { @apply fixed z-40 inline-flex items-center justify-center; }
-[data-tema=full_color] .tombol-wa { @apply right-3 bottom-3 size-12 bg-[#1DA851] text-white ring-4 ring-white hover:bg-[#178F45] sm:right-6 sm:bottom-6 sm:size-14; --tw-shadow: 0 1px 2px rgb(15 23 42 / .05), 0 6px 16px -8px rgb(6 78 59 / .22); }
-[data-tema=full_color] .tombol-wa { border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .tombol-wa .ikon-wa { @apply size-6 sm:size-7; }
-[data-tema=full_color] .label-wa { @apply sr-only; }
-[data-tema=monochrome] .tombol-wa { @apply right-4 bottom-4 h-12 gap-2 bg-foreground px-4 text-sm font-medium text-background shadow-lg ring-1 ring-white/30 hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); }
-[data-tema=monochrome] .tombol-wa .ikon-wa { @apply size-5; }
+/* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel ala Monochrome di kedua tema (pilihan pemilik 2026-10-11).
+   Full Color: warna utama (navy) dan bayangan lewat token. */
+.tombol-wa { @apply fixed right-4 bottom-4 z-40 inline-flex h-12 items-center justify-center gap-2 bg-foreground px-4 text-sm font-medium text-background ring-1 ring-white/30 transition-colors hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); }
+[data-tema=full_color] .tombol-wa { @apply font-semibold; --tw-shadow: var(--bayangan-melayang); }
+[data-tema=monochrome] .tombol-wa { @apply shadow-lg; }
+.tombol-wa .ikon-wa { @apply size-5; }
+/* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
+body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
