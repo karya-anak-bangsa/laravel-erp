@@ -286,6 +286,8 @@
 [data-tema=monochrome] .item-faq[open] .ikon-faq { @apply rotate-180; }
 [data-tema=monochrome] .ikon-faq :is(.ikon-plus, .ikon-minus) { display: none; }
 [data-tema=monochrome] .jawab-faq { @apply pr-8 pb-5 text-[15px]/7 text-muted-foreground; }
+/* Cegah satu kata tertinggal sendirian di baris terakhir pertanyaan. */
+.tanya-faq > :first-child { @apply text-pretty; }
 
 /* ---------- Kontak ---------- */
 [data-tema=full_color] .tata-kontak { @apply mt-10 sm:mt-14; }
@@ -307,6 +309,9 @@
 [data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply font-medium text-slate-700 underline decoration-slate-300 underline-offset-4; }
 [data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
 [data-tema=full_color] .panah-kontak { @apply size-4 shrink-0 text-slate-400; }
+/* Koreksi optik: garis bawah nilai (underline-offset-4) menambah tinta di bawah teks sehingga blok teks tampak
+   ±2px lebih rendah dari kotak ikon; digeser tanpa mengubah tinggi baris. */
+[data-tema=full_color] .isi-kontak { @apply -translate-y-0.5; }
 [data-tema=monochrome] .info-kontak { @apply overflow-hidden rounded-kartu border bg-card shadow-xs; }
 [data-tema=monochrome] .tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
 [data-tema=monochrome] a.tautan-kontak { @apply transition-colors hover:bg-muted/60; }
@@ -399,3 +404,23 @@
 .tombol-wa .ikon-wa { @apply size-5; }
 /* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
 body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
+
+/* ---------- Ponsel sempit (360–389px) ----------
+   Ruang dalam kartu dirapatkan dan judul sedikit diperkecil agar jumlah baris judul & label sama dengan di 390px
+   (pilihan pemilik 2026-10-11); 390px ke atas tidak terpengaruh. */
+@media (max-width: 389.98px) {
+  .judul-seksi, .judul-ajakan { font-size: 1.6875rem; }
+  [data-tema=full_color] .kotak-ajakan { padding-inline: 1.25rem; }
+  [data-tema=full_color] :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.125rem; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 6rem; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: .75rem; }
+  [data-tema=full_color] .tanya-faq { padding-inline: 1rem; column-gap: .75rem; }
+  [data-tema=full_color] .jawab-faq { padding-inline: 1rem; }
+  [data-tema=full_color] .tautan-kontak { padding-inline: 1rem; gap: .75rem; }
+  .peta-cadangan { padding: 1rem; }
+  [data-tema=full_color] .kartu-pin { padding-inline: 1rem; }
+  [data-tema=monochrome] :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
+  [data-tema=monochrome] .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
+  [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
+  [data-tema=monochrome] .tanya-faq { column-gap: .5rem; }
+}

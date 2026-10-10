@@ -77,7 +77,8 @@
         </div>
 
         <div class="kaki-bawah">
-            <p>© {{ now()->year }} {{ $identitas->nama_perusahaan }}. Hak cipta dilindungi.</p>
+            {{-- Bila tidak muat satu baris, patah sebelum "Hak cipta" agar "dilindungi." tidak tertinggal sendirian. --}}
+            <p>© {{ now()->year }} {{ $identitas->nama_perusahaan }}. <span class="whitespace-nowrap">Hak cipta dilindungi.</span></p>
             <a href="{{ route('beranda') }}#beranda" class="tautan-kaki w-fit gap-x-2 font-semibold">
                 Kembali ke atas
                 <x-web.ikon nama="panah-atas" class="size-4" />
