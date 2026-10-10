@@ -21,11 +21,6 @@
         </nav>
 
         <div class="aksi-navbar">
-            <a href="{{ route('beranda') }}#kontak" class="btn tombol-navbar">
-                Hubungi Kami
-                <x-web.ikon nama="panah-kanan" class="size-4" />
-            </a>
-
             {{-- Pilihan tema disimpan di cookie 'tema' oleh resources/js/web/tema.js. --}}
             <div class="pilih-tema" role="group" aria-label="Tema tampilan">
                 @foreach (App\Enums\CompanyProfile\JenisTemplate::cases() as $jenis)
@@ -64,11 +59,6 @@
                     @endforeach
                 </div>
             </div>
-
-            <a href="{{ route('beranda') }}#kontak" class="btn">
-                Hubungi Kami
-                <x-web.ikon nama="panah-kanan" class="size-4" />
-            </a>
         </nav>
     </div>
 </header>

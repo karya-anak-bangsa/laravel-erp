@@ -6,7 +6,7 @@
 <section id="beranda" class="hero relative isolate overflow-hidden" aria-labelledby="judul-hero" data-sembunyikan-wa>
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <div class="pola-kisi pola-pudar absolute inset-0"></div>
-        <div class="absolute inset-x-0 top-0 mx-auto h-full max-w-7xl mono:hidden">
+        <div class="absolute inset-x-0 top-0 mx-auto h-full max-w-(--lebar-konten) mono:hidden">
             <div class="hero-blob -top-32 -left-24 size-72 bg-(--warna-aksen)/15 sm:size-[28rem]"></div>
             <div class="hero-blob top-10 -right-24 size-80 bg-sky-400/20 sm:size-[34rem]"></div>
             <div class="hero-blob bottom-0 left-1/3 hidden size-[22rem] bg-violet-400/15 sm:block"></div>
@@ -26,9 +26,6 @@
                     @php($luar = str_starts_with($cta['url'], 'http://') || str_starts_with($cta['url'], 'https://'))
                     <a href="{{ $cta['url'] }}" @if ($luar) target="_blank" rel="noopener" @endif class="btn btn-besar" @if ($cta['gaya'] !== 'primary') data-variant="outline" @endif>
                         {{ $cta['label'] }}
-                        @if ($cta['gaya'] === 'primary')
-                            <x-web.ikon nama="panah-kanan" class="size-4" />
-                        @endif
                         @if ($luar)
                             <span class="sr-only">(membuka tab baru)</span>
                         @endif

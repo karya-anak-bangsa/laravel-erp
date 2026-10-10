@@ -154,6 +154,10 @@ Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3. Berisi
 | nada_dasar | VARCHAR(20) NULL | enum `NadaDasar`: netral, zinc, stone, slate (skala abu-abu); wajib bila monochrome |
 | font | VARCHAR(50) | enum `FontTemplate`: plus_jakarta_sans, geist, inter, poppins, manrope, dm_sans |
 | sudut | VARCHAR(20) | enum `SudutTemplate`: tajam, sedang, bulat |
+| skala | VARCHAR(20) | enum `SkalaTemplate`: ringkas, standar, lega. Ukuran desktop (≥1024px) tinggi navbar, logo, teks menu, dan tombol besar; nilai per jenis di enum, naik satu tingkat otomatis di layar ≥1920px. Jarak antarseksi menyusul saat review seksi (disetujui pemilik 2026-10-11) |
+| lebar_konten | VARCHAR(20) | enum `LebarKonten`: standar (1280px), lebar (1440px). Lebar maksimum isi halaman di monitor ≥1920px; di bawahnya selalu 1280px (disetujui pemilik 2026-10-11) |
+| ketebalan_judul | VARCHAR(20) | enum `KetebalanJudul`: semibold, bold, extrabold — judul hero & judul seksi (disetujui pemilik 2026-10-11) |
+| bayangan | VARCHAR(20) | enum `BayanganTemplate`: tanpa, halus, tegas — bayangan tombol, kartu, dan gambar hero (disetujui pemilik 2026-10-11) |
 | status_aktif | BOOLEAN DEFAULT false | |
 | created_at, updated_at, deleted_at | | |
 
@@ -164,7 +168,8 @@ Catatan implementasi:
 - Kolom yang tidak relevan dengan jenisnya disimpan NULL: `warna_*` untuk monochrome, `nada_dasar` untuk full_color.
 - Turunan keterbacaan tidak disimpan, tetapi dihitung saat render: warna teks yang dijamin kontras ≥ 4,5:1 di atas putih, dan warna teks di atas tombol aksen (putih atau gelap).
 - Template aktif tidak bisa dihapus, dinonaktifkan langsung, atau diubah jenisnya, agar frontend selalu punya tepat satu template per jenis.
-- Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Plus Jakarta Sans, sedang — pilihan pemilik) dan "TKAB Monochrome" (netral, Geist, sedang).
+- Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Plus Jakarta Sans, sudut sedang, skala ringkas, konten lebar, judul extrabold, bayangan halus — pilihan pemilik) dan "TKAB Monochrome" (netral, Geist, sudut sedang, skala ringkas, konten lebar, judul semibold, bayangan halus).
+- Pengaturan ukuran & gaya berupa pilihan bertingkat, bukan angka piksel bebas, agar tampilan tidak bisa rusak dan satu pilihan sekaligus menyesuaikan semua ukuran layar (keputusan pemilik 2026-10-11). `skala` dan `lebar_konten` sudah berlaku lewat `config/tema.php` → `TemaService`; `ketebalan_judul` dan `bayangan` dibuat bersama tabel ini.
 
 ---
 

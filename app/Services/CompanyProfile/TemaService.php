@@ -4,7 +4,9 @@ namespace App\Services\CompanyProfile;
 
 use App\Enums\CompanyProfile\FontTemplate;
 use App\Enums\CompanyProfile\JenisTemplate;
+use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
+use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
 use App\Support\KontrasWarna;
 use Illuminate\Http\Request;
@@ -20,11 +22,11 @@ class TemaService
     // Cadangan bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy),
     // agar halaman publik tidak pernah gagal dirender karena template.
     private const BAWAAN = [
-        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'plus_jakarta_sans', 'sudut' => 'sedang'],
-        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang'],
+        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'plus_jakarta_sans', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
+        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
     ];
 
-    /** @var array<string, array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate}> */
+    /** @var array<string, array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}> */
     private array $template = [];
 
     public function jenisDariRequest(Request $request): JenisTemplate
@@ -33,7 +35,7 @@ class TemaService
     }
 
     /**
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate}
+     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
      */
     public function templateAktif(JenisTemplate $jenis): array
     {
@@ -61,16 +63,27 @@ class TemaService
             '--aksen-kontras' => KontrasWarna::teksDiAtas($aksen),
             '--font-tema' => '"'.$warna['font']->family().'"',
             ...$this->tokenSudut($warna['sudut']),
+            ...$this->tokenSkala($warna['skala'], JenisTemplate::FullColor),
+            '--lebar-konten' => LebarKonten::DASAR,
         ];
 
         $tokenMono = [
             ...array_combine(array_map(fn (int $t): string => "--nada-{$t}", NadaDasar::TINGKAT), $nada->skala()),
             '--font-tema' => '"'.$mono['font']->family().'"',
             ...$this->tokenSudut($mono['sudut']),
+            ...$this->tokenSkala($mono['skala'], JenisTemplate::Monochrome),
+            '--lebar-konten' => LebarKonten::DASAR,
         ];
 
+        // Monitor ≥1920px (24" ke atas): skala satu tingkat lebih besar dan lebar konten pilihan template.
+        $lebarWarna = [...$this->tokenSkala($warna['skala']->naik(), JenisTemplate::FullColor), '--lebar-konten' => $warna['lebar_konten']->nilai()];
+        $lebarMono = [...$this->tokenSkala($mono['skala']->naik(), JenisTemplate::Monochrome), '--lebar-konten' => $mono['lebar_konten']->nilai()];
+        $tokenLebar = 'html[data-tema=full_color] { '.$this->deklarasi($lebarWarna).' } '
+            .'html[data-tema=monochrome] { '.$this->deklarasi($lebarMono).' }';
+
         return 'html[data-tema=full_color] { '.$this->deklarasi($tokenWarna)." }\n"
-            .'html[data-tema=monochrome] { '.$this->deklarasi($tokenMono).' }';
+            .'html[data-tema=monochrome] { '.$this->deklarasi($tokenMono)." }\n"
+            ."@media (min-width: 1920px) { {$tokenLebar} }";
     }
 
     /**
@@ -89,7 +102,7 @@ class TemaService
     }
 
     /**
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate}
+     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
      */
     private function muat(JenisTemplate $jenis): array
     {
@@ -106,7 +119,7 @@ class TemaService
 
     /**
      * @param  array<string, mixed>  $data
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate}
+     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
      */
     private function rakit(JenisTemplate $jenis, array $data): array
     {
@@ -119,6 +132,9 @@ class TemaService
             'nada_dasar' => $warna ? null : NadaDasar::from((string) ($data['nada_dasar'] ?? '')),
             'font' => FontTemplate::from((string) ($data['font'] ?? '')),
             'sudut' => SudutTemplate::from((string) ($data['sudut'] ?? '')),
+            // Kunci baru: bila belum ada di config (mis. cache config lama), pakai bawaan tanpa menggugurkan nilai lain.
+            'skala' => SkalaTemplate::tryFrom((string) ($data['skala'] ?? '')) ?? SkalaTemplate::from(self::BAWAAN[$jenis->value]['skala']),
+            'lebar_konten' => LebarKonten::tryFrom((string) ($data['lebar_konten'] ?? '')) ?? LebarKonten::from(self::BAWAAN[$jenis->value]['lebar_konten']),
         ];
     }
 
@@ -134,6 +150,22 @@ class TemaService
         }
 
         return $token;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function tokenSkala(SkalaTemplate $skala, JenisTemplate $jenis): array
+    {
+        $nilai = $skala->token($jenis);
+
+        return [
+            '--tinggi-navbar' => $nilai['navbar'],
+            '--tinggi-logo' => $nilai['logo'],
+            '--teks-menu' => $nilai['menu'],
+            '--tinggi-tombol' => $nilai['tombol'],
+            '--teks-tombol' => $nilai['teks-tombol'],
+        ];
     }
 
     /**
