@@ -166,25 +166,19 @@ describe('isi', function () {
 
         $this->get('/')
             ->assertSeeInOrder(['Proyek Website Baru', 'Proyek Website Lama', 'Proyek Mobile', 'Proyek Pelatihan', 'Proyek Bootcamp', 'Proyek Lain'])
-            ->assertSee('class="item-portofolio corak-indigo" data-kategori="mobile-apps"', false)
+            ->assertSee('class="item-portofolio corak-indigo"', false)
             ->assertDontSee('Portofolio Terlama');
     });
 
-    it('selalu menampilkan tab kategori utama berurutan, lalu kategori lain yang tampil', function () {
-        Portofolio::factory()->create(['kategori' => 'Kategori Lain']);
-        Portofolio::factory()->create(['kategori' => 'pelatihan it']);
+    it('menampilkan portofolio tanpa tab filter kategori', function () {
         Portofolio::factory()->create(['kategori' => 'Website']);
+        Portofolio::factory()->create(['kategori' => 'Mobile Apps']);
 
         $this->get('/')
-            ->assertSee('role="tablist"', false)
-            ->assertSee('role="tabpanel"', false)
-            ->assertSeeInOrder(array_map(fn (string $slug) => "data-filter=\"{$slug}\"", [
-                'semua', 'website', 'mobile-apps', 'pelatihan-it', 'sertifikasi-it', 'bootcamp', 'kategori-lain',
-            ]), false)
-            // Label tab memakai penulisan baku, bukan isian bebas.
-            ->assertSee('data-filter="pelatihan-it">Pelatihan IT</button>', false)
-            // Tab tanpa data menampilkan pesan ini lewat resources/js/web/portofolio.js.
-            ->assertSee('<p id="portofolio-kosong" class="portofolio-kosong" hidden>Belum ada portofolio</p>', false);
+            ->assertSee('class="daftar-portofolio', false)
+            ->assertDontSee('role="tablist"', false)
+            ->assertDontSee('role="tabpanel"', false)
+            ->assertDontSee('data-filter=', false);
     });
 
     it('tetap tampil saat semua konten kosong dan menyembunyikan seksi tanpa data', function () {

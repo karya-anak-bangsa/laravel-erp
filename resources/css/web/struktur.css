@@ -13,7 +13,7 @@ body { background: var(--background); color: var(--teks); }
 
 /* Fokus keyboard seragam: garis 2px warna --ring (aksen di Full Color, hitam di Monochrome, putih di seksi gelap). */
 :where(a, button, summary, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-.btn:focus-visible, .tabs [role=tab]:focus-visible { --tw-ring-color: transparent; }
+.btn:focus-visible { --tw-ring-color: transparent; }
 
 /* Gambar konten tetap berwarna di kedua tema (keputusan pemilik 2026-10-10). */
 .gambar-konten { transition: transform .5s ease; }
@@ -95,7 +95,6 @@ body { background: var(--background); color: var(--teks); }
 
 /* ---------- Portofolio: ponsel = baris geser (scroll-snap), md+ = 2/3 kolom ---------- */
 .daftar-portofolio { display: flex; gap: 1rem; }
-.daftar-portofolio[hidden], .item-portofolio[hidden] { display: none !important; }
 @media (max-width: 767.98px) {
   .daftar-portofolio {
     overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
@@ -223,19 +222,17 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 /* Monitor sangat lebar (≥2400px): perbesar skala rem sedikit */
 @media (min-width: 2400px) { html { font-size: 112.5%; } }
 
-/* Animasi: masuk di hero (CSS murni), kartu portofolio saat difilter, dan transisi silang saat ganti tema */
+/* Animasi: masuk di hero (CSS murni) dan transisi silang saat ganti tema */
 @media (prefers-reduced-motion: no-preference) {
   .muncul { animation: naik-masuk .7s cubic-bezier(.2, .7, .2, 1) both; }
   .tunda-1 { animation-delay: .06s; }
   .tunda-2 { animation-delay: .12s; }
   .tunda-3 { animation-delay: .18s; }
   .tunda-4 { animation-delay: .26s; }
-  .muncul-ulang { animation: muncul .35s ease-out both; }
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 @keyframes naik-masuk { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes muncul { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes muncul-pudar { from { opacity: 0; } to { opacity: 1; } }

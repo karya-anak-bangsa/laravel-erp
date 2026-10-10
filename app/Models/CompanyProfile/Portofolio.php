@@ -20,8 +20,7 @@ class Portofolio extends Model
     public const FOLDER = 'company-profile/portofolio';
 
     /**
-     * Kategori layanan utama, sekaligus urutan tab dan kartu portofolio di beranda. Tabnya selalu tampil
-     * walau belum ada portofolio (keputusan pemilik 2026-10-11).
+     * Kategori layanan utama, sekaligus urutan kartu portofolio di beranda (keputusan pemilik 2026-10-11).
      */
     public const KATEGORI_UTAMA = ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'];
 
