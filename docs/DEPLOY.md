@@ -138,7 +138,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 
 ## Reset Data Produksi (boleh diulang selama tahap uji)
 
-Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (keputusan pemilik 2026-10-11). Ini pengecualian dari aturan "migrasi produksi hanya maju" (CLAUDE.md §2.4 & §11) dan berlaku **sampai pemilik menyatakan produksi memakai data real**. Sejak saat itu reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
+Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (keputusan pemilik 2026-10-11). Ini aturan tahap uji di CLAUDE.md §2.4 dan berlaku **sampai pemilik menyatakan produksi memakai data real**. Reset juga **wajib** bila migration yang sudah jalan di produksi diedit atau disusun ulang, karena `php artisan migrate` biasa tidak menjalankan ulang migration yang sudah tercatat. Sejak saat itu reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
 
 Syarat: seeder harus menghasilkan data yang sama dengan lokal. Reset hanya mengisi ulang dari seeder, jadi perubahan yang dibuat lewat admin lokal dan belum dipindahkan ke seeder tidak ikut ke produksi.
 

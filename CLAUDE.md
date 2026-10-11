@@ -20,6 +20,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 - **Fokus saat ini**: Fase 4 — frontend publik dengan dua tema (Full Color & Monochrome), dikerjakan bertahap (lihat `docs/ROADMAP.md`).
 - **Standar kualitas**: ISO/IEC 25010 (lihat §11).
 - **Domain produksi**: https://karyaanakbangsa.co.id (Hostinger)
+- **Tahap produksi**: **uji coba** — seluruh isi produksi masih data dummy yang belum bernilai (keputusan pemilik 2026-10-11). Selama tahap ini berlaku aturan khusus di §2.4. Tahap ini berakhir hanya bila pemilik menyatakan produksi sudah memakai data real.
 - **Repositori**: https://github.com/karya-anak-bangsa/laravel-erp
 
 ## 2. Aturan Kerja untuk Claude
@@ -27,10 +28,13 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 1. **Bahasa**: berkomunikasi dalam Bahasa Indonesia. Komentar kode dalam Bahasa Indonesia, singkat, hanya untuk menjelaskan *mengapa*, bukan *apa*.
 2. **Rencana dulu**: untuk fitur baru atau perubahan yang menyentuh lebih dari 2 file, tuliskan rencana singkat (daftar file yang dibuat/diubah + alasannya) dan tunggu persetujuan sebelum menulis kode.
 3. **Patuhi skema**: jangan menambah/mengubah/menghapus kolom di luar `docs/DATABASE.md` tanpa persetujuan. Jika ada kebutuhan, usulkan dulu lalu perbarui `docs/DATABASE.md`.
-4. **Migration yang sudah jalan di produksi tidak boleh diedit** — buat migration baru untuk perubahan. Bila sebuah modul dibatalkan, file migration-nya boleh dihapus; bila migration itu sudah jalan di produksi, buang tabelnya lewat migration baru (`dropIfExists`, tabel anak lebih dulu) agar produksi tetap hanya bergerak maju.
+4. **Migration, seeder, dan data produksi**:
+   - **Seeder = cermin database lokal.** `CompanyProfileSeeder` (+ `PenggunaSeeder` untuk akun admin) harus selalu menghasilkan data yang sama persis dengan database lokal, termasuk berkas gambarnya (`database/seeders/berkas`, disalin lewat `MenyalinBerkasAwal`). Setiap perubahan data lokal yang harus ikut ke produksi dimasukkan ke seeder, bukan diketik ulang lewat admin produksi.
+   - **Selama tahap uji** (§1): migration yang sudah jalan di produksi **boleh diedit atau disusun ulang** (tetap satu migration per tabel, sesuai `docs/DATABASE.md`), dan database produksi **boleh direset dari seeder berulang kali** (`migrate:fresh` + seeder, tanpa cadangan) lewat prosedur `docs/DEPLOY.md` › Reset Data Produksi. Reset juga wajib bila migration yang sudah jalan di produksi diedit.
+   - **Setelah data real masuk** (pemilik yang menyatakan): migration yang sudah jalan di produksi tidak boleh diedit — buat migration baru untuk perubahan. Bila sebuah modul dibatalkan, file migration-nya boleh dihapus; bila migration itu sudah jalan di produksi, buang tabelnya lewat migration baru (`dropIfExists`, tabel anak lebih dulu) agar produksi tetap hanya bergerak maju. Perubahan data dilakukan lewat admin; reset tidak boleh lagi.
 5. **Paket baru** (composer/npm) harus diminta izin dulu, sebutkan alasannya dan pastikan kompatibel dengan Laravel 13 / PHP 8.3.
 6. **Git**: semua commit langsung ke `main` (developer tunggal). Deploy ke Hostinger dilakukan **sendiri oleh pemilik proyek** (Claude tidak melakukan deploy), sehingga `main` harus selalu dalam kondisi siap dipakai di produksi:
-   - Jangan commit atau push kecuali diminta.
+   - Jangan commit atau push kecuali diminta. Alurnya: Claude menyelesaikan pekerjaan, menjalankan `composer check`, lalu mengusulkan pesan commit; pemilik me-review, commit, push, dan deploy sendiri.
    - Sebelum commit, wajib lulus `composer check` (lint + analisis statis + test).
    - Format pesan: Conventional Commits berbahasa Indonesia, scope = modul.
      Contoh: `feat(company-profile): tambah CRUD kategori artikel`, `fix(company-profile): perbaiki validasi slug artikel`, `chore(deploy): perbarui workflow`.
@@ -38,7 +42,7 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 7. **Rahasia**: jangan pernah menulis kredensial ke kode, docs, atau commit. `.env` tidak boleh di-commit.
 8. **Selesai berarti memenuhi Definition of Done** (§12), lalu centang item terkait di `docs/ROADMAP.md`.
 9. **Kecil dan sering online**: pemilik proyek ingin setiap kemajuan langsung bisa diakses di https://karyaanakbangsa.co.id. Pecah pekerjaan menjadi fitur kecil yang masing-masing utuh dan bisa di-deploy. Jangan meninggalkan `main` dalam kondisi setengah jadi (menu yang mengarah ke halaman rusak, migration tanpa fitur, dsb.).
-10. **Catatan deploy**: di akhir setiap fitur, sebutkan singkat apa yang berdampak ke server: migration baru, seeder yang perlu dijalankan sekali, variabel `.env` baru, paket composer/npm baru, dan apakah aset perlu di-build ulang.
+10. **Catatan deploy**: di akhir setiap fitur, sebutkan singkat apa yang berdampak ke server: migration baru, seeder yang perlu dijalankan sekali, variabel `.env` baru, paket composer/npm baru, apakah aset perlu di-build ulang, dan (selama tahap uji) apakah **reset data produksi** diperlukan karena migration atau seeder berubah. Pisahkan langkah wajib dan opsional, masing-masing dengan alasan singkat.
 11. Jika instruksi pengguna bertentangan dengan file ini, ikuti pengguna lalu tawarkan untuk memperbarui file ini.
 
 ## 3. Lingkungan Pengembangan
@@ -80,7 +84,7 @@ php artisan serve                       # server PHP di http://localhost:8000
 npm run dev                             # Vite dev server (jalankan bersamaan dengan artisan serve)
 npm run build                           # build aset produksi
 php artisan migrate --seed              # migrasi + seeder
-php artisan migrate:fresh --seed        # reset database lokal (JANGAN di produksi)
+php artisan migrate:fresh --seed        # reset database lokal (produksi: hanya selama tahap uji, lewat prosedur docs/DEPLOY.md)
 php artisan test                        # jalankan test
 composer lint                           # vendor/bin/pint
 composer analyse                        # vendor/bin/phpstan analyse
@@ -293,11 +297,11 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 | Security | Lihat §10; validasi seluruh input, escape output, berkas internal privat |
 | Maintainability | Struktur modular, konvensi ketat, controller tipis, Pint + Larastan + test wajib lulus sebelum commit, docs selalu diperbarui |
 | Flexibility (portability) | Konfigurasi via `.env`, tanpa path absolut, deploy terdokumentasi & dapat diulang |
-| Safety | Soft delete (hapus permanen hanya lewat fitur "sampah", lihat §9), `php artisan down` saat deploy, migrasi produksi hanya maju |
+| Safety | Soft delete (hapus permanen hanya lewat fitur "sampah", lihat §9), `php artisan down` saat deploy, migrasi produksi hanya maju setelah tahap uji berakhir (§2.4) |
 
 ## 12. Definition of Done (per fitur)
 
-- [ ] Migration, model (+ relasi eksplisit), factory, seeder (bila perlu) sesuai `docs/DATABASE.md`
+- [ ] Migration, model (+ relasi eksplisit), factory, seeder (bila perlu) sesuai `docs/DATABASE.md`; seeder menghasilkan data yang sama dengan database lokal (§2.4)
 - [ ] Form Request untuk store & update, pesan berbahasa Indonesia
 - [ ] Controller, rute bernama, entri menu `config/menu.php`
 - [ ] View memakai layout & komponen admin, responsif (desktop, tablet, ponsel)
@@ -305,5 +309,5 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - [ ] Feature test: akses tamu ditolak, validasi, create/read/update/delete berhasil
 - [ ] Unit test untuk setiap Service yang memuat logika
 - [ ] `composer check` lulus tanpa error
-- [ ] Catatan deploy (perintah server setelah `git pull`) disertakan
+- [ ] Catatan deploy (perintah server setelah `git pull`, termasuk perlu/tidaknya reset data produksi selama tahap uji) disertakan, lalu usulan pesan commit
 - [ ] Item terkait di `docs/ROADMAP.md` dicentang
