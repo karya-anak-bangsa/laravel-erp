@@ -124,7 +124,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 6 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel. Kotak masuk Kontak Kami sengaja kosong.
+- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel. Kotak masuk Kontak Kami sengaja kosong.
   ```bash
   php artisan db:seed --class=CompanyProfileSeeder --force
   ```
@@ -133,22 +133,35 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 ---
 
 - **Fase 4 — Frontend publik (beranda)** — sekali saat beranda pertama kali tayang (`/` tidak lagi dialihkan ke `/admin`; panel admin tetap di `/admin` dan `/login`):
-  1. Data awal (logo lebar transparan, CTA hero ber-anchor) sudah disamakan dengan lokal lewat **Reset Data Produksi 2026-10-10** di bawah. Bila server dibangun ulang dari nol, cukup jalankan `CompanyProfileSeeder` seperti di atas.
+  1. Data awal (logo lebar transparan, CTA hero ber-anchor) sudah disamakan dengan lokal lewat **Reset Data Produksi** di bawah. Bila server dibangun ulang dari nol, cukup jalankan `CompanyProfileSeeder` seperti di atas.
   2. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
 
-## Reset Data Produksi (pengecualian 2026-10-10)
+## Reset Data Produksi (boleh diulang selama tahap uji)
 
-Produksi di-seed 2026-10-09 pagi, sebelum seeder diperbarui (logo lebar transparan, CTA hero ber-anchor), sehingga logo navbar tampil kecil dan tombol "Lihat Portofolio" mengarah ke `/portofolio` (404). Atas keputusan pemilik, database produksi dibuat ulang dari seeder agar **identik dengan lokal**. Ini melanggar aturan "migrasi produksi hanya maju" dan **tidak untuk diulang**: setelah data asli masuk, perubahan data dilakukan lewat admin.
+Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (keputusan pemilik 2026-10-11). Ini pengecualian dari aturan "migrasi produksi hanya maju" (CLAUDE.md §2.4 & §11) dan berlaku **sampai pemilik menyatakan produksi memakai data real**. Sejak saat itu reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
 
-Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami, akun admin, dan sesi login), lalu diisi ulang. Tanpa cadangan karena produksi masih tahap uji coba dan datanya belum bernilai. Kerjakan setelah langkah 2 Deploy Rutin (`php artisan down` … `composer install` … `package:discover`), **sebelum** `php artisan migrate --force`:
+Syarat: seeder harus menghasilkan data yang sama dengan lokal. Reset hanya mengisi ulang dari seeder, jadi perubahan yang dibuat lewat admin lokal dan belum dipindahkan ke seeder tidak ikut ke produksi.
+
+Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami, akun admin, dan sesi login), lalu diisi ulang. Tanpa cadangan karena datanya belum bernilai.
+
+Langkah lengkap, sekaligus dengan deploy kode:
 
 ```bash
 cd ~/domains/karyaanakbangsa.co.id/laravel-erp
+php artisan down
+```
+
+Bila aset berubah, unggah `public\build` sekarang (langkah 3 Deploy Rutin, dari PowerShell di laptop). Lalu di PuTTY:
+
+```bash
+git pull
+# Hanya bila composer.lock berubah:
+# composer install --no-dev --optimize-autoloader --no-scripts && php artisan package:discover --ansi
 
 # 1. Buang berkas unggahan lama agar tidak tertinggal tanpa pemilik
 rm -rf storage/app/public/company-profile
 
-# 2. Buat ulang semua tabel
+# 2. Buat ulang semua tabel (menggantikan "php artisan migrate --force" di Deploy Rutin)
 php artisan migrate:fresh --force
 
 # 3. Akun admin: isi ADMIN_PASSWORD='...' sementara di .env (nano .env), lalu
@@ -159,12 +172,14 @@ sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=/" .env
 # 4. Data Company Profile (sama persis dengan lokal)
 php artisan db:seed --class=CompanyProfileSeeder --force
 
-# 5. Selesai
+# 5. Selesai: cache config final, lalu buka kembali situs
 php artisan optimize
 php artisan up
 ```
 
-Cek: logo navbar lebar (bukan persegi), tombol "Lihat Portofolio" turun ke seksi portofolio, login admin berhasil. Unggah aset (`public\build`) **tidak perlu** untuk perubahan ini.
+Cek di jendela Incognito: login admin berhasil, beranda sama dengan lokal (hero, layanan, portofolio, artikel, identitas).
+
+Riwayat reset: 2026-10-10 (logo persegi lama dan tombol hero ke `/portofolio` yang 404), 2026-10-11 (data hasil perbaikan UI/UX: gambar hero & artikel sementara, judul layanan "Bootcamp", portofolio Sertifikasi IT).
 
 ## Aturan & Pemecahan Masalah
 
