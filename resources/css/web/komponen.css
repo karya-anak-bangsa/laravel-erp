@@ -88,15 +88,22 @@
 [data-tema=monochrome] .hero-deskripsi { @apply text-muted-foreground; }
 .hero-aksi { @apply mt-8 flex flex-col gap-3 sm:flex-row; }
 .hero-kata-kunci { @apply mt-10 flex flex-wrap gap-2 border-t pt-6; }
-.lencana-kata-kunci { @apply inline-flex h-7 items-center rounded-lencana border px-2.5 font-mono text-[11px]; }
-[data-tema=full_color] .lencana-kata-kunci { @apply gap-x-1.5 bg-(--corak-lembut) text-(--corak-teks); border-color: var(--corak-cincin); }
-[data-tema=full_color] .lencana-kata-kunci .titik { @apply size-1.5 rounded-full bg-(--corak); }
+/* Titik di depan kata kunci tampil di kedua tema (pilihan pemilik 2026-10-11) agar lebar lencana & patah barisnya sama. */
+.lencana-kata-kunci { @apply inline-flex h-7 items-center gap-x-1.5 rounded-lencana border px-2.5 font-mono text-[11px]; }
+.lencana-kata-kunci .titik { @apply size-1.5 rounded-full; }
+[data-tema=full_color] .lencana-kata-kunci { @apply bg-(--corak-lembut) text-(--corak-teks); border-color: var(--corak-cincin); }
+[data-tema=full_color] .lencana-kata-kunci .titik { @apply bg-(--corak); }
 [data-tema=monochrome] .lencana-kata-kunci { @apply text-foreground; }
-[data-tema=monochrome] .lencana-kata-kunci .titik { @apply hidden; }
+[data-tema=monochrome] .lencana-kata-kunci .titik { @apply bg-foreground; }
 .hero-media { @apply relative; }
 [data-tema=full_color] .hero-pendar { @apply absolute -inset-3 -z-10 blur-2xl sm:-inset-5; border-radius: 2rem; background-image: linear-gradient(to top right, color-mix(in oklab, var(--warna-aksen) 12%, transparent), rgb(139 92 246 / .08), rgb(56 189 248 / .15)); }
-/* Disembunyikan di md (hero dua kolom dengan celah 32px): pola titik yang menjorok 24px akan menempel ke kolom teks. */
-[data-tema=full_color] .hero-titik { @apply absolute -bottom-6 -left-6 -z-10 hidden size-28 sm:block md:hidden lg:block; background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); background-size: 14px 14px; }
+/* Pola titik di pojok kiri bawah & kanan atas bingkai hero, kedua tema (pilihan pemilik 2026-10-11). Disembunyikan di md
+   (hero dua kolom dengan celah 32px): pola yang menjorok 24px akan menempel ke kolom teks. */
+.hero-titik { @apply absolute -z-10 hidden size-28 sm:block md:hidden lg:block; background-size: 14px 14px; }
+.hero-titik-bawah { @apply -bottom-6 -left-6; }
+.hero-titik-atas { @apply -top-6 -right-6; }
+[data-tema=full_color] .hero-titik { background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); }
+[data-tema=monochrome] .hero-titik { background-image: radial-gradient(color-mix(in oklab, var(--nada-950) 25%, transparent) 1.5px, transparent 1.5px); }
 /* Bingkai berjarak dengan gambar rasio alami di kedua tema (pilihan pemilik 2026-10-11); Full Color berlatar terang. */
 .hero-bingkai { @apply border p-1.5 sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); }
 .hero-bingkai img { @apply block h-auto w-full border; border-radius: var(--sudut-kartu); }

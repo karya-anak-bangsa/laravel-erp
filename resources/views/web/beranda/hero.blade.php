@@ -46,7 +46,8 @@
         @if ($hero)
             <div class="hero-media muncul tunda-2">
                 <div class="hero-pendar mono:hidden" aria-hidden="true"></div>
-                <div class="hero-titik mono:hidden" aria-hidden="true"></div>
+                <div class="hero-titik hero-titik-bawah" aria-hidden="true"></div>
+                <div class="hero-titik hero-titik-atas" aria-hidden="true"></div>
                 <figure class="hero-bingkai">
                     <img src="{{ $hero->gambar_url }}" width="1536" height="1024" fetchpriority="high" loading="eager" alt="" class="gambar-konten">
                 </figure>
