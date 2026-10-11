@@ -6,7 +6,7 @@
     <div class="wadah kaki-isi">
         <div class="kaki-grid">
             <div class="kaki-merek">
-                <a href="{{ route('beranda') }}#beranda" class="inline-flex min-h-11 items-center rounded-lg warna:rounded-tombol" aria-label="{{ $identitas->nama_perusahaan }} — ke beranda">
+                <a href="{{ route('beranda') }}#beranda" class="inline-flex min-h-11 items-center rounded-tombol" aria-label="{{ $identitas->nama_perusahaan }} — ke beranda">
                     <img src="{{ $identitas->logo_url }}" alt="" width="107" height="40" loading="lazy" decoding="async" class="logo-putih">
                 </a>
                 <p class="kaki-nama">{{ $identitas->nama_perusahaan }}</p>
@@ -41,7 +41,7 @@
                 <ul class="kontak-kaki mt-4 grid gap-y-2 text-[15px]">
                     <li class="flex gap-x-3 pb-1">
                         <x-web.ikon nama="lokasi" :tebal="1.75" class="mt-0.5" />
-                        <address class="leading-relaxed not-italic">{{ $identitas->alamat }}</address>
+                        <address class="leading-relaxed text-pretty not-italic">{{ $identitas->alamat }}</address>
                     </li>
                     <li class="flex items-center gap-x-3">
                         <x-web.ikon nama="email" :tebal="1.75" />

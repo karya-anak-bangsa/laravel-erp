@@ -1,11 +1,14 @@
 /*
- * Gaya komponen per tema: [data-tema=full_color] .x dan [data-tema=monochrome] .x. Di luar @layer agar menang
- * atas utilitas (mis. kartu artikel :first-child) dan atas komponen Basecoat yang ada di @layer components.
+ * Gaya komponen frontend publik. Di luar @layer agar menang atas utilitas (mis. kartu artikel :first-child) dan atas
+ * komponen Basecoat yang ada di @layer components.
+ *
+ * Konvensi (pilihan pemilik 2026-10-11): ukuran — font, tinggi, padding, jarak, ukuran ikon — ditulis SEKALI di aturan
+ * bersama tanpa [data-tema], bernilai Monochrome sebagai acuan, sehingga kedua tema identik. Aturan [data-tema=full_color]
+ * dan [data-tema=monochrome] hanya berisi warna, bayangan, dekorasi, dan susunan yang memang beda antartema.
  */
 
 /* ---------- Tombol (Basecoat .btn) ---------- */
 .btn { border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .btn { @apply font-semibold; }
 /* Bayangan tombol netral & tipis (pilihan pemilik 2026-10-10; sebelumnya bayangan merah pekat). */
 [data-tema=full_color] .btn:not([data-variant]) { box-shadow: var(--bayangan-tombol); }
 [data-tema=full_color] .btn[data-variant=outline] { border-color: var(--input); background-color: var(--card); color: var(--foreground); }
@@ -17,35 +20,29 @@
   [data-tema=full_color] .dark .btn[data-variant=outline]:hover { background-color: rgb(255 255 255 / .1); border-color: rgb(255 255 255 / .5); }
   [data-tema=monochrome] .dark .btn[data-variant=outline]:hover { background-color: color-mix(in oklab, var(--input) 60%, transparent); }
 }
-/* Ukuran desktop (≥lg) dari skala template (TemaService: --tinggi-tombol, --teks-tombol); ponsel tetap ≥44px. */
-[data-tema=full_color] .btn-besar { @apply min-h-12 px-7 text-base lg:min-h-(--tinggi-tombol) lg:px-6 lg:text-(length:--teks-tombol); }
-[data-tema=monochrome] .btn-besar { @apply h-11 px-5 sm:h-10 lg:h-(--tinggi-tombol) lg:text-(length:--teks-tombol); }
-[data-tema=full_color] .btn-sedang { @apply min-h-11 px-5 text-sm; }
-[data-tema=monochrome] .btn-sedang { @apply h-11 px-4 sm:h-9; }
+/* Desktop (≥lg) dari skala template (TemaService: --tinggi-tombol, --teks-tombol); ponsel tetap 44px. */
+.btn-besar { @apply h-11 px-5 sm:h-10 lg:h-(--tinggi-tombol) lg:text-(length:--teks-tombol); }
+.btn-sedang { @apply h-11 px-4 sm:h-9; }
 
 /* ---------- Navbar ---------- */
 .kepala-situs { @apply sticky top-0 z-50 border-b bg-background; }
 [data-tema=full_color] .kepala-situs { @apply bg-background/95 backdrop-blur-lg; box-shadow: var(--bayangan-navbar); }
+/* Latar padat saat menu ponsel terbuka: latar redup di belakang tembus 5% sehingga navbar tampak abu di atas panel putih. */
+[data-tema=full_color] .kepala-situs:has(#tombol-menu[aria-expanded=true]) { background-color: var(--background); }
 /* Tinggi navbar, logo, dan teks menu desktop dari skala template (--tinggi-navbar, --tinggi-logo, --teks-menu). */
 .bilah-navigasi { @apply mx-auto flex h-16 max-w-(--lebar-konten) items-center gap-4 px-4 sm:px-6 lg:h-(--tinggi-navbar) lg:px-8; }
-.logo-situs { @apply flex min-h-11 shrink-0 items-center gap-3 rounded-lg; }
-[data-tema=full_color] .logo-situs { border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .logo-gambar { @apply h-9 w-auto lg:h-(--tinggi-logo); }
-[data-tema=monochrome] .logo-gambar { @apply h-7 w-auto lg:h-(--tinggi-logo); filter: brightness(0); }
+.logo-situs { @apply flex min-h-11 shrink-0 items-center gap-3 rounded-tombol; }
+.logo-gambar { @apply h-7 w-auto lg:h-(--tinggi-logo); }
+[data-tema=monochrome] .logo-gambar { filter: brightness(0); }
 /* Nama perusahaan di navbar mulai xl (kedua tema); di bawahnya tampil sebagai lencana hero (.hero-eyebrow). */
-.pemisah-navbar { @apply hidden w-px bg-border xl:block; }
-.nama-navbar { @apply hidden tracking-tight text-foreground xl:block; }
-[data-tema=full_color] .pemisah-navbar { @apply h-6; }
-[data-tema=full_color] .nama-navbar { @apply text-[15px] font-semibold; }
-[data-tema=monochrome] .pemisah-navbar { @apply h-5; }
-[data-tema=monochrome] .nama-navbar { @apply text-sm font-medium; }
+.pemisah-navbar { @apply hidden h-5 w-px bg-border xl:block; }
+.nama-navbar { @apply hidden text-sm font-medium tracking-tight text-foreground xl:block; }
 .menu-utama { @apply hidden flex-1 lg:block; }
 /* Menu rata kanan, tepat sebelum pilihan tema (kedua tema; pilihan pemilik 2026-10-11, sebelumnya rata kiri). */
 .menu-utama ul { @apply flex items-center justify-end gap-0.5 lg:pe-3 xl:pe-4; }
-[data-tema=full_color] .menu-utama ul { @apply gap-1; }
-.tautan-menu { @apply inline-flex min-h-11 items-center rounded-lg px-3 text-(length:--teks-menu) font-medium transition-colors; }
-[data-tema=full_color] .tautan-menu { @apply text-slate-700 hover:text-aksen; border-radius: var(--sudut-tombol); }
-[data-tema=monochrome] .tautan-menu { @apply px-2.5 text-muted-foreground hover:text-foreground xl:px-3; }
+.tautan-menu { @apply inline-flex min-h-11 items-center rounded-tombol px-2.5 text-(length:--teks-menu) font-medium transition-colors xl:px-3; }
+[data-tema=full_color] .tautan-menu { @apply text-slate-700 hover:text-aksen; }
+[data-tema=monochrome] .tautan-menu { @apply text-muted-foreground hover:text-foreground; }
 .aksi-navbar { @apply ml-auto flex items-center gap-2 lg:ml-0; }
 .tombol-menu { @apply size-11 lg:hidden; }
 
@@ -68,199 +65,198 @@
 .latar-menu { @apply fixed inset-0 z-45 bg-slate-950/40 lg:hidden; }
 [data-tema=monochrome] .latar-menu { @apply bg-black/40; }
 @media (prefers-reduced-motion: no-preference) { .latar-menu:not([hidden]) { animation: muncul-pudar .2s ease-out both; } }
-/* Baris tema berlabel di menu ponsel: ikon contoh warna di navbar saja sulit ditebak artinya. */
+/* Baris tema berlabel di menu ponsel: ikon contoh warna di navbar saja sulit ditebak artinya. 44px seperti sasaran sentuh lain. */
 .tema-ponsel { @apply flex items-center justify-between gap-3 pt-3; }
 .tema-ponsel-label { @apply text-[15px] font-medium text-foreground; }
-.tema-ponsel .pilih-tema .opsi-tema { @apply h-10 w-auto gap-2 px-3 text-sm font-medium text-foreground; }
+.tema-ponsel .pilih-tema .opsi-tema { @apply h-11 w-auto gap-2 px-3 text-sm font-medium text-foreground; }
 
 /* ---------- Hero ---------- */
 [data-tema=full_color] .hero { background-image: linear-gradient(to bottom, var(--utama-50), #fff 72%); }
 [data-tema=monochrome] .hero { @apply border-b; }
 [data-tema=full_color] .hero-blob { @apply absolute rounded-full blur-3xl; }
-.hero-tata { @apply mx-auto grid max-w-(--lebar-konten) items-center gap-12 px-4 sm:px-6 lg:px-8; }
-[data-tema=full_color] .hero-tata { @apply pt-10 pb-14 sm:pt-16 sm:pb-20 lg:grid-cols-12 lg:gap-x-12 lg:pt-20 lg:pb-16; }
-[data-tema=monochrome] .hero-tata { @apply pt-14 pb-16 sm:pt-20 sm:pb-20 md:grid-cols-12 md:gap-8 lg:gap-10 lg:pt-24 lg:pb-28; }
-[data-tema=full_color] :is(.hero-teks, .hero-media) { @apply lg:col-span-6; }
-[data-tema=monochrome] :is(.hero-teks, .hero-media) { @apply md:col-span-6; }
-.hero-eyebrow { @apply inline-flex items-center gap-2 rounded-lencana xl:hidden; }
-[data-tema=full_color] .hero-eyebrow { @apply bg-white/80 px-3.5 py-1.5 text-sm font-semibold text-foreground shadow-2xs ring-1 ring-border backdrop-blur; }
-[data-tema=monochrome] .hero-eyebrow { @apply border bg-background px-3 py-1 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase shadow-xs; }
-.hero-eyebrow .titik { @apply size-2 rounded-full bg-primary; }
-[data-tema=monochrome] .hero-eyebrow .titik { @apply size-1.5 bg-foreground; }
-.hero-judul { @apply mt-6 text-balance text-foreground xl:mt-0; }
-/* Lebar dibatasi agar di konten lebar (≥1920px) judul tidak patah dua baris di tempat janggal. */
-[data-tema=full_color] .hero-judul { @apply max-w-xl text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-5xl xl:text-6xl; }
-[data-tema=monochrome] .hero-judul { @apply text-[2.5rem] leading-[1.05] font-semibold tracking-tighter sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl; }
-.hero-deskripsi { @apply mt-6 max-w-xl text-lg text-pretty; }
-[data-tema=full_color] .hero-deskripsi { @apply leading-relaxed text-teks; }
-[data-tema=monochrome] .hero-deskripsi { @apply leading-8 text-muted-foreground; }
-.hero-aksi { @apply mt-9 flex flex-col gap-3 sm:flex-row; }
-[data-tema=monochrome] .hero-aksi { @apply mt-8; }
-.hero-kata-kunci { @apply mt-9 flex flex-wrap border-t pt-6; }
-[data-tema=full_color] .hero-kata-kunci { @apply max-w-2xl gap-x-1.5 gap-y-2 lg:max-w-none; }
-[data-tema=monochrome] .hero-kata-kunci { @apply mt-10 gap-2; }
-[data-tema=full_color] .lencana-kata-kunci { @apply inline-flex items-center gap-x-1.5 rounded-lencana bg-(--corak-lembut) px-3 py-1.5 text-sm font-semibold text-(--corak-teks) ring-1 ring-(--corak-cincin) ring-inset; }
+/* Dua kolom mulai md di kedua tema (pilihan pemilik 2026-10-11; Full Color sebelumnya mulai lg). */
+.hero-tata { @apply mx-auto grid max-w-(--lebar-konten) items-center gap-12 px-4 pt-14 pb-16 sm:px-6 sm:pt-20 sm:pb-20 md:grid-cols-12 md:gap-8 lg:gap-10 lg:px-8 lg:pt-24 lg:pb-28; }
+:is(.hero-teks, .hero-media) { @apply md:col-span-6; }
+.hero-eyebrow { @apply inline-flex items-center gap-2 rounded-lencana border px-3 py-1 font-mono text-[11px] tracking-[0.14em] uppercase xl:hidden; }
+[data-tema=full_color] .hero-eyebrow { @apply bg-white/80 text-foreground shadow-2xs backdrop-blur; }
+[data-tema=monochrome] .hero-eyebrow { @apply bg-background text-muted-foreground shadow-xs; }
+.hero-eyebrow .titik { @apply size-1.5 rounded-full bg-primary; }
+[data-tema=monochrome] .hero-eyebrow .titik { @apply bg-foreground; }
+.hero-judul { @apply mt-6 text-[2.5rem] leading-[1.05] font-semibold tracking-tighter text-balance text-foreground sm:text-6xl md:text-5xl lg:text-6xl xl:mt-0 xl:text-7xl; }
+.hero-deskripsi { @apply mt-6 max-w-xl text-lg leading-8 text-pretty; }
+[data-tema=full_color] .hero-deskripsi { @apply text-teks; }
+[data-tema=monochrome] .hero-deskripsi { @apply text-muted-foreground; }
+.hero-aksi { @apply mt-8 flex flex-col gap-3 sm:flex-row; }
+.hero-kata-kunci { @apply mt-10 flex flex-wrap gap-2 border-t pt-6; }
+.lencana-kata-kunci { @apply inline-flex h-7 items-center rounded-lencana border px-2.5 font-mono text-[11px]; }
+[data-tema=full_color] .lencana-kata-kunci { @apply gap-x-1.5 bg-(--corak-lembut) text-(--corak-teks); border-color: var(--corak-cincin); }
 [data-tema=full_color] .lencana-kata-kunci .titik { @apply size-1.5 rounded-full bg-(--corak); }
-[data-tema=monochrome] .lencana-kata-kunci { @apply inline-flex h-7 items-center rounded-lencana border px-2.5 font-mono text-[11px] text-foreground; }
+[data-tema=monochrome] .lencana-kata-kunci { @apply text-foreground; }
 [data-tema=monochrome] .lencana-kata-kunci .titik { @apply hidden; }
 .hero-media { @apply relative; }
 [data-tema=full_color] .hero-pendar { @apply absolute -inset-3 -z-10 blur-2xl sm:-inset-5; border-radius: 2rem; background-image: linear-gradient(to top right, color-mix(in oklab, var(--warna-aksen) 12%, transparent), rgb(139 92 246 / .08), rgb(56 189 248 / .15)); }
-[data-tema=full_color] .hero-titik { @apply absolute -bottom-6 -left-6 -z-10 hidden size-28 sm:block; background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); background-size: 14px 14px; }
-[data-tema=full_color] .hero-bingkai { @apply aspect-video overflow-hidden bg-(--utama-teks) ring-1 ring-slate-900/10 lg:aspect-3/2; --tw-shadow: var(--bayangan-gambar); border-radius: calc(var(--sudut-kartu) + .25rem); }
-[data-tema=full_color] .hero-bingkai img { @apply size-full object-cover; }
-[data-tema=monochrome] .hero-bingkai { @apply border bg-muted/60 p-1.5 shadow-sm sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); }
-[data-tema=monochrome] .hero-bingkai img { @apply block h-auto w-full border; border-radius: var(--sudut-kartu); }
+/* Disembunyikan di md (hero dua kolom dengan celah 32px): pola titik yang menjorok 24px akan menempel ke kolom teks. */
+[data-tema=full_color] .hero-titik { @apply absolute -bottom-6 -left-6 -z-10 hidden size-28 sm:block md:hidden lg:block; background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); background-size: 14px 14px; }
+/* Bingkai berjarak dengan gambar rasio alami di kedua tema (pilihan pemilik 2026-10-11); Full Color berlatar terang. */
+.hero-bingkai { @apply border p-1.5 sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); }
+.hero-bingkai img { @apply block h-auto w-full border; border-radius: var(--sudut-kartu); }
+[data-tema=full_color] .hero-bingkai { @apply bg-white/70; box-shadow: var(--bayangan-gambar); }
+[data-tema=monochrome] .hero-bingkai { @apply bg-muted/60 shadow-sm; }
 
 /* ---------- Seksi & kepala seksi ---------- */
 /* Lebar isi dari template (--lebar-konten: 80rem, melebar di ≥1920px sesuai pilihan template). */
 .wadah { @apply mx-auto max-w-(--lebar-konten) px-4 sm:px-6 lg:px-8; }
-[data-tema=full_color] .seksi { @apply py-14 sm:py-24 lg:py-28; }
-[data-tema=monochrome] .seksi { @apply border-b py-20 sm:py-24 lg:py-28; }
+.seksi { @apply py-20 sm:py-24 lg:py-28; }
+[data-tema=monochrome] .seksi { @apply border-b; }
 .seksi-redup { background-color: var(--latar-redup); }
 .kepala-seksi { @apply max-w-2xl; }
 [data-tema=full_color] .kepala-seksi[data-rata=tengah] { @apply mx-auto text-center; }
-.label-seksi { @apply inline-flex items-center; }
-[data-tema=full_color] .label-seksi { @apply gap-x-2 text-sm font-bold tracking-[0.16em] text-aksen uppercase; }
+.label-seksi { @apply inline-flex items-center font-mono text-xs tracking-[0.18em] uppercase; }
+/* items-baseline: garis hiasan (pseudo-elemen tanpa teks) tidak boleh menjadi garis dasar label, agar tinggi kepala seksi
+   sama persis dengan Monochrome; garisnya tetap di tengah lewat self-center. */
+[data-tema=full_color] .label-seksi { @apply items-baseline gap-x-2 text-aksen; }
 [data-tema=full_color] .label-seksi::before,
-[data-tema=full_color] .kepala-seksi[data-rata=tengah] .label-seksi::after { content: ""; @apply h-px w-6 bg-current; }
+[data-tema=full_color] .kepala-seksi[data-rata=tengah] .label-seksi::after { content: ""; @apply h-px w-6 self-center bg-current; }
 [data-tema=full_color] .label-nomor { @apply hidden; }
-[data-tema=monochrome] .label-seksi { @apply font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
+[data-tema=monochrome] .label-seksi { @apply text-muted-foreground; }
 [data-tema=monochrome] .label-nomor { @apply text-foreground; }
 [data-tema=monochrome] .label-nomor::after { content: "\00a0/\00a0"; color: var(--muted-foreground); }
-.judul-seksi { @apply mt-4 text-3xl tracking-tight text-balance text-foreground sm:text-4xl; }
-/* Ukuran desktop dari skala template (--teks-judul-seksi). */
-[data-tema=full_color] .judul-seksi { @apply font-extrabold lg:text-(length:--teks-judul-seksi) lg:leading-tight; }
-[data-tema=monochrome] .judul-seksi { @apply font-semibold lg:text-(length:--teks-judul-seksi); }
-.deskripsi-seksi { @apply text-lg text-pretty; }
-[data-tema=full_color] .deskripsi-seksi { @apply mt-5 leading-relaxed text-teks; }
-[data-tema=monochrome] .deskripsi-seksi { @apply mt-4 leading-8 text-muted-foreground; }
-[data-tema=full_color] .tautan-teks { @apply font-semibold text-aksen underline decoration-2 underline-offset-4 transition; text-decoration-color: color-mix(in oklab, var(--aksen-teks) 30%, transparent); }
+/* Ukuran desktop dari skala template (--teks-judul-seksi); tinggi baris ikut rasio text-4xl. */
+.judul-seksi { @apply mt-4 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); }
+.deskripsi-seksi { @apply mt-4 text-lg leading-8 text-pretty; }
+[data-tema=full_color] .deskripsi-seksi { @apply text-teks; }
+[data-tema=monochrome] .deskripsi-seksi { @apply text-muted-foreground; }
+.tautan-teks { @apply font-medium underline underline-offset-4; }
+[data-tema=full_color] .tautan-teks { @apply text-aksen decoration-2 transition; text-decoration-color: color-mix(in oklab, var(--aksen-teks) 30%, transparent); }
 [data-tema=full_color] .tautan-teks:hover { text-decoration-color: var(--aksen-teks); }
-[data-tema=monochrome] .tautan-teks { @apply font-medium text-foreground underline underline-offset-4; }
+[data-tema=monochrome] .tautan-teks { @apply text-foreground; }
 
 /* ---------- Layanan ---------- */
+/* Kartu & bingkai bergaris border 1px di kedua tema (Full Color sebelumnya ring-1) agar geometrinya identik; bayangan
+   Full Color ditulis langsung lewat token. */
+.kartu-layanan { @apply relative rounded-kartu border bg-card p-1.5; }
 /* Bayangan lembut menyebar seperti navbar (pilihan pemilik 2026-10-11; sebelumnya shadow-sm, saat sorot shadow-xl). */
-[data-tema=full_color] .kartu-layanan { @apply relative flex flex-col rounded-kartu bg-card p-3 ring-1 ring-border transition duration-300 hover:-translate-y-1 hover:ring-(--corak-cincin); --tw-shadow: var(--bayangan-kartu); }
-/* Lewat --tw-shadow agar digabung dengan garis ring-1 (Tailwind menyusun keduanya dalam satu box-shadow). */
-@media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover { --tw-shadow: var(--bayangan-kartu-sorot); } }
-[data-tema=full_color] .isi-layanan { @apply flex flex-1 flex-col; }
-/* 16:9 di ponsel agar seksi tidak terlalu panjang, 16:10 di kartu biasa seperti Monochrome; kartu lebar 4:3 (struktur.css). */
-[data-tema=full_color] .isi-layanan-gambar { @apply aspect-video overflow-hidden rounded-dalam bg-(--corak-lembut) sm:aspect-16/10; }
-[data-tema=full_color] .isi-layanan-gambar img { @apply size-full object-cover; }
+[data-tema=full_color] .kartu-layanan { @apply flex flex-col transition duration-300 hover:-translate-y-1 hover:border-(--corak-cincin); box-shadow: var(--bayangan-kartu); }
+@media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover { box-shadow: var(--bayangan-kartu-sorot); } }
+/* Garis tepi satu tingkat lebih tegas dari --border agar kartu tidak tampak pudar tanpa bantuan bayangan. */
+[data-tema=monochrome] .kartu-layanan { @apply shadow-xs; border-color: var(--garis-kartu); }
+.isi-layanan-gambar { @apply overflow-hidden rounded-dalam border; }
+.isi-layanan-gambar img { @apply block w-full object-cover; }
+/* Garis bingkai gambar Full Color transparan (hanya menjaga geometri), latar tidak merembes ke garis. */
+[data-tema=full_color] .isi-layanan-gambar { @apply bg-(--corak-lembut); border-color: transparent; background-clip: padding-box; }
 @media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover .isi-layanan-gambar img { transform: scale(1.03); } }
-[data-tema=full_color] .isi-layanan-kepala { @apply px-3 pt-5 sm:pt-6; }
-[data-tema=full_color] .nomor-layanan { @apply inline-flex w-fit items-center rounded-lencana bg-(--corak-lembut) px-2.5 py-1 text-xs font-bold tracking-wider text-(--corak-teks); }
-[data-tema=full_color] .judul-layanan { @apply mt-3.5 text-xl font-bold tracking-tight text-foreground; }
-[data-tema=full_color] .isi-layanan-deskripsi { @apply mt-2.5 px-3 leading-relaxed text-teks; }
+[data-tema=monochrome] .isi-layanan-gambar { @apply bg-muted; }
+.isi-layanan-kepala { @apply px-4 pt-4 sm:px-5 sm:pt-5; }
+/* Nomor polos Geist Mono di kedua tema (pilihan pemilik 2026-10-11; Full Color sebelumnya pil berwarna). */
+.nomor-layanan { @apply block font-mono text-xs; }
+[data-tema=full_color] .nomor-layanan { @apply text-(--corak-teks); }
+[data-tema=monochrome] .nomor-layanan { @apply text-muted-foreground; }
+.judul-layanan { @apply mt-2 text-lg font-semibold tracking-tight text-balance text-foreground sm:mt-3; }
+/* text-pretty: cegah satu kata tertinggal sendirian di baris terakhir (CLAUDE.md §9). */
+.isi-layanan-deskripsi { @apply px-4 pt-2 text-[15px]/[1.65] text-pretty text-teks sm:px-5; }
+/* Full Color: keterangan di modal (tombol Selengkapnya); Monochrome: keterangan langsung di kartu. */
 [data-tema=full_color] .isi-layanan-rinci { @apply hidden; }
-[data-tema=full_color] .isi-layanan-aksi { @apply mt-auto px-3 pt-5 pb-3; }
-/* Selengkapnya berbentuk tombol tanpa ikon (pilihan pemilik 2026-10-11); ::after merentang agar seluruh kartu tetap bisa diklik. */
-.tombol-selengkapnya { @apply inline-flex min-h-11 items-center justify-center bg-(--corak-lembut) px-4 text-sm font-semibold text-(--corak-teks) ring-1 ring-(--corak-cincin) transition lg:min-h-10; border-radius: var(--sudut-tombol); }
+[data-tema=monochrome] .isi-layanan-rinci { @apply mx-4 mt-4 mb-4 border-t pt-4 text-sm/6 text-pretty text-muted-foreground sm:mx-5 sm:mb-5; }
+[data-tema=full_color] .isi-layanan-aksi { @apply px-4 py-4 sm:px-5 sm:pb-5; }
+[data-tema=monochrome] .isi-layanan-aksi { @apply hidden; }
+/* Selengkapnya berbentuk tombol tanpa ikon (pilihan pemilik 2026-10-11) setinggi .btn-sedang; ::after merentang agar
+   seluruh kartu tetap bisa diklik. */
+.tombol-selengkapnya { @apply inline-flex min-h-11 items-center justify-center border border-(--corak-cincin) bg-(--corak-lembut) px-4 text-sm font-medium text-(--corak-teks) transition sm:min-h-9; border-radius: var(--sudut-tombol); }
 .tombol-selengkapnya::after { content: ""; @apply absolute inset-0 rounded-kartu; }
 .tombol-selengkapnya:focus-visible { outline: 2px solid var(--corak); outline-offset: 2px; }
-@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply shadow-xs ring-(--corak); } }
-/* Garis tepi satu tingkat lebih tegas dari --border agar kartu tidak tampak pudar tanpa bantuan bayangan. */
-[data-tema=monochrome] .kartu-layanan { @apply rounded-kartu border bg-card p-1.5 shadow-xs; border-color: var(--garis-kartu); }
-[data-tema=monochrome] .isi-layanan-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
-[data-tema=monochrome] .isi-layanan-gambar img { @apply block w-full object-cover; }
-[data-tema=monochrome] .isi-layanan-kepala { @apply px-4 pt-4 sm:px-5 sm:pt-5; }
-[data-tema=monochrome] .nomor-layanan { @apply block font-mono text-xs text-muted-foreground; }
-[data-tema=monochrome] .judul-layanan { @apply mt-2 text-lg font-semibold tracking-tight text-balance text-foreground sm:mt-3; }
-[data-tema=monochrome] .isi-layanan-deskripsi { @apply px-4 pt-2 text-[15px]/[1.65] text-teks sm:px-5; }
-[data-tema=monochrome] .isi-layanan-rinci { @apply mx-4 mt-4 mb-4 border-t pt-4 text-sm/6 text-muted-foreground sm:mx-5 sm:mb-5; }
-[data-tema=monochrome] .isi-layanan-aksi { @apply hidden; }
+@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply border-(--corak) shadow-xs; } }
 
-/* Modal layanan (Full Color) */
+/* Modal layanan (Full Color): deskripsi & keterangan seukuran kartu layanan; judul modal tetap 20/24px (pilihan pemilik 2026-10-11). */
 .dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card; box-shadow: var(--bayangan-melayang, 0 24px 48px -16px rgb(0 0 0 / .2)); border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
 .dialog-layanan-kepala { @apply flex items-center gap-4 bg-(--corak-lembut) p-4 pe-16 sm:gap-6 sm:p-6 sm:pe-20; }
 .dialog-layanan-gambar { @apply aspect-4/3 w-28 shrink-0 overflow-hidden rounded-dalam ring-1 ring-black/5 sm:w-40; --tw-shadow: var(--bayangan-kartu); }
 .dialog-layanan-gambar img { @apply size-full object-cover; }
-.dialog-layanan-nomor { @apply inline-flex w-fit items-center rounded-lencana bg-white px-2.5 py-1 text-xs font-bold tracking-wider text-(--corak-teks) shadow-2xs; }
-.dialog-layanan-judul { @apply mt-2.5 text-xl font-extrabold tracking-tight text-balance text-foreground sm:text-2xl; }
+.dialog-layanan-nomor { @apply block font-mono text-xs text-(--corak-teks); }
+.dialog-layanan-judul { @apply mt-2 text-xl font-semibold tracking-tight text-balance text-foreground sm:mt-3 sm:text-2xl; }
 .dialog-layanan-badan { @apply p-6 sm:p-8; }
-.dialog-layanan-deskripsi { @apply leading-relaxed font-medium text-foreground; }
-.dialog-layanan-rinci { @apply mt-3 leading-relaxed text-teks; }
+.dialog-layanan-deskripsi { @apply text-[15px]/[1.65] text-foreground; }
+.dialog-layanan-rinci { @apply mt-4 text-sm/6 text-teks; }
 .dialog-layanan-aksi { @apply mt-7 flex flex-col gap-3 sm:flex-row; }
 .dialog-layanan-tutup { @apply absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-xs ring-1 ring-slate-200 backdrop-blur transition hover:bg-white; }
 [data-tema=full_color] .dialog-layanan-tutup { border-radius: var(--sudut-tombol); }
 
 /* ---------- Portofolio ---------- */
-[data-tema=full_color] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu bg-card p-3 ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .kartu-portofolio-gambar { @apply aspect-4/3 overflow-hidden rounded-dalam bg-(--corak-lembut); }
-[data-tema=full_color] .kartu-portofolio-isi { @apply flex flex-1 flex-col px-3 pt-5 pb-3; }
-[data-tema=full_color] .lencana-kategori { @apply inline-flex w-fit items-center gap-x-1.5 rounded-lencana bg-(--corak-lembut) px-2.5 py-1 text-xs font-bold text-(--corak-teks); }
+/* Bingkai kartu seperti kartu layanan: gambar berjarak dari tepi; ukuran teks kartu sama di layanan, portofolio, dan
+   artikel serta di kedua tema (pilihan pemilik 2026-10-11). */
+.kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5; }
+[data-tema=full_color] .kartu-portofolio { box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .kartu-portofolio { @apply shadow-xs; border-color: var(--garis-kartu); }
+.kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border; }
+/* 16:10 di kedua tema, sama dengan kartu layanan biasa (pilihan pemilik 2026-10-11; Full Color sebelumnya 4:3). */
+.kartu-portofolio-gambar img { @apply block size-full object-cover; aspect-ratio: 16 / 10; }
+[data-tema=full_color] .kartu-portofolio-gambar { @apply bg-(--corak-lembut); border-color: transparent; background-clip: padding-box; }
+[data-tema=monochrome] .kartu-portofolio-gambar { @apply bg-muted; }
+.kartu-portofolio-isi { @apply flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
+.lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px]; }
+[data-tema=full_color] .lencana-kategori { @apply gap-x-1.5 bg-(--corak-lembut) text-(--corak-teks); border-color: transparent; }
 [data-tema=full_color] .lencana-kategori .titik { @apply size-1.5 rounded-full bg-(--corak); }
-/* Ukuran teks kartu sama dengan kartu layanan di masing-masing tema (pilihan pemilik 2026-10-11). */
-[data-tema=full_color] .judul-portofolio { @apply mt-3.5 text-xl font-bold tracking-tight text-balance text-foreground; }
-[data-tema=full_color] .deskripsi-portofolio { @apply mt-2.5 text-base leading-relaxed text-teks; }
-/* Bingkai kartu Monochrome seperti kartu layanan: gambar berjarak dari tepi, garis --garis-kartu. */
-[data-tema=monochrome] .kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5 shadow-xs; border-color: var(--garis-kartu); }
-[data-tema=monochrome] .kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
-[data-tema=monochrome] .kartu-portofolio-gambar img { display: block; aspect-ratio: 16 / 10; }
-[data-tema=monochrome] .kartu-portofolio-isi { @apply flex flex-col px-4 py-4 sm:px-5 sm:py-5; }
-[data-tema=monochrome] .lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
+[data-tema=monochrome] .lencana-kategori { @apply text-foreground; }
 [data-tema=monochrome] .lencana-kategori .titik { @apply hidden; }
-[data-tema=monochrome] .judul-portofolio { @apply mt-3 text-lg font-semibold tracking-tight text-balance text-foreground; }
-[data-tema=monochrome] .deskripsi-portofolio { @apply mt-2 text-[15px]/[1.65] text-teks; }
-.kartu-portofolio-gambar img { @apply size-full object-cover; }
-.petunjuk-geser { @apply mt-2 flex items-center gap-2 text-xs text-muted-foreground md:hidden; }
-[data-tema=monochrome] .petunjuk-geser { @apply font-mono; }
+.judul-portofolio { @apply mt-3 text-lg font-semibold tracking-tight text-balance text-foreground; }
+.deskripsi-portofolio { @apply mt-2 text-[15px]/[1.65] text-pretty text-teks; }
+.petunjuk-geser { @apply mt-2 flex items-center gap-2 font-mono text-xs text-muted-foreground md:hidden; }
 
 /* ---------- Band ajakan ---------- */
 .seksi-ajakan { @apply relative overflow-hidden; }
-[data-tema=full_color] .seksi-ajakan { @apply pb-14 sm:pb-24 lg:pb-28; background-color: var(--latar-redup); }
+/* Ruang di bawah kotak Full Color = jarak antarseksi. */
+[data-tema=full_color] .seksi-ajakan { @apply pb-20 sm:pb-24 lg:pb-28; background-color: var(--latar-redup); }
 [data-tema=monochrome] .seksi-ajakan { @apply bg-background text-foreground; }
-[data-tema=full_color] .kotak-ajakan { @apply relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-20; border-radius: calc(var(--sudut-kartu) + .5rem); background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 18px 36px -24px color-mix(in oklab, var(--utama-teks) 16%, transparent); }
-/* Tombol sejajar tengah blok teks (pilihan pemilik 2026-10-11; sebelumnya rata bawah). */
-[data-tema=monochrome] .kotak-ajakan { @apply relative flex flex-col gap-10 py-20 lg:flex-row lg:items-center lg:justify-between lg:py-24; }
+/* Tombol sejajar tengah blok teks (pilihan pemilik 2026-10-11; sebelumnya rata bawah). Full Color: kotak bergradasi
+   bersudut dengan ruang samping; Monochrome: band selebar wadah. */
+.kotak-ajakan { @apply relative flex flex-col gap-10 py-20 lg:flex-row lg:items-center lg:justify-between lg:py-24; }
+[data-tema=full_color] .kotak-ajakan { @apply isolate overflow-hidden px-6 sm:px-12 lg:px-16; border-radius: calc(var(--sudut-kartu) + .5rem); background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: var(--bayangan-ajakan); }
 [data-tema=full_color] .ajakan-blob { @apply pointer-events-none absolute -z-10 rounded-full blur-3xl; }
 [data-tema=full_color] .ajakan-titik { @apply pointer-events-none absolute inset-0 -z-10; background-image: radial-gradient(rgb(255 255 255 / .09) 1px, transparent 1px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(to right, transparent, #000 40%, #000); mask-image: linear-gradient(to right, transparent, #000 40%, #000); }
-.label-ajakan { @apply hidden; }
-[data-tema=monochrome] .label-ajakan { @apply mb-4 block font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
-.judul-ajakan { @apply text-3xl tracking-tight text-balance text-foreground sm:text-4xl; }
-[data-tema=full_color] .judul-ajakan { @apply leading-tight font-extrabold; }
-[data-tema=monochrome] .judul-ajakan { @apply font-semibold lg:text-5xl; }
+.label-ajakan { @apply mb-4 block font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
+.judul-ajakan { @apply text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl lg:text-5xl; }
 .deskripsi-ajakan { @apply mt-4 text-lg leading-relaxed text-pretty text-muted-foreground; }
 .aksi-ajakan { @apply flex shrink-0 flex-col gap-3 sm:flex-row; }
-[data-tema=full_color] .aksi-ajakan { @apply mt-8 lg:mt-0; }
 
 /* ---------- Artikel ---------- */
 .kepala-artikel { @apply flex flex-col gap-6 md:flex-row md:items-end md:justify-between; }
 .kepala-artikel .btn { @apply self-start md:self-auto; }
-[data-tema=full_color] .daftar-artikel { @apply mt-10 lg:mt-14; }
-[data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu bg-card p-3 ring-1 ring-border transition duration-300; --tw-shadow: var(--bayangan-kartu); }
+.daftar-artikel { @apply mt-12; }
+[data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5 transition duration-300; box-shadow: var(--bayangan-kartu); }
 /* Efek sorot hanya untuk kartu yang bisa diklik (bertautan); halaman artikel belum ada di Fase 4 langkah 2. */
 [data-tema=full_color] .kartu-artikel:has(.tautan-rentang) { @apply hover:-translate-y-1; }
-@media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover { --tw-shadow: var(--bayangan-kartu-sorot); } }
-[data-tema=full_color] .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam bg-muted; }
+@media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover { box-shadow: var(--bayangan-kartu-sorot); } }
+.kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
+[data-tema=full_color] .kartu-artikel-gambar { border-color: transparent; background-clip: padding-box; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-gambar img { transform: scale(1.03); } }
-[data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-3 pt-5 pb-3; }
+/* Ruang dalam kartu utama sama dengan kartu portofolio; kartu samping diatur di struktur.css. */
+[data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
 .kartu-artikel-gambar img { @apply size-full object-cover; }
 .kartu-artikel-meta { @apply flex flex-wrap items-center text-sm; }
 /* Tanggal di bawah ringkasan (pilihan pemilik 2026-10-11): meta dilebur agar lencana & tanggal menjadi anak kolom isi
-   yang bisa diurutkan; markup tetap satu untuk kedua tema. Ukuran teks sama dengan kartu layanan & portofolio. */
+   yang bisa diurutkan; markup tetap satu untuk kedua tema. Lencana & tanggal Geist Mono 13px di kedua tema. */
 [data-tema=full_color] .kartu-artikel-meta { display: contents; }
-[data-tema=full_color] .lencana-artikel { @apply inline-flex w-fit items-center self-start rounded-lencana bg-(--utama-50) px-2.5 py-1 text-xs font-bold text-foreground ring-1 ring-(--utama-100) ring-inset; }
-[data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3 text-sm text-muted-foreground; }
-[data-tema=full_color] .kartu-artikel-judul { @apply mt-3.5 text-xl font-bold tracking-tight text-balance text-foreground transition; }
+.lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
+[data-tema=full_color] .lencana-artikel { @apply self-start bg-(--utama-50); border-color: var(--utama-100); }
+.tanggal-artikel { @apply font-mono text-[13px] text-muted-foreground; }
+[data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3; }
+[data-tema=monochrome] .tanggal-artikel { @apply -order-1; }
+.kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground; }
+[data-tema=full_color] .kartu-artikel-judul { @apply mt-2 transition; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { color: var(--aksen-teks); } }
 /* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh. */
-[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2.5 text-base leading-relaxed text-teks; }
-[data-tema=full_color] .kartu-artikel-tautan { @apply mt-auto inline-flex items-center gap-x-1.5 pt-4 text-sm font-semibold text-aksen; }
+.kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-teks; }
+[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2; }
+[data-tema=full_color] .kartu-artikel-tautan { @apply mt-auto inline-flex items-center gap-x-1.5 pt-4 text-sm font-medium text-aksen; }
 .tautan-rentang::after { content: ""; @apply absolute inset-0; }
 [data-tema=full_color] .tautan-rentang::after { border-radius: var(--sudut-kartu); }
 .tautan-rentang:focus-visible { outline: none; }
 .tautan-rentang:focus-visible::after { outline: 2px solid var(--ring); outline-offset: 2px; }
-[data-tema=monochrome] .daftar-artikel { @apply mt-12 border-y; }
+[data-tema=monochrome] .daftar-artikel { @apply border-y; }
 [data-tema=monochrome] .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
-[data-tema=monochrome] .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=monochrome] .kartu-artikel-gambar img { @apply block aspect-4/3; }
 [data-tema=monochrome] .kartu-artikel-meta { @apply gap-x-3 gap-y-2 lg:flex-col lg:items-start lg:gap-3 lg:pt-1; }
-/* Tanggal & lencana 13px (pilihan pemilik 2026-10-11); judul & ringkasan sama dengan kartu layanan & portofolio. */
-[data-tema=monochrome] .lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
-[data-tema=monochrome] .tanggal-artikel { @apply -order-1 font-mono text-[13px] text-muted-foreground; }
-[data-tema=monochrome] .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground underline-offset-4; }
-[data-tema=monochrome] .kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-teks sm:max-w-2xl; }
+[data-tema=monochrome] .kartu-artikel-judul { @apply underline-offset-4; }
+[data-tema=monochrome] .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
 [data-tema=monochrome] .kartu-artikel-tautan { @apply hidden; }
 @media (hover: hover) {
   [data-tema=monochrome] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { @apply underline; }
@@ -275,99 +271,103 @@
 [data-tema=monochrome] .daftar-faq { @apply border-t; }
 [data-tema=full_color] .item-faq { @apply rounded-dalam bg-card ring-1 ring-border transition; }
 [data-tema=full_color] .item-faq[open] { @apply ring-(--warna-aksen)/25; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .tanya-faq { @apply flex w-full items-center justify-between gap-x-4 rounded-dalam px-5 py-5 text-start text-base font-semibold text-foreground transition hover:text-aksen sm:px-6 sm:text-lg; }
-[data-tema=full_color] .ikon-faq { @apply flex size-9 shrink-0 items-center justify-center bg-muted text-teks transition; border-radius: var(--sudut-dalam); }
+[data-tema=monochrome] .item-faq { @apply border-b; }
+.tanya-faq { @apply flex w-full justify-between gap-x-4 py-5 text-start text-[15px] font-medium text-foreground sm:text-base; }
+[data-tema=full_color] .tanya-faq { @apply items-center rounded-dalam px-5 transition hover:text-aksen sm:px-6; }
+[data-tema=monochrome] .tanya-faq { @apply items-start underline-offset-4 hover:underline; }
+/* Cegah satu kata tertinggal sendirian di baris terakhir pertanyaan. */
+.tanya-faq > :first-child { @apply text-pretty; }
+.ikon-faq { @apply shrink-0; }
+/* Kotak ikon 24px: tinggi baris pertanyaan sama dengan Monochrome (pilihan pemilik 2026-10-11; sebelumnya 36px). */
+[data-tema=full_color] .ikon-faq { @apply flex size-6 items-center justify-center bg-muted text-teks transition; border-radius: var(--sudut-dalam); }
 [data-tema=full_color] .item-faq[open] .ikon-faq { @apply bg-primary text-primary-foreground; }
 [data-tema=full_color] .ikon-chevron { @apply hidden; }
-[data-tema=full_color] .jawab-faq { @apply px-5 pb-6 leading-relaxed text-teks sm:px-6; }
-[data-tema=monochrome] .item-faq { @apply border-b; }
-[data-tema=monochrome] .tanya-faq { @apply flex items-start justify-between gap-4 py-5 text-[15px] font-medium text-foreground underline-offset-4 hover:underline sm:text-base; }
 [data-tema=monochrome] .ikon-faq { @apply mt-1 text-muted-foreground transition-transform; }
 [data-tema=monochrome] .item-faq[open] .ikon-faq { @apply rotate-180; }
 [data-tema=monochrome] .ikon-faq :is(.ikon-plus, .ikon-minus) { display: none; }
-[data-tema=monochrome] .jawab-faq { @apply pr-8 pb-5 text-[15px]/7 text-muted-foreground; }
-/* Cegah satu kata tertinggal sendirian di baris terakhir pertanyaan. */
-.tanya-faq > :first-child { @apply text-pretty; }
+.jawab-faq { @apply pb-5 text-[15px]/7; }
+[data-tema=full_color] .jawab-faq { @apply px-5 text-teks sm:px-6; }
+[data-tema=monochrome] .jawab-faq { @apply pr-8 text-muted-foreground; }
 
 /* ---------- Kontak ---------- */
-[data-tema=full_color] .tata-kontak { @apply mt-10 sm:mt-14; }
-[data-tema=monochrome] .tata-kontak { @apply mt-12; }
-/* Daftar kontak satu kartu bergaris pemisah seperti Monochrome (list-group; pilihan pemilik 2026-10-11). */
-[data-tema=full_color] .info-kontak { @apply overflow-hidden rounded-kartu bg-card ring-1 ring-border; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .tautan-kontak { @apply flex h-full items-center gap-4 p-5 transition-colors; }
+.tata-kontak { @apply mt-12; }
+/* Daftar kontak satu kartu bergaris pemisah (list-group; pilihan pemilik 2026-10-11). */
+.info-kontak { @apply overflow-hidden rounded-kartu border bg-card; }
+[data-tema=full_color] .info-kontak { box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .info-kontak { @apply shadow-xs; }
+.tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
+a.tautan-kontak { @apply transition-colors; }
+a.tautan-kontak:focus-visible { outline-offset: -3px; }
 [data-tema=full_color] a.tautan-kontak:hover { background-color: var(--latar-redup); }
-[data-tema=full_color] a.tautan-kontak:focus-visible { outline-offset: -3px; }
+[data-tema=monochrome] a.tautan-kontak { @apply hover:bg-muted/60; }
+.ikon-kontak { @apply flex size-10 shrink-0 items-center justify-center rounded-dalam; }
+.ikon-kontak svg { @apply size-[18px]; }
 /* Ikon berwarna padat + ikon putih (pilihan pemilik 2026-10-11: lebih berwarna); kontras putih ≥3:1 untuk ikon. */
-[data-tema=full_color] .ikon-kontak { @apply flex size-11 shrink-0 items-center justify-center text-white; border-radius: var(--sudut-dalam); box-shadow: 0 1px 2px rgb(15 23 42 / .12); }
+[data-tema=full_color] .ikon-kontak { @apply text-white; box-shadow: var(--bayangan-ikon); }
 [data-tema=full_color] .ikon-kontak[data-jenis=alamat] { background-color: var(--warna-aksen); }
 [data-tema=full_color] .ikon-kontak[data-jenis=email] { @apply bg-sky-600; }
 [data-tema=full_color] .ikon-kontak[data-jenis=telepon] { @apply bg-violet-600; }
 [data-tema=full_color] .ikon-kontak[data-jenis=whatsapp] { @apply bg-emerald-600; }
-[data-tema=full_color] .ikon-kontak svg { @apply size-5; }
-[data-tema=full_color] .label-kontak { @apply block font-bold text-foreground; }
-[data-tema=full_color] .nilai-kontak { @apply mt-1 block text-[15px] leading-relaxed text-teks; }
-[data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply font-medium text-slate-700 underline decoration-slate-300 underline-offset-4; }
+[data-tema=monochrome] .ikon-kontak { @apply border bg-muted text-foreground; }
+.label-kontak { @apply block font-mono text-[11px] tracking-[0.14em] uppercase; }
+[data-tema=full_color] .label-kontak { @apply text-foreground; }
+[data-tema=monochrome] .label-kontak { @apply text-muted-foreground; }
+.nilai-kontak { @apply mt-1 block text-sm/6 text-pretty; }
+a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
+[data-tema=full_color] .nilai-kontak { @apply text-teks; }
+[data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply text-slate-700 underline decoration-slate-300; }
 [data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
-[data-tema=full_color] .panah-kontak { @apply size-4 shrink-0 text-slate-400; }
-/* Koreksi optik: garis bawah nilai (underline-offset-4) menambah tinta di bawah teks sehingga blok teks tampak
-   ±2px lebih rendah dari kotak ikon; digeser tanpa mengubah tinggi baris. */
-[data-tema=full_color] .isi-kontak { @apply -translate-y-0.5; }
-[data-tema=monochrome] .info-kontak { @apply overflow-hidden rounded-kartu border bg-card shadow-xs; }
-[data-tema=monochrome] .tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
-[data-tema=monochrome] a.tautan-kontak { @apply transition-colors hover:bg-muted/60; }
-[data-tema=monochrome] a.tautan-kontak:focus-visible { outline-offset: -3px; }
-[data-tema=monochrome] .ikon-kontak { @apply flex size-10 shrink-0 items-center justify-center rounded-dalam border bg-muted text-foreground; }
-[data-tema=monochrome] .ikon-kontak svg { @apply size-[18px]; }
-[data-tema=monochrome] .label-kontak { @apply block font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase; }
-[data-tema=monochrome] .nilai-kontak { @apply mt-1 block text-sm/6 text-foreground; }
-[data-tema=monochrome] a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
+[data-tema=monochrome] .nilai-kontak { @apply text-foreground; }
 [data-tema=monochrome] a.tautan-kontak:hover .nilai-kontak { @apply underline; }
-[data-tema=monochrome] .panah-kontak { @apply size-4 shrink-0 text-muted-foreground; }
+.panah-kontak { @apply size-4 shrink-0; }
+[data-tema=full_color] .panah-kontak { @apply text-slate-400; }
+[data-tema=monochrome] .panah-kontak { @apply text-muted-foreground; }
 .isi-kontak { @apply min-w-0 flex-1; }
+/* Koreksi optik: garis bawah permanen nilai Full Color (underline-offset-4) menambah tinta di bawah teks sehingga blok
+   teks tampak lebih rendah dari kotak ikon; digeser tanpa mengubah tinggi baris. */
+[data-tema=full_color] .isi-kontak { @apply -translate-y-px; }
 
 /* Formulir mengisi tinggi kolom kanan (daftar kontak + peta di kiri); kotak pesan yang memanjang. */
-[data-tema=full_color] .kartu-formulir { @apply flex flex-col rounded-kartu bg-card p-6 ring-1 ring-border sm:p-8; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6 shadow-sm; }
-.judul-formulir { @apply tracking-tight text-foreground; }
-[data-tema=full_color] .judul-formulir { @apply text-xl font-bold; }
-[data-tema=monochrome] .judul-formulir { @apply text-lg font-semibold; }
+.kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6; }
+[data-tema=full_color] .kartu-formulir { box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .kartu-formulir { @apply shadow-sm; }
+.judul-formulir { @apply text-lg font-semibold tracking-tight text-foreground; }
 .catatan-formulir { @apply mt-1.5 text-sm text-muted-foreground; }
 .tanda-wajib { @apply text-aksen; }
 [data-tema=monochrome] .tanda-wajib { @apply text-muted-foreground; }
-.form-kontak { @apply mt-7 flex flex-1 flex-col; }
-[data-tema=monochrome] .form-kontak { @apply mt-6; }
+.form-kontak { @apply mt-6 flex flex-1 flex-col; }
 .form-kontak .isian-pesan { @apply flex flex-1 flex-col; }
-[data-tema=full_color] .field > label { @apply mb-1 text-sm font-semibold text-foreground; }
+[data-tema=full_color] .field > label { @apply text-foreground; }
 .field > :is(input, textarea) { border-radius: var(--sudut-isian); }
-[data-tema=full_color] .field > input { @apply min-h-12 px-4 text-[15px]; }
-[data-tema=full_color] .field > textarea { @apply min-h-36 flex-1 px-4 py-3 text-[15px] leading-relaxed; }
-[data-tema=full_color] .field > :is(input, textarea) { border-color: var(--input); }
+.field > input { @apply h-11 sm:h-10; }
+.field > textarea { @apply min-h-36 flex-1; }
+/* Hanya isian valid: garis merah aria-invalid bawaan Basecoat tetap berlaku seperti di Monochrome. */
+[data-tema=full_color] .field > :is(input, textarea):not([aria-invalid=true]) { border-color: var(--input); }
 [data-tema=full_color] .field > :is(input, textarea)::placeholder { color: #64748b; }
-[data-tema=monochrome] .field > input { @apply h-11 sm:h-10; }
-[data-tema=monochrome] .field > textarea { @apply min-h-36 flex-1; }
 .galat-isian { @apply mt-1.5 text-sm font-medium text-red-700; }
 .aksi-formulir { @apply mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between; }
 .aksi-formulir .btn { @apply w-full sm:order-2 sm:w-auto; }
-.kotak-sukses { @apply flex items-start gap-x-3 p-4 text-sm font-medium sm:order-1; border-radius: var(--sudut-isian); }
-[data-tema=full_color] .kotak-sukses { @apply bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200; }
-[data-tema=monochrome] .kotak-sukses { @apply border bg-muted text-foreground; }
+.kotak-sukses { @apply flex items-start gap-x-3 border p-4 text-sm font-medium sm:order-1; border-radius: var(--sudut-isian); }
+[data-tema=full_color] .kotak-sukses { @apply border-emerald-200 bg-emerald-50 text-emerald-800; }
+[data-tema=monochrome] .kotak-sukses { @apply bg-muted text-foreground; }
 /* Kotak sukses/galat difokuskan skrip hanya agar diumumkan pembaca layar; bukan elemen interaktif, jadi tanpa garis fokus. */
 .kotak-sukses:focus, .kotak-galat:focus { outline: none; }
 /* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
 .kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
 
-[data-tema=full_color] .wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu bg-muted ring-1 ring-border lg:min-h-72; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border bg-muted/50 shadow-xs lg:min-h-72; }
+.wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border lg:min-h-72; }
+[data-tema=full_color] .wadah-peta { @apply bg-muted; box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .wadah-peta { @apply bg-muted/50 shadow-xs; }
 .peta-cadangan { @apply absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center; }
 .pin-peta { @apply flex size-12 items-center justify-center; }
 [data-tema=full_color] .pin-peta { @apply -rotate-45 rounded-full rounded-bl-none border-[3px] border-white bg-primary text-primary-foreground shadow-md; }
 [data-tema=full_color] .pin-peta svg { @apply rotate-45; }
 [data-tema=monochrome] .pin-peta { @apply rounded-full bg-foreground text-background shadow-md ring-8 ring-foreground/10; }
+.kartu-pin { @apply flex flex-col items-center gap-4; }
 [data-tema=full_color] .kartu-pin { @apply rounded-dalam bg-white/95 px-5 py-4 ring-1 ring-border backdrop-blur; --tw-shadow: var(--bayangan-melayang); }
-[data-tema=monochrome] .kartu-pin { @apply flex flex-col items-center gap-4; }
-[data-tema=full_color] .nama-pin { @apply font-bold text-foreground; }
-[data-tema=monochrome] .nama-pin { @apply font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase; }
-[data-tema=full_color] .kartu-pin .btn { @apply mt-2; }
+.nama-pin { @apply font-mono text-[11px] tracking-[0.14em] uppercase; }
+[data-tema=full_color] .nama-pin { @apply text-foreground; }
+[data-tema=monochrome] .nama-pin { @apply text-muted-foreground; }
 
 /* ---------- Footer ---------- */
 .kaki-situs { @apply relative bg-background text-muted-foreground; }
@@ -375,31 +375,26 @@
 .kaki-isi { @apply pt-14 pb-8 sm:pt-16 sm:pb-10 lg:pt-20; }
 .kaki-grid { @apply grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-x-6 gap-y-10 sm:gap-x-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(17rem,1.3fr)] lg:grid-cols-12 lg:gap-y-12; }
 .kaki-merek { @apply col-span-2 md:col-span-3 lg:col-span-4; }
-.kaki-merek img { @apply h-10 w-auto; }
-[data-tema=monochrome] .kaki-merek img { @apply h-8; }
-.kaki-nama { @apply mt-5 font-semibold text-foreground; }
-[data-tema=monochrome] .kaki-nama { @apply mt-4 text-sm font-medium tracking-tight; }
-.kaki-deskripsi { @apply mt-2 max-w-sm text-[15px] leading-relaxed; }
-[data-tema=monochrome] .kaki-deskripsi { @apply mt-4 text-sm/6; }
-.judul-kaki { @apply text-foreground; }
-[data-tema=full_color] .judul-kaki { @apply text-sm font-bold tracking-wider uppercase; }
-[data-tema=monochrome] .judul-kaki { @apply font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase; }
-.tautan-kaki { @apply inline-flex min-h-11 items-center text-[15px] transition hover:text-foreground; }
-[data-tema=monochrome] .tautan-kaki { @apply text-sm text-foreground/85 sm:min-h-9; }
-.kontak-kaki svg { @apply size-5 shrink-0; color: color-mix(in oklab, var(--warna-aksen) 70%, #fff); }
-[data-tema=monochrome] .kontak-kaki svg { @apply size-4 text-muted-foreground; }
+.kaki-merek img { @apply h-8 w-auto; }
+.kaki-nama { @apply mt-4 text-sm font-medium tracking-tight text-foreground; }
+.kaki-deskripsi { @apply mt-4 max-w-sm text-sm/6; }
+.judul-kaki { @apply font-mono text-[11px] tracking-[0.14em] uppercase; }
+[data-tema=full_color] .judul-kaki { @apply text-foreground; }
+[data-tema=monochrome] .judul-kaki { @apply text-muted-foreground; }
+.tautan-kaki { @apply inline-flex min-h-11 items-center text-sm transition hover:text-foreground sm:min-h-9; }
+[data-tema=monochrome] .tautan-kaki { @apply text-foreground/85; }
+.kontak-kaki svg { @apply size-4 shrink-0; color: color-mix(in oklab, var(--warna-aksen) 70%, #fff); }
+[data-tema=monochrome] .kontak-kaki svg { @apply text-muted-foreground; }
 /* Logo WhatsApp padat memenuhi kotak 24 unit, ikon garis lain hanya ±20 unit: diperkecil agar tampak sama besar;
    margin menjaga teks tetap sejajar dengan baris lain. */
-.kontak-kaki .logo-wa { width: 17px; height: 17px; margin-inline: 1.5px; }
-[data-tema=monochrome] .kontak-kaki .logo-wa { width: 14px; height: 14px; margin-inline: 1px; }
-.kaki-bawah { @apply mt-12 flex flex-col-reverse gap-3 border-t pt-6 text-sm sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:pt-8; }
-[data-tema=monochrome] .kaki-bawah { @apply text-xs; }
+.kontak-kaki .logo-wa { width: 14px; height: 14px; margin-inline: 1px; }
+.kaki-bawah { @apply mt-12 flex flex-col-reverse gap-3 border-t pt-6 text-xs sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:pt-8; }
 
 /* ---------- Tombol WhatsApp melayang ---------- */
-/* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel ala Monochrome di kedua tema (pilihan pemilik 2026-10-11).
+/* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel di kedua tema (pilihan pemilik 2026-10-11).
    Full Color tetap hijau WhatsApp (kontras teks putih ≥4,5:1) dengan bayangan lewat token. */
 .tombol-wa { @apply fixed right-4 bottom-4 z-40 inline-flex h-12 items-center justify-center gap-2 bg-foreground px-4 text-sm font-medium text-background ring-1 ring-white/30 transition-colors hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .tombol-wa { @apply bg-[#15803D] font-semibold text-white hover:bg-[#166534]; --tw-shadow: var(--bayangan-melayang); }
+[data-tema=full_color] .tombol-wa { @apply bg-[#15803D] text-white hover:bg-[#166534]; --tw-shadow: var(--bayangan-melayang); }
 [data-tema=monochrome] .tombol-wa { @apply shadow-lg; }
 .tombol-wa .ikon-wa { @apply size-5; }
 /* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
@@ -407,20 +402,20 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 
 /* ---------- Ponsel sempit (360–389px) ----------
    Ruang dalam kartu dirapatkan dan judul sedikit diperkecil agar jumlah baris judul & label sama dengan di 390px
-   (pilihan pemilik 2026-10-11); 390px ke atas tidak terpengaruh. */
+   (pilihan pemilik 2026-10-11); 390px ke atas tidak terpengaruh. Nilai ukuran bersama untuk kedua tema; aturan
+   [data-tema] di sini hanya untuk kotak yang memang khusus satu tema. */
 @media (max-width: 389.98px) {
   .judul-seksi, .judul-ajakan { font-size: 1.6875rem; }
-  [data-tema=full_color] .kotak-ajakan { padding-inline: 1.25rem; }
-  [data-tema=full_color] :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.125rem; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 6rem; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: .75rem; }
-  [data-tema=full_color] .tanya-faq { padding-inline: 1rem; column-gap: .75rem; }
-  [data-tema=full_color] .jawab-faq { padding-inline: 1rem; }
-  [data-tema=full_color] .tautan-kontak { padding-inline: 1rem; gap: .75rem; }
+  :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
+  .tanya-faq { column-gap: .5rem; }
   .peta-cadangan { padding: 1rem; }
+  .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
+  [data-tema=full_color] .kotak-ajakan { padding-inline: 1rem; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 5rem; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: .75rem; }
+  [data-tema=full_color] :is(.tanya-faq, .jawab-faq) { padding-inline: 1rem; }
+  /* Tanda +/− tetap tampak 16px dari tepi (glyph 16px di kotak 24px berjarak dalam 4px); pertanyaan sebaris sama dengan 390px. */
+  [data-tema=full_color] .tanya-faq { padding-right: .75rem; column-gap: .25rem; }
   [data-tema=full_color] .kartu-pin { padding-inline: 1rem; }
-  [data-tema=monochrome] :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
-  [data-tema=monochrome] .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
   [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
-  [data-tema=monochrome] .tanya-faq { column-gap: .5rem; }
 }

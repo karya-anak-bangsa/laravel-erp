@@ -4,8 +4,8 @@ namespace App\Enums\CompanyProfile;
 
 /**
  * Ukuran elemen frontend di desktop (≥1024px): tinggi navbar, logo, teks menu, tombol besar, dan judul seksi.
- * Nilainya per jenis template karena gaya kedua tema berbeda; di bawah 1024px ukuran tetap
- * mengikuti CSS agar sasaran sentuh di ponsel tidak ikut mengecil.
+ * Satu tabel untuk kedua jenis agar ukuran Full Color dan Monochrome identik (pilihan pemilik 2026-10-11);
+ * di bawah 1024px ukuran tetap mengikuti CSS agar sasaran sentuh di ponsel tidak ikut mengecil.
  */
 enum SkalaTemplate: string
 {
@@ -36,20 +36,13 @@ enum SkalaTemplate: string
     /**
      * @return array{navbar: string, logo: string, menu: string, tombol: string, teks-tombol: string, judul-seksi: string}
      */
-    public function token(JenisTemplate $jenis): array
+    public function token(): array
     {
-        // Full Color Lega = ukuran awal Fase 4 langkah 2a; Monochrome Ringkas = ukuran awal Monochrome.
-        return match ($jenis) {
-            JenisTemplate::FullColor => match ($this) {
-                self::Ringkas => ['navbar' => '4rem', 'logo' => '2.25rem', 'menu' => '.875rem', 'tombol' => '2.75rem', 'teks-tombol' => '.9375rem', 'judul-seksi' => '2.375rem'],
-                self::Standar => ['navbar' => '4.5rem', 'logo' => '2.375rem', 'menu' => '.9375rem', 'tombol' => '2.875rem', 'teks-tombol' => '.9375rem', 'judul-seksi' => '2.5rem'],
-                self::Lega => ['navbar' => '5rem', 'logo' => '2.5rem', 'menu' => '.9375rem', 'tombol' => '3rem', 'teks-tombol' => '1rem', 'judul-seksi' => '2.75rem'],
-            },
-            JenisTemplate::Monochrome => match ($this) {
-                self::Ringkas => ['navbar' => '4rem', 'logo' => '1.75rem', 'menu' => '.875rem', 'tombol' => '2.5rem', 'teks-tombol' => '.875rem', 'judul-seksi' => '2.25rem'],
-                self::Standar => ['navbar' => '4.25rem', 'logo' => '1.875rem', 'menu' => '.875rem', 'tombol' => '2.75rem', 'teks-tombol' => '.875rem', 'judul-seksi' => '2.375rem'],
-                self::Lega => ['navbar' => '4.5rem', 'logo' => '2rem', 'menu' => '.9375rem', 'tombol' => '3rem', 'teks-tombol' => '.9375rem', 'judul-seksi' => '2.5rem'],
-            },
+        // Ringkas = ukuran awal Monochrome yang menjadi acuan kedua tema.
+        return match ($this) {
+            self::Ringkas => ['navbar' => '4rem', 'logo' => '1.75rem', 'menu' => '.875rem', 'tombol' => '2.5rem', 'teks-tombol' => '.875rem', 'judul-seksi' => '2.25rem'],
+            self::Standar => ['navbar' => '4.25rem', 'logo' => '1.875rem', 'menu' => '.875rem', 'tombol' => '2.75rem', 'teks-tombol' => '.875rem', 'judul-seksi' => '2.375rem'],
+            self::Lega => ['navbar' => '4.5rem', 'logo' => '2rem', 'menu' => '.9375rem', 'tombol' => '3rem', 'teks-tombol' => '.9375rem', 'judul-seksi' => '2.5rem'],
         };
     }
 }

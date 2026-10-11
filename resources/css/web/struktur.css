@@ -41,58 +41,54 @@ body { background: var(--background); color: var(--teks); }
    Layanan teratas menurut urutan_ke (layanan utama: website & mobile apps) jadi kartu lebar, tanpa kartu yatim:
    5 item → 2 kartu lebar + 3 kartu; 4 item → 2 + 2. */
 .grid-layanan { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
-.isi-layanan-gambar { grid-area: gambar; }
-.isi-layanan-kepala { grid-area: kepala; }
-.isi-layanan-deskripsi { grid-area: deskripsi; }
-.isi-layanan-rinci { grid-area: rinci; }
-@media (min-width: 640px) { [data-tema=full_color] .grid-layanan { gap: 1.5rem; } }
 @media (min-width: 768px) {
   .grid-layanan { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-layanan:has(> :last-child:nth-child(odd)) > :first-child { grid-column: 1 / -1; }
 }
 @media (min-width: 1024px) {
   .grid-layanan { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  [data-tema=full_color] .grid-layanan { gap: 1.75rem; }
   .grid-layanan > *,
   .grid-layanan:has(> :last-child:nth-child(odd)) > :first-child { grid-column: span 2; }
   .grid-layanan:has(> :last-child:nth-child(3n+2)) > :nth-child(-n+2),
   .grid-layanan:has(> :last-child:nth-child(3n+1)) > :nth-child(-n+4) { grid-column: span 3; }
 }
-/* Isi kartu layanan Monochrome: gambar → judul → deskripsi → keterangan; ponsel: gambar jadi thumbnail;
-   kartu lebar (container ≥ 36rem): judul & deskripsi di kiri, gambar 4:3 di kanan. */
-/* Kartu lebar di kedua tema: judul & deskripsi di kiri, gambar 4:3 di kanan. Full Color berambang 34rem karena
-   padding kartunya lebih besar; selektor diawali .kartu-layanan agar menang atas komponen.css yang dimuat sesudahnya. */
+/* Isi kartu layanan, susunan sama di kedua tema: gambar → judul → deskripsi → baris bawah. Baris bawah berisi keterangan
+   (Monochrome) atau tombol Selengkapnya (Full Color); hanya satu yang tampil per tema. Ponsel: gambar jadi thumbnail di
+   kanan judul; kartu lebar (container ≥ 36rem): judul & deskripsi di kiri, gambar 4:3 di kanan. */
 .kartu-layanan { container-type: inline-size; }
-.isi-layanan-aksi { grid-area: aksi; }
-@container (min-width: 34rem) {
-  [data-tema=full_color] .kartu-layanan .isi-layanan {
-    display: grid; column-gap: .5rem;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    grid-template-rows: 1fr auto auto auto 1fr;
-    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" "aksi gambar" ". gambar";
-  }
-  [data-tema=full_color] .kartu-layanan .isi-layanan-gambar { aspect-ratio: 4 / 3; align-self: center; }
-  [data-tema=full_color] .kartu-layanan .isi-layanan-kepala { padding-top: .75rem; }
-  [data-tema=full_color] .kartu-layanan .isi-layanan-aksi { margin-top: 0; }
-}
-[data-tema=monochrome] .isi-layanan { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-areas: "gambar" "kepala" "deskripsi" "rinci"; }
-[data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 16 / 10; }
+.isi-layanan { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-areas: "gambar" "kepala" "deskripsi" "bawah"; }
+.isi-layanan-gambar { grid-area: gambar; }
+.isi-layanan-kepala { grid-area: kepala; }
+.isi-layanan-deskripsi { grid-area: deskripsi; }
+.isi-layanan-rinci, .isi-layanan-aksi { grid-area: bawah; }
+.isi-layanan-gambar img { aspect-ratio: 16 / 10; }
+/* Full Color: isi mengisi tinggi kartu dan tombol Selengkapnya rata bawah agar sejajar antarkartu sebaris. */
+[data-tema=full_color] .isi-layanan { flex: 1; grid-template-rows: auto auto auto 1fr; }
+[data-tema=full_color] .isi-layanan-aksi { align-self: end; }
 @media (max-width: 639.98px) {
-  [data-tema=monochrome] .isi-layanan { grid-template-columns: minmax(0, 1fr) 5.75rem; grid-template-areas: "kepala gambar" "deskripsi deskripsi" "rinci rinci"; }
-  [data-tema=monochrome] .isi-layanan-gambar { margin: .625rem .625rem 0 0; align-self: start; }
-  [data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
+  .isi-layanan { grid-template-columns: minmax(0, 1fr) 5.75rem; grid-template-areas: "kepala gambar" "deskripsi deskripsi" "bawah bawah"; }
+  [data-tema=full_color] .isi-layanan { grid-template-rows: auto auto 1fr; }
+  .isi-layanan-gambar { margin: .625rem .625rem 0 0; align-self: start; }
+  .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
 }
 @container (min-width: 36rem) {
-  [data-tema=monochrome] .isi-layanan {
+  .isi-layanan {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
     grid-template-rows: 1fr auto auto 1fr auto;
-    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" ". gambar" "rinci rinci";
+    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" ". gambar" "bawah bawah";
   }
-  [data-tema=monochrome] .isi-layanan-gambar { align-self: center; margin: 0; }
-  [data-tema=monochrome] .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
-  [data-tema=monochrome] .isi-layanan-kepala { padding: 0 1.5rem; }
-  [data-tema=monochrome] .isi-layanan-deskripsi { padding-inline: 1.5rem; }
-  [data-tema=monochrome] .isi-layanan-rinci { margin-inline: 1.5rem; margin-top: 1.25rem; }
+  /* Full Color: Selengkapnya tetap di kolom teks, di bawah deskripsi. */
+  [data-tema=full_color] .isi-layanan {
+    grid-template-rows: 1fr auto auto auto 1fr;
+    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" "bawah gambar" ". gambar";
+  }
+  [data-tema=full_color] .isi-layanan-aksi { align-self: start; }
+  /* Kolom teks Full Color (dengan Selengkapnya) bisa lebih tinggi dari gambar 4:3: gambar direntangkan agar tetap rapat 7px
+     ke tepi kartu seperti Monochrome (object-cover memotong sedikit sisi kiri-kanan ilustrasi). */
+  [data-tema=full_color] .isi-layanan-gambar { align-self: stretch; }
+  [data-tema=full_color] .isi-layanan-gambar img { height: 100%; }
+  .isi-layanan-gambar { align-self: center; margin: 0; }
+  .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
 }
 
 /* ---------- Portofolio: ponsel = baris geser (scroll-snap), md+ = 2/3 kolom ---------- */
@@ -123,12 +119,18 @@ body { background: var(--background); color: var(--teks); }
    display: contents agar anak-anaknya menjadi sel grid kartu. */
 [data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
+/* Kartu samping: thumbnail 6rem di bawah 1024px (5rem di <390px) agar lencana Geist Mono 13px tetap satu baris
+   (pilihan pemilik 2026-10-11); ukuran teks sama dengan kartu utama. */
 @media (max-width: 767.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: flex-start; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 7.5rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 6rem; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .25rem .5rem .25rem 1rem; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-judul { margin-top: .5rem; font-size: 1rem; line-height: 1.4; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) :is(.kartu-artikel-ringkasan, .kartu-artikel-tautan) { display: none; }
+}
+/* Kolom teks kartu samping di bawah 1024px hanya ±200–230px, tidak muat "Diterbitkan 27 September 2026" (Geist Mono 13px ±226px)
+   dalam satu baris: tanggal saja. */
+@media (max-width: 1023.98px) {
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .awalan-tanggal { display: none; }
 }
 @media (min-width: 768px) {
   [data-tema=full_color] .daftar-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
@@ -138,9 +140,13 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 40%; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
 }
-/* Kartu samping tablet tanpa ringkasan, kolom teksnya sempit (±175px): judul 18px; 20px mulai 1280px saat ringkasan tampil. */
+/* Tablet: thumbnail sebesar mungkin dengan kolom teks tetap 14.25rem agar lencana terpanjang satu baris (min 6rem, maks 40%). */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: clamp(6rem, calc(100% - 14.25rem), 40%); }
+  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: 1rem; }
+}
+/* Kartu samping tablet tanpa ringkasan karena kolom teksnya sempit; ringkasan tampil mulai 1280px. */
 @media (min-width: 768px) and (max-width: 1279.98px) {
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-judul { font-size: 1.125rem; line-height: 1.4; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-ringkasan { display: none; }
 }
 [data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan"; align-items: start; }
@@ -213,8 +219,11 @@ html:has(.dialog-layanan[open]) { overflow: hidden; }
 /* Sisi kanan diberi ruang selebar tombol tutup agar nama tidak tertimpa (×). */
 .leaflet-popup-content { margin: 14px 32px 14px 18px; font-size: 13px; line-height: 1.5; color: var(--teks); }
 .leaflet-popup-content strong { color: var(--foreground); }
-.leaflet-popup-content .tautan-peta { display: inline-block; margin-top: .25rem; font-weight: 600; color: var(--aksen-teks); text-decoration: underline; text-underline-offset: 3px; }
-[data-tema=monochrome] .leaflet-popup-content .tautan-peta { font-weight: 500; color: var(--foreground); }
+.leaflet-popup-content .tautan-peta { display: inline-block; margin-top: .25rem; font-weight: 500; color: var(--aksen-teks); text-decoration: underline; text-underline-offset: 3px; }
+[data-tema=monochrome] .leaflet-popup-content .tautan-peta { color: var(--foreground); }
+/* popupAnchor (peta.js) disetel untuk pin tetes 40px Full Color; titik Monochrome 22px berpusat di koordinat, jadi popup diturunkan
+   lewat CSS (tema bisa berganti tanpa memuat ulang peta). */
+[data-tema=monochrome] .leaflet-popup { margin-bottom: -6px; }
 .leaflet-bar a { color: var(--foreground); }
 @media (pointer: coarse) {
   .leaflet-touch .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; }

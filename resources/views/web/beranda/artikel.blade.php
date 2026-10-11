@@ -19,9 +19,9 @@
                             @if ($item->kategoriArtikel)
                                 <span class="lencana-artikel">{{ $item->kategoriArtikel->nama_kategori }}</span>
                             @endif
-                            {{-- Full Color: "Diterbitkan …" di bawah ringkasan (CSS); Monochrome: tanggal saja di kolom meta. Tanggal tidak
-                                 dipatah agar di kartu sempit "Diterbitkan" yang turun baris. Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
-                            <time class="tanggal-artikel" datetime="{{ $item->tanggal->toDateString() }}"><span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $item->tanggal->translatedFormat('j F Y') }}</span></time>
+                            {{-- Full Color: "Diterbitkan …" di bawah ringkasan (CSS; kartu samping di bawah 1024px hanya tanggal); Monochrome: tanggal saja di
+                                 kolom meta. Tanggal tidak dipatah. Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
+                            <time class="tanggal-artikel" datetime="{{ $item->tanggal->toDateString() }}"><span class="awalan-tanggal mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $item->tanggal->translatedFormat('j F Y') }}</span></time>
                         </div>
                         <h3 class="kartu-artikel-judul">{{ $item->judul }}</h3>
                         {{-- Maksimal 150 karakter termasuk spasi, dipotong di akhir kata (pilihan pemilik 2026-10-11). --}}

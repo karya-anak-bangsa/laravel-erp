@@ -53,14 +53,15 @@ describe('tema', function () {
     })->with(['gelap', '"><script>alert(1)</script>']);
 
     it('merender token kedua template aktif', function () {
-        $this->get('/')
+        $respons = $this->get('/')
             ->assertSee('<style id="token-template"', false)
             ->assertSee('--warna-utama: #15253f; --warna-aksen: #cb1839;', false)
             ->assertSee('--aksen-kontras: #ffffff;', false)
-            ->assertSee('--font-tema: "Plus Jakarta Sans";', false)
             ->assertSee('--nada-950: oklch(14.5% 0 0);', false)
-            ->assertSee('--font-tema: "Geist";', false)
             ->assertSee('--sudut-tombol: .5rem;', false);
+
+        // Kedua template memakai Geist (pilihan pemilik 2026-10-11).
+        expect(substr_count($respons->getContent(), '--font-tema: "Geist";'))->toBe(2);
     });
 });
 
@@ -128,7 +129,7 @@ describe('isi', function () {
         $this->get('/')
             ->assertSeeInOrder(['Artikel Empat', 'Artikel Tiga', 'Artikel Dua'])
             ->assertSee('Kategori Uji')
-            ->assertSee('<span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
+            ->assertSee('<span class="awalan-tanggal mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
             ->assertDontSee('04 Oktober 2026')
             ->assertDontSee('Artikel Satu')
             ->assertDontSee('Artikel Draf');

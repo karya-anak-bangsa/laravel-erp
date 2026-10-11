@@ -22,7 +22,7 @@ class TemaService
     // Cadangan bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy),
     // agar halaman publik tidak pernah gagal dirender karena template.
     private const BAWAAN = [
-        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'plus_jakarta_sans', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
+        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
         'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
     ];
 
@@ -63,7 +63,7 @@ class TemaService
             '--aksen-kontras' => KontrasWarna::teksDiAtas($aksen),
             '--font-tema' => '"'.$warna['font']->family().'"',
             ...$this->tokenSudut($warna['sudut']),
-            ...$this->tokenSkala($warna['skala'], JenisTemplate::FullColor),
+            ...$this->tokenSkala($warna['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
         ];
 
@@ -71,13 +71,13 @@ class TemaService
             ...array_combine(array_map(fn (int $t): string => "--nada-{$t}", NadaDasar::TINGKAT), $nada->skala()),
             '--font-tema' => '"'.$mono['font']->family().'"',
             ...$this->tokenSudut($mono['sudut']),
-            ...$this->tokenSkala($mono['skala'], JenisTemplate::Monochrome),
+            ...$this->tokenSkala($mono['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
         ];
 
         // Monitor ≥1920px (24" ke atas): skala satu tingkat lebih besar dan lebar konten pilihan template.
-        $lebarWarna = [...$this->tokenSkala($warna['skala']->naik(), JenisTemplate::FullColor), '--lebar-konten' => $warna['lebar_konten']->nilai()];
-        $lebarMono = [...$this->tokenSkala($mono['skala']->naik(), JenisTemplate::Monochrome), '--lebar-konten' => $mono['lebar_konten']->nilai()];
+        $lebarWarna = [...$this->tokenSkala($warna['skala']->naik()), '--lebar-konten' => $warna['lebar_konten']->nilai()];
+        $lebarMono = [...$this->tokenSkala($mono['skala']->naik()), '--lebar-konten' => $mono['lebar_konten']->nilai()];
         $tokenLebar = 'html[data-tema=full_color] { '.$this->deklarasi($lebarWarna).' } '
             .'html[data-tema=monochrome] { '.$this->deklarasi($lebarMono).' }';
 
@@ -155,9 +155,9 @@ class TemaService
     /**
      * @return array<string, string>
      */
-    private function tokenSkala(SkalaTemplate $skala, JenisTemplate $jenis): array
+    private function tokenSkala(SkalaTemplate $skala): array
     {
-        $nilai = $skala->token($jenis);
+        $nilai = $skala->token();
 
         return [
             '--tinggi-navbar' => $nilai['navbar'],

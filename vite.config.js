@@ -20,8 +20,9 @@ export default defineConfig({
                 bunny('Inter', {
                     weights: [400, 500, 600, 700],
                 }),
-                // Font frontend publik: kedua tema dimuat @font-face-nya agar ganti tema tanpa memuat ulang,
-                // tetapi tidak di-preload supaya pengunjung hanya mengunduh font tema yang sedang tampil.
+                // Font frontend publik: halaman hanya mencetak @font-face font template aktif (@fonts di head) dan tidak
+                // di-preload. Kedua template bawaan kini memakai Geist + Geist Mono; Plus Jakarta Sans tetap dibangun
+                // sebagai pilihan font Manajemen Template (Fase 4 langkah 3) dan tidak diunduh pengunjung.
                 bunny('Plus Jakarta Sans', {
                     weights: [400, 500, 600, 700, 800],
                     preload: false,

@@ -23,7 +23,7 @@ return [
             'warna_utama' => '#15253F',
             'warna_aksen' => '#CB1839',
             'nada_dasar' => null,
-            'font' => 'plus_jakarta_sans',
+            'font' => 'geist',
             'sudut' => 'sedang',
             // Ringkas: pas di laptop 14" (1536px); naik satu tingkat otomatis di layar ≥1920px.
             'skala' => 'ringkas',

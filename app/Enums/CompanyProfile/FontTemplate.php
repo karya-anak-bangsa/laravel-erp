@@ -4,8 +4,8 @@ namespace App\Enums\CompanyProfile;
 
 /**
  * Font template frontend. Font di-host sendiri lewat vite.config.js; alias() = nama untuk @fonts.
- * Baru Plus Jakarta Sans & Geist (dua template bawaan) yang dibangun; font lain wajib ditambahkan
- * ke vite.config.js sebelum bisa dipilih admin (Fase 4 langkah 3).
+ * Kedua template bawaan memakai Geist (+ Geist Mono untuk label); Plus Jakarta Sans juga sudah dibangun.
+ * Font lain wajib ditambahkan ke vite.config.js sebelum bisa dipilih admin (Fase 4 langkah 3).
  */
 enum FontTemplate: string
 {
