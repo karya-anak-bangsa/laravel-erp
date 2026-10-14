@@ -5,7 +5,7 @@
     @include('layouts.web.head')
 </head>
 <body class="min-h-screen bg-background font-sans antialiased">
-    <a href="#konten" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-tombol focus:bg-background focus:px-4 focus:py-2 focus:font-semibold focus:text-foreground focus:shadow-lg warna:focus:shadow-(--bayangan-melayang)">Langsung ke konten</a>
+    @include('layouts.web.lompat-konten')
 
     @include('layouts.web.navbar')
 

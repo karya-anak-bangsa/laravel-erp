@@ -5,6 +5,7 @@ namespace App\Models\CompanyProfile;
 use Database\Factories\CompanyProfile\LayananFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,6 +43,16 @@ class Layanan extends Model
     public function scopeBerurutan(Builder $query): void
     {
         $query->orderBy('urutan_ke')->orderBy('judul');
+    }
+
+    /**
+     * Judul layanan untuk kolom Layanan di footer publik (SitusComposer & halaman error).
+     *
+     * @return Collection<int, static>
+     */
+    public static function untukFooter(): Collection
+    {
+        return static::query()->berurutan()->get(['id_layanan', 'judul']);
     }
 
     /**

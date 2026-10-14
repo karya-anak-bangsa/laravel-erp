@@ -304,11 +304,15 @@ describe('cache identitas', function () {
         $this->get('/')->assertOk()->assertSee('PT Uji Beranda')->assertSee($this->identitas->email);
     });
 
-    it('menampilkan 404 tanpa menyimpan kegagalan ke cache bila identitas belum ada', function () {
+    it('menampilkan 404 ringkas tanpa menyimpan kegagalan ke cache bila identitas belum ada', function () {
         $this->identitas->forceDelete();
         Cache::flush();
 
-        $this->get('/')->assertNotFound();
+        // Halaman error publik tidak bisa memakai identitas, jadi tampil ringkas dengan nama cadangan.
+        $this->get('/')
+            ->assertNotFound()
+            ->assertSee('class="logo-situs merek-ringkas"', false)
+            ->assertSee(config('perusahaan.nama'));
 
         expect(Cache::has(Identitas::KUNCI_CACHE))->toBeFalse();
     });

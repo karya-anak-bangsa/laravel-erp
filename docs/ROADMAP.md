@@ -48,7 +48,7 @@ Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — di
 - [x] Putuskan template: Tailwind v4 + Basecoat UI, dua tema Full Color & Monochrome; dicatat di CLAUDE.md §4
 - [x] Langkah 1 — Prototipe gabungan `tema-ganda.html` (di luar repo) disetujui pemilik (2026-10-09; Full Color memakai sudut sedang)
 - [x] Langkah 2a — Layout publik terpisah dari admin (`layouts/web`, entri Vite sendiri) + beranda (hero, layanan, portofolio, artikel terbaru, FAQ, kontak) dengan dua template bawaan dan tombol ganti tema di navbar (bawaan Full Color, pilihan pengunjung disimpan di cookie); data identitas di-cache; peta Leaflet + OSM (titik Jalan Pipit III dari Nominatim). Kartu artikel belum bertautan sampai halaman artikel dibuat
-- [ ] Langkah 2b — Halaman error publik (404/419/500/503 bergaya tema frontend, tanpa tautan ke `/admin`); halaman admin tetap memakai layout error admin
+- [x] Langkah 2b — Halaman error publik (404/419/500/503 + 429/4xx/5xx bergaya tema frontend dengan navbar & footer, tanpa tautan ke `/admin`; tampil ringkas bila database tidak terbaca); halaman admin tetap memakai layout error admin
 - [ ] Langkah 3 — Manajemen Template (Pengaturan Sistem): `tb_template`, tambah/ubah/hapus, aktivasi satu template per jenis, pratinjau; tema beranda diambil dari template aktif
 - [ ] Halaman: portofolio, artikel + detail (slug), kontak
 - [x] Form kontak → `tb_kontak_kami` (rate limit 3/menit per IP, honeypot) — dikerjakan bersama langkah 2a; notifikasi email (opsional, butuh SMTP) belum dibuat

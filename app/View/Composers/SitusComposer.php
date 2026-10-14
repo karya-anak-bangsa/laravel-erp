@@ -22,17 +22,21 @@ class SitusComposer
 
     public function compose(View $view): void
     {
-        $atribut = $this->request->attributes;
+        // Halaman error publik sudah membawa identitasnya sendiri (HalamanErrorComposer), termasuk null saat
+        // database tidak terbaca; jangan dibaca ulang karena justru akan gagal lagi.
+        if (! $view->offsetExists('identitas')) {
+            $atribut = $this->request->attributes;
 
-        if (! $atribut->has(self::KUNCI)) {
-            $atribut->set(self::KUNCI, $this->identitasService->untukSitus());
+            if (! $atribut->has(self::KUNCI)) {
+                $atribut->set(self::KUNCI, $this->identitasService->untukSitus());
+            }
+
+            $view->with('identitas', $atribut->get(self::KUNCI));
         }
-
-        $view->with('identitas', $atribut->get(self::KUNCI));
 
         // Daftar layanan di footer: halaman yang sudah memuat layanan (beranda) tidak perlu query ulang.
         if ($view->name() === 'layouts.web.footer' && ! $view->offsetExists('layanan')) {
-            $view->with('layanan', Layanan::query()->berurutan()->get(['id_layanan', 'judul']));
+            $view->with('layanan', Layanan::untukFooter());
         }
     }
 }
