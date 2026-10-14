@@ -2,13 +2,17 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Font template frontend. Font di-host sendiri lewat vite.config.js; alias() = nama untuk @fonts.
- * Kedua template bawaan memakai Geist (+ Geist Mono untuk label); Plus Jakarta Sans juga sudah dibangun.
- * Font lain wajib ditambahkan ke vite.config.js sebelum bisa dipilih admin (Fase 4 langkah 3).
+ * Setiap font di sini wajib dibangun di vite.config.js (bobot 400–800, dijaga test) sebelum bisa dipilih
+ * admin, karena @fonts dengan alias yang tidak ada di manifest menggagalkan halaman.
  */
 enum FontTemplate: string
 {
+    use MenyediakanOpsi;
+
     case PlusJakartaSans = 'plus_jakarta_sans';
     case Geist = 'geist';
     case Inter = 'inter';
@@ -26,6 +30,11 @@ enum FontTemplate: string
             self::Manrope => 'Manrope',
             self::DmSans => 'DM Sans',
         };
+    }
+
+    public function label(): string
+    {
+        return $this->family();
     }
 
     /**

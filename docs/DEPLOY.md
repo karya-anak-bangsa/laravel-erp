@@ -124,7 +124,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel. Kotak masuk Kontak Kami sengaja kosong.
+- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel, 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
   ```bash
   php artisan db:seed --class=CompanyProfileSeeder --force
   ```
@@ -135,6 +135,11 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
 - **Fase 4 — Frontend publik (beranda)** — sekali saat beranda pertama kali tayang (`/` tidak lagi dialihkan ke `/admin`; panel admin tetap di `/admin` dan `/login`):
   1. Data awal (logo lebar transparan, CTA hero ber-anchor) sudah disamakan dengan lokal lewat **Reset Data Produksi** di bawah. Bila server dibangun ulang dari nol, cukup jalankan `CompanyProfileSeeder` seperti di atas.
   2. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
+- **Fase 4 langkah 3a — Manajemen Template** — sekali setelah `php artisan migrate --force` membuat `tb_template`: isi dua template bawaan yang aktif (nilainya sama dengan `config/tema.php`, jadi tampilan website tidak berubah).
+  ```bash
+  php artisan db:seed --class=TemplateSeeder --force
+  ```
+  Tanpa langkah ini website tetap tampil normal (TemaService memakai `config/tema.php`), tetapi daftar Pengaturan Sistem › Manajemen Template kosong. Aman dijalankan ulang; `CompanyProfileSeeder` juga menjalankannya.
 
 ## Reset Data Produksi (boleh diulang selama tahap uji)
 

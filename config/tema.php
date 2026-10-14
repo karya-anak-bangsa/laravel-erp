@@ -5,10 +5,11 @@
 | Template frontend publik
 |--------------------------------------------------------------------------
 |
-| Nilai dua template bawaan (satu per jenis). Kuncinya sama dengan kolom tb_template
-| (docs/DATABASE.md) agar Fase 4 langkah 3 cukup memindahkannya ke database; setelah itu
-| nilai di sini menjadi data awal sekaligus cadangan. View tidak membaca config ini
-| langsung — selalu lewat App\Services\CompanyProfile\TemaService.
+| Nilai dua template bawaan (satu per jenis), dengan kunci sama seperti kolom tb_template
+| (docs/DATABASE.md). Sejak Fase 4 langkah 3 template aktif dikelola admin di Pengaturan
+| Sistem › Manajemen Template; nilai di sini menjadi data awal TemplateSeeder sekaligus
+| cadangan bila database tidak terbaca atau belum ada template aktif. View tidak membaca
+| config ini langsung — selalu lewat App\Services\CompanyProfile\TemaService.
 |
 */
 
@@ -29,6 +30,8 @@ return [
             'skala' => 'ringkas',
             // Lebar isi halaman di monitor ≥1920px: standar (1280px) atau lebar (1440px).
             'lebar_konten' => 'lebar',
+            'ketebalan_judul' => 'semibold',
+            'bayangan' => 'halus',
         ],
         'monochrome' => [
             'nama' => 'TKAB Monochrome',
@@ -39,6 +42,8 @@ return [
             'sudut' => 'sedang',
             'skala' => 'ringkas',
             'lebar_konten' => 'lebar',
+            'ketebalan_judul' => 'semibold',
+            'bayangan' => 'halus',
         ],
     ],
 

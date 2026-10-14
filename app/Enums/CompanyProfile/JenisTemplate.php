@@ -2,12 +2,16 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Jenis template frontend publik: satu markup, dua tema. Nilainya dipakai sebagai atribut
  * data-tema di <html> dan sebagai isi cookie 'tema' pilihan pengunjung.
  */
 enum JenisTemplate: string
 {
+    use MenyediakanOpsi;
+
     case FullColor = 'full_color';
     case Monochrome = 'monochrome';
 

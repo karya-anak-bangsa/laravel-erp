@@ -8,6 +8,8 @@ use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\Portofolio;
+use App\Models\CompanyProfile\Template;
+use App\Services\CompanyProfile\TemaService;
 use Database\Seeders\CompanyProfileSeeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,7 +30,18 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
         ->and(Faq::count())->toBe(5)
         ->and(KategoriArtikel::count())->toBe(4)
         ->and(Artikel::count())->toBe(6)
-        ->and(KontakKami::count())->toBe(0);
+        ->and(KontakKami::count())->toBe(0)
+        ->and(Template::aktif()->pluck('nama')->all())->toBe(['TKAB Full Color', 'TKAB Monochrome']);
+});
+
+it('membuat template aktif yang tampilannya sama dengan cadangan config', function () {
+    // Token dari config (database kosong) harus identik dengan token dari template hasil seeder.
+    $cadangan = (new TemaService)->tokenCss();
+
+    $this->seed(CompanyProfileSeeder::class);
+
+    expect((new TemaService)->tokenCss())->toBe($cadangan)
+        ->and(Template::where('nama', 'TKAB Full Color')->sole()->warna_aksen)->toBe('#cb1839');
 });
 
 it('tidak memberi CTA hero tautan ke halaman publik yang belum ada', function () {
@@ -59,5 +72,6 @@ it('menjalankan seeder company profile ulang tanpa duplikasi data maupun gambar'
     expect(Hero::count())->toBe(5)
         ->and(Portofolio::count())->toBe(7)
         ->and(Artikel::count())->toBe(6)
+        ->and(Template::count())->toBe(2)
         ->and(Storage::disk('public')->allFiles())->toHaveCount($jumlahBerkas);
 });

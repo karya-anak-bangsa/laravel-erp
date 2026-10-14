@@ -1,10 +1,10 @@
 @extends('layouts.admin', ['breadcrumb' => [
-    'Company Profile' => null,
+    'Pengaturan Sistem' => null,
     'Identitas' => null,
 ]])
 
 @section('content')
-    <x-admin.page-header title="Company Profile" />
+    <x-admin.page-header title="Pengaturan Sistem" />
 
     <form method="POST" action="{{ route('admin.identitas.update') }}" enctype="multipart/form-data" novalidate
         data-confirm="Perubahan identitas perusahaan akan disimpan dan tampil di website." data-confirm-title="Simpan perubahan?"

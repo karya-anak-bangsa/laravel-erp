@@ -142,7 +142,7 @@ Catatan implementasi: slug dibuat `SlugService` (dipakai bersama portofolio) den
 Admin hanya: daftar (filter sudah/belum dibaca), lihat (otomatis tandai dibaca), tandai belum dibaca, hapus. Data masuk dari form publik (Fase 4).
 
 ### tb_template **(+)**
-Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3. Berisi template tampilan frontend publik, dikelola lewat menu Pengaturan Sistem › Manajemen Template. Boleh banyak template, tetapi **hanya satu yang aktif per jenis** (satu Full Color, satu Monochrome). Aturan ini dijaga `TemplateService` dengan pola yang sama seperti Hero: mengaktifkan satu template otomatis menonaktifkan template lain yang sejenis.
+Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3a (2026-10-14). Berisi template tampilan frontend publik, dikelola lewat menu Pengaturan Sistem › Manajemen Template. Boleh banyak template, tetapi **hanya satu yang aktif per jenis** (satu Full Color, satu Monochrome). Aturan ini dijaga `TemplateService` dengan pola yang sama seperti Hero: mengaktifkan satu template otomatis menonaktifkan template lain yang sejenis.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
@@ -169,7 +169,8 @@ Catatan implementasi:
 - Turunan keterbacaan tidak disimpan, tetapi dihitung saat render: warna teks yang dijamin kontras ≥ 4,5:1 di atas putih, dan warna teks di atas tombol aksen (putih atau gelap).
 - Template aktif tidak bisa dihapus, dinonaktifkan langsung, atau diubah jenisnya, agar frontend selalu punya tepat satu template per jenis.
 - Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Geist, sudut sedang, skala ringkas, konten lebar, judul semibold, bayangan halus — pilihan pemilik; font & ketebalan disamakan dengan Monochrome 2026-10-11) dan "TKAB Monochrome" (netral, Geist, sudut sedang, skala ringkas, konten lebar, judul semibold, bayangan halus).
-- Pengaturan ukuran & gaya berupa pilihan bertingkat, bukan angka piksel bebas, agar tampilan tidak bisa rusak dan satu pilihan sekaligus menyesuaikan semua ukuran layar (keputusan pemilik 2026-10-11). `skala` dan `lebar_konten` sudah berlaku lewat `config/tema.php` → `TemaService`; `ketebalan_judul` dan `bayangan` dibuat bersama tabel ini.
+- Pengaturan ukuran & gaya berupa pilihan bertingkat, bukan angka piksel bebas, agar tampilan tidak bisa rusak dan satu pilihan sekaligus menyesuaikan semua ukuran layar (keputusan pemilik 2026-10-11). `ketebalan_judul` berlaku untuk judul hero, judul seksi, band ajakan, dan halaman error (token `--ketebalan-judul`; judul kartu tetap semibold). `bayangan` sudah disimpan (semua template `halus`, nilai bawaan model); pilihan dan efeknya dibuat di langkah 3b.
+- Frontend membaca template aktif lewat `TemaService` dengan satu query per halaman. Bila database tidak terbaca atau belum ada template aktif, nilainya dari `config/tema.php` — sama dengan data awal `TemplateSeeder` — lalu nilai bawaan, sehingga halaman publik dan halaman error tidak pernah gagal karena template.
 
 ---
 

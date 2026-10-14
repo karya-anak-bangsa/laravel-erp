@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Admin\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
 use App\Http\Controllers\Admin\CompanyProfile\PortofolioController;
+use App\Http\Controllers\Admin\CompanyProfile\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,3 +36,8 @@ Route::resource('faq', FaqController::class)->except('show');
 Route::resource('kontak-kami', KontakKamiController::class)->only(['index', 'destroy']);
 Route::patch('kontak-kami/{kontak_kami}/status-baca', [KontakKamiController::class, 'statusBaca'])
     ->name('kontak-kami.status-baca');
+
+// Template tampilan frontend (Pengaturan Sistem › Manajemen Template). Pratinjau = beranda dengan nilai isian
+// form, dibuka di tab baru tanpa menyimpan apa pun.
+Route::get('template/pratinjau', [TemplateController::class, 'pratinjau'])->name('template.pratinjau');
+Route::resource('template', TemplateController::class)->except('show');

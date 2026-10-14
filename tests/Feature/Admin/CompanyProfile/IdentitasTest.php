@@ -43,7 +43,7 @@ it('menampilkan form identitas berisi data tersimpan', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.identitas.edit'))
         ->assertOk()
-        ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
+        ->assertSee('<h1 class="page-title">Pengaturan Sistem</h1>', false)
         ->assertSee('Informasi Website')
         ->assertSee('value="PT Uji Identitas"', false)
         ->assertSee(Storage::disk('public')->url($identitas->logo_website))

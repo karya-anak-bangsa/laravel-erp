@@ -7,6 +7,13 @@
 <body class="min-h-screen bg-background font-sans antialiased">
     @include('layouts.web.lompat-konten')
 
+    @if ($templatePratinjau)
+        {{-- Hanya di pratinjau admin (Pengaturan Sistem › Manajemen Template), bukan tampilan pengunjung. --}}
+        <div class="pita-pratinjau" role="status">
+            Pratinjau template{{ filled($templatePratinjau->nama) ? ' “'.$templatePratinjau->nama.'”' : '' }} — belum tentu tersimpan atau aktif
+        </div>
+    @endif
+
     @include('layouts.web.navbar')
 
     <main id="konten">

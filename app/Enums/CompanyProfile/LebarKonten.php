@@ -2,12 +2,16 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Lebar maksimum isi halaman frontend di monitor ≥1920px (24" ke atas). Di bawahnya selalu
  * 80rem (1280px) agar laptop 1536px tetap bermargin cukup.
  */
 enum LebarKonten: string
 {
+    use MenyediakanOpsi;
+
     case Standar = 'standar';
     case Lebar = 'lebar';
 

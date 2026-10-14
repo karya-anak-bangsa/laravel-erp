@@ -10,3 +10,7 @@ parameters:
 
     # Dimulai dari 5, dinaikkan bertahap (ROADMAP: Penguatan Kualitas).
     level: 5
+
+    # Model memakai method casts() (CLAUDE.md §8); tanpa ini Larastan hanya membaca tipe kolom migration,
+    # sehingga atribut ber-cast enum dianggap string.
+    parseModelCastsMethod: true

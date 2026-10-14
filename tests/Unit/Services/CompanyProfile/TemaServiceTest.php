@@ -1,15 +1,21 @@
 <?php
 
+use App\Enums\CompanyProfile\BayanganTemplate;
 use App\Enums\CompanyProfile\FontTemplate;
 use App\Enums\CompanyProfile\JenisTemplate;
+use App\Enums\CompanyProfile\KetebalanJudul;
 use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
 use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
+use App\Models\CompanyProfile\Template;
 use App\Services\CompanyProfile\TemaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-it('membaca dua template bawaan dari config', function () {
+it('membaca dua template bawaan dari config selama belum ada template aktif di database', function () {
+    Template::factory()->create(['warna_aksen' => '#0ea5e9']);
     $layanan = new TemaService;
 
     expect($layanan->templateAktif(JenisTemplate::FullColor))->toBe([
@@ -21,6 +27,8 @@ it('membaca dua template bawaan dari config', function () {
         'sudut' => SudutTemplate::Sedang,
         'skala' => SkalaTemplate::Ringkas,
         'lebar_konten' => LebarKonten::Lebar,
+        'ketebalan_judul' => KetebalanJudul::Semibold,
+        'bayangan' => BayanganTemplate::Halus,
     ])
         ->and($layanan->templateAktif(JenisTemplate::Monochrome))->toBe([
             'nama' => 'TKAB Monochrome',
@@ -31,7 +39,69 @@ it('membaca dua template bawaan dari config', function () {
             'sudut' => SudutTemplate::Sedang,
             'skala' => SkalaTemplate::Ringkas,
             'lebar_konten' => LebarKonten::Lebar,
+            'ketebalan_judul' => KetebalanJudul::Semibold,
+            'bayangan' => BayanganTemplate::Halus,
         ]);
+});
+
+it('membaca template aktif per jenis dari database', function () {
+    Template::factory()->aktif()->create([
+        'nama' => 'Biru Laut',
+        'warna_utama' => '#0c4a6e',
+        'warna_aksen' => '#0ea5e9',
+        'font' => FontTemplate::Poppins,
+        'ketebalan_judul' => KetebalanJudul::Extrabold,
+    ]);
+    Template::factory()->monochrome()->aktif()->create(['nada_dasar' => NadaDasar::Stone, 'sudut' => SudutTemplate::Tajam]);
+    $layanan = new TemaService;
+
+    expect($layanan->templateAktif(JenisTemplate::FullColor))
+        ->toMatchArray(['nama' => 'Biru Laut', 'warna_utama' => '#0c4a6e', 'warna_aksen' => '#0ea5e9', 'font' => FontTemplate::Poppins, 'ketebalan_judul' => KetebalanJudul::Extrabold])
+        ->and($layanan->templateAktif(JenisTemplate::Monochrome))
+        ->toMatchArray(['nada_dasar' => NadaDasar::Stone, 'sudut' => SudutTemplate::Tajam])
+        ->and($layanan->tokenCss())
+        ->toContain('--warna-aksen: #0ea5e9;')
+        ->toContain('--font-tema: "Poppins"; --ketebalan-judul: 800;')
+        ->and($layanan->aliasFont())->toBe(['poppins', 'geist', 'geist-mono']);
+});
+
+it('membaca kedua template aktif dengan satu query per halaman', function () {
+    Template::factory()->aktif()->create();
+    Template::factory()->monochrome()->aktif()->create();
+    $layanan = new TemaService;
+
+    DB::enableQueryLog();
+    $layanan->tokenCss();
+    $layanan->aliasFont();
+
+    expect(collect(DB::getQueryLog())->pluck('query')->filter(fn (string $sql) => str_contains($sql, 'tb_template')))->toHaveCount(1);
+});
+
+it('memakai config bila database tidak terbaca agar halaman tetap tampil', function () {
+    Log::spy();
+    config(['database.connections.rusak' => [...config('database.connections.mysql'), 'database' => 'laravel_erp_tidak_ada']]);
+    $koneksiAsli = DB::getDefaultConnection();
+    DB::setDefaultConnection('rusak');
+
+    try {
+        $template = (new TemaService)->templateAktif(JenisTemplate::FullColor);
+    } finally {
+        // Rollback RefreshDatabase saat teardown memakai koneksi bawaan.
+        DB::setDefaultConnection($koneksiAsli);
+    }
+
+    expect($template)->toMatchArray(['nama' => 'TKAB Full Color', 'warna_aksen' => '#cb1839']);
+    Log::shouldHaveReceived('warning')->withArgs(fn (string $pesan) => str_contains($pesan, 'tidak terbaca dari database'))->once();
+});
+
+it('memakai template pratinjau untuk jenisnya dan menjadikannya tema halaman', function () {
+    $pratinjau = new Template(['nama' => 'Coba Stone', 'jenis' => 'monochrome', 'nada_dasar' => 'stone', 'font' => 'inter', 'sudut' => 'bulat', 'skala' => 'lega', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'bold']);
+    $layanan = (new TemaService)->pratinjau($pratinjau);
+
+    expect($layanan->jenisDariRequest(Request::create('/', cookies: ['tema' => 'full_color'])))->toBe(JenisTemplate::Monochrome)
+        ->and($layanan->templateAktif(JenisTemplate::Monochrome))->toMatchArray(['nama' => 'Coba Stone', 'nada_dasar' => NadaDasar::Stone, 'font' => FontTemplate::Inter])
+        ->and($layanan->templateAktif(JenisTemplate::FullColor))->toMatchArray(['nama' => 'TKAB Full Color'])
+        ->and($layanan->aliasFont())->toBe(['geist', 'inter', 'geist-mono']);
 });
 
 it('menentukan tema dari cookie pengunjung', function (mixed $cookie, JenisTemplate $harapan) {
@@ -50,9 +120,9 @@ it('merender token lengkap kedua template', function () {
     $css = (new TemaService)->tokenCss();
 
     expect($css)
-        ->toContain('html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: "Geist"; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; --tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.25rem; --lebar-konten: 80rem; }')
+        ->toContain('html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; --tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.25rem; --lebar-konten: 80rem; }')
         ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);')
-        ->toContain('--nada-950: oklch(14.5% 0 0); --font-tema: "Geist"; --sudut-kartu: .75rem;')
+        ->toContain('--nada-950: oklch(14.5% 0 0); --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem;')
         ->and(substr_count($css, '--nada-'))->toBe(11);
 });
 

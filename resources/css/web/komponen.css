@@ -70,6 +70,9 @@
 .tema-ponsel-label { @apply text-[15px] font-medium text-foreground; }
 .tema-ponsel .pilih-tema .opsi-tema { @apply h-11 w-auto gap-2 px-3 text-sm font-medium text-foreground; }
 
+/* Pita di atas navbar, hanya di pratinjau template admin (layouts/web). */
+.pita-pratinjau { @apply bg-foreground px-4 py-2 text-center text-[13px] font-medium text-balance text-background; }
+
 /* ---------- Hero ---------- */
 [data-tema=full_color] :is(.hero, .halaman-galat) { background-image: linear-gradient(to bottom, var(--utama-50), #fff 72%); }
 [data-tema=monochrome] .hero { @apply border-b; }
@@ -82,7 +85,8 @@
 [data-tema=monochrome] .hero-eyebrow { @apply bg-background text-muted-foreground shadow-xs; }
 .hero-eyebrow .titik { @apply size-1.5 rounded-full bg-primary; }
 [data-tema=monochrome] .hero-eyebrow .titik { @apply bg-foreground; }
-.hero-judul { @apply mt-6 text-[2.5rem] leading-[1.05] font-semibold tracking-tighter text-balance text-foreground sm:text-6xl md:text-5xl lg:text-6xl xl:mt-0 xl:text-7xl; }
+/* Judul besar (hero, seksi, band ajakan, halaman error) memakai ketebalan pilihan template: --ketebalan-judul 600/700/800. */
+.hero-judul { @apply mt-6 text-[2.5rem] leading-[1.05] tracking-tighter text-balance text-foreground sm:text-6xl md:text-5xl lg:text-6xl xl:mt-0 xl:text-7xl; font-weight: var(--ketebalan-judul); }
 .hero-deskripsi { @apply mt-6 max-w-xl text-lg leading-8 text-pretty; }
 [data-tema=full_color] .hero-deskripsi { @apply text-teks; }
 [data-tema=monochrome] .hero-deskripsi { @apply text-muted-foreground; }
@@ -129,7 +133,7 @@
 [data-tema=monochrome] .label-nomor { @apply text-foreground; }
 [data-tema=monochrome] .label-nomor::after { content: "\00a0/\00a0"; color: var(--muted-foreground); }
 /* Ukuran desktop dari skala template (--teks-judul-seksi); tinggi baris ikut rasio text-4xl. */
-.judul-seksi { @apply mt-4 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); }
+.judul-seksi { @apply mt-4 text-3xl tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); font-weight: var(--ketebalan-judul); }
 .deskripsi-seksi { @apply mt-4 text-lg leading-8 text-pretty; }
 [data-tema=full_color] .deskripsi-seksi { @apply text-teks; }
 [data-tema=monochrome] .deskripsi-seksi { @apply text-muted-foreground; }
@@ -220,7 +224,7 @@
 [data-tema=full_color] .ajakan-blob { @apply pointer-events-none absolute -z-10 rounded-full blur-3xl; }
 [data-tema=full_color] .ajakan-titik { @apply pointer-events-none absolute inset-0 -z-10; background-image: radial-gradient(rgb(255 255 255 / .09) 1px, transparent 1px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(to right, transparent, #000 40%, #000); mask-image: linear-gradient(to right, transparent, #000 40%, #000); }
 .label-ajakan { @apply mb-4 block font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
-.judul-ajakan { @apply text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl lg:text-5xl; }
+.judul-ajakan { @apply text-3xl tracking-tight text-balance text-foreground sm:text-4xl lg:text-5xl; font-weight: var(--ketebalan-judul); }
 .deskripsi-ajakan { @apply mt-4 text-lg leading-relaxed text-pretty text-muted-foreground; }
 .aksi-ajakan { @apply flex shrink-0 flex-col gap-3 sm:flex-row; }
 
@@ -414,12 +418,12 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 /* Tampilan ringkas (database tidak terbaca): body flex kolom, isi mengisi sisa layar agar baris hak cipta tetap terlihat. */
 .halaman-galat-ringkas { @apply flex-1; min-height: 0; }
 .tata-galat { @apply mx-auto flex w-full max-w-(--lebar-konten) flex-col items-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8; }
-.kode-galat { @apply text-7xl leading-none font-semibold tracking-tighter sm:text-8xl lg:text-9xl; }
+.kode-galat { @apply text-7xl leading-none tracking-tighter sm:text-8xl lg:text-9xl; font-weight: var(--ketebalan-judul); }
 /* Full Color: gradasi warna utama ke aksen seperti garis merek footer; Monochrome hitam. */
 [data-tema=full_color] .kode-galat { background-image: linear-gradient(120deg, var(--utama-teks) 30%, var(--warna-aksen)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 [data-tema=monochrome] .kode-galat { @apply text-foreground; }
 @media (forced-colors: active) { .kode-galat { background: none; color: CanvasText; } }
-.judul-galat { @apply mt-6 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); }
+.judul-galat { @apply mt-6 text-3xl tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); font-weight: var(--ketebalan-judul); }
 .pesan-galat { @apply mt-4 max-w-xl text-lg leading-8 text-pretty; }
 [data-tema=full_color] .pesan-galat { @apply text-teks; }
 [data-tema=monochrome] .pesan-galat { @apply text-muted-foreground; }

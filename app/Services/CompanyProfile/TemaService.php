@@ -2,40 +2,65 @@
 
 namespace App\Services\CompanyProfile;
 
+use App\Enums\CompanyProfile\BayanganTemplate;
 use App\Enums\CompanyProfile\FontTemplate;
 use App\Enums\CompanyProfile\JenisTemplate;
+use App\Enums\CompanyProfile\KetebalanJudul;
 use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
 use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
+use App\Models\CompanyProfile\Template;
 use App\Support\KontrasWarna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
- * Satu-satunya sumber nilai template frontend. Saat ini dari config/tema.php; di Fase 4 langkah 3
- * cukup kelas ini yang dialihkan ke tb_template (template aktif per jenis).
+ * Satu-satunya sumber nilai template frontend: template aktif per jenis di tb_template (Pengaturan Sistem ›
+ * Manajemen Template). Bila database tidak terbaca atau belum ada template aktif, nilainya dari config/tema.php
+ * lalu nilai bawaan, agar halaman publik (termasuk halaman error) tidak pernah gagal karena template.
+ *
+ * @phpstan-type NilaiTemplate array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten, ketebalan_judul: KetebalanJudul, bayangan: BayanganTemplate}
  */
 class TemaService
 {
-    // Cadangan bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy),
-    // agar halaman publik tidak pernah gagal dirender karena template.
+    /** Atribut request berisi Template (belum tentu tersimpan) yang sedang dipratinjau admin. */
+    public const PRATINJAU = 'tema.pratinjau';
+
+    // Cadangan terakhir bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy).
     private const BAWAAN = [
-        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
-        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar'],
+        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
+        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
     ];
 
-    /** @var array<string, array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}> */
+    /** @var array<string, NilaiTemplate> */
     private array $template = [];
+
+    /** @var array<string, array<string, string>>|null nilai mentah template aktif per jenis, dibaca sekali per halaman */
+    private ?array $aktifDatabase = null;
+
+    private ?Template $pratinjau = null;
+
+    /**
+     * Mode pratinjau (TemplateController::pratinjau): template ini menggantikan template aktif sejenisnya dan
+     * menentukan tema halaman, tanpa disimpan.
+     */
+    public function pratinjau(?Template $template): static
+    {
+        $this->pratinjau = $template;
+        $this->template = [];
+
+        return $this;
+    }
 
     public function jenisDariRequest(Request $request): JenisTemplate
     {
-        return JenisTemplate::dariCookie($request->cookie(config('tema.cookie', 'tema')));
+        return $this->pratinjau->jenis ?? JenisTemplate::dariCookie($request->cookie(config('tema.cookie', 'tema')));
     }
 
     /**
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
+     * @return NilaiTemplate
      */
     public function templateAktif(JenisTemplate $jenis): array
     {
@@ -62,6 +87,7 @@ class TemaService
             '--aksen-teks' => KontrasWarna::pastikanKontras($aksen),
             '--aksen-kontras' => KontrasWarna::teksDiAtas($aksen),
             '--font-tema' => '"'.$warna['font']->family().'"',
+            '--ketebalan-judul' => $warna['ketebalan_judul']->nilai(),
             ...$this->tokenSudut($warna['sudut']),
             ...$this->tokenSkala($warna['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
@@ -70,6 +96,7 @@ class TemaService
         $tokenMono = [
             ...array_combine(array_map(fn (int $t): string => "--nada-{$t}", NadaDasar::TINGKAT), $nada->skala()),
             '--font-tema' => '"'.$mono['font']->family().'"',
+            '--ketebalan-judul' => $mono['ketebalan_judul']->nilai(),
             ...$this->tokenSudut($mono['sudut']),
             ...$this->tokenSkala($mono['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
@@ -102,28 +129,57 @@ class TemaService
     }
 
     /**
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
+     * @return NilaiTemplate
      */
     private function muat(JenisTemplate $jenis): array
     {
-        $config = config("tema.template.{$jenis->value}");
-
-        try {
-            return $this->rakit($jenis, is_array($config) ? $config : []);
-        } catch (Throwable $e) {
-            Log::warning("Template {$jenis->value} di config/tema.php tidak valid, memakai bawaan.", ['galat' => $e->getMessage()]);
-
-            return $this->rakit($jenis, self::BAWAAN[$jenis->value]);
+        if ($this->pratinjau?->jenis === $jenis) {
+            return $this->rakit($jenis, $this->pratinjau->nilaiTampilan());
         }
+
+        foreach (['database' => $this->dariDatabase($jenis), 'config/tema.php' => config("tema.template.{$jenis->value}")] as $sumber => $nilai) {
+            if (! is_array($nilai)) {
+                continue;
+            }
+
+            try {
+                return $this->rakit($jenis, $nilai);
+            } catch (Throwable $e) {
+                Log::warning("Template {$jenis->value} dari {$sumber} tidak valid, memakai cadangan berikutnya.", ['galat' => $e->getMessage()]);
+            }
+        }
+
+        return $this->rakit($jenis, self::BAWAAN[$jenis->value]);
+    }
+
+    /**
+     * @return array<string, string>|null
+     */
+    private function dariDatabase(JenisTemplate $jenis): ?array
+    {
+        if ($this->aktifDatabase === null) {
+            try {
+                // Satu query untuk kedua jenis.
+                $this->aktifDatabase = Template::query()->aktif()->orderBy('id_template')->get()
+                    ->mapWithKeys(fn (Template $template): array => [$template->jenis->value => $template->nilaiTampilan()])
+                    ->all();
+            } catch (Throwable $e) {
+                Log::warning('Template aktif tidak terbaca dari database, memakai config/tema.php.', ['galat' => $e->getMessage()]);
+                $this->aktifDatabase = [];
+            }
+        }
+
+        return $this->aktifDatabase[$jenis->value] ?? null;
     }
 
     /**
      * @param  array<string, mixed>  $data
-     * @return array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten}
+     * @return NilaiTemplate
      */
     private function rakit(JenisTemplate $jenis, array $data): array
     {
         $warna = $jenis === JenisTemplate::FullColor;
+        $bawaan = self::BAWAAN[$jenis->value];
 
         return [
             'nama' => (string) ($data['nama'] ?? ''),
@@ -132,9 +188,11 @@ class TemaService
             'nada_dasar' => $warna ? null : NadaDasar::from((string) ($data['nada_dasar'] ?? '')),
             'font' => FontTemplate::from((string) ($data['font'] ?? '')),
             'sudut' => SudutTemplate::from((string) ($data['sudut'] ?? '')),
-            // Kunci baru: bila belum ada di config (mis. cache config lama), pakai bawaan tanpa menggugurkan nilai lain.
-            'skala' => SkalaTemplate::tryFrom((string) ($data['skala'] ?? '')) ?? SkalaTemplate::from(self::BAWAAN[$jenis->value]['skala']),
-            'lebar_konten' => LebarKonten::tryFrom((string) ($data['lebar_konten'] ?? '')) ?? LebarKonten::from(self::BAWAAN[$jenis->value]['lebar_konten']),
+            // Kunci yang lebih baru: bila belum ada (mis. cache config lama), pakai bawaan tanpa menggugurkan nilai lain.
+            'skala' => SkalaTemplate::tryFrom((string) ($data['skala'] ?? '')) ?? SkalaTemplate::from($bawaan['skala']),
+            'lebar_konten' => LebarKonten::tryFrom((string) ($data['lebar_konten'] ?? '')) ?? LebarKonten::from($bawaan['lebar_konten']),
+            'ketebalan_judul' => KetebalanJudul::tryFrom((string) ($data['ketebalan_judul'] ?? '')) ?? KetebalanJudul::from($bawaan['ketebalan_judul']),
+            'bayangan' => BayanganTemplate::tryFrom((string) ($data['bayangan'] ?? '')) ?? BayanganTemplate::from($bawaan['bayangan']),
         ];
     }
 

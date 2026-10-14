@@ -8,10 +8,12 @@ import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
 import { pasangTandaiBaca } from './admin/kontak-kami.js';
 import { pasangRepeater } from './admin/repeater.js';
+import { pasangFormTemplate } from './admin/template.js';
 
 mountShell();
 pasangRepeater();
 pasangTandaiBaca();
+pasangFormTemplate();
 
 // Editor WYSIWYG cukup berat (TipTap + ProseMirror), jadi hanya dimuat di halaman form yang memakainya.
 if (document.querySelector('[data-editor]')) {

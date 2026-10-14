@@ -2,11 +2,15 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Skala abu-abu tema Monochrome (pilihan "base color" ala shadcn, nilai oklch Tailwind v4).
  */
 enum NadaDasar: string
 {
+    use MenyediakanOpsi;
+
     case Netral = 'netral';
     case Zinc = 'zinc';
     case Stone = 'stone';

@@ -2,11 +2,15 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Gaya tombol CTA pada hero: menentukan tampilan tombol di frontend.
  */
 enum GayaCta: string
 {
+    use MenyediakanOpsi;
+
     case Primary = 'primary';
     case Secondary = 'secondary';
 
@@ -16,19 +20,5 @@ enum GayaCta: string
             self::Primary => 'Utama',
             self::Secondary => 'Sekunder',
         };
-    }
-
-    /**
-     * @return array<string, string> [nilai => label] untuk <x-admin.form-select>
-     */
-    public static function opsi(): array
-    {
-        $opsi = [];
-
-        foreach (self::cases() as $gaya) {
-            $opsi[$gaya->value] = $gaya->label();
-        }
-
-        return $opsi;
     }
 }

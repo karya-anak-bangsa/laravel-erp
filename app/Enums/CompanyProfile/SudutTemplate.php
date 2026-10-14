@@ -2,11 +2,15 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Kelengkungan sudut komponen frontend; setiap pilihan menghasilkan lima token --sudut-*.
  */
 enum SudutTemplate: string
 {
+    use MenyediakanOpsi;
+
     case Tajam = 'tajam';
     case Sedang = 'sedang';
     case Bulat = 'bulat';

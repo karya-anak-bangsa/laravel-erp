@@ -92,6 +92,12 @@ return [
                 'rute' => 'admin.identitas.edit',
                 'aktif' => 'admin.identitas.*',
             ],
+            [
+                'label' => 'Manajemen Template',
+                'ikon' => 'book',
+                'rute' => 'admin.template.index',
+                'aktif' => 'admin.template.*',
+            ],
         ],
     ],
 ];

@@ -2,6 +2,8 @@
 
 namespace App\Enums\CompanyProfile;
 
+use App\Enums\Concerns\MenyediakanOpsi;
+
 /**
  * Ukuran elemen frontend di desktop (≥1024px): tinggi navbar, logo, teks menu, tombol besar, dan judul seksi.
  * Satu tabel untuk kedua jenis agar ukuran Full Color dan Monochrome identik (pilihan pemilik 2026-10-11);
@@ -9,6 +11,8 @@ namespace App\Enums\CompanyProfile;
  */
 enum SkalaTemplate: string
 {
+    use MenyediakanOpsi;
+
     case Ringkas = 'ringkas';
     case Standar = 'standar';
     case Lega = 'lega';
