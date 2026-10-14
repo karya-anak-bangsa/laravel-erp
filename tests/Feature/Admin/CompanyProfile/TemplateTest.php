@@ -134,16 +134,17 @@ it('mengisi form tambah dengan salinan template aktif dalam keadaan nonaktif', f
         ->assertDontSee('name="status_aktif" value="1" checked', false)
         ->assertSee('data-khusus-jenis="full_color" >', false)
         ->assertSee('data-khusus-jenis="monochrome" hidden>', false)
-        // Satu kartu: Pratinjau di kepala kartu, Status di akhir kartu, lalu tombol Simpan & Batal.
+        // Kartu kanan "Status dan Pratinjau": status lalu tombol pratinjau selebar kartu; baris bawah Simpan & Batal.
         ->assertSeeInOrder([
             '<div class="card-title">Tampilan Template</div>',
-            'data-pratinjau-template="'.route('admin.template.pratinjau').'"',
             'name="nama"',
             '</fieldset>',
+            '<div class="card-title">Status dan Pratinjau</div>',
             'name="status_aktif"',
+            '<button type="button" class="btn btn-info btn-blok" data-pratinjau-template="'.route('admin.template.pratinjau').'"',
+            'Buka pratinjau',
             '<div class="form-actions">',
-        ], false)
-        ->assertDontSee('<div class="card-title">Status</div>', false);
+        ], false);
 
     expect($respons->getContent())->toMatch('/<fieldset class="isian-tampilan" data-isian-tampilan data-bawaan="[^"]+"\s*>/')
         ->and(substr_count($respons->getContent(), 'data-pratinjau-template='))->toBe(1);

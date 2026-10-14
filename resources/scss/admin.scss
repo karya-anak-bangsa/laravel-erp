@@ -627,6 +627,12 @@ table.table .kolom-aksi {
     justify-content: center;
 }
 
+// Tombol selebar wadahnya, setara .btn-block/.w-100 Bootstrap (mis. Buka pratinjau di kartu Status dan Pratinjau).
+.btn-blok {
+    width: 100%;
+    justify-content: center;
+}
+
 // Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat
 // disorot agar tidak terkesan bisa diklik.
 table.table.tabel-informasi tbody tr:hover {

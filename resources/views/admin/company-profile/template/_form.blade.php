@@ -23,17 +23,9 @@
     $abuAbu = "abu\u{2011}abu";
 @endphp
 
-{{-- Satu kartu seperti form Kategori Artikel: Status dan Pratinjau ikut di kartu ini (pilihan pemilik 2026-10-14). --}}
+{{-- Status dan tombol Pratinjau selebar kartu di kartu kanan (pilihan pemilik 2026-10-14). --}}
 <div class="row col-8-4">
     <x-admin.card title="Tampilan Template" subtitle="Warna, huruf, dan bentuk komponen di website.">
-        <x-slot:aksi>
-            {{-- Membuka beranda dengan nilai isian saat ini di tab baru, tanpa menyimpan (resources/js/admin/template.js). --}}
-            <button type="button" class="btn btn-info" data-pratinjau-template="{{ route('admin.template.pratinjau') }}">
-                <x-admin.icon name="eye" />
-                Pratinjau
-            </button>
-        </x-slot>
-
         <x-admin.form-input name="nama" label="Nama Template" :value="$template->nama" :required="true" maxlength="100"
             placeholder="mis. TKAB Full Color Biru" />
 
@@ -86,8 +78,10 @@
                     :required="true" :placeholder="false" hint="Lebar isi halaman di monitor 1920px ke atas." />
             </div>
         </fieldset>
+    </x-admin.card>
 
-        {{-- Di luar fieldset agar status tetap bisa diubah saat pengaturan Default. --}}
+    {{-- Di luar fieldset agar status tetap bisa diubah saat pengaturan Default. --}}
+    <x-admin.card title="Status dan Pratinjau">
         @if ($terkunci)
             <input type="hidden" name="status_aktif" value="1">
             <div class="form-group">
@@ -99,6 +93,16 @@
             <x-admin.form-switch name="status_aktif" label="Status" text="Pakai di website" :checked="$template->status_aktif"
                 hint="Hanya satu template aktif per jenis. Mengaktifkan template ini akan menonaktifkan template lain yang sejenis." />
         @endif
+
+        {{-- Membuka beranda dengan nilai isian saat ini di tab baru, tanpa menyimpan (resources/js/admin/template.js). --}}
+        <div class="form-group">
+            <div class="form-label">Pratinjau</div>
+            <button type="button" class="btn btn-info btn-blok" data-pratinjau-template="{{ route('admin.template.pratinjau') }}">
+                <x-admin.icon name="eye" />
+                Buka pratinjau
+            </button>
+            <div class="form-help">Membuka beranda dengan isian ini, tanpa menyimpan.</div>
+        </div>
     </x-admin.card>
 </div>
 
