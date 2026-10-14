@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\CompanyProfile;
 
 use App\Enums\CompanyProfile\JenisTemplate;
+use App\Enums\CompanyProfile\PengaturanTampilan;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Requests\Admin\CompanyProfile\PratinjauTemplateRequest;
@@ -18,7 +19,7 @@ use Illuminate\View\View;
 
 class TemplateController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, TemaService $temaService): View
     {
         $q = $request->string('q')->trim()->value();
         $jenis = JenisTemplate::tryFrom($request->string('jenis')->value());
@@ -35,7 +36,10 @@ class TemplateController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        return view('admin.company-profile.template.index', compact('template'));
+        // Pengaturan Default/Custom tidak disimpan, jadi dihitung untuk modal Lihat.
+        $pengaturan = $template->getCollection()->mapWithKeys(fn (Template $item): array => [$item->getKey() => $temaService->pengaturan($item)]);
+
+        return view('admin.company-profile.template.index', compact('template', 'pengaturan'));
     }
 
     public function create(TemaService $temaService): View
@@ -43,40 +47,40 @@ class TemplateController extends Controller
         $warna = $temaService->templateAktif(JenisTemplate::FullColor);
         $mono = $temaService->templateAktif(JenisTemplate::Monochrome);
 
-        return view('admin.company-profile.template.create', [
-            // Isian awal menyalin template yang sedang aktif agar admin cukup mengubah yang perlu; nonaktif agar
-            // website tidak berubah tanpa sengaja.
-            'template' => new Template([
-                'jenis' => JenisTemplate::FullColor,
-                'warna_utama' => $warna['warna_utama'],
-                'warna_aksen' => $warna['warna_aksen'],
-                'nada_dasar' => $mono['nada_dasar'],
-                'font' => $warna['font'],
-                'sudut' => $warna['sudut'],
-                'skala' => $warna['skala'],
-                'lebar_konten' => $warna['lebar_konten'],
-                'ketebalan_judul' => $warna['ketebalan_judul'],
-                'bayangan' => $warna['bayangan'],
-                'status_aktif' => false,
-            ]),
+        // Isian awal menyalin template yang sedang aktif agar admin cukup mengubah yang perlu; nonaktif agar
+        // website tidak berubah tanpa sengaja.
+        $template = new Template([
+            'jenis' => JenisTemplate::FullColor,
+            'warna_utama' => $warna['warna_utama'],
+            'warna_aksen' => $warna['warna_aksen'],
+            'nada_dasar' => $mono['nada_dasar'],
+            'font' => $warna['font'],
+            'sudut' => $warna['sudut'],
+            'skala' => $warna['skala'],
+            'lebar_konten' => $warna['lebar_konten'],
+            'ketebalan_judul' => $warna['ketebalan_judul'],
+            'bayangan' => $warna['bayangan'],
+            'status_aktif' => false,
         ]);
+
+        return view('admin.company-profile.template.create', ['template' => $template, ...$this->dataForm($template, $temaService)]);
     }
 
     public function store(StoreTemplateRequest $request, TemplateService $templateService): RedirectResponse
     {
-        $templateService->simpan($request->validated());
+        $templateService->simpan($request->safe()->except('pengaturan'));
 
         return redirect()->route('admin.template.index')->with('success', 'Template berhasil ditambahkan.');
     }
 
-    public function edit(Template $template): View
+    public function edit(Template $template, TemaService $temaService): View
     {
-        return view('admin.company-profile.template.edit', compact('template'));
+        return view('admin.company-profile.template.edit', ['template' => $template, ...$this->dataForm($template, $temaService)]);
     }
 
     public function update(UpdateTemplateRequest $request, Template $template, TemplateService $templateService): RedirectResponse
     {
-        $templateService->perbarui($template, $request->validated());
+        $templateService->perbarui($template, $request->safe()->except('pengaturan'));
 
         return redirect()->route('admin.template.index')->with('success', 'Template berhasil diperbarui.');
     }
@@ -102,8 +106,25 @@ class TemplateController extends Controller
     {
         // Dibaca TemaComposer dari request asli; FormRequest hanyalah salinannya, jadi atributnya tidak ikut terbaca.
         // Tidak ada yang disimpan.
-        request()->attributes->set(TemaService::PRATINJAU, new Template($request->validated()));
+        request()->attributes->set(TemaService::PRATINJAU, new Template($request->safe()->except('pengaturan')));
 
         return $beranda();
+    }
+
+    /**
+     * Pilihan Pengaturan awal dan nilai bawaan kedua jenis, yang diisikan resources/js/admin/template.js saat
+     * Default dipilih atau jenis diganti.
+     *
+     * @return array{pengaturan: PengaturanTampilan, bawaan: array<string, array<string, string>>}
+     */
+    private function dataForm(Template $template, TemaService $temaService): array
+    {
+        $bawaan = [];
+
+        foreach (JenisTemplate::cases() as $jenis) {
+            $bawaan[$jenis->value] = $temaService->nilaiBawaan($jenis);
+        }
+
+        return ['pengaturan' => $temaService->pengaturan($template), 'bawaan' => $bawaan];
     }
 }

@@ -87,6 +87,10 @@
                                                             <th scope="row">Jenis</th>
                                                             <td>{{ $item->jenis->label() }}</td>
                                                         </tr>
+                                                        <tr>
+                                                            <th scope="row">Pengaturan</th>
+                                                            <td>{{ $pengaturan[$item->getKey()]->label() }}</td>
+                                                        </tr>
                                                         @if ($item->jenis === JenisTemplate::FullColor)
                                                             <tr>
                                                                 <th scope="row">Warna utama</th>

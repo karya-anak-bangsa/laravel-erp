@@ -65,10 +65,10 @@ it('mengaktifkan template lewat perubahan dan menonaktifkan template sejenis', f
         'jenis' => JenisTemplate::Monochrome->value,
         'warna_utama' => null,
         'warna_aksen' => null,
-        'nada_dasar' => 'zinc',
+        'nada_dasar' => 'hijau',
     ]));
 
     expect($template->refresh()->status_aktif)->toBeTrue()
-        ->and($template->nada_dasar->value)->toBe('zinc')
+        ->and($template->nada_dasar->value)->toBe('hijau')
         ->and($aktif->refresh()->status_aktif)->toBeFalse();
 });

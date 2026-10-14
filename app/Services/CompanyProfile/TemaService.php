@@ -8,6 +8,7 @@ use App\Enums\CompanyProfile\JenisTemplate;
 use App\Enums\CompanyProfile\KetebalanJudul;
 use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
+use App\Enums\CompanyProfile\PengaturanTampilan;
 use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
 use App\Models\CompanyProfile\Template;
@@ -19,7 +20,8 @@ use Throwable;
 /**
  * Satu-satunya sumber nilai template frontend: template aktif per jenis di tb_template (Pengaturan Sistem ›
  * Manajemen Template). Bila database tidak terbaca atau belum ada template aktif, nilainya dari config/tema.php
- * lalu nilai bawaan, agar halaman publik (termasuk halaman error) tidak pernah gagal karena template.
+ * lalu nilai bawaan, agar halaman publik (termasuk halaman error) tidak pernah gagal karena template. Nilai
+ * config/tema.php yang sama menjadi pilihan "Default" di form template (nilaiBawaan()).
  *
  * @phpstan-type NilaiTemplate array{nama: string, warna_utama: string|null, warna_aksen: string|null, nada_dasar: NadaDasar|null, font: FontTemplate, sudut: SudutTemplate, skala: SkalaTemplate, lebar_konten: LebarKonten, ketebalan_judul: KetebalanJudul, bayangan: BayanganTemplate}
  */
@@ -28,14 +30,18 @@ class TemaService
     /** Atribut request berisi Template (belum tentu tersimpan) yang sedang dipratinjau admin. */
     public const PRATINJAU = 'tema.pratinjau';
 
-    // Cadangan terakhir bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy).
+    // Cadangan terakhir bila config tidak lengkap/tidak valid (mis. cache config lama saat deploy); isinya sama dengan
+    // config/tema.php.
     private const BAWAAN = [
-        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
-        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'ringkas', 'lebar_konten' => 'lebar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
+        'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'standar', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
+        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'standar', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'tanpa'],
     ];
 
     /** @var array<string, NilaiTemplate> */
     private array $template = [];
+
+    /** @var array<string, NilaiTemplate> nilai bawaan per jenis: config/tema.php, lalu BAWAAN */
+    private array $bawaan = [];
 
     /** @var array<string, array<string, string>>|null nilai mentah template aktif per jenis, dibaca sekali per halaman */
     private ?array $aktifDatabase = null;
@@ -131,6 +137,44 @@ class TemaService
     }
 
     /**
+     * Nilai pilihan "Default" di form template: nilai bawaan jenisnya dalam bentuk isian form (nilai enum, hex huruf
+     * kecil), hanya kolom yang relevan dengan jenis tersebut.
+     *
+     * @return array<string, string>
+     */
+    public function nilaiBawaan(JenisTemplate $jenis): array
+    {
+        $nilai = $this->bawaan($jenis);
+        $khusus = $jenis === JenisTemplate::FullColor
+            ? ['warna_utama' => (string) $nilai['warna_utama'], 'warna_aksen' => (string) $nilai['warna_aksen']]
+            : ['nada_dasar' => ($nilai['nada_dasar'] ?? NadaDasar::Netral)->value];
+
+        return [
+            ...$khusus,
+            'font' => $nilai['font']->value,
+            'ketebalan_judul' => $nilai['ketebalan_judul']->value,
+            'sudut' => $nilai['sudut']->value,
+            'bayangan' => $nilai['bayangan']->value,
+            'skala' => $nilai['skala']->value,
+            'lebar_konten' => $nilai['lebar_konten']->value,
+        ];
+    }
+
+    /**
+     * Pilihan Pengaturan di form & modal Lihat. Tidak disimpan: template dianggap Default bila semua nilai
+     * tampilannya sama dengan nilai bawaan jenisnya.
+     */
+    public function pengaturan(Template $template): PengaturanTampilan
+    {
+        $bawaan = $this->nilaiBawaan($template->jenis);
+        $nilai = array_intersect_key($template->nilaiTampilan(), $bawaan);
+        ksort($bawaan);
+        ksort($nilai);
+
+        return $nilai === $bawaan ? PengaturanTampilan::Bawaan : PengaturanTampilan::Kustom;
+    }
+
+    /**
      * @return NilaiTemplate
      */
     private function muat(JenisTemplate $jenis): array
@@ -139,19 +183,38 @@ class TemaService
             return $this->rakit($jenis, $this->pratinjau->nilaiTampilan());
         }
 
-        foreach (['database' => $this->dariDatabase($jenis), 'config/tema.php' => config("tema.template.{$jenis->value}")] as $sumber => $nilai) {
-            if (! is_array($nilai)) {
-                continue;
-            }
+        $nilai = $this->dariDatabase($jenis);
 
+        if ($nilai !== null) {
             try {
                 return $this->rakit($jenis, $nilai);
             } catch (Throwable $e) {
-                Log::warning("Template {$jenis->value} dari {$sumber} tidak valid, memakai cadangan berikutnya.", ['galat' => $e->getMessage()]);
+                Log::warning("Template {$jenis->value} dari database tidak valid, memakai nilai bawaan.", ['galat' => $e->getMessage()]);
             }
         }
 
-        return $this->rakit($jenis, self::BAWAAN[$jenis->value]);
+        return $this->bawaan($jenis);
+    }
+
+    /**
+     * Nilai bawaan: config/tema.php (sama dengan data awal TemplateSeeder), lalu BAWAAN bila config tidak valid.
+     *
+     * @return NilaiTemplate
+     */
+    private function bawaan(JenisTemplate $jenis): array
+    {
+        if (! isset($this->bawaan[$jenis->value])) {
+            $config = config("tema.template.{$jenis->value}");
+
+            try {
+                $this->bawaan[$jenis->value] = $this->rakit($jenis, is_array($config) ? $config : self::BAWAAN[$jenis->value]);
+            } catch (Throwable $e) {
+                Log::warning("Template {$jenis->value} dari config/tema.php tidak valid, memakai nilai bawaan.", ['galat' => $e->getMessage()]);
+                $this->bawaan[$jenis->value] = $this->rakit($jenis, self::BAWAAN[$jenis->value]);
+            }
+        }
+
+        return $this->bawaan[$jenis->value];
     }
 
     /**

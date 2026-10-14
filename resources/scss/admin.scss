@@ -448,6 +448,21 @@ a.btn:hover {
         background: var(--bg-surface);
         cursor: pointer;
 
+        // Terkunci (Pengaturan Default): latar & kursor sama dengan .form-control:disabled Gentelella, warnanya
+        // dipudarkan seperti .btn:disabled agar tidak tampak masih bisa diklik.
+        &:disabled {
+            background: var(--bg-surface-secondary);
+            cursor: not-allowed;
+        }
+
+        &:disabled::-webkit-color-swatch {
+            opacity: 0.5;
+        }
+
+        &:disabled::-moz-color-swatch {
+            opacity: 0.5;
+        }
+
         &::-webkit-color-swatch-wrapper {
             padding: 0;
         }
@@ -467,6 +482,15 @@ a.btn:hover {
     .form-control {
         flex: 1;
     }
+}
+
+// Isian tampilan template dikunci lewat <fieldset disabled> saat Pengaturan Default; fieldset sendiri tidak boleh
+// menambah garis atau jarak.
+.isian-tampilan {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 // Catatan di bawah sepasang isian warna: jaraknya ke isian sama dengan petunjuk (4px), ke isian berikutnya

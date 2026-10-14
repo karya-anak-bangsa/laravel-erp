@@ -7,9 +7,11 @@
 |
 | Nilai dua template bawaan (satu per jenis), dengan kunci sama seperti kolom tb_template
 | (docs/DATABASE.md). Sejak Fase 4 langkah 3 template aktif dikelola admin di Pengaturan
-| Sistem › Manajemen Template; nilai di sini menjadi data awal TemplateSeeder sekaligus
-| cadangan bila database tidak terbaca atau belum ada template aktif. View tidak membaca
-| config ini langsung — selalu lewat App\Services\CompanyProfile\TemaService.
+| Sistem › Manajemen Template; nilai di sini menjadi data awal TemplateSeeder, nilai pilihan
+| "Default" di form template, sekaligus cadangan bila database tidak terbaca atau belum ada
+| template aktif. View tidak membaca config ini langsung — selalu lewat
+| App\Services\CompanyProfile\TemaService. Nilai sekarang = data template lokal yang
+| ditetapkan pemilik sebagai bawaan (2026-10-14).
 |
 */
 
@@ -26,10 +28,10 @@ return [
             'nada_dasar' => null,
             'font' => 'geist',
             'sudut' => 'sedang',
-            // Ringkas: pas di laptop 14" (1536px); naik satu tingkat otomatis di layar ≥1920px.
-            'skala' => 'ringkas',
+            // Ukuran desktop navbar, tombol, dan judul seksi; naik satu tingkat otomatis di layar ≥1920px.
+            'skala' => 'standar',
             // Lebar isi halaman di monitor ≥1920px: standar (1280px) atau lebar (1440px).
-            'lebar_konten' => 'lebar',
+            'lebar_konten' => 'standar',
             'ketebalan_judul' => 'semibold',
             // Bayangan tombol, kartu, isian, dan bingkai gambar hero: tanpa, halus, atau tegas.
             'bayangan' => 'halus',
@@ -41,10 +43,10 @@ return [
             'nada_dasar' => 'netral',
             'font' => 'geist',
             'sudut' => 'sedang',
-            'skala' => 'ringkas',
-            'lebar_konten' => 'lebar',
+            'skala' => 'standar',
+            'lebar_konten' => 'standar',
             'ketebalan_judul' => 'semibold',
-            'bayangan' => 'halus',
+            'bayangan' => 'tanpa',
         ],
     ],
 

@@ -8,8 +8,10 @@ use App\Enums\CompanyProfile\JenisTemplate;
 use App\Enums\CompanyProfile\KetebalanJudul;
 use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
+use App\Enums\CompanyProfile\PengaturanTampilan;
 use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
+use App\Services\CompanyProfile\TemaService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,9 +35,14 @@ class StoreTemplateRequest extends FormRequest
             'warna_aksen' => $this->hexKecil('warna_aksen'),
         ]);
 
-        // Kolom yang tidak relevan dengan jenisnya disimpan NULL (DATABASE.md); form tetap mengirim keduanya.
         $jenis = JenisTemplate::tryFrom((string) $this->input('jenis'));
 
+        // Pengaturan Default: isian tampilan dikunci di form sehingga tidak terkirim; nilainya diisi bawaan jenisnya.
+        if ($jenis !== null && $this->input('pengaturan') === PengaturanTampilan::Bawaan->value) {
+            $this->merge(app(TemaService::class)->nilaiBawaan($jenis));
+        }
+
+        // Kolom yang tidak relevan dengan jenisnya disimpan NULL (DATABASE.md); form tetap mengirim keduanya.
         if ($jenis === JenisTemplate::FullColor) {
             $this->merge(['nada_dasar' => null]);
         } elseif ($jenis === JenisTemplate::Monochrome) {
@@ -78,6 +85,7 @@ class StoreTemplateRequest extends FormRequest
         return [
             'nama' => 'nama template',
             'jenis' => 'jenis',
+            'pengaturan' => 'pengaturan',
             'warna_utama' => 'warna utama',
             'warna_aksen' => 'warna aksen',
             'nada_dasar' => 'nada dasar',
@@ -103,6 +111,8 @@ class StoreTemplateRequest extends FormRequest
 
         return [
             'jenis' => ['required', Rule::enum(JenisTemplate::class)],
+            // Bukan kolom: hanya menentukan apakah nilai tampilan diisi bawaan (lihat prepareForValidation()).
+            'pengaturan' => ['required', Rule::enum(PengaturanTampilan::class)],
             'warna_utama' => ['nullable', 'required_if:jenis,'.JenisTemplate::FullColor->value, 'string', $hex],
             'warna_aksen' => ['nullable', 'required_if:jenis,'.JenisTemplate::FullColor->value, 'string', $hex],
             'nada_dasar' => ['nullable', 'required_if:jenis,'.JenisTemplate::Monochrome->value, Rule::enum(NadaDasar::class)],

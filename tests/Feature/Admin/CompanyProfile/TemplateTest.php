@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\CompanyProfile\BayanganTemplate;
 use App\Enums\CompanyProfile\JenisTemplate;
 use App\Enums\CompanyProfile\NadaDasar;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\Template;
 use App\Models\Pengguna;
+use App\Services\CompanyProfile\TemaService;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -17,6 +19,7 @@ function dataTemplateValid(array $timpa = []): array
     return [
         'nama' => 'Biru Laut',
         'jenis' => 'full_color',
+        'pengaturan' => 'kustom',
         'warna_utama' => '#0C4A6E',
         'warna_aksen' => '#0EA5E9',
         'nada_dasar' => 'netral',
@@ -60,13 +63,15 @@ it('menampilkan daftar template: aktif di atas, lalu per jenis dan abjad', funct
 
 it('menampilkan rincian, tautan pratinjau, dan tombol hapus yang terkunci untuk template aktif', function () {
     $aktif = Template::factory()->aktif()->create(['nama' => 'Aktif', 'warna_utama' => '#15253f', 'warna_aksen' => '#cb1839', 'bayangan' => 'tegas']);
-    $nonaktif = Template::factory()->monochrome()->create(['nama' => 'Cadangan', 'nada_dasar' => NadaDasar::Stone, 'bayangan' => 'tanpa']);
+    $nonaktif = Template::factory()->monochrome()->create(['nama' => 'Cadangan', 'nada_dasar' => NadaDasar::Cokelat, 'bayangan' => 'tanpa']);
 
     $respons = $this->actingAs($this->admin)->get(route('admin.template.index'));
 
     $respons->assertSeeInOrder([
         'judul semibold · bayangan tegas',
         'data-detail-title="Detail Template"',
+        '<th scope="row">Pengaturan</th>',
+        '<td>Custom</td>',
         '#15253f',
         '#cb1839',
         '<th scope="row">Bayangan</th>',
@@ -78,10 +83,18 @@ it('menampilkan rincian, tautan pratinjau, dan tombol hapus yang terkunci untuk 
     ], false)
         ->assertDontSee('action="'.route('admin.template.destroy', $aktif).'"', false)
         ->assertSee('action="'.route('admin.template.destroy', $nonaktif).'"', false)
-        ->assertSee('Stone (abu hangat)')
+        ->assertSee('Cokelat (abu kecokelatan)')
         ->assertSee('judul semibold · tanpa bayangan');
 
     expect($aktif->nilaiTampilan())->toHaveKey('bayangan', 'tegas');
+});
+
+it('menampilkan pengaturan Default di rincian template yang memakai nilai bawaan', function () {
+    Template::factory()->monochrome()->create(['nama' => 'Bawaan', ...app(TemaService::class)->nilaiBawaan(JenisTemplate::Monochrome)]);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.template.index'))
+        ->assertSeeInOrder(['<th scope="row">Pengaturan</th>', '<td>Default</td>', 'Netral (hitam-putih)'], false);
 });
 
 it('mencari template berdasarkan nama serta memfilter jenis dan status', function () {
@@ -110,16 +123,63 @@ it('membedakan empty state data kosong dan hasil filter kosong', function () {
 it('mengisi form tambah dengan salinan template aktif dalam keadaan nonaktif', function () {
     Template::factory()->aktif()->create(['warna_aksen' => '#0ea5e9', 'font' => 'manrope', 'bayangan' => 'tegas']);
 
-    $this->actingAs($this->admin)
+    $respons = $this->actingAs($this->admin)
         ->get(route('admin.template.create'))
         ->assertOk()
         ->assertSee('<input type="color" value="#0ea5e9" data-pilih-warna="warna_aksen"', false)
         ->assertSee('<option value="manrope" selected>', false)
         ->assertSee('<option value="tegas" selected>', false)
+        // Salinan berbeda dari nilai bawaan, jadi mulai sebagai Custom dengan isian terbuka.
+        ->assertSee('<option value="kustom" selected>Custom</option>', false)
         ->assertDontSee('name="status_aktif" value="1" checked', false)
         ->assertSee('data-khusus-jenis="full_color" >', false)
         ->assertSee('data-khusus-jenis="monochrome" hidden>', false)
         ->assertSee('data-pratinjau-template="'.route('admin.template.pratinjau').'"', false);
+
+    expect($respons->getContent())->toMatch('/<fieldset class="isian-tampilan" data-isian-tampilan data-bawaan="[^"]+"\s*>/');
+});
+
+it('membuka form dengan pengaturan Default dan isian terkunci bila nilai template sama dengan bawaan', function () {
+    $temaService = app(TemaService::class);
+    $template = Template::factory()->create($temaService->nilaiBawaan(JenisTemplate::FullColor));
+    $bawaan = ['full_color' => $temaService->nilaiBawaan(JenisTemplate::FullColor), 'monochrome' => $temaService->nilaiBawaan(JenisTemplate::Monochrome)];
+
+    $respons = $this->actingAs($this->admin)
+        ->get(route('admin.template.edit', $template))
+        ->assertOk()
+        ->assertSee('<option value="bawaan" selected>Default</option>', false)
+        // Nilai bawaan kedua jenis untuk template.js (Default dipilih atau jenis diganti).
+        ->assertSee('data-bawaan="'.e(json_encode($bawaan)).'"', false);
+
+    expect($respons->getContent())->toMatch('/<fieldset class="isian-tampilan"[^>]* disabled>/');
+});
+
+it('menyimpan nilai bawaan jenisnya bila pengaturan Default walau isian tampilan tidak terkirim', function (string $jenis) {
+    // Isian dalam fieldset disabled tidak ikut terkirim browser.
+    $this->actingAs($this->admin)
+        ->post(route('admin.template.store'), ['nama' => 'Ikut Bawaan', 'jenis' => $jenis, 'pengaturan' => 'bawaan', 'status_aktif' => '0'])
+        ->assertRedirect(route('admin.template.index'))
+        ->assertSessionHasNoErrors();
+
+    $template = Template::sole();
+    $temaService = app(TemaService::class);
+    expect(array_intersect_key($template->nilaiTampilan(), $temaService->nilaiBawaan($template->jenis)))->toEqual($temaService->nilaiBawaan($template->jenis))
+        ->and($temaService->pengaturan($template)->value)->toBe('bawaan');
+})->with(['full_color', 'monochrome']);
+
+it('mengembalikan template ke nilai bawaan lewat pengaturan Default dan mengabaikan isian tampilan yang dikirim', function () {
+    $template = Template::factory()->monochrome()->create(['nama' => 'Coba-coba', 'nada_dasar' => NadaDasar::Ungu, 'bayangan' => 'tegas', 'skala' => 'lega']);
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.template.update', $template), dataTemplateValid(['nama' => 'Coba-coba', 'jenis' => 'monochrome', 'pengaturan' => 'bawaan', 'nada_dasar' => 'ungu']))
+        ->assertRedirect(route('admin.template.index'));
+
+    $template->refresh();
+    expect($template->nada_dasar)->toBe(NadaDasar::Netral)
+        ->and($template->bayangan)->toBe(BayanganTemplate::Tanpa)
+        ->and($template->skala->value)->toBe('standar')
+        ->and($template->font->value)->toBe('geist')
+        ->and($template->warna_utama)->toBeNull();
 });
 
 it('menyimpan template Full Color dengan hex huruf kecil dan tanpa nada dasar', function () {
@@ -139,12 +199,12 @@ it('menyimpan template Full Color dengan hex huruf kecil dan tanpa nada dasar', 
 
 it('menyimpan template Monochrome tanpa warna', function () {
     $this->actingAs($this->admin)
-        ->post(route('admin.template.store'), dataTemplateValid(['jenis' => 'monochrome', 'nada_dasar' => 'slate']))
+        ->post(route('admin.template.store'), dataTemplateValid(['jenis' => 'monochrome', 'nada_dasar' => 'biru']))
         ->assertRedirect(route('admin.template.index'));
 
     $template = Template::sole();
     expect($template->jenis)->toBe(JenisTemplate::Monochrome)
-        ->and($template->nada_dasar)->toBe(NadaDasar::Slate)
+        ->and($template->nada_dasar)->toBe(NadaDasar::Biru)
         ->and($template->warna_utama)->toBeNull()
         ->and($template->warna_aksen)->toBeNull();
 });
@@ -172,6 +232,9 @@ it('memvalidasi isian sesuai jenis template', function (array $timpa, array $gal
     'warna wajib untuk Full Color' => [['warna_utama' => '', 'warna_aksen' => null], ['warna_utama', 'warna_aksen']],
     'hex tidak valid' => [['warna_utama' => 'merah', 'warna_aksen' => '#abc'], ['warna_utama', 'warna_aksen']],
     'nada dasar wajib untuk Monochrome' => [['jenis' => 'monochrome', 'nada_dasar' => ''], ['nada_dasar']],
+    'nada dasar lama yang sudah dibuang' => [['jenis' => 'monochrome', 'nada_dasar' => 'zinc'], ['nada_dasar']],
+    'pengaturan wajib dipilih' => [['pengaturan' => ''], ['pengaturan']],
+    'pengaturan di luar enum' => [['pengaturan' => 'acak'], ['pengaturan']],
     'pilihan di luar enum' => [['jenis' => 'gelap', 'font' => 'comic_sans', 'sudut' => 'lancip', 'skala' => 'raksasa', 'lebar_konten' => 'penuh', 'ketebalan_judul' => 'tipis', 'bayangan' => 'pekat'], ['jenis', 'font', 'sudut', 'skala', 'lebar_konten', 'ketebalan_judul', 'bayangan']],
     'bayangan wajib dipilih' => [['bayangan' => ''], ['bayangan']],
     'nama kosong' => [['nama' => ''], ['nama']],
@@ -220,12 +283,12 @@ it('mengubah jenis template nonaktif dan mengosongkan kolom yang tidak relevan',
     $template = Template::factory()->create(['nama' => 'Fleksibel']);
 
     $this->actingAs($this->admin)
-        ->put(route('admin.template.update', $template), dataTemplateValid(['nama' => 'Fleksibel', 'jenis' => 'monochrome', 'nada_dasar' => 'zinc']))
+        ->put(route('admin.template.update', $template), dataTemplateValid(['nama' => 'Fleksibel', 'jenis' => 'monochrome', 'nada_dasar' => 'hijau']))
         ->assertRedirect(route('admin.template.index'));
 
     $template->refresh();
     expect($template->jenis)->toBe(JenisTemplate::Monochrome)
-        ->and($template->nada_dasar)->toBe(NadaDasar::Zinc)
+        ->and($template->nada_dasar)->toBe(NadaDasar::Hijau)
         ->and($template->warna_utama)->toBeNull();
 });
 
@@ -252,16 +315,25 @@ describe('pratinjau dan frontend', function () {
     it('menampilkan beranda dengan nilai isian tanpa menyimpan apa pun', function () {
         $this->actingAs($this->admin)
             ->withUnencryptedCookie('tema', 'full_color')
-            ->get(route('admin.template.pratinjau', dataTemplateValid(['jenis' => 'monochrome', 'nada_dasar' => 'stone', 'nama' => 'Abu <Hangat>'])))
+            ->get(route('admin.template.pratinjau', dataTemplateValid(['jenis' => 'monochrome', 'nada_dasar' => 'cokelat', 'nama' => 'Abu <Hangat>'])))
             ->assertOk()
             ->assertSee('<html lang="id" data-tema="monochrome">', false)
-            ->assertSee('--nada-50: oklch(98.5% 0.001 106.423);', false)
+            ->assertSee('--nada-50: oklch(98.5% 0.003 55);', false)
             ->assertSee('--font-tema: "Poppins"; --ketebalan-judul: 700;', false)
             // Bayangan Tegas Monochrome: formulir shadow-md.
             ->assertSee('--bayangan-formulir: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;', false)
             ->assertSee('Pratinjau template “Abu &lt;Hangat&gt;”', false);
 
         expect(Template::count())->toBe(0);
+    });
+
+    it('mempratinjau pengaturan Default dengan nilai bawaan walau isian tampilan tidak dikirim', function () {
+        $this->actingAs($this->admin)
+            ->get(route('admin.template.pratinjau', ['nama' => 'Baru', 'jenis' => 'monochrome', 'pengaturan' => 'bawaan']))
+            ->assertOk()
+            ->assertSee('<html lang="id" data-tema="monochrome">', false)
+            ->assertSee('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);', false)
+            ->assertSee('--garis-kartu: var(--nada-300);', false);
     });
 
     it('menolak pratinjau dengan nilai tidak valid', function () {
@@ -273,15 +345,15 @@ describe('pratinjau dan frontend', function () {
     });
 
     it('memakai template aktif di beranda tanpa pita pratinjau', function () {
-        Template::factory()->aktif()->create(['warna_aksen' => '#0ea5e9', 'ketebalan_judul' => 'extrabold', 'bayangan' => 'tanpa']);
+        Template::factory()->aktif()->create(['warna_aksen' => '#0ea5e9', 'ketebalan_judul' => 'extrabold', 'bayangan' => 'tegas']);
 
         $this->get(route('beranda'))
             ->assertOk()
             ->assertSee('--warna-aksen: #0ea5e9;', false)
             ->assertSee('--ketebalan-judul: 800;', false)
-            // Kartu Monochrome (Halus dari config) tetap berbayangan; hanya Full Color yang datar.
+            // Kartu Full Color Tegas dari template aktif; Monochrome (Tanpa dari config) datar.
+            ->assertSee('--bayangan-kartu: '.BayanganTemplate::Tegas->token(JenisTemplate::FullColor)['--bayangan-kartu'].';', false)
             ->assertSee('--bayangan-kartu: 0 0 #0000;', false)
-            ->assertSee('--bayangan-kartu: 0 1px 2px 0 #0000000d;', false)
             ->assertDontSee('pita-pratinjau', false);
     });
 });
