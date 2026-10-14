@@ -19,10 +19,21 @@
     $jenisTerpilih = old('jenis', $template->jenis?->value);
     // Default: isian warna sampai lebar konten dikunci dan diisi nilai bawaan jenis terpilih (template.js).
     $pakaiBawaan = old('pengaturan', $pengaturan->value) === PengaturanTampilan::Bawaan->value;
+    // Tanda hubung tak terputus (U+2011): "abu-abu" tidak boleh terpenggal di akhir baris petunjuk.
+    $abuAbu = "abu\u{2011}abu";
 @endphp
 
+{{-- Satu kartu seperti form Kategori Artikel: Status dan Pratinjau ikut di kartu ini (pilihan pemilik 2026-10-14). --}}
 <div class="row col-8-4">
     <x-admin.card title="Tampilan Template" subtitle="Warna, huruf, dan bentuk komponen di website.">
+        <x-slot:aksi>
+            {{-- Membuka beranda dengan nilai isian saat ini di tab baru, tanpa menyimpan (resources/js/admin/template.js). --}}
+            <button type="button" class="btn btn-info" data-pratinjau-template="{{ route('admin.template.pratinjau') }}">
+                <x-admin.icon name="eye" />
+                Pratinjau
+            </button>
+        </x-slot>
+
         <x-admin.form-input name="nama" label="Nama Template" :value="$template->nama" :required="true" maxlength="100"
             placeholder="mis. TKAB Full Color Biru" />
 
@@ -33,7 +44,7 @@
         <div class="isian-berjajar">
             <x-admin.form-select name="jenis" label="Jenis" :options="JenisTemplate::opsi()" :value="$template->jenis"
                 :required="true" :placeholder="false" :disabled="$terkunci" data-pilih-jenis
-                :hint="$terkunci ? 'Jenis template aktif tidak bisa diubah.' : 'Full Color memakai warna merek; Monochrome memakai nada abu-abu.'" />
+                :hint="$terkunci ? 'Jenis template aktif tidak bisa diubah.' : 'Full Color memakai warna merek; Monochrome memakai nada '.$abuAbu.'.'" />
             <x-admin.form-select name="pengaturan" label="Pengaturan" :options="PengaturanTampilan::opsi()" :value="$pengaturan"
                 :required="true" :placeholder="false" data-pilih-pengaturan
                 hint="Default memakai nilai bawaan dan mengunci isian di bawah; pilih Custom untuk mengubahnya." />
@@ -52,7 +63,7 @@
             </div>
             <div data-khusus-jenis="{{ JenisTemplate::Monochrome->value }}" {{ $jenisTerpilih !== JenisTemplate::Monochrome->value ? 'hidden' : '' }}>
                 <x-admin.form-select name="nada_dasar" label="Nada Dasar" :options="NadaDasar::opsi()" :value="$template->nada_dasar"
-                    :required="true" :placeholder="false" hint="Tinta abu-abu pada teks, garis, tombol, band ajakan, dan footer." />
+                    :required="true" :placeholder="false" :hint="'Tinta '.$abuAbu.' pada teks, garis, tombol, band ajakan, dan footer.'" />
             </div>
 
             {{-- Berpasangan per kelompok: huruf, bentuk, lalu ukuran. --}}
@@ -75,9 +86,8 @@
                     :required="true" :placeholder="false" hint="Lebar isi halaman di monitor 1920px ke atas." />
             </div>
         </fieldset>
-    </x-admin.card>
 
-    <x-admin.card title="Status">
+        {{-- Di luar fieldset agar status tetap bisa diubah saat pengaturan Default. --}}
         @if ($terkunci)
             <input type="hidden" name="status_aktif" value="1">
             <div class="form-group">
@@ -96,11 +106,6 @@
     <button type="submit" class="btn btn-success">
         <x-admin.icon name="floppy-disk" />
         Simpan
-    </button>
-    {{-- Membuka beranda dengan nilai isian saat ini di tab baru, tanpa menyimpan (resources/js/admin/template.js). --}}
-    <button type="button" class="btn btn-info" data-pratinjau-template="{{ route('admin.template.pratinjau') }}">
-        <x-admin.icon name="eye" />
-        Pratinjau
     </button>
     <a href="{{ route('admin.template.index') }}" class="btn btn-secondary">
         <x-admin.icon name="rotate-left" />

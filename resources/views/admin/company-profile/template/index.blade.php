@@ -94,16 +94,16 @@
                                                         @if ($item->jenis === JenisTemplate::FullColor)
                                                             <tr>
                                                                 <th scope="row">Warna utama</th>
-                                                                <td><span class="contoh-template" aria-hidden="true"><span style="background: {{ $item->warna_utama }}"></span></span> {{ $item->warna_utama }}</td>
+                                                                <td><span class="nilai-contoh"><span class="contoh-template" aria-hidden="true"><span style="background: {{ $item->warna_utama }}"></span></span>{{ $item->warna_utama }}</span></td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Warna aksen</th>
-                                                                <td><span class="contoh-template" aria-hidden="true"><span style="background: {{ $item->warna_aksen }}"></span></span> {{ $item->warna_aksen }}</td>
+                                                                <td><span class="nilai-contoh"><span class="contoh-template" aria-hidden="true"><span style="background: {{ $item->warna_aksen }}"></span></span>{{ $item->warna_aksen }}</span></td>
                                                             </tr>
                                                         @else
                                                             <tr>
                                                                 <th scope="row">Nada dasar</th>
-                                                                <td>@include('admin.company-profile.template._contoh-warna', ['contoh' => $item]) {{ $item->nada_dasar?->label() }}</td>
+                                                                <td><span class="nilai-contoh">@include('admin.company-profile.template._contoh-warna', ['contoh' => $item]){{ $item->nada_dasar?->label() }}</span></td>
                                                             </tr>
                                                         @endif
                                                         {{-- Urutan sama dengan form: huruf, bentuk, lalu ukuran. --}}

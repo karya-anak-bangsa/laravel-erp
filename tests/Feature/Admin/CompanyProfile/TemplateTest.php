@@ -134,9 +134,19 @@ it('mengisi form tambah dengan salinan template aktif dalam keadaan nonaktif', f
         ->assertDontSee('name="status_aktif" value="1" checked', false)
         ->assertSee('data-khusus-jenis="full_color" >', false)
         ->assertSee('data-khusus-jenis="monochrome" hidden>', false)
-        ->assertSee('data-pratinjau-template="'.route('admin.template.pratinjau').'"', false);
+        // Satu kartu: Pratinjau di kepala kartu, Status di akhir kartu, lalu tombol Simpan & Batal.
+        ->assertSeeInOrder([
+            '<div class="card-title">Tampilan Template</div>',
+            'data-pratinjau-template="'.route('admin.template.pratinjau').'"',
+            'name="nama"',
+            '</fieldset>',
+            'name="status_aktif"',
+            '<div class="form-actions">',
+        ], false)
+        ->assertDontSee('<div class="card-title">Status</div>', false);
 
-    expect($respons->getContent())->toMatch('/<fieldset class="isian-tampilan" data-isian-tampilan data-bawaan="[^"]+"\s*>/');
+    expect($respons->getContent())->toMatch('/<fieldset class="isian-tampilan" data-isian-tampilan data-bawaan="[^"]+"\s*>/')
+        ->and(substr_count($respons->getContent(), 'data-pratinjau-template='))->toBe(1);
 });
 
 it('membuka form dengan pengaturan Default dan isian terkunci bila nilai template sama dengan bawaan', function () {

@@ -834,28 +834,60 @@ table.table.tabel-informasi tbody tr:hover {
 
 // Tabel rincian: label di kolom kiri selebar isinya, nilai di kanan; dibingkai agar
 // tampak sebagai satu tabel di dalam modal.
+// Semua baris satu baris setinggi sama persis, 33px (permintaan pemilik 2026-10-14): garis pemisah milik sel
+// sendiri, bukan dibagi dua antarbaris seperti border-collapse, dan baris terakhir tetap bergaris tetapi tertutup
+// bingkai lewat margin -1px.
 .tabel-detail {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     overflow: hidden;
 
     table.table {
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: -1px;
+
+        tr :is(th, td) {
+            border-bottom: 1px solid var(--border-color-light);
+        }
+
+        // Label & nilai sejajar garis dasar baris pertamanya, juga untuk nilai panjang (mis. deskripsi). Dengan rata
+        // atas, label 11px tampak 2px lebih tinggi dari nilai 13px.
+        th,
+        td {
+            vertical-align: baseline;
+        }
+
         th {
             width: 1%;
             white-space: nowrap;
-            vertical-align: top;
-            border-bottom-color: var(--border-color-light);
         }
 
-        // Rata atas agar label sejajar baris pertama nilai yang panjang (mis. deskripsi).
         td {
-            vertical-align: top;
+            line-height: 16px;
             color: var(--text);
             overflow-wrap: anywhere;
         }
 
-        tr:last-child th {
-            border-bottom: none;
+        // Isi sebaris yang lebih tinggi dari teks dipusatkan di baris 16px tanpa menambah tinggi baris.
+        .status {
+            height: 16px;
+            vertical-align: top;
+        }
+
+        .btn {
+            height: 24px;
+            margin-block: -4px;
+            vertical-align: top;
+        }
+
+        // Contoh warna template (20px, sama dengan di daftar) beserta teksnya.
+        .nilai-contoh {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 16px;
+            vertical-align: top;
         }
     }
 }
