@@ -30,9 +30,6 @@ class Template extends Model
 
     protected $fillable = [...self::KOLOM_TAMPILAN, 'status_aktif'];
 
-    // Pilihan bayangan baru dibuka di Fase 4 langkah 3b; sampai itu setiap template memakai Halus.
-    protected $attributes = ['bayangan' => 'halus'];
-
     protected function casts(): array
     {
         return [

@@ -31,6 +31,7 @@ return [
             // Lebar isi halaman di monitor ≥1920px: standar (1280px) atau lebar (1440px).
             'lebar_konten' => 'lebar',
             'ketebalan_judul' => 'semibold',
+            // Bayangan tombol, kartu, isian, dan bingkai gambar hero: tanpa, halus, atau tegas.
             'bayangan' => 'halus',
         ],
         'monochrome' => [

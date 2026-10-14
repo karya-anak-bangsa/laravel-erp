@@ -95,11 +95,11 @@ it('memakai config bila database tidak terbaca agar halaman tetap tampil', funct
 });
 
 it('memakai template pratinjau untuk jenisnya dan menjadikannya tema halaman', function () {
-    $pratinjau = new Template(['nama' => 'Coba Stone', 'jenis' => 'monochrome', 'nada_dasar' => 'stone', 'font' => 'inter', 'sudut' => 'bulat', 'skala' => 'lega', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'bold']);
+    $pratinjau = new Template(['nama' => 'Coba Stone', 'jenis' => 'monochrome', 'nada_dasar' => 'stone', 'font' => 'inter', 'sudut' => 'bulat', 'skala' => 'lega', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'bold', 'bayangan' => 'tegas']);
     $layanan = (new TemaService)->pratinjau($pratinjau);
 
     expect($layanan->jenisDariRequest(Request::create('/', cookies: ['tema' => 'full_color'])))->toBe(JenisTemplate::Monochrome)
-        ->and($layanan->templateAktif(JenisTemplate::Monochrome))->toMatchArray(['nama' => 'Coba Stone', 'nada_dasar' => NadaDasar::Stone, 'font' => FontTemplate::Inter])
+        ->and($layanan->templateAktif(JenisTemplate::Monochrome))->toMatchArray(['nama' => 'Coba Stone', 'nada_dasar' => NadaDasar::Stone, 'font' => FontTemplate::Inter, 'bayangan' => BayanganTemplate::Tegas])
         ->and($layanan->templateAktif(JenisTemplate::FullColor))->toMatchArray(['nama' => 'TKAB Full Color'])
         ->and($layanan->aliasFont())->toBe(['geist', 'inter', 'geist-mono']);
 });
@@ -116,14 +116,46 @@ it('menentukan tema dari cookie pengunjung', function (mixed $cookie, JenisTempl
     'berbentuk array' => [['monochrome'], JenisTemplate::FullColor],
 ]);
 
+/**
+ * @param  array<string, string>  $token
+ */
+function deklarasiToken(array $token): string
+{
+    return implode(' ', array_map(fn (string $nama, string $nilai): string => "{$nama}: {$nilai};", array_keys($token), $token));
+}
+
 it('merender token lengkap kedua template', function () {
     $css = (new TemaService)->tokenCss();
+    $bayanganWarna = deklarasiToken(BayanganTemplate::Halus->token(JenisTemplate::FullColor));
+    $bayanganMono = deklarasiToken(BayanganTemplate::Halus->token(JenisTemplate::Monochrome));
 
     expect($css)
-        ->toContain('html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; --tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.25rem; --lebar-konten: 80rem; }')
+        ->toContain("html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: \"Geist\"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; {$bayanganWarna} --tinggi-navbar: 4rem; --tinggi-logo: 1.75rem; --teks-menu: .875rem; --tinggi-tombol: 2.5rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.25rem; --lebar-konten: 80rem; }")
         ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);')
         ->toContain('--nada-950: oklch(14.5% 0 0); --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem;')
-        ->and(substr_count($css, '--nada-'))->toBe(11);
+        ->toContain("--sudut-isian: .5rem; {$bayanganMono} --tinggi-navbar: 4rem;")
+        // Sebelas deklarasi skala nada; rujukan var(--nada-*) di --garis-kartu tidak dihitung.
+        ->and(preg_match_all('/--nada-\d+:/', $css))->toBe(11);
+});
+
+it('merender bayangan sesuai pilihan masing-masing template', function () {
+    config(['tema.template.full_color.bayangan' => 'tegas', 'tema.template.monochrome.bayangan' => 'tanpa']);
+
+    // tokenCss(): baris 1 Full Color, baris 2 Monochrome; bayangan tidak berubah di layar lebar (baris 3).
+    [$warna, $mono, $layarLebar] = explode("\n", (new TemaService)->tokenCss());
+
+    expect($warna)->toContain(deklarasiToken(BayanganTemplate::Tegas->token(JenisTemplate::FullColor)))
+        ->and($mono)->toContain(deklarasiToken(BayanganTemplate::Tanpa->token(JenisTemplate::Monochrome)))
+        ->toContain('--bayangan-kartu: 0 0 #0000;')
+        ->toContain('--garis-kartu: var(--nada-300);')
+        ->and($layarLebar)->not->toContain('--bayangan-');
+});
+
+it('memakai bayangan bawaan tanpa menggugurkan nilai lain bila pilihannya tidak dikenal', function () {
+    config(['tema.template.full_color.bayangan' => 'gelap', 'tema.template.full_color.warna_aksen' => '#f59e0b']);
+
+    expect((new TemaService)->templateAktif(JenisTemplate::FullColor))
+        ->toMatchArray(['bayangan' => BayanganTemplate::Halus, 'warna_aksen' => '#f59e0b']);
 });
 
 it('merender skala yang sama untuk kedua jenis dan menaikkannya satu tingkat di layar 1920px ke atas', function () {

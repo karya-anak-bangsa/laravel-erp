@@ -21,16 +21,17 @@ function dataTemplateLayanan(array $timpa = []): array
         'skala' => 'ringkas',
         'lebar_konten' => 'lebar',
         'ketebalan_judul' => 'semibold',
+        'bayangan' => 'halus',
         'status_aktif' => true,
         ...$timpa,
     ];
 }
 
-it('menyimpan template baru dengan bayangan bawaan halus', function () {
-    $template = $this->layanan->simpan(dataTemplateLayanan());
+it('menyimpan template baru beserta pilihan bayangannya', function () {
+    $template = $this->layanan->simpan(dataTemplateLayanan(['bayangan' => 'tegas']));
 
     expect($template->exists)->toBeTrue()
-        ->and($template->refresh()->bayangan->value)->toBe('halus');
+        ->and($template->refresh()->bayangan->value)->toBe('tegas');
 });
 
 it('hanya menyisakan satu template aktif per jenis, termasuk terhadap template yang terhapus', function () {

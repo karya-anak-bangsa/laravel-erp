@@ -89,6 +89,7 @@ class TemaService
             '--font-tema' => '"'.$warna['font']->family().'"',
             '--ketebalan-judul' => $warna['ketebalan_judul']->nilai(),
             ...$this->tokenSudut($warna['sudut']),
+            ...$warna['bayangan']->token(JenisTemplate::FullColor),
             ...$this->tokenSkala($warna['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
         ];
@@ -98,6 +99,7 @@ class TemaService
             '--font-tema' => '"'.$mono['font']->family().'"',
             '--ketebalan-judul' => $mono['ketebalan_judul']->nilai(),
             ...$this->tokenSudut($mono['sudut']),
+            ...$mono['bayangan']->token(JenisTemplate::Monochrome),
             ...$this->tokenSkala($mono['skala']),
             '--lebar-konten' => LebarKonten::DASAR,
         ];

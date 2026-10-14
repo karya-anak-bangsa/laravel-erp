@@ -1,3 +1,4 @@
+@use('App\Enums\CompanyProfile\BayanganTemplate')
 @use('App\Enums\CompanyProfile\JenisTemplate')
 
 @extends('layouts.admin', ['breadcrumb' => ['Pengaturan Sistem' => null, 'Manajemen Template' => null]])
@@ -58,7 +59,7 @@
                                         @include('admin.company-profile.template._contoh-warna', ['contoh' => $item])
                                         <div>
                                             <div class="cell-strong">{{ $item->nama }}</div>
-                                            <div class="card-subtitle">Sudut {{ Str::lower($item->sudut->label()) }} · skala {{ Str::lower($item->skala->label()) }} · judul {{ Str::lower($item->ketebalan_judul->name) }}</div>
+                                            <div class="card-subtitle">Sudut {{ Str::lower($item->sudut->label()) }} · skala {{ Str::lower($item->skala->label()) }} · judul {{ Str::lower($item->ketebalan_judul->name) }} · {{ $item->bayangan === BayanganTemplate::Tanpa ? 'tanpa bayangan' : 'bayangan '.Str::lower($item->bayangan->label()) }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -101,13 +102,22 @@
                                                                 <td>@include('admin.company-profile.template._contoh-warna', ['contoh' => $item]) {{ $item->nada_dasar?->label() }}</td>
                                                             </tr>
                                                         @endif
+                                                        {{-- Urutan sama dengan form: huruf, bentuk, lalu ukuran. --}}
                                                         <tr>
                                                             <th scope="row">Font</th>
                                                             <td>{{ $item->font->label() }}</td>
                                                         </tr>
                                                         <tr>
+                                                            <th scope="row">Ketebalan judul</th>
+                                                            <td>{{ $item->ketebalan_judul->label() }}</td>
+                                                        </tr>
+                                                        <tr>
                                                             <th scope="row">Sudut</th>
                                                             <td>{{ $item->sudut->label() }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Bayangan</th>
+                                                            <td>{{ $item->bayangan->label() }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Skala</th>
@@ -116,10 +126,6 @@
                                                         <tr>
                                                             <th scope="row">Lebar konten</th>
                                                             <td>{{ $item->lebar_konten->label() }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Ketebalan judul</th>
-                                                            <td>{{ $item->ketebalan_judul->label() }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Status</th>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\CompanyProfile;
 
+use App\Enums\CompanyProfile\BayanganTemplate;
 use App\Enums\CompanyProfile\FontTemplate;
 use App\Enums\CompanyProfile\JenisTemplate;
 use App\Enums\CompanyProfile\KetebalanJudul;
@@ -85,6 +86,7 @@ class StoreTemplateRequest extends FormRequest
             'skala' => 'skala',
             'lebar_konten' => 'lebar konten',
             'ketebalan_judul' => 'ketebalan judul',
+            'bayangan' => 'bayangan',
             'status_aktif' => 'status aktif',
         ];
     }
@@ -109,6 +111,7 @@ class StoreTemplateRequest extends FormRequest
             'skala' => ['required', Rule::enum(SkalaTemplate::class)],
             'lebar_konten' => ['required', Rule::enum(LebarKonten::class)],
             'ketebalan_judul' => ['required', Rule::enum(KetebalanJudul::class)],
+            'bayangan' => ['required', Rule::enum(BayanganTemplate::class)],
         ];
     }
 

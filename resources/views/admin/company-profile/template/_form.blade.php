@@ -1,3 +1,4 @@
+@use('App\Enums\CompanyProfile\BayanganTemplate')
 @use('App\Enums\CompanyProfile\FontTemplate')
 @use('App\Enums\CompanyProfile\JenisTemplate')
 @use('App\Enums\CompanyProfile\KetebalanJudul')
@@ -41,19 +42,24 @@
                 :required="true" :placeholder="false" hint="Skala abu-abu untuk teks, garis, dan latar." />
         </div>
 
-        <x-admin.form-select name="font" label="Font" :options="FontTemplate::opsi()" :value="$template->font"
-            :required="true" :placeholder="false" hint="Huruf seluruh teks website; label kecil tetap Geist Mono." />
+        {{-- Berpasangan per kelompok: huruf, bentuk, lalu ukuran. --}}
+        <div class="isian-berjajar">
+            <x-admin.form-select name="font" label="Font" :options="FontTemplate::opsi()" :value="$template->font"
+                :required="true" :placeholder="false" hint="Huruf seluruh teks website; label kecil tetap Geist Mono." />
+            <x-admin.form-select name="ketebalan_judul" label="Ketebalan Judul" :options="KetebalanJudul::opsi()" :value="$template->ketebalan_judul"
+                :required="true" :placeholder="false" hint="Judul hero, judul seksi, dan band ajakan." />
+        </div>
         <div class="isian-berjajar">
             <x-admin.form-select name="sudut" label="Sudut" :options="SudutTemplate::opsi()" :value="$template->sudut"
                 :required="true" :placeholder="false" hint="Kelengkungan kartu, tombol, dan isian." />
-            <x-admin.form-select name="skala" label="Skala" :options="SkalaTemplate::opsi()" :value="$template->skala"
-                :required="true" :placeholder="false" hint="Tinggi navbar & tombol serta ukuran judul di laptop ke atas." />
+            <x-admin.form-select name="bayangan" label="Bayangan" :options="BayanganTemplate::opsi()" :value="$template->bayangan"
+                :required="true" :placeholder="false" hint="Tombol, kartu, isian, dan bingkai gambar hero." />
         </div>
         <div class="isian-berjajar">
+            <x-admin.form-select name="skala" label="Skala" :options="SkalaTemplate::opsi()" :value="$template->skala"
+                :required="true" :placeholder="false" hint="Tinggi navbar & tombol serta ukuran judul di laptop ke atas." />
             <x-admin.form-select name="lebar_konten" label="Lebar Konten" :options="LebarKonten::opsi()" :value="$template->lebar_konten"
                 :required="true" :placeholder="false" hint="Lebar isi halaman di monitor 1920px ke atas." />
-            <x-admin.form-select name="ketebalan_judul" label="Ketebalan Judul" :options="KetebalanJudul::opsi()" :value="$template->ketebalan_judul"
-                :required="true" :placeholder="false" hint="Judul hero, judul seksi, dan band ajakan." />
         </div>
     </x-admin.card>
 

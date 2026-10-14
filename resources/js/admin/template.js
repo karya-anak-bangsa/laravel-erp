@@ -1,5 +1,5 @@
 // Form template (Pengaturan Sistem › Manajemen Template): isian khusus jenis, pemilih warna, dan tombol pratinjau.
-const KUNCI_PRATINJAU = ['nama', 'jenis', 'warna_utama', 'warna_aksen', 'nada_dasar', 'font', 'sudut', 'skala', 'lebar_konten', 'ketebalan_judul'];
+const KUNCI_PRATINJAU = ['nama', 'jenis', 'warna_utama', 'warna_aksen', 'nada_dasar', 'font', 'sudut', 'skala', 'lebar_konten', 'ketebalan_judul', 'bayangan'];
 
 export function pasangFormTemplate() {
     const form = document.querySelector('form[data-form-template]');

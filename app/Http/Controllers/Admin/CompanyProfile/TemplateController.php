@@ -56,6 +56,7 @@ class TemplateController extends Controller
                 'skala' => $warna['skala'],
                 'lebar_konten' => $warna['lebar_konten'],
                 'ketebalan_judul' => $warna['ketebalan_judul'],
+                'bayangan' => $warna['bayangan'],
                 'status_aktif' => false,
             ]),
         ]);

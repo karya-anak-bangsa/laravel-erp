@@ -157,7 +157,7 @@ Tabel baru yang disetujui pemilik 2026-10-09; dibuat di Fase 4 langkah 3a (2026-
 | skala | VARCHAR(20) | enum `SkalaTemplate`: ringkas, standar, lega. Ukuran desktop (≥1024px) tinggi navbar, logo, teks menu, tombol besar, dan judul seksi; satu tabel nilai untuk kedua jenis (ukuran Full Color = Monochrome, pilihan pemilik 2026-10-11), naik satu tingkat otomatis di layar ≥1920px. Jarak antarseksi menyusul saat review seksi (disetujui pemilik 2026-10-11) |
 | lebar_konten | VARCHAR(20) | enum `LebarKonten`: standar (1280px), lebar (1440px). Lebar maksimum isi halaman di monitor ≥1920px; di bawahnya selalu 1280px (disetujui pemilik 2026-10-11) |
 | ketebalan_judul | VARCHAR(20) | enum `KetebalanJudul`: semibold, bold, extrabold — judul hero & judul seksi (disetujui pemilik 2026-10-11) |
-| bayangan | VARCHAR(20) | enum `BayanganTemplate`: tanpa, halus, tegas — bayangan tombol, kartu, dan gambar hero (disetujui pemilik 2026-10-11) |
+| bayangan | VARCHAR(20) | enum `BayanganTemplate`: tanpa, halus, tegas — bayangan permukaan: tombol, isian, kartu, dan bingkai gambar hero (disetujui pemilik 2026-10-11; cakupan & nilai 2026-10-14) |
 | status_aktif | BOOLEAN DEFAULT false | |
 | created_at, updated_at, deleted_at | | |
 
@@ -169,7 +169,7 @@ Catatan implementasi:
 - Turunan keterbacaan tidak disimpan, tetapi dihitung saat render: warna teks yang dijamin kontras ≥ 4,5:1 di atas putih, dan warna teks di atas tombol aksen (putih atau gelap).
 - Template aktif tidak bisa dihapus, dinonaktifkan langsung, atau diubah jenisnya, agar frontend selalu punya tepat satu template per jenis.
 - Data awal: dua template aktif, "TKAB Full Color" (#15253F, #CB1839, Geist, sudut sedang, skala ringkas, konten lebar, judul semibold, bayangan halus — pilihan pemilik; font & ketebalan disamakan dengan Monochrome 2026-10-11) dan "TKAB Monochrome" (netral, Geist, sudut sedang, skala ringkas, konten lebar, judul semibold, bayangan halus).
-- Pengaturan ukuran & gaya berupa pilihan bertingkat, bukan angka piksel bebas, agar tampilan tidak bisa rusak dan satu pilihan sekaligus menyesuaikan semua ukuran layar (keputusan pemilik 2026-10-11). `ketebalan_judul` berlaku untuk judul hero, judul seksi, band ajakan, dan halaman error (token `--ketebalan-judul`; judul kartu tetap semibold). `bayangan` sudah disimpan (semua template `halus`, nilai bawaan model); pilihan dan efeknya dibuat di langkah 3b.
+- Pengaturan ukuran & gaya berupa pilihan bertingkat, bukan angka piksel bebas, agar tampilan tidak bisa rusak dan satu pilihan sekaligus menyesuaikan semua ukuran layar (keputusan pemilik 2026-10-11). `ketebalan_judul` berlaku untuk judul hero, judul seksi, band ajakan, dan halaman error (token `--ketebalan-judul`; judul kartu tetap semibold). `bayangan` (langkah 3b, pilihan pemilik 2026-10-14) berlaku untuk tombol, isian, kartu, bingkai & lencana hero, serta navbar, kotak ajakan, dan ikon kontak Full Color: Tanpa = datar (garis kartu layanan & portofolio Monochrome dipertegas), Halus = tampilan yang disetujui 2026-10-11, Tegas = ±2× Halus di Full Color dan gaya shadcn klasik di Monochrome. Elemen melayang (menu ponsel, modal layanan, tombol WhatsApp, popup & penanda peta) dan penanda tema terpilih tetap berbayangan di semua tingkat.
 - Frontend membaca template aktif lewat `TemaService` dengan satu query per halaman. Bila database tidak terbaca atau belum ada template aktif, nilainya dari `config/tema.php` — sama dengan data awal `TemplateSeeder` — lalu nilai bawaan, sehingga halaman publik dan halaman error tidak pernah gagal karena template.
 
 ---

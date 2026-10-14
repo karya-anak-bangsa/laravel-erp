@@ -4,13 +4,17 @@
  *
  * Konvensi (pilihan pemilik 2026-10-11): ukuran — font, tinggi, padding, jarak, ukuran ikon — ditulis SEKALI di aturan
  * bersama tanpa [data-tema], bernilai Monochrome sebagai acuan, sehingga kedua tema identik. Aturan [data-tema=full_color]
- * dan [data-tema=monochrome] hanya berisi warna, bayangan, dekorasi, dan susunan yang memang beda antartema.
+ * dan [data-tema=monochrome] hanya berisi warna, bayangan khusus satu tema, dekorasi, dan susunan yang memang beda
+ * antartema. Bayangan permukaan yang ada di kedua tema ditulis di aturan bersama lewat token --bayangan-* (nilainya per
+ * tema dan per pilihan bayangan template, dari TemaService).
  */
 
 /* ---------- Tombol (Basecoat .btn) ---------- */
 .btn { border-radius: var(--sudut-tombol); }
-/* Bayangan tombol netral & tipis (pilihan pemilik 2026-10-10; sebelumnya bayangan merah pekat). */
-[data-tema=full_color] .btn:not([data-variant]) { box-shadow: var(--bayangan-tombol); }
+/* Bayangan tombol dari pilihan bayangan template (Full Color Halus: netral & tipis, pilihan pemilik 2026-10-10). Tombol
+   garis menimpa shadow-xs Basecoat lewat --tw-shadow agar komposisi box-shadow-nya (cincin fokus) tetap utuh. */
+.btn:not([data-variant]) { box-shadow: var(--bayangan-tombol); }
+.btn[data-variant=outline] { --tw-shadow: var(--bayangan-tombol-garis); }
 [data-tema=full_color] .btn[data-variant=outline] { border-color: var(--input); background-color: var(--card); color: var(--foreground); }
 [data-tema=full_color] .dark .btn[data-variant=outline] { border-color: rgb(255 255 255 / .3); background-color: transparent; color: #fff; }
 [data-tema=monochrome] .dark .btn[data-variant=outline] { border-color: color-mix(in oklab, var(--foreground) 25%, transparent); background-color: color-mix(in oklab, var(--input) 30%, transparent); }
@@ -80,9 +84,9 @@
 /* Dua kolom mulai md di kedua tema (pilihan pemilik 2026-10-11; Full Color sebelumnya mulai lg). */
 .hero-tata { @apply mx-auto grid max-w-(--lebar-konten) items-center gap-12 px-4 pt-14 pb-16 sm:px-6 sm:pt-20 sm:pb-20 md:grid-cols-12 md:gap-8 lg:gap-10 lg:px-8 lg:pt-24 lg:pb-28; }
 :is(.hero-teks, .hero-media) { @apply md:col-span-6; }
-.hero-eyebrow { @apply inline-flex items-center gap-2 rounded-lencana border px-3 py-1 font-mono text-[11px] tracking-[0.14em] uppercase xl:hidden; }
-[data-tema=full_color] .hero-eyebrow { @apply bg-white/80 text-foreground shadow-2xs backdrop-blur; }
-[data-tema=monochrome] .hero-eyebrow { @apply bg-background text-muted-foreground shadow-xs; }
+.hero-eyebrow { @apply inline-flex items-center gap-2 rounded-lencana border px-3 py-1 font-mono text-[11px] tracking-[0.14em] uppercase xl:hidden; box-shadow: var(--bayangan-lencana); }
+[data-tema=full_color] .hero-eyebrow { @apply bg-white/80 text-foreground backdrop-blur; }
+[data-tema=monochrome] .hero-eyebrow { @apply bg-background text-muted-foreground; }
 .hero-eyebrow .titik { @apply size-1.5 rounded-full bg-primary; }
 [data-tema=monochrome] .hero-eyebrow .titik { @apply bg-foreground; }
 /* Judul besar (hero, seksi, band ajakan, halaman error) memakai ketebalan pilihan template: --ketebalan-judul 600/700/800. */
@@ -109,10 +113,10 @@
 [data-tema=full_color] .hero-titik { background-image: radial-gradient(color-mix(in oklab, var(--warna-utama) 25%, transparent) 1.5px, transparent 1.5px); }
 [data-tema=monochrome] .hero-titik { background-image: radial-gradient(color-mix(in oklab, var(--nada-950) 25%, transparent) 1.5px, transparent 1.5px); }
 /* Bingkai berjarak dengan gambar rasio alami di kedua tema (pilihan pemilik 2026-10-11); Full Color berlatar terang. */
-.hero-bingkai { @apply border p-1.5 sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); }
+.hero-bingkai { @apply border p-1.5 sm:p-2; border-radius: calc(var(--sudut-kartu) + .5rem); box-shadow: var(--bayangan-gambar); }
 .hero-bingkai img { @apply block h-auto w-full border; border-radius: var(--sudut-kartu); }
-[data-tema=full_color] .hero-bingkai { @apply bg-white/70; box-shadow: var(--bayangan-gambar); }
-[data-tema=monochrome] .hero-bingkai { @apply bg-muted/60 shadow-sm; }
+[data-tema=full_color] .hero-bingkai { @apply bg-white/70; }
+[data-tema=monochrome] .hero-bingkai { @apply bg-muted/60; }
 
 /* ---------- Seksi & kepala seksi ---------- */
 /* Lebar isi dari template (--lebar-konten: 80rem, melebar di ≥1920px sesuai pilihan template). */
@@ -143,14 +147,13 @@
 [data-tema=monochrome] .tautan-teks { @apply text-foreground; }
 
 /* ---------- Layanan ---------- */
-/* Kartu & bingkai bergaris border 1px di kedua tema (Full Color sebelumnya ring-1) agar geometrinya identik; bayangan
-   Full Color ditulis langsung lewat token. */
-.kartu-layanan { @apply relative rounded-kartu border bg-card p-1.5; }
-/* Bayangan lembut menyebar seperti navbar (pilihan pemilik 2026-10-11; sebelumnya shadow-sm, saat sorot shadow-xl). */
-[data-tema=full_color] .kartu-layanan { @apply flex flex-col transition duration-300 hover:-translate-y-1 hover:border-(--corak-cincin); box-shadow: var(--bayangan-kartu); }
+/* Kartu & bingkai bergaris border 1px di kedua tema (Full Color sebelumnya ring-1) agar geometrinya identik; bayangannya
+   ditulis langsung lewat token. Full Color Halus: lembut menyebar seperti navbar (pilihan pemilik 2026-10-11). */
+.kartu-layanan { @apply relative rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .kartu-layanan { @apply flex flex-col transition duration-300 hover:-translate-y-1 hover:border-(--corak-cincin); }
 @media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover { box-shadow: var(--bayangan-kartu-sorot); } }
-/* Garis tepi satu tingkat lebih tegas dari --border agar kartu tidak tampak pudar tanpa bantuan bayangan. */
-[data-tema=monochrome] .kartu-layanan { @apply shadow-xs; border-color: var(--garis-kartu); }
+/* Garis tepi lebih tegas dari --border agar kartu tidak tampak pudar (makin tegas saat template tanpa bayangan). */
+[data-tema=monochrome] .kartu-layanan { border-color: var(--garis-kartu); }
 .isi-layanan-gambar { @apply overflow-hidden rounded-dalam border; }
 .isi-layanan-gambar img { @apply block w-full object-cover; }
 /* Garis bingkai gambar Full Color transparan (hanya menjaga geometri), latar tidak merembes ke garis. */
@@ -175,7 +178,7 @@
 .tombol-selengkapnya { @apply inline-flex min-h-11 items-center justify-center border border-(--corak-cincin) bg-(--corak-lembut) px-4 text-sm font-medium text-(--corak-teks) transition sm:min-h-9; border-radius: var(--sudut-tombol); }
 .tombol-selengkapnya::after { content: ""; @apply absolute inset-0 rounded-kartu; }
 .tombol-selengkapnya:focus-visible { outline: 2px solid var(--corak); outline-offset: 2px; }
-@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply border-(--corak) shadow-xs; } }
+@media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply border-(--corak); box-shadow: var(--bayangan-tombol-garis); } }
 
 /* Modal layanan (Full Color): deskripsi & keterangan seukuran kartu layanan; judul modal tetap 20/24px (pilihan pemilik 2026-10-11). */
 .dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card; box-shadow: var(--bayangan-melayang, 0 24px 48px -16px rgb(0 0 0 / .2)); border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
@@ -194,9 +197,8 @@
 /* ---------- Portofolio ---------- */
 /* Bingkai kartu seperti kartu layanan: gambar berjarak dari tepi; ukuran teks kartu sama di layanan, portofolio, dan
    artikel serta di kedua tema (pilihan pemilik 2026-10-11). */
-.kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5; }
-[data-tema=full_color] .kartu-portofolio { box-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .kartu-portofolio { @apply shadow-xs; border-color: var(--garis-kartu); }
+.kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .kartu-portofolio { border-color: var(--garis-kartu); }
 .kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border; }
 /* 16:10 di kedua tema, sama dengan kartu layanan biasa (pilihan pemilik 2026-10-11; Full Color sebelumnya 4:3). */
 .kartu-portofolio-gambar img { @apply block size-full object-cover; aspect-ratio: 16 / 10; }
@@ -303,9 +305,7 @@
 /* ---------- Kontak ---------- */
 .tata-kontak { @apply mt-12; }
 /* Daftar kontak satu kartu bergaris pemisah (list-group; pilihan pemilik 2026-10-11). */
-.info-kontak { @apply overflow-hidden rounded-kartu border bg-card; }
-[data-tema=full_color] .info-kontak { box-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .info-kontak { @apply shadow-xs; }
+.info-kontak { @apply overflow-hidden rounded-kartu border bg-card; box-shadow: var(--bayangan-kartu); }
 .tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
 a.tautan-kontak { @apply transition-colors; }
 a.tautan-kontak:focus-visible { outline-offset: -3px; }
@@ -339,9 +339,7 @@ a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
 [data-tema=full_color] .isi-kontak { @apply -translate-y-px; }
 
 /* Formulir mengisi tinggi kolom kanan (daftar kontak + peta di kiri); kotak pesan yang memanjang. */
-.kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6; }
-[data-tema=full_color] .kartu-formulir { box-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .kartu-formulir { @apply shadow-sm; }
+.kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6; box-shadow: var(--bayangan-formulir); }
 .judul-formulir { @apply text-lg font-semibold tracking-tight text-foreground; }
 .catatan-formulir { @apply mt-1.5 text-sm text-muted-foreground; }
 .tanda-wajib { @apply text-aksen; }
@@ -349,7 +347,8 @@ a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
 .form-kontak { @apply mt-6 flex flex-1 flex-col; }
 .form-kontak .isian-pesan { @apply flex flex-1 flex-col; }
 [data-tema=full_color] .field > label { @apply text-foreground; }
-.field > :is(input, textarea) { border-radius: var(--sudut-isian); }
+/* Bayangan isian lewat --tw-shadow agar cincin fokus & galat Basecoat (ring-3) tetap tersusun di box-shadow yang sama. */
+.field > :is(input, textarea) { border-radius: var(--sudut-isian); --tw-shadow: var(--bayangan-isian); }
 .field > input { @apply h-11 sm:h-10; }
 .field > textarea { @apply min-h-36 flex-1; }
 /* Hanya isian valid: garis merah aria-invalid bawaan Basecoat tetap berlaku seperti di Monochrome. */
@@ -366,9 +365,9 @@ a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
 /* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
 .kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
 
-.wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border lg:min-h-72; }
-[data-tema=full_color] .wadah-peta { @apply bg-muted; box-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .wadah-peta { @apply bg-muted/50 shadow-xs; }
+.wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border lg:min-h-72; box-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .wadah-peta { @apply bg-muted; }
+[data-tema=monochrome] .wadah-peta { @apply bg-muted/50; }
 .peta-cadangan { @apply absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center; }
 .pin-peta { @apply flex size-12 items-center justify-center; }
 [data-tema=full_color] .pin-peta { @apply -rotate-45 rounded-full rounded-bl-none border-[3px] border-white bg-primary text-primary-foreground shadow-md; }
