@@ -287,18 +287,20 @@
 @media (hover: hover) {
   [data-tema=monochrome] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { @apply underline; }
 }
-/* Pita kategori di daftar artikel (<x-web.kartu-artikel :pita="true">, varian B1 pilihan pemilik 2026-10-15): bendera yang
-   melipat di tepi kanan kartu, sehingga nama panjang tetap utuh. Full Color warna utama di semua lebar; Monochrome hitam
-   mulai 640px (di bawahnya thumbnail hanya 6rem, kategori tetap lencana di atas judul). Ukuran sama di kedua tema; jarak
-   atas mengikuti ruang dalam kartu tiap tema. Klik diteruskan ke tautan kartu di bawahnya. */
-[data-tema=full_color] .kartu-artikel[data-pita] .lencana-artikel { @apply pointer-events-none absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px] text-white; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--utama-teks); box-shadow: var(--bayangan-lencana); }
-[data-tema=full_color] .kartu-artikel[data-pita] .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--utama-teks) 45%, #000); border-right: .375rem solid transparent; }
+/* Pita kategori (varian B1 pilihan pemilik 2026-10-15): bendera yang melipat di tepi kanan, sehingga nama panjang tetap
+   utuh. Dipakai di kartu daftar artikel (<x-web.kartu-artikel :pita="true">) dan bingkai gambar detail artikel. Ukuran sama
+   di setiap pemakaian dan di kedua tema; warnanya dari token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu
+   Monochrome baru berpita mulai 640px: di bawahnya thumbnail hanya 6rem, kategori tetap lencana di atas judul. Klik
+   diteruskan ke tautan kartu di bawahnya. */
+:is([data-tema=full_color] .kartu-artikel[data-pita], .bingkai-artikel) .lencana-artikel { @apply pointer-events-none absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+:is([data-tema=full_color] .kartu-artikel[data-pita], .bingkai-artikel) .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+@media (min-width: 640px) {
+  /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu Monochrome (py-8). */
+  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel { @apply pointer-events-none absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+}
 /* Lencana keluar dari alur kartu: judul menjadi baris pertama isi. */
 [data-tema=full_color] .kartu-artikel[data-pita] .kartu-artikel-judul { @apply mt-0; }
-@media (min-width: 640px) {
-  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel { @apply pointer-events-none absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px] text-background; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--foreground); box-shadow: var(--bayangan-lencana); }
-  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--foreground) 45%, #000); border-right: .375rem solid transparent; }
-}
 
 /* ---------- FAQ ---------- */
 .tata-faq { @apply grid gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-16; }
@@ -456,15 +458,17 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 [data-tema=monochrome] .remah-roti a { @apply hover:text-foreground; }
 [data-tema=full_color] .remah-roti [aria-current] { @apply text-aksen; }
 [data-tema=monochrome] .remah-roti [aria-current] { @apply text-foreground; }
-/* Meta detail artikel: lencana & tanggal sebaris dengan gaya kartu artikel (Monochrome tetap tanggal lebih dulu). */
-.meta-artikel { @apply mt-6 flex flex-wrap items-center gap-x-3 gap-y-2; }
-[data-tema=full_color] .meta-artikel :is(.lencana-artikel, .tanggal-artikel) { @apply order-none mt-0 self-auto; }
 /* Full Color rata kiri hanya di detail artikel; kepala halaman lain tetap rata tengah. */
 [data-tema=full_color] .kepala-halaman-artikel .kepala-halaman-isi { @apply mx-0 text-left; }
 [data-tema=full_color] .kepala-halaman-artikel .remah-roti ol { @apply justify-start; }
 
-/* Badan detail artikel: gambar & isi selebar kolom utama. Isi WYSIWYG dengan sub-judul H2/H3; ukuran sama di kedua tema. */
+/* Badan detail artikel: gambar & isi selebar kolom utama; kategori sebagai pita di bingkai gambar. Isi WYSIWYG dengan
+   sub-judul H2/H3; ukuran sama di kedua tema. */
+.bingkai-artikel { @apply relative; }
 .isi-artikel { @apply mt-10 text-[17px]/[1.75] text-teks sm:mt-12 sm:text-lg/8; }
+/* Tanggal terbit di akhir isi (pilihan pemilik 2026-10-15), bergaya tanggal kartu artikel; berjarak seperti antarparagraf
+   agar terbaca sebagai baris terakhir artikel, bukan bagian tombol bagikan. */
+.terbit-artikel { @apply mt-6 leading-none; }
 .isi-artikel > * + * { margin-top: 1.25em; }
 .isi-artikel :is(h2, h3) + * { margin-top: .75em; }
 .isi-artikel > :first-child { margin-top: 0; }
@@ -505,6 +509,10 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 [data-tema=full_color] .judul-samping { @apply text-foreground; }
 [data-tema=monochrome] .judul-samping { @apply text-muted-foreground; }
 .kotak-samping > .btn { @apply mt-4 w-full; }
+/* "Lihat semua artikel" Full Color berwarna utama padat seperti pita kategori (pilihan pemilik 2026-10-15); tombol garis
+   putih tampak tak berwarna di dalam kotak putih. Monochrome tetap tombol garis. */
+[data-tema=full_color] .kotak-samping > .btn { border-color: transparent; background-color: var(--utama-teks); color: #fff; --tw-shadow: var(--bayangan-tombol); }
+@media (hover: hover) { [data-tema=full_color] .kotak-samping > .btn[data-variant=outline]:hover { border-color: transparent; background-color: var(--utama-gelap); } }
 /* Artikel terbaru: seluruh baris (thumbnail 4:3, judul, tanggal) satu tautan; garis pemisah antarbaris. */
 .daftar-terbaru { @apply mt-2; }
 .daftar-terbaru > li + li { @apply border-t; }
@@ -515,9 +523,10 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .isi-terbaru { @apply min-w-0 flex-1; }
 .judul-terbaru { @apply block text-[15px]/snug font-medium text-pretty text-foreground transition-colors; }
 .tanggal-terbaru { @apply mt-1.5 block font-mono text-[13px] text-muted-foreground; }
-/* Layanan kami: baris tautan berpanah setinggi 44px seperti sasaran sentuh lain. */
+/* Layanan kami: baris tautan berpanah setinggi 44px seperti sasaran sentuh lain; garis di bawah setiap baris, termasuk
+   baris terakhir (pilihan pemilik 2026-10-15). */
 .daftar-layanan-samping { @apply mt-2; }
-.daftar-layanan-samping > li + li { @apply border-t; }
+.daftar-layanan-samping > li { @apply border-b; }
 .tautan-layanan-samping { @apply flex min-h-11 items-center justify-between gap-3 py-2 text-[15px] font-medium text-foreground transition-colors; }
 .tautan-layanan-samping svg { @apply size-4 shrink-0 text-muted-foreground transition; }
 @media (hover: hover) {

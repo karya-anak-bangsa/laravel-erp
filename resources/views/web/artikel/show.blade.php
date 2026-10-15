@@ -29,25 +29,22 @@
 @section('konten')
     <article aria-labelledby="judul-artikel">
         <x-web.kepala-halaman class="kepala-halaman-artikel" id-judul="judul-artikel" :judul="$artikel->judul"
-            :jejak="['Beranda' => route('beranda'), 'Artikel' => route('artikel.index')]">
-            <x-slot:meta>
-                <div class="meta-artikel">
-                    @if ($artikel->kategoriArtikel)
-                        <span class="lencana-artikel">{{ $artikel->kategoriArtikel->nama_kategori }}</span>
-                    @endif
-                    <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}">Diterbitkan <span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
-                </div>
-            </x-slot>
-        </x-web.kepala-halaman>
+            :jejak="['Beranda' => route('beranda'), 'Artikel' => route('artikel.index')]" />
 
         <div class="isi-halaman">
             <div class="wadah tata-samping">
                 <div class="badan-artikel">
-                    {{-- Gambar utuh (rasio asli) dalam bingkai seperti gambar hero; di atas lipatan, jadi tidak lazy. --}}
+                    {{-- Gambar utuh (rasio asli) dalam bingkai seperti gambar hero; di atas lipatan, jadi tidak lazy. Kategori
+                         tampil sebagai pita di tepi kanan bingkai, sama dengan kartu daftar artikel (pilihan pemilik 2026-10-15). --}}
                     <div class="bingkai-artikel">
+                        @if ($artikel->kategoriArtikel)
+                            <span class="lencana-artikel">{{ $artikel->kategoriArtikel->nama_kategori }}</span>
+                        @endif
                         <img src="{{ $artikel->gambar_url }}" width="800" height="600" fetchpriority="high" decoding="async" alt="{{ $artikel->judul }}">
                     </div>
                     <div class="isi-artikel konten-html">{!! $artikel->deskripsi !!}</div>
+                    {{-- Tanggal terbit di akhir isi (pilihan pemilik 2026-10-15). --}}
+                    <p class="terbit-artikel"><time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}">Diterbitkan <span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time></p>
                     <x-web.bagikan :alamat="$alamatKanonis" :judul="$artikel->judul" />
                 </div>
 

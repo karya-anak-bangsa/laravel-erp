@@ -94,9 +94,14 @@ describe('detail artikel', function () {
             ->assertSee('<meta name="description" content="Pembuka artikel. Isi tebal.">', false)
             ->assertSee('id="judul-artikel"', false)
             ->assertSee('class="judul-seksi">Judul Artikel Uji</h1>', false)
-            ->assertSee('<div class="isi-artikel konten-html"><p>Pembuka artikel.</p><h2>Bagian Pertama</h2><p>Isi <strong>tebal</strong>.</p></div>', false)
-            ->assertSee('<span class="lencana-artikel">Teknologi</span>', false)
-            ->assertSee('<time class="tanggal-artikel" datetime="2026-10-09">Diterbitkan <span class="whitespace-nowrap">9 Oktober 2026</span></time>', false)
+            // Kategori sebagai pita di bingkai gambar, tanggal terbit di akhir isi (pilihan pemilik 2026-10-15).
+            ->assertSeeInOrder([
+                '<div class="bingkai-artikel">',
+                '<span class="lencana-artikel">Teknologi</span>',
+                '<div class="isi-artikel konten-html"><p>Pembuka artikel.</p><h2>Bagian Pertama</h2><p>Isi <strong>tebal</strong>.</p></div>',
+                '<p class="terbit-artikel"><time class="tanggal-artikel" datetime="2026-10-09">Diterbitkan <span class="whitespace-nowrap">9 Oktober 2026</span></time></p>',
+                'class="bagikan"',
+            ], false)
             ->assertSee('href="'.route('artikel.index').'">Artikel</a>', false);
     });
 

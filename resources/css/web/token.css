@@ -22,6 +22,8 @@ html[data-tema=full_color] {
   --aksen-lembut: color-mix(in oklab, var(--warna-aksen) 8%, #fff);
   --kisi: color-mix(in oklab, var(--warna-utama) 7%, transparent);
   --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3);
+  /* Pita kategori artikel: warna utama (--utama-teks dijamin kontras ≥4,5:1 dengan putih). */
+  --latar-pita: var(--utama-teks); --teks-pita: #ffffff;
   /* Elemen melayang (menu ponsel, modal, tombol WhatsApp, popup peta, tautan lompat konten) tetap berbayangan di setiap
      pilihan bayangan template, karena bayangannya memisahkan lapisan; bayangan permukaan lain dari TemaService. */
   --bayangan-melayang: 0 1px 2px rgb(15 23 42 / .03), 0 16px 32px -18px rgb(15 23 42 / .15);
@@ -40,6 +42,7 @@ html[data-tema=monochrome] {
   --latar-redup: color-mix(in oklab, var(--nada-100) 40%, #fff);
   --aksen-teks: var(--nada-950); --kisi: var(--nada-200);
   --corak: var(--nada-900); --corak-lembut: var(--nada-100); --corak-teks: var(--nada-900); --corak-cincin: var(--nada-200);
+  --latar-pita: var(--foreground); --teks-pita: var(--background);
 }
 /* Seksi gelap (band ajakan, footer). Token --color-* Basecoat dihitung di :root, jadi dipetakan ulang di sini.
    Semua token ditulis ulang karena aturan .dark bawaan Basecoat ikut menimpa nilai yang diwarisi (mis. --primary). */
