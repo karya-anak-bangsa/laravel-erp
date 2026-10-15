@@ -1,67 +1,28 @@
 # Roadmap Pengembangan — ERP TKAB
 
-Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (CLAUDE.md §12).
+Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (CLAUDE.md §12). Rincian pekerjaan yang sudah selesai ada di riwayat git.
 
-**Alasan urutan**: panel admin wajib terlindungi login sebelum online, jadi dashboard & autentikasi dikerjakan bersama. Deploy dilakukan sedini mungkin agar masalah server ketahuan saat aplikasi masih kecil. Backend Company Profile dikerjakan sebelum frontend publik karena frontend menampilkan datanya.
+## Selesai
 
----
-
-## Fase 0 — Fondasi Proyek
-- [x] Instal Laravel 13 di repo `laravel-erp` (folder `C:\laragon\www\project\laravel-erp`), hubungkan remote GitHub
-- [x] `.env`: MySQL `laravel_erp`, `APP_LOCALE=id`, `APP_FAKER_LOCALE=id_ID`, `APP_TIMEZONE`/config `Asia/Jakarta`, `APP_URL=http://localhost:8000`
-- [x] `.env.example` lengkap (tanpa nilai rahasia), termasuk `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
-- [x] Pest, Larastan (level 5, dinaikkan bertahap), Pint; script composer `lint`, `analyse`, `test`, `check`
-- [x] `phpunit.xml` memakai database `laravel_erp_testing` (MySQL)
-- [x] `lang/id/validation.php` dan pesan dasar berbahasa Indonesia
-- [x] Kerangka folder sesuai CLAUDE.md §6 (`routes/admin.php`, `config/menu.php`, `app/Support`, `app/Services/Shared`)
-- [x] `.editorconfig`, README singkat (cara instal lokal)
-
-## Fase 1 — Tampilan Dashboard Backend & Autentikasi
-### 1a. Login & dashboard terlindungi (lalu deploy pertama)
-- [x] Instal Gentelella v4 via npm (ganti Tailwind bawaan); `resources/scss/admin.scss` + `resources/js/admin.js` di Vite
-- [x] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
-- [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`
-- [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, logout), breadcrumb, footer (toggle dark mode dihapus 2026-10-08 atas keputusan pemilik)
-- [x] Dashboard placeholder (kartu ringkasan kosong, diisi seiring modul ditambahkan)
-- [x] Feature test autentikasi & akses dashboard
-### 1b. Komponen & halaman error
-- [x] Komponen Blade admin dasar: page-header, card, form-input/textarea/select/file (dengan error), delete-button + modal konfirmasi, empty-state, pagination, toast flash message
-- [x] Halaman error 403, 404, 419, 500, 503 bergaya Gentelella
-
-## Fase 2 — Deploy ke Hostinger
-Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap fitur yang selesai langsung di-deploy agar progres bisa diakses online.
-- [x] Deploy pertama & smoke test produksi: login, dashboard, halaman 404, HTTPS paksa (langkah & catatan server di `docs/DEPLOY.md`)
-
-## Fase 3 — Company Profile (Backend)
-- [x] Identitas (singleton: edit + upload logo & favicon) + `IdentitasSeeder`
-- [x] Kategori Artikel (data master abjad, jumlah artikel, tolak hapus bila masih dipakai) + `KategoriArtikelSeeder` (10 kategori topik teknologi sejak 2026-10-16)
-- [x] Artikel (slug otomatis, sanitasi HTML, editor rich text dengan sub-judul H2/H3, status draf/terbit, filter kategori & status) + `ArtikelDummySeeder` (32 artikel contoh panjang sejak 2026-10-16, isi di `database/seeders/data/artikel`)
-- [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
-- [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
-- [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder`
-- [x] FAQ (urutan, jawaban WYSIWYG) + `FaqSeeder` (5 FAQ awal)
-- [x] Kontak Kami (kotak masuk: filter, tandai dibaca/belum — otomatis saat modal detail dibuka, hapus) + badge jumlah belum dibaca di sidebar (kotak masuk awal kosong, diisi form kontak Fase 4)
-- [x] Data awal lokal & produksi seragam lewat `CompanyProfileSeeder`; migration Company Profile disusun ulang sebelum deploy pertama modul ini
+- [x] Fase 0 — Fondasi: Laravel 13 + MySQL, bahasa & zona waktu Indonesia, Pest, Larastan, Pint, `composer check`
+- [x] Fase 1 — Panel admin Gentelella v4: login (rate limit, tanpa "ingat saya"), layout & menu, dashboard, komponen Blade, halaman error
+- [x] Fase 2 — Deploy ke Hostinger (prosedur di `docs/DEPLOY.md`)
+- [x] Fase 3 — Backend Company Profile: Identitas, Hero, Layanan, Portofolio, Kategori Artikel, Artikel, FAQ, Kontak Kami; data awal lewat `CompanyProfileSeeder`
 
 ## Fase 4 — Frontend Publik
-Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — diterapkan bertahap (keputusan pemilik 2026-10-09).
-- [x] Putuskan template: Tailwind v4 + Basecoat UI, dua tema Full Color & Monochrome; dicatat di CLAUDE.md §4
-- [x] Langkah 1 — Prototipe gabungan `tema-ganda.html` (di luar repo) disetujui pemilik (2026-10-09; Full Color memakai sudut sedang)
-- [x] Langkah 2a — Layout publik terpisah dari admin (`layouts/web`, entri Vite sendiri) + beranda (hero, layanan, portofolio, artikel terbaru, FAQ, kontak) dengan dua template bawaan dan tombol ganti tema di navbar (bawaan Full Color, pilihan pengunjung disimpan di cookie); data identitas di-cache; peta Leaflet + OSM (titik Jalan Pipit III dari Nominatim). Kartu artikel belum bertautan sampai halaman artikel dibuat
-- [x] Langkah 2b — Halaman error publik (404/419/500/503 + 429/4xx/5xx bergaya tema frontend dengan navbar & footer, tanpa tautan ke `/admin`; tampil ringkas bila database tidak terbaca); halaman admin tetap memakai layout error admin
-- [x] Langkah 3a — Manajemen Template (Pengaturan Sistem): `tb_template`, tambah/ubah/hapus, aktivasi satu template per jenis (template aktif tidak bisa dihapus/dinonaktifkan/diganti jenisnya), pratinjau beranda di tab baru termasuk isian yang belum disimpan; tema frontend diambil dari template aktif (cadangan `config/tema.php`); semua font pilihan dibangun sampai bobot 800; ketebalan judul
-- [x] Langkah 3b — Pilihan bayangan template (tanpa/halus/tegas) untuk tombol, isian, kartu, dan bingkai gambar hero di kedua tema (Full Color juga navbar, kotak ajakan, ikon kontak); elemen melayang tetap berbayangan; Halus identik dengan tampilan sebelumnya
-- [x] Langkah 3c — Perbaikan dari review pemilik (2026-10-14): nada dasar Monochrome yang bedanya terlihat (Netral, Biru, Hijau, Ungu, Cokelat); pilihan Pengaturan Default/Custom di form template (Default mengunci isian dan memakai nilai bawaan); nilai bawaan `config/tema.php` = data template lokal
-- [x] Halaman artikel (2026-10-15): daftar `/artikel` (9 per halaman, paginasi) + detail `/artikel/{slug}` (kolom baca, artikel lainnya, band ajakan); kartu artikel beranda bertautan + tombol "Lihat semua artikel"; menu Artikel di navbar & footer ke halaman daftar; slug artikel dikunci setelah terbit
-- [x] Kolom samping halaman artikel, tahap 1 (2026-10-15): daftar & detail dua kolom mulai 1024px (kolom utama 8/12 + kolom samping 4/12; di bawahnya kolom samping turun ke bawah isi) berisi Artikel terbaru (5, di detail), Layanan kami, dan kartu Konsultasi gratis yang menempel saat digulir; seksi "Artikel lainnya" di detail digantikan kolom samping; kepala detail rata kiri di kedua tema, tanggal terbit pindah ke akhir isi; daftar 10 per halaman, Full Color dua kartu per baris, Monochrome tanggal di bawah ringkasan; kategori tampil sebagai pita di kartu halaman daftar dan bingkai gambar detail
-- [x] Kolom samping halaman artikel, tahap 2 (2026-10-15): halaman kategori `/artikel/kategori/{slug}` (susunan sama dengan daftar, 10 per halaman, hanya kategori berartikel terbit, masuk sitemap, remah roti JSON-LD; slug kategori otomatis dari nama dan dikunci begitu kategori punya artikel terbit) + kotak Kategori (nama + jumlah artikel terbit) di kolom samping daftar, kategori, dan detail; artikel beranda berpita kategori di kedua tema, Monochrome tanggal di bawah ringkasan (susunan sama dengan halaman daftar), tombol "Lihat semua artikel" padat berwarna template di bawah daftar beranda dan di kolom samping
-- [x] Detail tampilan artikel (2026-10-16): tombol panel admin mengikuti pola paradiplomasi-v2 di semua halaman daftar (Terapkan abu-abu & Reset merah sama tinggi dan lebar, `<x-admin.tombol-tambah>` "Tambah Data" hanya ikon di ponsel, daftar kosong tanpa tombol tambah, modal Lihat setinggi layar, tombol Simpan/Hapus nonaktif setelah dikonfirmasi); beranda tanpa tombol "Lihat semua artikel" (menu Artikel di navbar sudah mewakili); kolom samping berurutan Konsultasi gratis → Layanan kami → Kategori (→ Artikel terbaru di detail) dan kartu konsultasi tidak lagi menempel; data contoh 10 kategori topik teknologi + 32 artikel panjang (30 terbit, 2 draf) dengan ilustrasi sementara per kategori
-- [ ] Halaman: portofolio, kontak
-- [x] Form kontak → `tb_kontak_kami` (rate limit 3/menit per IP, honeypot) — dikerjakan bersama langkah 2a; notifikasi email (opsional, butuh SMTP) belum dibuat
-- [x] SEO (2026-10-15): judul (akhiran nama perusahaan) & deskripsi per halaman, alamat kanonis dari `APP_URL` + `www` dialihkan 301, Open Graph & Twitter Card (gambar bawaan = hero aktif, artikel memakai gambarnya sendiri), JSON-LD (Organization, WebSite, BlogPosting, BreadcrumbList), `sitemap.xml` & `robots.txt` dinamis, sakelar `SEO_INDEKS` (noindex selama tahap uji), noindex panel admin/login/pratinjau; tombol bagikan artikel (WhatsApp, Facebook, LinkedIn, salin tautan); Meta Deskripsi identitas terisi; favicon hanya PNG/ICO
-- [ ] Performa: lazy-load gambar (sudah di langkah 2a), ukuran gambar dioptimalkan, impor Basecoat selektif (`web.css` kini ±39 KB gzip), font woff2 saja (plugin font Laravel 3.2 membuat blok `@font-face` woff2 & woff terpisah sehingga browser mengunduh `.woff`)
+
+- [x] Layout publik dua tema (Full Color & Monochrome) + beranda: hero, layanan, portofolio, artikel, FAQ, kontak (formulir dengan rate limit & honeypot, peta)
+- [x] Halaman error publik
+- [x] Manajemen Template: satu template aktif per jenis, pratinjau, Pengaturan Default/Custom, nada dasar, ketebalan judul, bayangan
+- [x] Halaman artikel: daftar, kategori, detail, kolom samping
+- [x] SEO: judul & deskripsi per halaman, kanonis, Open Graph, JSON-LD, `sitemap.xml` & `robots.txt`, sakelar `SEO_INDEKS`; tombol bagikan artikel
+- [ ] Halaman portofolio
+- [ ] Halaman kontak
+- [ ] Performa: ukuran gambar dioptimalkan, impor Basecoat selektif (`web.css` kini ±39 KB gzip), font woff2 saja (plugin font Laravel membuat blok `@font-face` woff2 & woff terpisah sehingga browser mengunduh `.woff`)
+- [ ] (Opsional) Notifikasi email formulir kontak — butuh SMTP
 
 ## Fase 5 — Penguatan Kualitas
+
 - [ ] Manajemen pengguna & role/permission (nama tabel mengikuti konvensi `tb_`)
 - [ ] Audit log aktivitas
 - [ ] Backup database terjadwal
@@ -70,6 +31,7 @@ Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — di
 - [ ] (Opsional) GitHub Actions untuk menjalankan test otomatis setiap push
 
 ## Fase 6+ — Ekspansi ERP (gambaran)
+
 - [ ] Peserta (master bersama)
 - [ ] Pelatihan, Sertifikasi, Bootcamp (+ pendaftaran)
 - [ ] Klien, Proyek, Invoice

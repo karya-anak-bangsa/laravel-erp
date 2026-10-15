@@ -1,7 +1,6 @@
 # CLAUDE.md — ERP PT. Teknologi Karya Anak Bangsa (TKAB)
 
-File ini adalah panduan utama untuk Claude Code saat bekerja di repositori ini.
-Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca saat relevan**:
+Panduan utama untuk Claude Code di repositori ini. Baca seluruhnya di awal sesi; dokumen lain dibaca saat relevan:
 
 | File | Baca ketika |
 |---|---|
@@ -14,45 +13,38 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 ## 1. Tentang Proyek
 
 - **Perusahaan**: PT. Teknologi Karya Anak Bangsa — jasa pembuatan website, mobile apps, pelatihan IT, sertifikasi IT, dan bootcamp mahasiswa.
-- **Produk**: Sistem ERP berbasis web yang dikembangkan **bertahap dan konsisten**.
-- **Modul saat ini**: **Company Profile** — identitas, hero, layanan, portofolio, artikel + kategori, FAQ, kontak kami.
-- **Modul masa depan** (desain hari ini harus siap menampungnya): riwayat pelatihan, sertifikasi, bootcamp, klien/proyek, invoice.
-- **Fokus saat ini**: Fase 4 — frontend publik dengan dua tema (Full Color & Monochrome), dikerjakan bertahap (lihat `docs/ROADMAP.md`).
-- **Standar kualitas**: ISO/IEC 25010 (lihat §11).
-- **Domain produksi**: https://karyaanakbangsa.co.id (Hostinger)
-- **Tahap produksi**: **uji coba** — seluruh isi produksi masih data dummy yang belum bernilai (keputusan pemilik 2026-10-11). Selama tahap ini berlaku aturan khusus di §2.4. Tahap ini berakhir hanya bila pemilik menyatakan produksi sudah memakai data real.
+- **Produk**: sistem ERP berbasis web yang dikembangkan bertahap. Modul saat ini **Company Profile** (identitas, hero, layanan, portofolio, artikel + kategori, FAQ, kontak kami, template tampilan) beserta frontend publiknya. Modul masa depan yang harus bisa ditampung desain hari ini: pelatihan, sertifikasi, bootcamp, klien/proyek, invoice. Status dan urutan pekerjaan ada di `docs/ROADMAP.md`.
+- **Prinsip**: kualitas mendekati ISO/IEC 25010 (§11) **tanpa over engineering**. Lapisan, paket, pilihan konfigurasi, atau test baru hanya untuk kebutuhan nyata; pekerjaan dan pemeriksaan sebatas yang diminta dan yang terdampak.
+- **Produksi**: https://karyaanakbangsa.co.id (Hostinger), masih **tahap uji**: seluruh isinya data dummy yang belum bernilai, dengan aturan khusus di §2.4. Tahap ini berakhir hanya bila pemilik menyatakan produksi sudah memakai data real.
 - **Repositori**: https://github.com/karya-anak-bangsa/laravel-erp
 
 ## 2. Aturan Kerja untuk Claude
 
 1. **Bahasa**: berkomunikasi dalam Bahasa Indonesia. Komentar kode dalam Bahasa Indonesia, singkat, hanya untuk menjelaskan *mengapa*, bukan *apa*.
 2. **Rencana dulu**: untuk fitur baru atau perubahan yang menyentuh lebih dari 2 file, tuliskan rencana singkat (daftar file yang dibuat/diubah + alasannya) dan tunggu persetujuan sebelum menulis kode.
-3. **Patuhi skema**: jangan menambah/mengubah/menghapus kolom di luar `docs/DATABASE.md` tanpa persetujuan. Jika ada kebutuhan, usulkan dulu lalu perbarui `docs/DATABASE.md`.
+3. **Patuhi skema**: jangan menambah/mengubah/menghapus kolom di luar `docs/DATABASE.md` tanpa persetujuan. Bila ada kebutuhan, usulkan dulu lalu perbarui `docs/DATABASE.md`.
 4. **Migration, seeder, dan data produksi**:
-   - **Seeder = cermin database lokal.** `CompanyProfileSeeder` (+ `PenggunaSeeder` untuk akun admin) harus selalu menghasilkan data yang sama persis dengan database lokal, termasuk berkas gambarnya (`database/seeders/berkas`, disalin lewat `MenyalinBerkasAwal`). Setiap perubahan data lokal yang harus ikut ke produksi dimasukkan ke seeder, bukan diketik ulang lewat admin produksi.
-   - **Selama tahap uji** (§1): migration yang sudah jalan di produksi **boleh diedit atau disusun ulang** (tetap satu migration per tabel, sesuai `docs/DATABASE.md`), dan database produksi **boleh direset dari seeder berulang kali** (`migrate:fresh` + seeder, tanpa cadangan) lewat prosedur `docs/DEPLOY.md` › Reset Data Produksi. Reset juga wajib bila migration yang sudah jalan di produksi diedit.
-   - **Setelah data real masuk** (pemilik yang menyatakan): migration yang sudah jalan di produksi tidak boleh diedit — buat migration baru untuk perubahan. Bila sebuah modul dibatalkan, file migration-nya boleh dihapus; bila migration itu sudah jalan di produksi, buang tabelnya lewat migration baru (`dropIfExists`, tabel anak lebih dulu) agar produksi tetap hanya bergerak maju. Perubahan data dilakukan lewat admin; reset tidak boleh lagi.
-5. **Paket baru** (composer/npm) harus diminta izin dulu, sebutkan alasannya dan pastikan kompatibel dengan Laravel 13 / PHP 8.3.
-6. **Git**: semua commit langsung ke `main` (developer tunggal). Deploy ke Hostinger dilakukan **sendiri oleh pemilik proyek** (Claude tidak melakukan deploy), sehingga `main` harus selalu dalam kondisi siap dipakai di produksi:
-   - Jangan commit atau push kecuali diminta. Alurnya: Claude menyelesaikan pekerjaan, menjalankan `composer check`, lalu mengusulkan pesan commit; pemilik me-review, commit, push, dan deploy sendiri.
-   - Sebelum commit, wajib lulus `composer check` (lint + analisis statis + test).
-   - Format pesan: Conventional Commits berbahasa Indonesia, scope = modul.
-     Contoh: `feat(company-profile): tambah CRUD kategori artikel`, `fix(company-profile): perbaiki validasi slug artikel`, `chore(deploy): perbarui workflow`.
-   - Satu commit = satu perubahan logis.
+   - **Seeder = cermin database lokal.** `CompanyProfileSeeder` (+ `PenggunaSeeder` untuk akun admin) selalu menghasilkan data yang sama persis dengan database lokal, termasuk berkas gambarnya (`database/seeders/berkas`, disalin lewat `MenyalinBerkasAwal`). Perubahan data lokal yang harus ikut ke produksi dimasukkan ke seeder, bukan diketik ulang lewat admin produksi.
+   - **Selama tahap uji**: migration yang sudah jalan di produksi boleh diedit atau disusun ulang (tetap satu migration per tabel), dan database produksi boleh direset dari seeder berulang kali tanpa cadangan lewat `docs/DEPLOY.md` › Reset Data Produksi. Reset wajib bila migration yang sudah jalan di produksi diedit.
+   - **Setelah data real masuk**: migration yang sudah jalan di produksi tidak boleh diedit; perubahan lewat migration baru. Modul yang dibatalkan dibuang lewat migration baru (`dropIfExists`, tabel anak lebih dulu) bila migration-nya sudah jalan di produksi. Perubahan data lewat admin; reset tidak boleh lagi.
+5. **Paket baru** (composer/npm) harus diminta izin dulu, dengan alasan, dan kompatibel dengan Laravel 13 / PHP 8.3.
+6. **Git**: semua commit langsung ke `main` (developer tunggal). Pemilik yang me-review, commit, push, dan deploy ke Hostinger; Claude tidak melakukan deploy, jadi `main` harus selalu siap produksi.
+   - Jangan commit atau push kecuali diminta. Claude menyelesaikan pekerjaan, menjalankan `composer check` (lint + analisis statis + test) bila kode berubah, lalu mengusulkan pesan commit.
+   - Format: Conventional Commits berbahasa Indonesia, scope = modul, mis. `feat(company-profile): tambah CRUD kategori artikel`, `fix(company-profile): perbaiki validasi slug artikel`, `docs: …`. Satu commit = satu perubahan logis.
 7. **Rahasia**: jangan pernah menulis kredensial ke kode, docs, atau commit. `.env` tidak boleh di-commit.
-8. **Selesai berarti memenuhi Definition of Done** (§12), lalu centang item terkait di `docs/ROADMAP.md`.
-9. **Kecil dan sering online**: pemilik proyek ingin setiap kemajuan langsung bisa diakses di https://karyaanakbangsa.co.id. Pecah pekerjaan menjadi fitur kecil yang masing-masing utuh dan bisa di-deploy. Jangan meninggalkan `main` dalam kondisi setengah jadi (menu yang mengarah ke halaman rusak, migration tanpa fitur, dsb.).
-10. **Catatan deploy**: di akhir setiap fitur, sebutkan singkat apa yang berdampak ke server: migration baru, seeder yang perlu dijalankan sekali, variabel `.env` baru, paket composer/npm baru, apakah aset perlu di-build ulang, dan (selama tahap uji) apakah **reset data produksi** diperlukan karena migration atau seeder berubah. Pisahkan langkah wajib dan opsional, masing-masing dengan alasan singkat.
+8. **Selesai** berarti memenuhi Definition of Done (§12), lalu centang item terkait di `docs/ROADMAP.md`.
+9. **Kecil dan sering online**: setiap kemajuan sebaiknya langsung bisa diakses di produksi. Pecah pekerjaan menjadi fitur kecil yang masing-masing utuh dan bisa di-deploy; jangan meninggalkan `main` setengah jadi (menu ke halaman rusak, migration tanpa fitur, dsb.).
+10. **Catatan deploy**: di akhir setiap fitur, sebutkan yang berdampak ke server: migration baru, seeder yang perlu dijalankan sekali, variabel `.env` baru, paket composer/npm baru, perlu tidaknya build aset, dan (selama tahap uji) perlu tidaknya **reset data produksi**. Pisahkan langkah wajib dan opsional, masing-masing dengan alasan singkat.
 11. Jika instruksi pengguna bertentangan dengan file ini, ikuti pengguna lalu tawarkan untuk memperbarui file ini.
+12. **Dokumen**: tulis aturan yang berlaku sekarang, singkat, dan di satu tempat (tabel di atas; README hanya pengantar & instalasi). Riwayat dan alasan lama cukup tersimpan di git. File ini dibaca di setiap sesi, jadi detail yang sudah dijaga kode, test, atau acuan tampilan tidak perlu ditulis di sini.
 
 ## 3. Lingkungan Pengembangan
 
-- **OS**: Windows, dengan **Laragon 8.4.0** — Apache 2.4.62, PHP 8.3.28, MySQL 8.0.40, Node.js 24.12, Git 2.47.1, Composer 2.10.1.
-- **Lokasi proyek**: `C:\laragon\www\project\laravel-erp`, dijalankan dengan `php artisan serve` → `http://localhost:8000` (tanpa virtual host Laragon; Laragon hanya dipakai untuk MySQL).
-- **Editor**: VS Code + Claude Code. Tulis perintah terminal yang berjalan di Git Bash maupun PowerShell (hindari sintaks khusus Linux seperti `sudo`, `&&` pada PowerShell lama).
-- **Perangkat**: laptop 16 GB RAM, layar 1920×1200 — target utama tampilan panel admin, tetapi wajib tetap responsif di tablet & ponsel.
-- **Database lokal**: MySQL `laravel_erp` (user `root`, tanpa password — default Laragon). Database test: `laravel_erp_testing`.
-- Catatan: skeleton Laravel 13 default memakai SQLite — proyek ini **wajib MySQL** (`DB_CONNECTION=mysql`).
+- **OS**: Windows dengan **Laragon 8.4.0** — Apache 2.4.62, PHP 8.3.28, MySQL 8.0.40, Node.js 24.12, Git 2.47.1, Composer 2.10.1.
+- **Proyek**: `C:\laragon\www\project\laravel-erp`, dijalankan dengan `php artisan serve` → `http://localhost:8000` (Laragon hanya dipakai untuk MySQL).
+- **Editor**: VS Code + Claude Code. Tulis perintah terminal yang berjalan di Git Bash maupun PowerShell (hindari `sudo` dan `&&` pada PowerShell lama).
+- **Layar acuan**: laptop 1920×1200 berskala 125% (viewport CSS 1536×960); tampilan wajib tetap responsif di tablet & ponsel.
+- **Database**: MySQL `laravel_erp` (user `root`, tanpa password); test memakai `laravel_erp_testing`. Proyek wajib MySQL (`DB_CONNECTION=mysql`), bukan SQLite bawaan skeleton.
 
 ## 4. Tech Stack
 
@@ -60,93 +52,65 @@ Baca seluruhnya di awal sesi. Detail lanjutan ada di folder `docs/` dan **dibaca
 |---|---|
 | Framework | Laravel 13 (PHP ≥ 8.3) |
 | Database | MySQL 8, charset `utf8mb4_unicode_ci` |
-| Template admin | **Gentelella v4** (npm `gentelella`) — vanilla JS + SCSS + Vite. **Tanpa Bootstrap, tanpa jQuery.** |
-| Build aset | Vite (laravel-vite-plugin) |
-| Grafik | ECharts (bawaan Gentelella v4) |
+| Panel admin | **Gentelella v4** (npm `gentelella`) — vanilla JS + SCSS + Vite, grafik ECharts. **Tanpa Bootstrap, tanpa jQuery.** |
 | Toast & konfirmasi | Simple Notify (toast) dan SweetAlert2 (dialog konfirmasi), npm |
-| Editor WYSIWYG | TipTap 3 (`@tiptap/core`, `@tiptap/starter-kit`), npm; sanitasi HTML di server dengan `symfony/html-sanitizer` ^7.4 (versi 8 butuh PHP 8.4) |
-| Testing | Pest (di atas PHPUnit) |
-| Kualitas kode | Laravel Pint (preset `laravel`), Larastan |
-| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`, port shadcn/ui untuk HTML, MIT) dengan entri Vite terpisah dari aset admin; paket npm dipasang (dengan izin) di Fase 4 langkah 2. **Satu markup Blade, dua tema**: Full Color (bawaan) dan Monochrome, dipilih pengunjung lewat tombol di navbar. Kedua tema memakai font Geist + Geist Mono dan **ukuran yang identik** (Monochrome acuan; pilihan pemilik 2026-10-11) — bedanya hanya warna, dekorasi, dan susunan tertentu (§9). Warna, font, sudut, skala, lebar konten, ketebalan judul, dan bayangan tiap tema berasal dari template aktif per jenis di `tb_template` (Pengaturan Sistem › Manajemen Template), selalu dibaca lewat `TemaService` dengan cadangan `config/tema.php` bila database tidak terbaca. Acuan tampilan: §9 › Acuan tampilan. BootstrapMade dan Preline tidak dipakai (diputuskan pemilik 2026-10-09) |
+| Editor WYSIWYG | TipTap 3 (`@tiptap/core`, `@tiptap/starter-kit`); sanitasi HTML di server dengan `symfony/html-sanitizer` ^7.4 (versi 8 butuh PHP 8.4) |
+| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`) dengan entri Vite terpisah dari admin; peta Leaflet + OpenStreetMap; ikon Lucide. Satu markup, dua tema (§9 › Frontend Publik) |
+| Build aset | Vite (laravel-vite-plugin) |
+| Testing & kualitas | Pest (di atas PHPUnit), Laravel Pint (preset `laravel`), Larastan |
 
-### Integrasi Gentelella v4 dengan Laravel
-- Pasang via npm, lalu impor SCSS & modul JS di `resources/scss/admin.scss` dan `resources/js/admin.js`; dikompilasi oleh Vite Laravel.
-- Gentelella v4 menyuntikkan shell (sidebar/topbar) lewat JavaScript. Di proyek ini **sidebar, topbar, dan breadcrumb dirender server-side dengan Blade** (agar menu aktif, nama pengguna, dan otorisasi dikendalikan Laravel). Salin markup dari halaman referensi `production/*.html` dan `src/v4/shell-render.js`. `mountShell()` (di `resources/js/admin.js`) boleh dipanggil karena hanya memasang perilaku bila markup sudah ada; jangan pakai kelas `.tb-avatar`, `.tb-notifications`, `.tb-messages`, `.sidebar-user .more-btn`, `.theme-toggle`, dan kotak pencarian topbar karena Gentelella mengikatnya ke menu/data demo. **Panel admin hanya bermode terang** (mode gelap dihapus atas keputusan pemilik) — jangan memasang atribut `data-theme` atau toggle tema. Menu dropdown dibuat dengan tombol ber-atribut `data-menu="<id>"` + `<template id="<id>">` berisi markup Blade (`.menu-item`, `.menu-separator`); `admin.js` membukanya lewat `openPanel()`. Contoh: menu pengguna di `.sidebar-footer` (nama, email, logout); topbar hanya berisi tombol sidebar + breadcrumb. Layout admin terdiri dari `layouts/admin.blade.php` + `layouts/partials/{head,sidebar,topbar,footer}`; breadcrumb dikirim lewat `@extends('layouts.admin', ['breadcrumb' => ['Label' => url|null]])`.
-- Komponen JS Gentelella (chart, menu `openPanel`) boleh dipakai langsung. **Toast memakai Simple Notify dan dialog konfirmasi memakai SweetAlert2** (pilihan pemilik) — jangan memakai `showToast`/`showModal` Gentelella. Keduanya dipasang di `resources/js/admin.js` (sumber: flash session & atribut `data-confirm`), CSS-nya di `admin.scss` dengan token Gentelella agar seragam dengan panel admin. Keamanan: `text` Simple Notify dirender sebagai HTML → selalu di-escape; di SweetAlert2 pakai `titleText`/`text`, bukan `title`/`html`, untuk isi yang memuat input pengguna.
-- Jangan memakai kelas Bootstrap — Gentelella v4 tidak memuatnya. Gunakan kelas/komponen Gentelella; cek halaman *Component playground* untuk markup yang benar.
-- Tabel daftar data memakai **paginasi & pencarian server-side Laravel**, bukan DataTables client-side (performa saat data membesar).
+### Integrasi Gentelella v4
+- SCSS & modul JS diimpor di `resources/scss/admin.scss` dan `resources/js/admin.js`, dikompilasi Vite.
+- Sidebar, topbar, dan breadcrumb **dirender server-side dengan Blade** agar menu aktif, nama pengguna, dan otorisasi dikendalikan Laravel; markup disalin dari `production/*.html` dan `src/v4/shell-render.js` Gentelella. `mountShell()` boleh dipanggil karena hanya memasang perilaku pada markup yang sudah ada. Jangan memakai `.tb-avatar`, `.tb-notifications`, `.tb-messages`, `.sidebar-user .more-btn`, `.theme-toggle`, dan kotak pencarian topbar karena terikat ke data demo.
+- Panel admin **hanya bermode terang**: jangan memasang atribut `data-theme` atau toggle tema.
+- Menu dropdown: tombol `data-menu="<id>"` + `<template id="<id>">` berisi `.menu-item`/`.menu-separator`, dibuka `admin.js` lewat `openPanel()`. Menu pengguna (nama, email, logout) ada di `.sidebar-footer`; topbar hanya berisi tombol sidebar + breadcrumb.
+- Layout: `layouts/admin.blade.php` + `layouts/partials/{head,sidebar,topbar,footer}`; breadcrumb lewat `@extends('layouts.admin', ['breadcrumb' => ['Label' => url|null]])`.
+- Komponen JS Gentelella (chart, `openPanel`) boleh dipakai. Toast memakai Simple Notify dan konfirmasi SweetAlert2 (dipasang di `admin.js` dari flash session & atribut `data-confirm`; CSS di `admin.scss` dengan token Gentelella); jangan memakai `showToast`/`showModal` Gentelella. Keamanan: `text` Simple Notify dirender sebagai HTML → selalu di-escape; di SweetAlert2 pakai `titleText`/`text`, bukan `title`/`html`, untuk isi yang memuat input pengguna.
+- Jangan memakai kelas Bootstrap; gunakan kelas Gentelella (cek halaman *Component playground*).
+- Tabel daftar memakai **paginasi & pencarian server-side Laravel**, bukan DataTables client-side.
 
 ## 5. Perintah Umum
 
 ```bash
 composer install && npm install        # instal dependensi
 php artisan serve                       # server PHP di http://localhost:8000
-npm run dev                             # Vite dev server (jalankan bersamaan dengan artisan serve)
+npm run dev                             # Vite dev server (bersamaan dengan artisan serve)
 npm run build                           # build aset produksi
 php artisan migrate --seed              # migrasi + seeder
-php artisan migrate:fresh --seed        # reset database lokal (produksi: hanya selama tahap uji, lewat prosedur docs/DEPLOY.md)
+php artisan migrate:fresh --seed        # reset database lokal (produksi: hanya selama tahap uji, lewat docs/DEPLOY.md)
 php artisan test                        # jalankan test
 composer lint                           # vendor/bin/pint
 composer analyse                        # vendor/bin/phpstan analyse
-composer check                          # pint --test + phpstan + test (wajib sebelum commit)
+composer check                          # pint --test + phpstan + test (wajib sebelum commit kode)
 ```
-Script `lint`, `analyse`, `check` didefinisikan di `composer.json` pada Fase 0.
 
 ## 6. Arsitektur
 
 ### Prinsip
-- **Modular per domain** di dalam struktur standar Laravel (tanpa paket modul eksternal). Setiap modul punya namespace sendiri di setiap lapisan. Menambah modul baru = menambah folder namespace baru, tanpa mengubah modul lain.
+- **Modular per domain** di dalam struktur standar Laravel (tanpa paket modul eksternal). Setiap modul punya namespace sendiri di setiap lapisan; menambah modul = menambah folder namespace baru tanpa mengubah modul lain.
 - **Controller tipis**: menerima request → memanggil Model/Service → mengembalikan view/redirect.
 - **Validasi selalu di Form Request**, tidak pernah di controller.
-- **Service** dipakai bila ada: upload file, transaksi database, kalkulasi, penomoran, atau logika yang dipakai ulang. CRUD sederhana tanpa efek samping boleh langsung memakai Eloquent di controller.
-- **Tanpa Repository pattern** (Eloquent sudah cukup; tambah lapisan hanya bila ada kebutuhan nyata).
-- Nilai tetap (jenis, status) memakai **PHP backed enum** di `app/Enums/<Modul>/`. Enum yang menjadi pilihan form punya `label()` dan trait `App\Enums\Concerns\MenyediakanOpsi` (`opsi()` = `[nilai => label]` untuk `<x-admin.form-select>`).
-- Integrasi antar modul melalui relasi dan/atau Service yang terdefinisi, **bukan** dengan modul saling mengubah tabel modul lain.
+- **Service** dipakai bila ada upload file, transaksi database, kalkulasi, penomoran, atau logika yang dipakai ulang. CRUD sederhana tanpa efek samping boleh langsung memakai Eloquent di controller.
+- **Tanpa Repository pattern**: Eloquent sudah cukup.
+- Nilai tetap (jenis, status) memakai **PHP backed enum** di `app/Enums/<Modul>/`. Enum pilihan form punya `label()` dan trait `App\Enums\Concerns\MenyediakanOpsi` (`opsi()` = `[nilai => label]` untuk `<x-admin.form-select>`).
+- Integrasi antarmodul lewat relasi dan/atau Service yang terdefinisi, **bukan** dengan modul saling mengubah tabel modul lain.
 
 ### Struktur Folder
 ```
-app/
-├── Enums/CompanyProfile/
-├── Http/
-│   ├── Controllers/
-│   │   ├── Auth/LoginController.php
-│   │   ├── Admin/DashboardController.php
-│   │   ├── Admin/CompanyProfile/   (IdentitasController, HeroController, ...)
-│   │   ├── Web/CompanyProfile/     (BerandaController, ArtikelController, KategoriArtikelController, KontakKamiController — frontend publik)
-│   │   └── Web/SeoController.php   (sitemap.xml & robots.txt untuk seluruh situs)
-│   └── Requests/{Admin,Web}/CompanyProfile/   (StoreXxxRequest, UpdateXxxRequest)
-├── Models/
-│   ├── Pengguna.php
-│   └── CompanyProfile/   (Identitas, Hero, Layanan, Portofolio, Artikel, KategoriArtikel, Faq, KontakKami)
-├── Services/{CompanyProfile,Shared}/
-├── Support/              (helper murni tanpa state)
-└── View/Composers/       (MenuComposer; TemaComposer, SitusComposer & SeoComposer untuk view publik; HalamanErrorComposer untuk errors::*)
-config/menu.php            (definisi menu sidebar per modul)
-config/tema.php            (dua template bawaan: data awal TemplateSeeder & cadangan; dibaca hanya lewat TemaService)
-config/perusahaan.php      (nama cadangan perusahaan; titik peta kantor, env opsional PETA_LAT/PETA_LNG/PETA_ZOOM)
-config/seo.php             (sakelar pengindeksan mesin pencari, env SEO_INDEKS; false selama tahap uji)
-routes/
-├── web.php                (rute publik + auth)
-├── admin.php              (grup admin: prefix /admin, middleware web+auth, name admin.)
-└── admin/company-profile.php   (di-require oleh admin.php; satu file per modul)
-resources/css/web.css + resources/css/web/{token,struktur,komponen}.css   (Tailwind v4 + Basecoat, frontend publik)
-resources/js/web.js + resources/js/web/*.js                               (perilaku frontend publik)
-resources/views/
-├── layouts/{admin,auth,web}.blade.php   (+ layouts/web/{head,seo,aset,lompat-konten,navbar,footer,tombol-wa})
-├── layouts/{error,web-error}.blade.php  (halaman error panel admin & publik)
-├── errors/{403,404,419,429,4xx,500,503,5xx}.blade.php   (hanya judul & pesan, dipakai kedua layout error)
-├── components/admin/      (page-header, card, form-input, alert, delete-button, empty-state, ...)
-├── components/web/        (ikon, kepala-seksi, kepala-halaman, remah-roti, kartu-artikel, paginasi, isian, tautan-luar, bagikan, data-terstruktur)
-├── auth/login.blade.php
-├── admin/dashboard.blade.php
-├── admin/company-profile/<entitas-kebab>/{index,create,edit,show}.blade.php
-├── web/beranda.blade.php + web/beranda/*.blade.php   (seksi beranda publik)
-├── web/artikel/{index,show,daftar,samping}.blade.php (daftar & detail artikel publik, kartu + paginasi, kolom samping)
-├── web/kategori-artikel/show.blade.php               (halaman kategori artikel)
-├── seo/sitemap.blade.php                             (peta situs, SeoController)
-└── vendor/pagination/{admin,web}.blade.php           (paginasi panel admin & frontend publik)
+app/Enums/<Modul>/
+app/Http/Controllers/{Auth,Admin/<Modul>,Web/<Modul>}/   (+ Admin/DashboardController, Web/SeoController)
+app/Http/Requests/{Admin,Web}/<Modul>/
+app/Models/<Modul>/                (Pengguna langsung di app/Models)
+app/Services/{<Modul>,Shared}/
+app/Support/                       (helper murni tanpa state)
+app/View/Composers/                (menu, tema, situs, SEO, halaman error)
+config/{menu,tema,perusahaan,seo}.php
+routes/web.php, routes/admin.php   (prefix /admin, middleware web+auth, name admin.; didaftarkan di bootstrap/app.php)
+routes/admin/<modul>.php           (di-require admin.php; satu file per modul)
+resources/{scss/admin.scss,js/admin.js,js/admin/}             (panel admin)
+resources/{css/web.css,css/web/,js/web.js,js/web/}             (frontend publik)
+resources/views/{layouts,errors,components/{admin,web},admin/<modul>/<entitas-kebab>,web,seo,vendor/pagination}/
 ```
-`routes/admin.php` didaftarkan di `bootstrap/app.php` (callback `then:` pada `withRouting`).
 
 ### Menambah Modul Baru (mis. Bootcamp)
 1. Tambah entri di `docs/DATABASE.md` dan `docs/ROADMAP.md` → disetujui.
@@ -178,7 +142,7 @@ resources/views/
 | Variabel & method | camelCase | `$kategoriArtikel`, `buatSlug()` |
 | Relasi | camelCase | `kategoriArtikel()`, `artikel()` |
 
-Tabel infrastruktur framework (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `password_reset_tokens`) **tetap memakai nama default Laravel** karena nama & kolomnya dipakai internal oleh framework.
+Tabel infrastruktur framework (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `password_reset_tokens`) **tetap memakai nama default Laravel** karena dipakai internal oleh framework.
 
 ## 8. Pola Kode Wajib (karena PK/tabel non-standar)
 
@@ -211,8 +175,8 @@ class Artikel extends Model
     }
 }
 ```
-- Selalu set `$table` dan `$primaryKey` secara eksplisit (pakai properti, bukan PHP Attributes, demi konsistensi).
-- Cast ditulis di method `casts()`; Larastan membacanya lewat `parseModelCastsMethod: true` di `phpstan.neon`, sehingga atribut ber-cast enum bertipe enum (bukan string) di analisis statis.
+- Selalu set `$table` dan `$primaryKey` secara eksplisit (properti, bukan PHP Attributes).
+- Cast ditulis di method `casts()`; Larastan membacanya lewat `parseModelCastsMethod: true` di `phpstan.neon`, sehingga atribut ber-cast enum bertipe enum di analisis statis.
 - Selalu gunakan `$fillable` (jangan `$guarded = []`).
 - **Setiap relasi wajib menyebut foreign key & owner/local key secara eksplisit.**
 
@@ -232,106 +196,114 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 
 ### Jebakan yang Harus Dihindari
 - Validasi `exists`/`unique` **wajib menyebut kolom**: `exists:tb_kategori_artikel,id_kategori_artikel`.
-- Unique saat update: `Rule::unique('tb_artikel', 'slug')->ignoreModel($artikel)->withoutTrashed()` — `ignore($id)` tanpa nama kolom akan mencari kolom `id` dan salah.
-- Jangan `orderBy('id')` / `pluck('name', 'id')` — gunakan nama kolom sebenarnya.
-- Route model binding otomatis memakai `$primaryKey` — tidak perlu override `getRouteKeyName()` kecuali memakai slug di frontend publik.
-- `Route::resource()` untuk nama berakhiran *-s* (mis. `kelas`) wajib diberi `->parameters(['kelas' => 'kelas'])`. Tanpanya Laravel menganggap nama itu jamak bahasa Inggris dan memotong parameternya menjadi `{kela}`.
-- Kolom `user_id` di tabel `sessions` berisi nilai `id_pengguna` — ini normal.
+- Unique saat update: `Rule::unique('tb_artikel', 'slug')->ignoreModel($artikel)->withoutTrashed()`; `ignore($id)` tanpa nama kolom akan mencari kolom `id` dan salah.
+- Jangan `orderBy('id')` / `pluck('name', 'id')`; gunakan nama kolom sebenarnya.
+- Route model binding otomatis memakai `$primaryKey`; override `getRouteKeyName()` hanya bila memakai slug di frontend publik.
+- `Route::resource()` untuk nama berakhiran *-s* (mis. `kelas`) wajib diberi `->parameters(['kelas' => 'kelas'])`; tanpanya Laravel memotong parameternya menjadi `{kela}`.
+- Kolom `user_id` di tabel `sessions` berisi nilai `id_pengguna`; ini normal.
 - Factory untuk FK: `'id_kategori_artikel' => KategoriArtikel::factory()`.
 
 ## 9. Konvensi Fitur
 
 ### Controller & Rute
-- Gunakan `Route::resource()` dan hanya aksi yang dibutuhkan (`->only()` / `->except()`).
-- `index`: pencarian (`?q=`), filter, `->latest()->paginate(25)->withQueryString()` (25 data per halaman untuk semua modul — keputusan pemilik), eager loading relasi (cegah N+1).
-- Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang ditampilkan sebagai toast.
-- Hapus = soft delete, dengan konfirmasi modal. Hapus permanen hanya bila fitur "sampah" dibuat.
-- **Semua aksi tambah, ubah, dan hapus wajib dikonfirmasi SweetAlert2** (keinginan pemilik). Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi atribut `data-confirm="..."`, `data-confirm-title="..."`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="success"`, mis. `<form method="POST" action="…" novalidate data-confirm="Pastikan data sudah benar sebelum disimpan." data-confirm-title="Simpan kategori artikel baru?" data-confirm-label="Ya, simpan" data-confirm-variant="success">`. Setelah dikonfirmasi, tombol submit form itu dinonaktifkan sampai halaman berpindah (`admin.js`) agar data tidak terkirim dua kali.
-- Warna tombol (pilihan pemilik): Tambah & Simpan `btn-success`, Lihat `btn-info` (ikon `eye`), Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` dengan ikon `rotate-left` (termasuk tombol Batal dialog SweetAlert2). Urutan tombol selalu aksi utama di kiri lalu Batal di kanan, di form maupun dialog SweetAlert2 (jangan pakai `reverseButtons`). Detail tombol mengikuti pola paradiplomasi-v2 (pilihan pemilik 2026-10-16): di kartu filter, Terapkan `btn-secondary` (ikon `filter`) dan Reset `btn-danger` (ikon `clock-rotate-left`) sama tinggi & lebar dalam `.aksi-filter`; tombol tambah selalu `<x-admin.tombol-tambah>`.
-- Modul singleton (`tb_identitas`) hanya punya `edit` & `update`.
+- Gunakan `Route::resource()` dengan aksi yang dibutuhkan saja (`->only()` / `->except()`). Modul singleton (`tb_identitas`) hanya punya `edit` & `update`.
+- `index`: pencarian (`?q=`), filter, eager loading relasi (cegah N+1), `->paginate(25)->withQueryString()`. Urutan `->latest()`, kecuali data master (mis. kategori artikel) yang diurutkan abjad.
+- Setelah `store`/`update`/`destroy`: redirect dengan flash message (`->with('success', '...')`) yang tampil sebagai toast.
+- Hapus = soft delete. Hapus permanen hanya bila fitur "sampah" dibuat.
+- **Semua aksi tambah, ubah, dan hapus dikonfirmasi SweetAlert2.** Hapus lewat `<x-admin.delete-button>`; form tambah/ubah diberi `data-confirm="Pastikan data sudah benar sebelum disimpan."`, `data-confirm-title="Simpan <entitas> baru?"`, `data-confirm-label="Ya, simpan"`, `data-confirm-variant="success"`. Setelah dikonfirmasi, tombol submit dinonaktifkan sampai halaman berpindah (`admin.js`) agar data tidak terkirim dua kali.
+- Tombol: Tambah & Simpan `btn-success`, Lihat `btn-info` (ikon `eye`), Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` berikon `rotate-left` (termasuk Batal di SweetAlert2). Aksi utama di kiri, Batal di kanan, di form maupun dialog (tanpa `reverseButtons`). Kartu filter: Terapkan `btn-secondary` (ikon `filter`) dan Reset `btn-danger` (ikon `clock-rotate-left`), sama tinggi & lebar dalam `.aksi-filter`. Tombol tambah selalu `<x-admin.tombol-tambah>`.
 
 ### Upload File
-- Gambar publik (company profile): disk `public`, folder `company-profile/<entitas>/`, nama file UUID. Validasi `image|mimes:jpg,jpeg,png,webp|max:2048`.
-- **Berkas privat** (dokumen internal yang tidak boleh publik, bila kelak dibutuhkan): disk `local`, folder `<modul>/<entitas>/`, nama file UUID, diakses hanya lewat rute ber-`auth` yang men-stream file.
-- Saat update dengan file baru, hapus file lama setelah penyimpanan sukses. File tetap disimpan saat soft delete.
-- Logika upload dipusatkan di `App\Services\Shared\FileUploadService`. Untuk simpan/ubah data berberkas pakai `simpanDenganBerkas()` (simpan berkas baru → jalankan penyimpanan → hapus berkas lama; berkas baru dibersihkan bila gagal). Berkas bawaan untuk seeder disalin lewat trait `Database\Seeders\Concerns\MenyalinBerkasAwal`.
+- Gambar publik: disk `public`, folder `company-profile/<entitas>/`, nama file UUID, validasi `image|mimes:jpg,jpeg,png,webp|max:2048`.
+- Berkas privat (bila kelak dibutuhkan): disk `local`, folder `<modul>/<entitas>/`, nama file UUID, diakses hanya lewat rute ber-`auth` yang men-stream file.
+- Logika upload di `App\Services\Shared\FileUploadService`. Simpan/ubah data berberkas memakai `simpanDenganBerkas()`: simpan berkas baru → simpan data → hapus berkas lama; berkas baru dibersihkan bila gagal. File tetap disimpan saat soft delete. Berkas bawaan seeder disalin lewat trait `Database\Seeders\Concerns\MenyalinBerkasAwal`.
 
-### Tampilan
-- Semua halaman admin extend `layouts/admin`. Pakai Blade component untuk elemen berulang (header halaman, kartu, input form + pesan error, tombol hapus, empty state).
-- Susunan halaman (pilihan pemilik): `<x-admin.page-header>` hanya berisi **nama modul** (mis. `title="Company Profile"`, tanpa `pretitle` dan tanpa tombol) di semua halaman — daftar, tambah, ubah, singleton. Nama entitas & aksi (Hero › Tambah) cukup tampil di breadcrumb. Halaman daftar: page-header → `<x-admin.filter-bar>` (kartu sendiri) → `<x-admin.card title="<Entitas>" :flush="true">` dengan `<x-admin.tombol-tambah :href="…">` di `<x-slot:aksi>` (judul kiri, tombol kanan) berisi tabel. Daftar kosong cukup `<x-admin.empty-state>` tanpa tombol "Tambah … Pertama", karena tombol Tambah Data sudah tepat di atasnya.
-  Komponen tersedia (anonymous, `resources/views/components/admin/`): `page-header`, `card` (slot `aksi`, `footer`, prop `flush`), `form-input`, `form-textarea`, `form-editor` (WYSIWYG TipTap; `:maks` = batas teks terlihat + penghitung; tinggi 5 baris untuk semua editor — pilihan pemilik, jangan diberi `rows`; satu-satunya pengecualian isi artikel: `:baris="15"` dan `:judul-bagian="true"` untuk tombol sub-judul H2/H3, disanitasi dengan `bersihkanHtml([...], judulBagian: true)`), `form-select` (`:options="[nilai => label]"`, atau `['Label grup' => [nilai => label]]` untuk `<optgroup>`), `form-file` (`berkas-saat-ini`), `form-switch` (boolean; `text`, `:checked`, mengirim hidden `0`), `form-warna` (hex `#rrggbb` + pemilih warna browser yang saling mengisi lewat `resources/js/admin/template.js`), `filter-bar` (pencarian `?q=` + slot filter tambahan + tombol Terapkan/Reset; merender kartunya sendiri, diletakkan di bawah page-header dan di atas kartu tabel), `tombol-tambah` ("Tambah Data", `:href`; di ponsel ≤768px hanya ikon persegi, nama di `title` & `aria-label`), `alert`, `empty-state`, `delete-button` (modal konfirmasi via atribut `data-confirm`, dipasang `admin.js`; `:ikon-saja="true"`), `detail-button` (tombol Lihat; isi slot = rincian data dalam `<template>`, dibuka `admin.js` sebagai modal SweetAlert2; `title`, `:ikon-saja="true"`), `pagination` (`:paginator`), `icon` (Font Awesome solid, `name` tanpa awalan `fa-`, mis. `<x-admin.icon name="gauge" />`; ikon menu di `config/menu.php` memakai nama yang sama: Dashboard `landmark`, semua menu modul `book`; ikon di tombol Dashboard `landmark`, semua menu modul `book`) pencarian 12px, kecuali kompensasi optik `pen-to-square` 13px, `rotate-left` 11px, dan `filter` dinaikkan 1px — diatur di `admin.scss`, jangan diberi ukuran per halaman). Semua ikon memakai Font Awesome — jangan menambah SVG inline. Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
-  Isian berulang (tambah/hapus baris, mis. keyword & CTA hero) memakai repeater `data-repeater` dari `resources/js/admin/repeater.js`; contoh markup di `admin/company-profile/hero/_form.blade.php`. Baris kosong dibuang dan diindeks ulang di `prepareForValidation()`.
-- Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, file `lang/id/validation.php`).
-- Format tanggal: `translatedFormat('d F Y')` (zona `Asia/Jakarta`). Halaman publik memakai `j F Y` tanpa nol di depan ("9 Oktober 2026", pilihan pemilik).
-- Input tanggal: `type="date"` bawaan browser dengan nilai `Y-m-d` (pilihan pemilik). Format tampilannya mengikuti bahasa browser (mis. Chrome `yyyy-mm-dd`, Firefox `mm/dd/yyyy`) dan tidak bisa diatur dari kode. Pemilih tanggal JS (flatpickr) sudah dicoba dan dibatalkan karena tampilan kalendernya kurang serasi — jangan usulkan lagi kecuali diminta.
-- Tabel yang hanya menampilkan informasi (mis. rincian laporan) diberi kelas `tabel-informasi` dan tanpa tautan per baris (pilihan pemilik).
-- Isian wajib (`:required="true"`) ditandai bintang **di depan** label: `*Nama Kategori` (pilihan pemilik).
-- Daftar data: 25 baris per halaman.
-- Tabel daftar: teks rata kiri, status di tengah. Kolom aksi memakai `<th class="kolom-aksi">` dan `<td class="kolom-aksi"><div class="aksi-tabel">…tombol…</div></td>` agar lebarnya pas dengan tombol.
-- Aksi per baris (pilihan pemilik): tiga tombol ikon persegi 32px tanpa teks — Lihat, Ubah, Hapus — setinggi tombol Tambah. Lihat = `<x-admin.detail-button title="Detail <Entitas>" :ikon-saja="true">`; Ubah = `<a class="btn btn-warning btn-ikon" title="Ubah" aria-label="Ubah">`; Hapus = `<x-admin.delete-button :ikon-saja="true">`. Contoh lengkap: `admin/company-profile/portofolio/index.blade.php`.
-- Modal detail (pilihan pemilik) bergaya modal Bootstrap 5.3: judul kiri + tombol ×, footer Tutup rata kanan, lebar `.modal-lg` (800px mulai 992px, 500px mulai 576px), tinggi dibatasi layar sehingga hanya isinya yang digulir dan judul & Tutup selalu tampak (pola paradiplomasi-v2). Isinya `<div class="detail-kolom">` berisi tabel rincian di kiri (`<div class="tabel-detail"><table class="table tabel-informasi">`, baris `<th scope="row">Label</th><td>Nilai</td>`, isian WYSIWYG ditampilkan `<td class="konten-html">{!! … !!}</td>`, nilai kosong `—`, ditutup baris Dibuat & Diperbarui `d F Y, H:i`) dan gambar di kanan (`pratinjau-gambar pratinjau-gambar-lebar`), rasio 8:4 sama dengan form tambah/ubah; bertumpuk di layar sempit. Tinggi baris mengikuti isinya (pemilik 2026-10-14 memilih kembali ke cara ini setelah mencoba semua baris dipaksa 33px).
-- **WYSIWYG hanya untuk teks yang tampil di frontend** (prinsip pemilik): deskripsi hero, layanan (deskripsi & keterangan), portofolio, dan kelak isi artikel memakai `<x-admin.form-editor>`. Teks yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap `<x-admin.form-textarea>`.
-- Konten HTML wajib disanitasi sebelum disimpan: Form Request memakai trait `App\Http\Requests\Concerns\MembersihkanHtml` (`$this->bersihkanHtml([...])` di `prepareForValidation()`) dan aturan `new App\Rules\PanjangTeksHtml(<maks>)` sebagai pengganti `max:`. Tampilkan dengan `{!! !!}` **hanya** untuk konten yang sudah disanitasi (kelas `konten-html`); ringkasan di tabel memakai `Str::limit(App\Support\TeksHtml::polos(...))`. Selain itu selalu `{{ }}`. Data awal di seeder ditulis teks polos lalu dibungkus `TeksHtml::dariTeksPolos()`, kecuali isi artikel contoh: satu berkas HTML per artikel di `database/seeders/data/artikel/<slug>.html` (satu elemen blok per baris, hanya format editor: p, h2, h3, ul/ol dengan `<li><p>`, strong, em, a) yang disaring `HtmlSanitizerService` seperti isian form. Bahasa isi artikel baku sesuai EYD V (pilihan pemilik 2026-10-16): kalimat efektif dan aktif; kalimat tidak diawali konjungsi intrakalimat (dan, tetapi, sedangkan, sehingga, lalu), "Untuk", atau "Bagi" (anak kalimat "Saat …,"/"Jika …," dan konjungsi antarkalimat seperti "Oleh karena itu," boleh); tanpa koma sebelum konjungsi subordinatif seperti "sehingga" dan "karena"; istilah asing miring (`<em>`) di setiap kemunculan dan kepanjangan singkatan ditulis "*Total Graphics Power* (TGP)", sedangkan nama diri, singkatan, kode, dan label menu tetap tegak; padanan lazim didahulukan (daring, perangkat lunak, peramban, berkas, galat).
+### Panel Admin
+- Semua halaman extend `layouts/admin` dan memakai komponen di `resources/views/components/admin/` (page-header, card, form-*, filter-bar, tombol-tambah, alert, empty-state, delete-button, detail-button, pagination, icon). `form-select` menerima `[nilai => label]` atau `['Label grup' => [nilai => label]]` untuk `<optgroup>`; `filter-bar` merender kartunya sendiri; `detail-button` membuka rincian dalam `<template>` sebagai modal SweetAlert2.
+- Susunan halaman: `<x-admin.page-header>` hanya berisi nama modul (mis. `title="Company Profile"`) di semua halaman; entitas & aksi cukup di breadcrumb. Halaman daftar: page-header → `<x-admin.filter-bar>` → `<x-admin.card title="<Entitas>" :flush="true">` dengan `<x-admin.tombol-tambah :href="…">` di `<x-slot:aksi>`, berisi tabel. Daftar kosong cukup `<x-admin.empty-state>` tanpa tombol tambah.
+- Tabel: teks rata kiri, status di tengah. Kolom aksi `<th class="kolom-aksi">` + `<td class="kolom-aksi"><div class="aksi-tabel">…</div></td>` berisi tiga tombol ikon persegi 32px: Lihat (`<x-admin.detail-button title="Detail <Entitas>" :ikon-saja="true">`), Ubah (`<a class="btn btn-warning btn-ikon" title="Ubah" aria-label="Ubah">`), Hapus (`<x-admin.delete-button :ikon-saja="true">`). Contoh lengkap: `admin/company-profile/portofolio/index.blade.php`. Tabel yang hanya menampilkan informasi diberi kelas `tabel-informasi`, tanpa tautan per baris.
+- Modal detail: `<div class="detail-kolom">` berisi tabel rincian di kiri (`<div class="tabel-detail"><table class="table tabel-informasi">`, baris `<th scope="row">Label</th><td>Nilai</td>`, isian WYSIWYG `<td class="konten-html">{!! … !!}</td>`, nilai kosong `—`, diakhiri baris Dibuat & Diperbarui `d F Y, H:i`) dan gambar di kanan (`pratinjau-gambar pratinjau-gambar-lebar`); tinggi baris mengikuti isinya.
+- Form: isian wajib (`:required="true"`) bertanda bintang di depan label (`*Nama Kategori`). Input tanggal `type="date"` bernilai `Y-m-d`. Isian berulang memakai repeater `data-repeater` (`resources/js/admin/repeater.js`, contoh `admin/company-profile/hero/_form.blade.php`); baris kosong dibuang dan diindeks ulang di `prepareForValidation()`.
+- Ikon: Font Awesome solid lewat `<x-admin.icon name="…">` (tanpa awalan `fa-`); menu Dashboard `landmark`, semua menu modul `book`. Ukuran ikon dan koreksi optiknya diatur sekali di `admin.scss`, bukan per halaman. Jangan menambah SVG inline di panel admin.
+- Flash `success`/`error`/`warning`/`info` otomatis tampil sebagai toast.
 
-### Frontend publik (Fase 4)
-- Layout `layouts/web` (bukan `layouts/admin`), entri Vite `resources/css/web.css` + `resources/js/web.js`. Satu markup, dua tema: `<html data-tema="full_color|monochrome">` dirender server dari cookie `tema` (ditulis `resources/js/web/tema.js`, dikecualikan dari enkripsi di `bootstrap/app.php`, divalidasi `JenisTemplate::dariCookie()`; bawaan Full Color).
-- **Ukuran sama persis di kedua tema** (pilihan pemilik 2026-10-11): font, tinggi baris, spasi huruf, ketebalan, tinggi tombol/isian, padding, jarak, dan ukuran ikon ditulis SEKALI di aturan bersama tanpa `[data-tema]` di `resources/css/web/komponen.css` (di luar `@layer`), bernilai Monochrome sebagai acuan. `[data-tema=full_color] .kelas { … }` / `[data-tema=monochrome] .kelas { … }` hanya untuk warna, bayangan khusus satu tema, dekorasi, dan susunan yang memang beda. Beda yang dipertahankan: warna; bayangan lembut Full Color vs garis Monochrome (nilainya per tema dari pilihan bayangan template); dekorasi (blob/pendar hero, garis label seksi Full Color vs "01 /" Monochrome, titik di lencana kategori portofolio, garis merek footer, pola kisi, ilustrasi peta; pola titik di pojok kiri bawah & kanan atas bingkai hero dan titik lencana kata kunci hero tampil di kedua tema); Selengkapnya + modal layanan (Full Color) vs keterangan di kartu (Monochrome); kepala seksi rata tengah (Full Color) vs kiri (Monochrome); susunan artikel, FAQ, kotak ajakan, dan kartu pin peta. Di dalam susunan yang berbeda pun ukuran teksnya tetap sama. Kartu & bingkai bergaris `border` 1px di kedua tema (bukan `ring-1`, agar geometrinya sama); bingkai gambar Full Color memakai garis transparan + `background-clip: padding-box`. Beda kecil di markup memakai varian `warna:` / `mono:`, hanya untuk dekorasi/visibilitas, bukan ukuran. Cara memeriksa: alat `ukur-tema.mjs` + `beda-tema.mjs` (laravel-erp-prototipe/alat; laporan saat ini per halaman di `acuan/beda-tema/`) — laporan beda hanya boleh berisi hal di atas. Komponen bersudut wajib memakai token `--sudut-*` (`rounded-kartu`, `rounded-tombol`, dst.), bukan `rounded-full`; bulat hanya untuk bentuk dekoratif (titik, blob, contoh warna, pin peta).
-- Nilai template (warna, nada, font, sudut, skala, lebar konten, ketebalan judul, bayangan) hanya lewat `App\Services\CompanyProfile\TemaService`, yang membaca template aktif per jenis dari `tb_template` dengan satu query per halaman (cadangan `config/tema.php` lalu nilai bawaan bila database gagal atau belum ada template aktif); view tidak membaca `config('tema')` langsung. Ukuran desktop navbar, logo, teks menu, tombol besar, dan judul seksi memakai token skala (`--tinggi-navbar`, `--tinggi-logo`, `--teks-menu`, `--tinggi-tombol`, `--teks-tombol`, `--teks-judul-seksi`; satu tabel untuk kedua jenis di `SkalaTemplate`), bukan angka tetap; batas lebar isi memakai `max-w-(--lebar-konten)`, bukan `max-w-7xl`. Bayangan permukaan kedua tema lewat token dari pilihan bayangan template (Fase 4 langkah 3b, pilihan pemilik 2026-10-14; nilai di `BayanganTemplate::token()`, dirender `TemaService`): `--bayangan-tombol`, `--bayangan-tombol-garis`, `--bayangan-isian`, `--bayangan-lencana`, `--bayangan-kartu`, `--bayangan-formulir`, `--bayangan-gambar`, khusus Full Color `--bayangan-kartu-sorot`, `--bayangan-navbar`, `--bayangan-ajakan`, `--bayangan-ikon`, plus `--garis-kartu` Monochrome (lebih gelap saat Tanpa). Aturannya ditulis sekali di aturan bersama `komponen.css` — jangan memakai utilitas `shadow-*` Tailwind untuk permukaan, dan jangan `shadow-lg`/`shadow-xl`/`shadow-2xl` di Full Color. Nilai Tanpa `0 0 #0000` (bukan `none`) agar sah di dalam `--tw-shadow`; warnanya hex beralfa yang dibulatkan ke 1/255 seperti keluaran build CSS, sehingga Halus identik dengan tampilan 2026-10-11 (dijaga `BayanganTemplateTest`). Elemen melayang (menu ponsel, modal layanan, tombol WhatsApp, popup & penanda peta, kartu pin, tautan lompat konten) dan penanda tema terpilih tidak ikut pilihan; Full Color memakai `--bayangan-melayang` statis di `token.css`. Elemen bergaris `border` memakai `box-shadow: var(--bayangan-…)` langsung; elemen ber-`ring-1` (item FAQ, kartu pin peta, gambar modal) serta tombol garis & isian Basecoat mengisinya lewat `--tw-shadow` agar garis/cincin fokusnya tidak tertimpa. Turunan kontras dihitung `App\Support\KontrasWarna`. Font publik di `vite.config.js` (`preload: false`): semua pilihan `FontTemplate` dibangun dengan bobot 400–800 (dijaga `FontTemplateTest`); font baru wajib ditambahkan di enum dan di sana bersamaan. Geist Mono dipakai kedua tema untuk label kecil (eyebrow hero, label seksi, lencana, nomor layanan, tanggal artikel, label kontak, nama di kartu peta, judul kolom footer, petunjuk geser).
-- Identitas untuk frontend dibaca `IdentitasService::untukSitus()` (cache tanpa batas, dibuang event model `Identitas`), disediakan `SitusComposer` sebagai `$identitas` untuk `layouts.web*` dan `web.*`.
-- Halaman error (Fase 4 langkah 2b): view `errors/*` hanya berisi `title` & `message`; `HalamanErrorComposer` memilih layout dari alamat — `admin`, `admin/*`, `login`, `logout` → `layouts/error` (Gentelella), selain itu → `layouts/web-error` — dan menyediakan `$kodeError`. Tombol per kode diatur di layout, bukan di view. Versi publik (pilihan pemilik 2026-10-14): navbar + footer + tombol WhatsApp seperti halaman lain, isi rata tengah di kedua tema (angka kode besar, judul, pesan), tombol "Ke beranda" + "Kembali" (`resources/js/web/kembali.js`, tampil hanya bila tab punya halaman sebelumnya); 503 hanya "Muat ulang". Halaman error tidak boleh bergantung pada sesi/`csrf_token()` (juga dirender untuk alamat tak dikenal dan mode pemeliharaan); identitas & layanan footer dibaca composer dengan `try/catch` — bila gagal, tampil ringkas (nama dari `config('perusahaan.nama')`, tanpa navbar/footer). Kode 429 wajib punya view sendiri karena view 429 bawaan Laravel menimpa cadangan `4xx`.
-- Manajemen Template (Fase 4 langkah 3a, pilihan pemilik 2026-10-14): satu template aktif per jenis dijaga `TemplateService` (pola Hero); template aktif tidak bisa dihapus (tombol Hapus nonaktif, controller juga menolak), dinonaktifkan, atau diganti jenisnya (`UpdateTemplateRequest`); aktivasi lewat switch di form; daftar tetap tiga tombol aksi. Form tambah/ubah (pilihan pemilik 2026-10-14): kartu "Tampilan Template" di kiri dan kartu "Status dan Pratinjau" di kanan (`col-8-4`) berisi Status lalu tombol "Buka pratinjau" selebar kartu (`.btn-blok`); baris bawah hanya Simpan | Batal. Isian berpasangan per kelompok — Jenis + Pengaturan, Font + Ketebalan Judul, Sudut + Bayangan, Skala + Lebar Konten — dan modal Lihat memakai urutan yang sama. Pengaturan Default/Custom (pilihan pemilik 2026-10-14, menggantikan usulan tombol "kembalikan bawaan"): Default mengunci isian warna/nada sampai lebar konten lewat `<fieldset disabled>` dan mengisinya dengan nilai bawaan `config/tema.php` (`TemaService::nilaiBawaan()`; diisi `resources/js/admin/template.js` di form, dan `StoreTemplateRequest` di server karena isian terkunci tidak terkirim); tidak disimpan sebagai kolom — template dianggap Default bila semua nilai tampilannya sama dengan bawaan (`TemaService::pengaturan()`). Nada dasar Monochrome: Netral, Biru, Hijau, Ungu, Cokelat — kecerahan Tailwind neutral + kekuatan tinta Tailwind slate agar setiap pilihan terlihat, teks redup tetap ≥ 4,5:1 (dijaga `NadaDasarTest`); jangan kembali ke skala abu Tailwind lain (zinc, stone, dst.) karena bedanya dengan Netral nyaris tak terlihat. Pratinjau (`admin.template.pratinjau`, dari tombol Pratinjau di form dan modal Lihat) merender beranda asli di tab baru dengan nilai dari query string tanpa menyimpan: controller menaruh `Template` di atribut request `TemaService::PRATINJAU` pada request asli (FormRequest hanyalah salinan), dibaca `TemaComposer`; pita `.pita-pratinjau` di `layouts/web` hanya tampil di mode ini. Judul besar (hero, seksi, band ajakan, halaman error) memakai `font-weight: var(--ketebalan-judul)` dari template, bukan `font-semibold`; judul kartu tetap semibold.
-- Ikon frontend: SVG Lucide lewat `<x-web.ikon nama="…">`, ditambah logo merek berisi penuh WhatsApp, Facebook, dan LinkedIn dari Simple Icons (aturan Font Awesome di atas khusus panel admin). Tautan ke situs lain: `<x-web.tautan-luar>`.
-- Tautan menu ke seksi beranda memakai `{{ route('beranda') }}#seksi` agar tetap berfungsi dari halaman publik lain; menu Artikel (navbar & footer) ke `route('artikel.index')` dan ditandai `aria-current` (`page` di daftar, `true` di detail & kategori; warna saja). Jangan menautkan ke halaman yang belum ada (mis. `/portofolio` sampai halamannya dibuat).
-- Halaman artikel (Fase 4, pilihan pemilik 2026-10-15): daftar `/artikel` 10 per halaman (`ArtikelController::PER_HALAMAN`, `<x-web.paginasi>` pola shadcn tanpa ikon, nomor halaman di luar jangkauan 404), kategori `/artikel/kategori/{slug}` (`Web\CompanyProfile\KategoriArtikelController`; susunan sama dengan daftar lewat partial `web/artikel/daftar`; judul h1 = nama kategori dengan remah roti sampai Artikel; kategori tanpa artikel terbit, terhapus, atau nomor halaman di luar jangkauan → 404), dan detail `/artikel/{slug}` (hanya terbit; draf, terhapus, slug salah → 404). Halaman publik selain beranda memakai `<x-web.kepala-halaman>`: remah roti bergaya label seksi, judul h1 `judul-seksi`, latar meniru hero (FC gradasi + kisi, Mono kisi), FC rata tengah & Mono rata kiri. Kartu artikel satu komponen `<x-web.kartu-artikel>` (judul bertautan `tautan-rentang` sehingga seluruh kartu bisa diklik; h3 di bawah kepala seksi, h2 di halaman daftar & kategori) dengan wadah `.daftar-artikel` (beranda — FC: kartu utama + kartu samping) atau `.grid-artikel` (daftar & kategori — FC: bersusun di ponsel, dua kartu per baris bergambar di atas mulai 768px, sehingga halaman penuh tanpa kartu yatim). Monochrome sama di kedua wadah (pilihan pemilik 2026-10-15, susunan tiga kolom beranda dihapus): daftar editorial dengan tanggal di bawah ringkasan, lencana kategori di atas judul di ponsel, mulai 640px thumbnail 14rem agar pita terpanjang muat. Kategori tampil sebagai pita (varian B1, bendera yang melipat di tepi kanan) di semua kartu artikel — beranda, daftar, kategori; FC di semua lebar, Mono mulai 640px (di bawahnya tetap lencana di atas judul) — dan di bingkai gambar detail artikel (kedua tema, semua lebar); ukurannya sama di setiap pemakaian, warnanya dari token `--latar-pita`/`--teks-pita` di `token.css` (FC warna utama `--utama-teks`, Mono hitam). Kartu samping beranda FC (gambar di kiri): pita di atas kolom teks, sejajar pita kartu utama, dan judul mulai di bawahnya. Tombol "Lihat semua artikel" (`.tombol-semua-artikel`, hanya di kotak Artikel terbaru kolom samping) padat berwarna template (pilihan pemilik 2026-10-15): FC warna utama seperti pita, Mono `--primary` dari nada dasar. Beranda tidak memakainya (pilihan pemilik 2026-10-16): menu Artikel di navbar sudah mewakili. Ketiga halaman memakai kolom utama + kolom samping (`.tata-samping`, partial `web/artikel/samping`): mulai 1024px kolom utama 8/12 dan kolom samping 4/12 (celah `--celah-samping`), di bawahnya kolom samping turun ke bawah isi dengan kotaknya dua kolom di tablet. Isi kolom samping berurutan (pilihan pemilik 2026-10-16, sama di ketiga halaman): kartu "Konsultasi gratis" bertombol WhatsApp (slot promosi sementara; gelap seperti band ajakan, hanya mulai 1024px karena di bawahnya langsung disusul band ajakan; tidak menempel saat digulir, karena di posisi pertama kotak lain akan bergulir di balik kartu), Layanan kami (semua layanan, ke kartunya di beranda `#layanan-{id}` seperti footer; koleksinya dipakai ulang footer), Kategori (kategori berartikel terbit urut abjad + jumlah artikel terbitnya, `KategoriArtikel::untukSamping()`; ke halaman kategori, yang sedang dibuka ditandai `aria-current` — FC warna aksen, Mono garis bawah) — baris Layanan kami & Kategori setinggi 44px dengan garis di bawah setiap baris termasuk yang terakhir — lalu Artikel terbaru (5 terbit selain yang dibaca, `ArtikelController::JUMLAH_TERBARU`, hanya di detail; thumbnail + judul + tanggal + tombol "Lihat semua artikel"). Detail: kepala (remah roti + judul, tanpa meta) rata kiri di kedua tema dan selebar kolom utama; gambar utuh (rasio asli) dalam bingkai yang sama dengan hero, berpita kategori; isi 17px (18px mulai sm) dengan sub-judul H2/H3, selebar kolom utama; tanggal "Diterbitkan …" di akhir isi (`.terbit-artikel`, sebelum tombol bagikan); lalu band ajakan. Band ajakan FC berlatar redup hanya bila menyambung `.seksi-redup` di atasnya. Slug artikel dikunci setelah terbit (`ArtikelService::perbarui()`); slug kategori dibuat `KategoriArtikelService` dari nama dan dikunci begitu kategori punya artikel terbit (`KategoriArtikel::slugTerkunci()`), karena sejak itu halamannya tayang. Tombol bagikan (`<x-web.bagikan>`, pilihan pemilik 2026-10-15) di akhir isi kolom utama: label "Bagikan artikel ini" bergaya label seksi + tombol ikon-saja 44px WhatsApp, Facebook, LinkedIn, dan Salin tautan, tanpa paket. Yang dibagikan selalu alamat kanonis. Salin tautan lewat `resources/js/web/bagikan.js` (Clipboard API, cadangan `execCommand`); tombolnya baru ditampilkan JS, lalu ikonnya berubah menjadi centang + teks "Tautan disalin" (`role=status`) selama 2,5 detik. Full Color ikon berwarna merek (WhatsApp `#15803D`, Facebook `#0866FF`, LinkedIn `#0A66C2`, salin warna utama); Monochrome hitam; ukuran sama.
-- SEO (Fase 4, pilihan pemilik 2026-10-15): judul, deskripsi, kanonis, robots, Open Graph, dan Twitter Card dirender `layouts/web/seo` dari `SeoComposer`. Halaman cukup mengisi section: `judul` **tanpa** akhiran (layout menambah " — <Nama Perusahaan>" seperti halaman error; tanpa section = Judul Website, hanya untuk beranda), `deskripsi`, `kanonis` (bawaan path request tanpa query; isi sendiri bila memakai slug atau paginasi — halaman 2 dst. kanonis ke `?page=N`-nya sendiri), `jenis-og` (`article` di detail), `gambar-bagikan` (bawaan gambar hero aktif; ukurannya dibaca `Seo::ukuranGambar()` untuk og:image:width/height). Tag khusus halaman lewat `@push('kepala')`, mis. `article:*` dan JSON-LD `<x-web.data-terstruktur :data="DataTerstruktur::…">` (Organization + WebSite di beranda, BlogPosting + BreadcrumbList di artikel, BreadcrumbList di daftar & kategori; FAQPage sengaja tidak dipakai karena hasil kaya FAQ kini hanya untuk situs pemerintah/kesehatan). Semua alamat untuk mesin pencari (kanonis, og:url, og:image, sitemap, JSON-LD, tombol bagikan) dibentuk `App\Support\Seo::alamat()` dari `APP_URL`, bukan dari host request; `www.` dialihkan 301 ke tanpa www di `public/.htaccess`. `config('seo.indeks')` (env `SEO_INDEKS`, bawaan true; produksi false selama tahap uji) mengganti robots `max-image-preview:large` menjadi `noindex` dan membuang baris Sitemap dari robots.txt; pratinjau template selalu noindex, panel admin & login `noindex, nofollow`, halaman error noindex. `/sitemap.xml` (beranda, `/artikel`, kategori berartikel terbit, artikel terbit; lastmod dari `updated_at` — kategori: terbaru antara kategorinya dan artikel terbitnya; halaman paginasi tidak dimasukkan) dan `/robots.txt` (tolak `/admin` & `/login`) dirender `Web\SeoController` — jangan membuat `public/robots.txt` karena berkas statis didahulukan server (dijaga test). Modul baru yang punya halaman publik menambahkan alamatnya ke `seo/sitemap.blade.php`. Meta Keyword tidak dirender (diabaikan Google). Favicon hanya PNG/ICO karena Google Search tidak menampilkan favicon WEBP.
-- Tombol berteks di frontend tanpa ikon (pilihan pemilik 2026-10-10/11: navbar, hero, Selengkapnya layanan); ikon hanya untuk tombol ikon-saja (menu ponsel, tema). Layanan: dua teratas menurut `urutan_ke` menjadi kartu lebar di kedua tema. Portofolio tanpa tab filter kategori (keputusan pemilik 2026-10-11: data nyata didominasi website & mobile apps); kartu berurutan menurut `Portofolio::KATEGORI_UTAMA` (Website, Mobile Apps, Pelatihan IT, Sertifikasi IT, Bootcamp, dicocokkan lewat slug), dalam satu kategori yang terbaru lebih dulu. Ukuran teks kartu di layanan, portofolio, dan artikel sama antarseksi dan di kedua tema: judul 18px, deskripsi/ringkasan 15px/1.65, lencana & tanggal Geist Mono 13px. Gambar kartu layanan biasa & portofolio 16:10; di ponsel (<640px) kartu layanan kedua tema memakai thumbnail di kanan judul. Hero dua kolom mulai 768px dengan gambar dalam bingkai berjarak di kedua tema. Ringkasan kartu artikel maksimal 150 karakter termasuk spasi, dipotong di akhir kata lewat `TeksHtml::potongDiAkhirKata()` (tanpa `line-clamp` agar tampil utuh). Artikel Full Color: tanggal "Diterbitkan …" di bawah ringkasan (kartu samping di bawah 1024px hanya tanggal karena kolomnya tidak muat), gambar kartu samping rata atas (6rem di ponsel, tablet selebar mungkin dengan kolom teks 14.25rem). Band ajakan hanya tombol WhatsApp ("Kirim Pesan" ke `#kontak` hanya cadangan bila link WhatsApp kosong). Kontak: susunan sama di kedua tema (kiri atas daftar kontak satu kartu bergaris pemisah, kiri bawah peta, kanan formulir); semua baris kontak tautan berpanah dan setinggi sama (alamat → Google Maps); ikon kontak Full Color berwarna padat dengan ikon putih, teksnya digeser 1px ke atas sebagai koreksi optik garis bawah permanen; kartu telepon hanya cadangan bila link WhatsApp kosong; peta Leaflet + OpenStreetMap dengan popup nama perusahaan + "Buka di Google Maps" (URL dari koordinat `config/perusahaan.php`). Footer: kontak WhatsApp tampil sebagai logo WhatsApp + nomor (telepon hanya cadangan bila link WhatsApp kosong). Menu navbar rata kanan (tepat sebelum pilihan tema). Tombol WhatsApp melayang selalu tampil, berbentuk pil berlabel di kedua tema (Full Color hijau `#15803D`, Monochrome hitam); footer diberi ruang bawah (`body:has(#tombol-wa) .kaki-isi`) agar tombol tidak menutupi isinya. Tautan menu bergulir halus lewat `html { scroll-behavior: smooth }` (bukan `html:focus-within`, karena klik mouse tidak memberi fokus), dimatikan bila `prefers-reduced-motion: reduce`.
-- Seksi beranda yang datanya kosong tidak dirender; teks WYSIWYG ditampilkan `{!! !!}` di `.konten-html`, ringkasan memakai `TeksHtml::polos()`. Ringkasan kartu dari isi bersub-judul (artikel) memakai `TeksHtml::ringkasan()` agar teks H2/H3 tidak menyambung dengan paragraf.
-- Ponsel sempit (360–389px, pilihan pemilik 2026-10-11): blok `@media (max-width: 389.98px)` di akhir `komponen.css` merapatkan ruang dalam kartu dan sedikit memperkecil judul agar jumlah baris judul & label sama dengan di 390px; nilainya satu set untuk kedua tema (aturan `[data-tema]` di blok itu hanya untuk kotak khusus satu tema); 390px ke atas tidak tersentuh. Teks yang bisa menyisakan satu kata di baris terakhir diberi `text-pretty` atau `whitespace-nowrap` pada frasa penutupnya (mis. "Hak cipta dilindungi.").
-- Kelas Tailwind hanya dipindai dari berkas publik (`@source` di `web.css`), jadi **setiap perubahan Blade/JS publik wajib `npm run build`** sebelum deploy.
+### Teks, WYSIWYG & Bahasa
+- Label, pesan, dan validasi dalam Bahasa Indonesia (`APP_LOCALE=id`, `lang/id/validation.php`). Tanggal `translatedFormat('d F Y')` (zona `Asia/Jakarta`); halaman publik `j F Y` ("9 Oktober 2026").
+- **WYSIWYG hanya untuk teks yang tampil di frontend** (hero, layanan, portofolio, jawaban FAQ, isi artikel) lewat `<x-admin.form-editor>`: tinggi 5 baris, `:maks` = batas teks terlihat + penghitung. Pengecualian isi artikel: `:baris="15"` dan `:judul-bagian="true"` (sub-judul H2/H3). Teks yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap `<x-admin.form-textarea>`.
+- Konten HTML wajib disanitasi sebelum disimpan: Form Request memakai trait `App\Http\Requests\Concerns\MembersihkanHtml` (`$this->bersihkanHtml([...])` di `prepareForValidation()`; isi artikel dengan `judulBagian: true`) dan aturan `new App\Rules\PanjangTeksHtml(<maks>)` sebagai pengganti `max:`. `{!! !!}` **hanya** untuk konten tersanitasi (kelas `konten-html`); ringkasan memakai `App\Support\TeksHtml` (`polos()`, `ringkasan()` untuk isi bersub-judul, `potongDiAkhirKata()`). Selain itu selalu `{{ }}`.
+- Data awal seeder ditulis teks polos lalu dibungkus `TeksHtml::dariTeksPolos()`, kecuali isi artikel contoh: satu berkas HTML per artikel di `database/seeders/data/artikel/<slug>.html` (satu elemen blok per baris; hanya p, h2, h3, ul/ol dengan `<li><p>`, strong, em, a) yang disaring `HtmlSanitizerService` seperti isian form.
+- Teks situs memakai bahasa baku sesuai EYD V: kalimat efektif dan aktif; kalimat tidak diawali konjungsi intrakalimat (dan, tetapi, sedangkan, sehingga, lalu), "Untuk", atau "Bagi" (anak kalimat "Saat …,"/"Jika …," dan konjungsi antarkalimat seperti "Oleh karena itu," boleh); tanpa koma sebelum "sehingga" dan "karena"; istilah asing miring (`<em>`) di setiap kemunculan dan kepanjangan singkatan ditulis "*Total Graphics Power* (TGP)", sedangkan nama diri, singkatan, kode, dan label menu tetap tegak; padanan lazim didahulukan (daring, perangkat lunak, peramban, berkas, galat).
 
-### Acuan tampilan (pilihan pemilik 2026-10-15)
-- Tampilan situs per 2026-10-15, frontend publik kedua tema maupun panel admin, adalah **acuan dasar**. Potretnya ada di `laravel-erp-prototipe/acuan/` (di luar repo; buka `index.html`), dibuat `alat/potret-acuan.mjs` dari daftar `alat/daftar-acuan.json` dengan data seeder (§2.4). Prototipe awal (`tema-ganda.html`) sudah pensiun. Cara pakai: `laravel-erp-prototipe/README.md`.
+### Frontend Publik
+- Layout `layouts/web` (bukan `layouts/admin`), entri Vite `resources/css/web.css` + `resources/js/web.js`. Kelas Tailwind hanya dipindai dari berkas publik (`@source` di `web.css`), jadi **setiap perubahan Blade/JS/CSS publik wajib `npm run build`** sebelum deploy.
+- **Dua tema, satu markup**: `<html data-tema="full_color|monochrome">` dirender server dari cookie `tema` (ditulis `resources/js/web/tema.js`, dikecualikan dari enkripsi di `bootstrap/app.php`, divalidasi `JenisTemplate::dariCookie()`; bawaan Full Color).
+- **Ukuran sama persis di kedua tema**: font, tinggi baris, spasi huruf, ketebalan, tinggi tombol/isian, padding, jarak, dan ukuran ikon ditulis sekali di aturan bersama tanpa `[data-tema]` di `resources/css/web/komponen.css` (di luar `@layer`), dengan Monochrome sebagai acuan. `[data-tema=…] .kelas` hanya untuk warna, bayangan, dekorasi, dan susunan yang memang berbeda; varian `warna:`/`mono:` di markup hanya untuk dekorasi/visibilitas. Kartu & bingkai bergaris `border` 1px di kedua tema (bukan `ring-1`). Penyesuaian layar sempit (<390px) ditulis di blok `@media (max-width: 389.98px)` di akhir `komponen.css`, satu set untuk kedua tema. Pemeriksa: `ukur-tema.mjs` + `beda-tema.mjs` (laporan per halaman di `laravel-erp-prototipe/acuan/beda-tema/`), yang hanya boleh berisi beda jenis di atas.
+- **Nilai template** (warna, nada dasar, font, sudut, skala, lebar konten, ketebalan judul, bayangan) hanya lewat `App\Services\CompanyProfile\TemaService`: template aktif per jenis dari `tb_template` dengan satu query per halaman, cadangan `config/tema.php` lalu nilai bawaan bila database gagal. View tidak membaca `config('tema')` langsung. CSS memakai token, bukan angka atau utilitas tetap: sudut `--sudut-*` (`rounded-kartu`, `rounded-tombol`, dst.; bulat hanya untuk bentuk dekoratif), skala (`--tinggi-navbar`, `--tinggi-logo`, `--teks-menu`, `--tinggi-tombol`, `--teks-tombol`, `--teks-judul-seksi`), `max-w-(--lebar-konten)`, `font-weight: var(--ketebalan-judul)` untuk judul besar, dan bayangan `--bayangan-*` (nilai di `BayanganTemplate::token()`; jangan utilitas `shadow-*` Tailwind untuk permukaan). Elemen bergaris `border` memakai `box-shadow: var(--bayangan-…)`; elemen ber-`ring-1` serta tombol garis & isian Basecoat mengisinya lewat `--tw-shadow`. Turunan kontras dihitung `App\Support\KontrasWarna`. Font publik dibangun di `vite.config.js` (bobot 400–800); font baru ditambahkan di enum `FontTemplate` dan di sana bersamaan.
+- **Manajemen Template**: satu template aktif per jenis dijaga `TemplateService`; template aktif tidak bisa dihapus, dinonaktifkan, atau diganti jenisnya. Pengaturan Default/Custom bukan kolom: Default mengunci isian dan memakai `TemaService::nilaiBawaan()` (isian terkunci tidak terkirim, jadi `StoreTemplateRequest` mengisinya di server); template dianggap Default bila semua nilainya sama dengan bawaan (`TemaService::pengaturan()`). Pratinjau (`admin.template.pratinjau`) merender beranda dengan nilai dari query string tanpa menyimpan, lewat atribut `TemaService::PRATINJAU` pada request asli (bukan salinan FormRequest) yang dibaca `TemaComposer`.
+- **Identitas** dibaca `IdentitasService::untukSitus()` (cache tanpa batas, dibuang event model `Identitas`), disediakan `SitusComposer` sebagai `$identitas` untuk `layouts.web*` dan `web.*`. Seksi beranda yang datanya kosong tidak dirender.
+- **Halaman error**: view `errors/*` hanya berisi `title` & `message`; `HalamanErrorComposer` memilih layout dari alamat (`admin`, `admin/*`, `login`, `logout` → `layouts/error`; lainnya → `layouts/web-error`) dan menyediakan `$kodeError`; tombol per kode diatur di layout. Halaman error tidak boleh bergantung pada sesi/`csrf_token()` karena juga dirender untuk alamat tak dikenal dan mode pemeliharaan; identitas & layanan footer dibaca dengan `try/catch` dan halaman tampil ringkas bila gagal. Kode 429 wajib punya view sendiri karena view 429 bawaan Laravel menimpa cadangan `4xx`.
+- **Ikon & tautan**: SVG Lucide lewat `<x-web.ikon nama="…">` (logo WhatsApp, Facebook, LinkedIn dari Simple Icons); tautan ke situs lain lewat `<x-web.tautan-luar>`. Tombol berteks tanpa ikon; ikon hanya untuk tombol ikon-saja. Menu ke seksi beranda memakai `{{ route('beranda') }}#seksi` agar berfungsi dari halaman lain. Jangan menautkan ke halaman yang belum ada (mis. `/portofolio`). Hindari satu kata tersisa di baris terakhir (`text-pretty` atau `whitespace-nowrap` pada frasa penutup).
+- **Artikel**: daftar `/artikel` (10 per halaman, `ArtikelController::PER_HALAMAN`, `<x-web.paginasi>`), kategori `/artikel/kategori/{slug}` (`Web\CompanyProfile\KategoriArtikelController`, susunan sama dengan daftar lewat partial `web/artikel/daftar`), dan detail `/artikel/{slug}`. Draf, terhapus, slug salah, kategori tanpa artikel terbit, dan nomor halaman di luar jangkauan → 404. Slug artikel dikunci setelah terbit (`ArtikelService::perbarui()`); slug kategori dibuat `KategoriArtikelService` dari nama dan dikunci begitu kategori punya artikel terbit (`KategoriArtikel::slugTerkunci()`). Kartu artikel satu komponen `<x-web.kartu-artikel>`; halaman publik selain beranda memakai `<x-web.kepala-halaman>`; kolom samping lewat partial `web/artikel/samping`.
+- **SEO**: judul, deskripsi, kanonis, robots, Open Graph, dan Twitter Card dirender `layouts/web/seo` dari `SeoComposer`. Halaman cukup mengisi section `judul` (tanpa akhiran nama perusahaan; tanpa section = Judul Website, hanya untuk beranda), `deskripsi`, `kanonis` (isi sendiri bila memakai slug atau paginasi), `jenis-og`, dan `gambar-bagikan`; tag khusus lewat `@push('kepala')`, mis. JSON-LD `<x-web.data-terstruktur>`. Semua alamat untuk mesin pencari (kanonis, og:url, og:image, sitemap, JSON-LD, tombol bagikan) dibentuk `App\Support\Seo::alamat()` dari `APP_URL`; `www.` dialihkan 301 ke tanpa www di `public/.htaccess`. `config('seo.indeks')` (env `SEO_INDEKS`, produksi `false` selama tahap uji) mengganti robots menjadi `noindex` dan membuang baris Sitemap dari robots.txt; pratinjau template, panel admin, login, dan halaman error selalu noindex. `/sitemap.xml` dan `/robots.txt` dirender `Web\SeoController`; jangan membuat `public/robots.txt` karena berkas statis didahulukan server. Modul baru yang punya halaman publik menambahkan alamatnya ke `seo/sitemap.blade.php`.
+
+### Acuan Tampilan
+- Potret situs (frontend publik kedua tema dan panel admin) di `laravel-erp-prototipe/acuan/` (di luar repo; buka `index.html`) adalah acuan tampilan. Potret dibuat `alat/potret-acuan.mjs` dari daftar `alat/daftar-acuan.json` dengan data seeder; cara pakai di `laravel-erp-prototipe/README.md`.
 - Setiap perubahan tampilan dicek dengan `node alat/banding-acuan.mjs` dari folder itu (laporan di `banding/laporan.md`). Yang berubah hanya boleh bagian yang diminta; beda lain adalah regresi dan diperbaiki dulu.
-- Cakupan pemeriksaan sebanding dengan perubahannya, tidak *over engineering* (pilihan pemilik 2026-10-16). Dari diff, tentukan halaman yang benar-benar menampilkan apa yang berubah, lalu batasi kedua alat dengan `--saring=` (cocok sebagian dengan nama potret, mis. `--saring=beranda,artikel` = seksi artikel beranda + halaman artikel publik & admin), `--lebar=`, atau `--bagian=web|admin`.
+- Cakupan pemeriksaan sebanding dengan perubahannya. Dari diff, tentukan halaman yang benar-benar menampilkan apa yang berubah, lalu batasi kedua alat dengan `--saring=` (cocok sebagian dengan nama potret, mis. `--saring=beranda,artikel` = seksi artikel beranda + halaman artikel publik & admin), `--lebar=`, atau `--bagian=web|admin`.
   - Logika, test, atau docs saja → tanpa potret.
   - Isi/data seeder saja (teks, gambar) → tanpa banding karena bedanya pasti hanya di isi itu; potret ulang halaman yang memuat data itu, lalu lihat satu atau dua potretnya (1536 & 390). Identitas dan layanan tampil di navbar/footer sehingga cakupannya semua halaman publik.
   - Tampilan satu modul → modul itu di semua lebar, ditambah beranda bila modulnya punya seksi di sana.
   - Seluruh situs hanya bila yang berubah bagian bersama: layout, komponen Blade bersama, `token.css`/`komponen.css`/`admin.scss`, `TemaService`, atau paket npm.
-- Acuan selalu mengikuti tampilan terbaru: setiap perubahan tampilan, baik perbaikan detail maupun fitur baru, diakhiri dengan `node alat/potret-acuan.mjs --perbarui` dengan saringan yang sama setelah banding bersih. Perintah itu juga mengosongkan `banding/`, yang di luar itu dibiarkan. Halaman atau modul baru ditambahkan dulu ke `daftar-acuan.json`.
+- Acuan selalu mengikuti tampilan terbaru: setelah banding bersih, jalankan `node alat/potret-acuan.mjs --perbarui` dengan saringan yang sama (sekaligus mengosongkan `banding/`). Halaman atau modul baru ditambahkan dulu ke `daftar-acuan.json`.
+
+### Jangan Diusulkan Ulang
+Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
+- Bootstrap, jQuery, DataTables client-side, atau mode gelap di panel admin; Repository pattern.
+- Pemilih tanggal JS (mis. flatpickr): tampilan kalendernya kurang serasi.
+- Tinggi baris modal detail yang dipaksa seragam.
+- BootstrapMade atau Preline untuk frontend publik.
+- Tab filter kategori di seksi portofolio: data nyata didominasi website & mobile apps.
+- Tombol "Lihat semua artikel" di beranda (menu Artikel di navbar sudah mewakili) dan awalan "Diterbitkan" pada tanggal kartu artikel Monochrome.
+- Kartu Konsultasi gratis yang menempel saat digulir: kotak lain ikut bergulir di baliknya.
+- Nada dasar Monochrome dari skala abu Tailwind lain (zinc, stone, dst.): bedanya dengan Netral nyaris tak terlihat.
+- JSON-LD FAQPage (hasil kaya FAQ kini hanya untuk situs pemerintah/kesehatan), Meta Keyword di halaman (diabaikan Google), dan favicon WEBP (tidak ditampilkan Google Search).
 
 ## 10. Keamanan
 
-- Tidak ada registrasi publik. Akun admin dibuat oleh `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-- Login: rate limit (5 percobaan/menit per email+IP) — **dinonaktifkan saat `APP_ENV=local`** agar tidak mengganggu development, aktif di produksi. `session()->regenerate()` setelah login, invalidate saat logout.
-- **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (lihat `docs/DATABASE.md` bagian A). Jangan menambahkannya.
-- Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission direncanakan (lihat ROADMAP).
-- Form publik (kontak kami): `throttle:kontak` 3 kiriman/menit per IP (dimatikan saat `APP_ENV=local` seperti login) + honeypot `website` (pesan bot tidak disimpan tetapi tetap dibalas sukses). Sesi habis (419) dan batas kiriman kembali ke formulir dengan isian utuh.
-- Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`, header keamanan via middleware.
+- Tidak ada registrasi publik. Akun admin dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
+- Login: rate limit 5 percobaan/menit per email+IP (dimatikan saat `APP_ENV=local`), `session()->regenerate()` setelah login, invalidate saat logout.
+- **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
+- Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission ada di ROADMAP Fase 5.
+- Form publik (kontak kami): `throttle:kontak` 3 kiriman/menit per IP (dimatikan saat `APP_ENV=local`) + honeypot `website` (pesan bot tidak disimpan tetapi tetap dibalas sukses). Sesi habis (419) dan batas kiriman kembali ke formulir dengan isian utuh.
+- Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`. Header keamanan belum ada (ROADMAP Fase 5).
 
-## 11. ISO/IEC 25010 — Penerapan Praktis
+## 11. Kualitas (ISO/IEC 25010)
 
-| Karakteristik | Penerapan di proyek ini |
+Targetnya mendekati ISO/IEC 25010 dengan praktik yang cukup, bukan selengkap mungkin.
+
+| Karakteristik | Praktik yang cukup |
 |---|---|
-| Functional suitability | Feature test untuk setiap alur CRUD & aturan bisnis; logika Service diuji unit |
-| Performance efficiency | Paginasi server-side, eager loading, indeks pada kolom filter/FK, cache konfigurasi/rute di produksi, gambar dibatasi ukurannya |
-| Compatibility | Hanya fitur standar MySQL 8/PHP 8.3; modul berinteraksi lewat relasi/Service yang terdefinisi |
-| Interaction capability (usability) | UI konsisten (komponen Blade), pesan validasi jelas berbahasa Indonesia, konfirmasi aksi destruktif, responsif |
-| Reliability | Transaksi DB untuk operasi multi-langkah, soft delete, backup database, halaman error 403/404/500 ramah |
-| Security | Lihat §10; validasi seluruh input, escape output, berkas internal privat |
-| Maintainability | Struktur modular, konvensi ketat, controller tipis, Pint + Larastan + test wajib lulus sebelum commit, docs selalu diperbarui |
-| Flexibility (portability) | Konfigurasi via `.env`, tanpa path absolut, deploy terdokumentasi & dapat diulang |
-| Safety | Soft delete (hapus permanen hanya lewat fitur "sampah", lihat §9), `php artisan down` saat deploy, migrasi produksi hanya maju setelah tahap uji berakhir (§2.4) |
+| Kesesuaian fungsi | Feature test alur CRUD & aturan bisnis; unit test Service yang memuat logika |
+| Efisiensi kinerja | Paginasi server-side, eager loading, indeks kolom filter/FK, cache config/route di produksi, ukuran gambar dibatasi |
+| Kompatibilitas | Hanya fitur standar MySQL 8/PHP 8.3; modul berinteraksi lewat relasi/Service |
+| Kemudahan pakai | Komponen Blade seragam, pesan berbahasa Indonesia yang jelas, konfirmasi aksi, responsif |
+| Keandalan | Transaksi DB untuk operasi multi-langkah, soft delete, halaman error yang ramah |
+| Keamanan | §10: validasi seluruh input, escape output, berkas internal privat |
+| Pemeliharaan | Struktur modular, konvensi ketat, controller tipis, `composer check` sebelum commit, dokumen ringkas & mutakhir |
+| Portabilitas | Konfigurasi lewat `.env`, tanpa path absolut, deploy terdokumentasi & dapat diulang |
+| Keselamatan | Soft delete, `php artisan down` saat deploy, migrasi produksi hanya maju setelah tahap uji (§2.4) |
 
 ## 12. Definition of Done (per fitur)
 
-- [ ] Migration, model (+ relasi eksplisit), factory, seeder (bila perlu) sesuai `docs/DATABASE.md`; seeder menghasilkan data yang sama dengan database lokal (§2.4)
+Butir yang tidak relevan dengan perubahannya dilewati.
+
+- [ ] Migration, model (+ relasi eksplisit), factory, dan seeder sesuai `docs/DATABASE.md`; seeder = data lokal (§2.4)
 - [ ] Form Request untuk store & update, pesan berbahasa Indonesia
 - [ ] Controller, rute bernama, entri menu `config/menu.php`
-- [ ] View memakai layout & komponen admin, responsif (desktop, tablet, ponsel)
-- [ ] Frontend publik: `npm run build`, lalu cek visual halaman yang terdampak di kedua tema (Full Color & Monochrome) di 1536, 390 & 360 px
-- [ ] Tampilan dibandingkan dengan acuan (`banding-acuan.mjs`) sebatas halaman yang terdampak: hanya bagian yang diminta yang berubah; lalu acuan halaman itu diperbarui mengikuti tampilan terbaru (§9 › Acuan tampilan)
-- [ ] Feature test: akses tamu ditolak, validasi, create/read/update/delete berhasil
-- [ ] Unit test untuk setiap Service yang memuat logika
-- [ ] `composer check` lulus tanpa error
-- [ ] Catatan deploy (perintah server setelah `git pull`, termasuk perlu/tidaknya reset data produksi selama tahap uji) disertakan, lalu usulan pesan commit
+- [ ] View memakai layout & komponen, responsif (desktop, tablet, ponsel)
+- [ ] Frontend publik: `npm run build`, lalu cek visual halaman yang terdampak di kedua tema (1536, 390 & 360 px)
+- [ ] Tampilan dibandingkan dengan acuan sebatas halaman yang terdampak, lalu acuan halaman itu diperbarui (§9 › Acuan Tampilan)
+- [ ] Feature test (akses tamu ditolak, validasi, create/read/update/delete) dan unit test untuk Service yang memuat logika
+- [ ] `composer check` lulus
+- [ ] Catatan deploy (§2.10) dan usulan pesan commit
 - [ ] Item terkait di `docs/ROADMAP.md` dicentang

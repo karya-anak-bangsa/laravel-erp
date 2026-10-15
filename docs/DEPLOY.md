@@ -20,8 +20,8 @@ Deploy dilakukan **manual oleh pemilik proyek** lewat SSH (PuTTY). Alamat, port,
 
 | Batasan | Dampak & solusi |
 |---|---|
-| `proc_open`, `exec`, `shell_exec`, `popen` dimatikan | Composer tidak bisa menjalankan script → pakai `--no-scripts` lalu `php artisan package:discover`. Paket yang menjalankan program eksternal (Browsershot, wkhtmltopdf, Snappy) tidak bisa dipakai — pilih paket PHP murni (mis. dompdf). |
-| `symlink` (fungsi PHP) dimatikan | `php artisan storage:link` gagal → pakai shell `ln -s` (lihat bagian Satu Kali per Fase di bawah). |
+| `proc_open`, `exec`, `shell_exec`, `popen` dimatikan | Composer tidak bisa menjalankan script → pakai `--no-scripts` lalu `php artisan package:discover`. Apa pun yang menjalankan proses lain tidak bisa dipakai: Browsershot/wkhtmltopdf/Snappy (pilih paket PHP murni, mis. dompdf), Process facade, Concurrency driver `process`, scheduler `runInBackground`. |
+| `symlink` (fungsi PHP) dimatikan | `php artisan storage:link` gagal → pakai shell `ln -s` (Server Baru langkah 5). |
 | Tidak ada Node/npm | Aset Vite di-build di laptop lalu diunggah (`public/build` ada di `.gitignore`). |
 | `mail()` dimatikan | Email (bila nanti dibutuhkan) wajib lewat SMTP. |
 
@@ -78,79 +78,11 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
 
 ---
 
-## Deploy Pertama (sudah dilakukan 2026-10-07 — referensi bila server dibangun ulang)
-
-1. hPanel: aktifkan SSH, set PHP 8.3, buat database MySQL (`u491519120_erp`), pastikan SSL aktif.
-2. Clone & symlink:
-   ```bash
-   cd ~/domains/karyaanakbangsa.co.id
-   git clone https://github.com/karya-anak-bangsa/laravel-erp.git
-   mv public_html public_html_lama
-   ln -s laravel-erp/public public_html
-   ```
-3. `composer install --no-dev --optimize-autoloader --no-scripts` lalu `php artisan package:discover --ansi`.
-4. Buat `.env` produksi dari `.env.example` dengan perubahan:
-   ```ini
-   APP_ENV=production
-   APP_DEBUG=false
-   APP_URL=https://karyaanakbangsa.co.id
-   LOG_STACK=daily
-   LOG_LEVEL=error
-   DB_HOST=localhost
-   DB_DATABASE=...
-   DB_USERNAME=...
-   DB_PASSWORD='...'        # kutip tunggal: '#' di awal dianggap komentar, '$' di kutip ganda diproses
-   ADMIN_NAMA="..."
-   ADMIN_EMAIL=...
-   ADMIN_PASSWORD='...'
-   SESSION_SECURE_COOKIE=true
-   SEO_INDEKS=false         # selama tahap uji (data contoh); true setelah data real masuk
-   ```
-5. ```bash
-   chmod 600 .env
-   php artisan key:generate --force
-   php artisan migrate --force
-   php artisan db:seed --class=PenggunaSeeder --force
-   sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=/" .env   # password admin tidak disimpan sebagai teks biasa
-   ```
-6. Unggah `public/build` (langkah 3 deploy rutin), lalu `php artisan optimize`.
-
-## Satu Kali per Fase
-
-Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai referensi bila server dibangun ulang.
-
-- **Company Profile (sebelum upload gambar pertama)** — buat symlink storage:
-  ```bash
-  cd ~/domains/karyaanakbangsa.co.id/laravel-erp
-  ln -s ../storage/app/public public/storage
-  ```
-  File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo, favicon, meta deskripsi), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 10 kategori artikel, 32 artikel (30 terbit, 2 draf), 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
-  ```bash
-  php artisan db:seed --class=CompanyProfileSeeder --force
-  ```
-  Wajib: tanpa langkah ini menu Identitas menampilkan 404. Aman dijalankan ulang (tabel yang sudah berisi dilewati, isian admin tidak ditimpa). Jangan memakai `php artisan db:seed` tanpa `--class`: `PenggunaSeeder` di dalamnya gagal karena `ADMIN_PASSWORD` di server sudah dikosongkan.
-
----
-
-- **Fase 4 — Frontend publik (beranda)** — sekali saat beranda pertama kali tayang (`/` tidak lagi dialihkan ke `/admin`; panel admin tetap di `/admin` dan `/login`):
-  1. Data awal (logo lebar transparan, CTA hero ber-anchor) sudah disamakan dengan lokal lewat **Reset Data Produksi** di bawah. Bila server dibangun ulang dari nol, cukup jalankan `CompanyProfileSeeder` seperti di atas.
-  2. Opsional: koordinat peta kantor lewat `.env` (`PETA_LAT`, `PETA_LNG`, `PETA_ZOOM`) lalu `php artisan optimize`. Tanpa itu dipakai nilai bawaan di `config/perusahaan.php`.
-- **Fase 4 langkah 3a — Manajemen Template** — sekali setelah `php artisan migrate --force` membuat `tb_template`: isi dua template bawaan yang aktif (nilainya sama dengan `config/tema.php`, jadi tampilan website tidak berubah).
-  ```bash
-  php artisan db:seed --class=TemplateSeeder --force
-  ```
-  Tanpa langkah ini website tetap tampil normal (TemaService memakai `config/tema.php`), tetapi daftar Pengaturan Sistem › Manajemen Template kosong. Aman dijalankan ulang; `CompanyProfileSeeder` juga menjalankannya.
-- **Fase 4 — SEO** (sekali saat deploy pertama fitur SEO):
-  1. Selama tahap uji, tutup pengindeksan: tambahkan `SEO_INDEKS=false` ke `.env` (nano), lalu `php artisan optimize`. Semua halaman publik bertanda `noindex` dan robots.txt tidak menyebut sitemap. Tanpa baris ini situs terbuka untuk mesin pencari (bawaan `true`).
-  2. Cek dari laptop: `curl -I https://www.karyaanakbangsa.co.id` harus `301` ke alamat tanpa www (aturan di `public/.htaccess`), dan https://karyaanakbangsa.co.id/robots.txt harus berisi `Disallow: /admin`. Bila robots.txt masih berisi lama (`Disallow:` kosong), CDN Hostinger masih menyimpan berkas statis lama: kosongkan cache CDN lewat hPanel (pengaturan CDN situs).
-  3. **Saat data real masuk** (akhir tahap uji): ganti menjadi `SEO_INDEKS=true` + `php artisan optimize`, lalu daftarkan situs di Google Search Console (properti Domain, verifikasi lewat data TXT DNS di hPanel) dan kirim `https://karyaanakbangsa.co.id/sitemap.xml`. Opsional: Bing Webmaster Tools (bisa impor dari Search Console).
-
 ## Reset Data Produksi (boleh diulang selama tahap uji)
 
-Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (keputusan pemilik 2026-10-11). Ini aturan tahap uji di CLAUDE.md §2.4 dan berlaku **sampai pemilik menyatakan produksi memakai data real**. Reset juga **wajib** bila migration yang sudah jalan di produksi diedit atau disusun ulang, karena `php artisan migrate` biasa tidak menjalankan ulang migration yang sudah tercatat. Sejak saat itu reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
+Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (CLAUDE.md §2.4). Reset juga **wajib** bila migration yang sudah jalan di produksi diedit atau disusun ulang, karena `php artisan migrate` biasa tidak menjalankan ulang migration yang sudah tercatat. Setelah pemilik menyatakan produksi memakai data real, reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
 
-Syarat: seeder harus menghasilkan data yang sama dengan lokal. Reset hanya mengisi ulang dari seeder, jadi perubahan yang dibuat lewat admin lokal dan belum dipindahkan ke seeder tidak ikut ke produksi.
+Syarat: seeder menghasilkan data yang sama dengan lokal. Reset hanya mengisi ulang dari seeder, jadi perubahan lewat admin lokal yang belum dipindahkan ke seeder tidak ikut ke produksi.
 
 Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami, akun admin, dan sesi login), lalu diisi ulang. Tanpa cadangan karena datanya belum bernilai.
 
@@ -189,12 +121,65 @@ php artisan up
 
 Cek di jendela Incognito: login admin berhasil, beranda sama dengan lokal (hero, layanan, portofolio, artikel, identitas).
 
-Riwayat reset: 2026-10-10 (logo persegi lama dan tombol hero ke `/portofolio` yang 404), 2026-10-11 (data hasil perbaikan UI/UX: gambar hero & artikel sementara, judul layanan "Bootcamp", portofolio Sertifikasi IT).
+---
+
+## Server Baru dari Nol
+
+Referensi bila server dibangun ulang.
+
+1. hPanel: aktifkan SSH, set PHP 8.3, buat database MySQL (`u491519120_erp`), pastikan SSL aktif.
+2. Clone & symlink:
+   ```bash
+   cd ~/domains/karyaanakbangsa.co.id
+   git clone https://github.com/karya-anak-bangsa/laravel-erp.git
+   mv public_html public_html_lama
+   ln -s laravel-erp/public public_html
+   ```
+3. `composer install --no-dev --optimize-autoloader --no-scripts` lalu `php artisan package:discover --ansi`.
+4. Buat `.env` produksi dari `.env.example` dengan perubahan:
+   ```ini
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://karyaanakbangsa.co.id
+   LOG_STACK=daily
+   LOG_LEVEL=error
+   DB_HOST=localhost
+   DB_DATABASE=...
+   DB_USERNAME=...
+   DB_PASSWORD='...'        # kutip tunggal: '#' di awal dianggap komentar, '$' di kutip ganda diproses
+   ADMIN_NAMA="..."
+   ADMIN_EMAIL=...
+   ADMIN_PASSWORD='...'
+   SESSION_SECURE_COOKIE=true
+   SEO_INDEKS=false         # selama tahap uji; true setelah data real masuk (lihat Akhir Tahap Uji)
+   # Opsional: titik peta kantor (PETA_LAT, PETA_LNG, PETA_ZOOM); tanpa itu dipakai config/perusahaan.php
+   ```
+5. Database, akun admin, berkas unggahan, dan data awal:
+   ```bash
+   chmod 600 .env
+   php artisan key:generate --force
+   php artisan migrate --force
+   php artisan db:seed --class=PenggunaSeeder --force
+   sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=/" .env   # password admin tidak disimpan sebagai teks biasa
+   ln -s ../storage/app/public public/storage            # pengganti storage:link
+   php artisan db:seed --class=CompanyProfileSeeder --force
+   ```
+   `CompanyProfileSeeder` wajib (tanpa itu menu Identitas menampilkan 404) dan aman dijalankan ulang: tabel yang sudah berisi dilewati, isian admin tidak ditimpa. Jangan memakai `php artisan db:seed` tanpa `--class`, karena `PenggunaSeeder` di dalamnya gagal setelah `ADMIN_PASSWORD` dikosongkan.
+6. Unggah `public/build` (langkah 3 Deploy Rutin), lalu `php artisan optimize`.
+7. Cek dari laptop: `curl -I https://www.karyaanakbangsa.co.id` harus `301` ke alamat tanpa www, dan https://karyaanakbangsa.co.id/robots.txt harus berisi `Disallow: /admin`. Bila robots.txt masih versi lama, kosongkan cache CDN lewat hPanel (pengaturan CDN situs).
+
+## Akhir Tahap Uji (saat data real masuk)
+
+1. Ganti `SEO_INDEKS=true` di `.env`, lalu `php artisan optimize`.
+2. Daftarkan situs di Google Search Console (properti Domain, verifikasi lewat data TXT DNS di hPanel) dan kirim `https://karyaanakbangsa.co.id/sitemap.xml`. Opsional: Bing Webmaster Tools (bisa impor dari Search Console).
+3. Sejak itu Reset Data Produksi tidak boleh lagi (CLAUDE.md §2.4).
+
+---
 
 ## Aturan & Pemecahan Masalah
 
 - **Setiap mengubah `.env`, jalankan `php artisan optimize`** — config yang di-cache tidak membaca `.env` lagi.
-- **Edit `.env` lewat satu cara saja** (nano di PuTTY *atau* File Browser). Tab File Browser yang masih terbuka bisa menimpa perubahan dari PuTTY — pada deploy pertama ini menghapus `APP_KEY` dan menyebabkan error 500.
+- **Edit `.env` lewat satu cara saja** (nano di PuTTY *atau* File Browser): tab File Browser yang masih terbuka bisa menimpa perubahan dari PuTTY, misalnya menghapus `APP_KEY` sehingga muncul error 500.
 - **Error 500**: lihat judul errornya
   ```bash
   grep -h "production.ERROR" storage/logs/*.log | tail -3 | cut -c1-700
