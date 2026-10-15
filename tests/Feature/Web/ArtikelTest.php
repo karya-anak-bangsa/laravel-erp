@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Storage::fake('public');
-    Identitas::factory()->create(['judul_website' => 'Situs Uji Artikel']);
+    // Judul halaman selain beranda berakhiran nama perusahaan, bukan Judul Website.
+    Identitas::factory()->create(['nama_perusahaan' => 'PT Uji Artikel', 'judul_website' => 'Situs Uji Artikel']);
 });
 
 describe('daftar artikel', function () {
@@ -21,7 +22,7 @@ describe('daftar artikel', function () {
 
         $this->get(route('artikel.index'))
             ->assertOk()
-            ->assertSee('<title>Artikel — Situs Uji Artikel</title>', false)
+            ->assertSee('<title>Artikel — PT Uji Artikel</title>', false)
             ->assertSeeInOrder(['<h1', 'Wawasan &amp; kabar terbaru', '</h1>'], false)
             ->assertSeeInOrder(['Artikel Baru', 'Artikel Lama'])
             // Di bawah h1 halaman, judul kartu menjadi h2.
@@ -47,7 +48,7 @@ describe('daftar artikel', function () {
 
         $this->get(route('artikel.index', ['page' => 2]))
             ->assertOk()
-            ->assertSee('<title>Artikel (Halaman 2) — Situs Uji Artikel</title>', false)
+            ->assertSee('<title>Artikel (Halaman 2) — PT Uji Artikel</title>', false)
             ->assertSee('Artikel Urut 10')
             ->assertDontSee('Artikel Urut 09')
             ->assertSee('rel="prev"', false);
@@ -78,7 +79,7 @@ describe('detail artikel', function () {
 
         $this->get('/artikel/judul-artikel-uji')
             ->assertOk()
-            ->assertSee('<title>Judul Artikel Uji — Situs Uji Artikel</title>', false)
+            ->assertSee('<title>Judul Artikel Uji — PT Uji Artikel</title>', false)
             // Meta deskripsi dari ringkasan isi: sub-judul tidak ikut agar tidak menyambung dengan paragraf.
             ->assertSee('<meta name="description" content="Pembuka artikel. Isi tebal.">', false)
             ->assertSee('id="judul-artikel"', false)
@@ -87,6 +88,23 @@ describe('detail artikel', function () {
             ->assertSee('<span class="lencana-artikel">Teknologi</span>', false)
             ->assertSee('<time class="tanggal-artikel" datetime="2026-10-09">Diterbitkan <span class="whitespace-nowrap">9 Oktober 2026</span></time>', false)
             ->assertSee('href="'.route('artikel.index').'">Artikel</a>', false);
+    });
+
+    it('menyediakan tombol bagikan dengan alamat utama artikel', function () {
+        Artikel::factory()->terbit()->create(['judul' => 'Artikel & Bagikan', 'slug' => 'artikel-bagikan']);
+        $alamat = rtrim(config('app.url'), '/').'/artikel/artikel-bagikan';
+
+        // Dibuka lewat host lain (mis. www.): yang dibagikan tetap alamat utama.
+        $this->get('http://www.contoh.test/artikel/artikel-bagikan')
+            ->assertSee('href="https://wa.me/?text='.rawurlencode("Artikel & Bagikan\n".$alamat).'"', false)
+            ->assertSee('href="https://www.facebook.com/sharer/sharer.php?u='.rawurlencode($alamat).'"', false)
+            ->assertSee('href="https://www.linkedin.com/sharing/share-offsite/?url='.rawurlencode($alamat).'"', false)
+            ->assertSee('<span class="sr-only">Bagikan ke WhatsApp</span>', false)
+            ->assertSee('data-salin-tautan="'.$alamat.'"', false)
+            // Tombol salin baru ditampilkan JavaScript karena tanpa itu tidak berfungsi.
+            ->assertSee('<li hidden>', false);
+
+        $this->get(route('artikel.index'))->assertDontSee('class="bagikan"', false);
     });
 
     it('menolak artikel draf, artikel terhapus, dan slug yang tidak dikenal', function () {

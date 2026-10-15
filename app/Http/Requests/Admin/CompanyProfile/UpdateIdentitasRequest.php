@@ -23,8 +23,9 @@ class UpdateIdentitasRequest extends FormRequest
             'meta_deskripsi' => ['nullable', 'string', 'max:255'],
             'meta_keyword' => ['nullable', 'string', 'max:255'],
             'logo_website' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            // Aturan image tidak menerima .ico, padahal format itu lazim untuk favicon.
-            'favicon_website' => ['nullable', 'file', 'mimes:png,ico,webp', 'max:512'],
+            // Aturan image tidak menerima .ico, padahal format itu lazim untuk favicon. Tanpa WEBP: Google Search tidak
+            // menampilkan favicon WEBP di hasil pencarian.
+            'favicon_website' => ['nullable', 'file', 'mimes:png,ico', 'max:512'],
             'email' => ['required', 'email', 'max:150'],
             'telepon' => ['required', 'string', 'max:30', 'regex:/^\+?[0-9][0-9 \-]*$/'],
             'alamat' => ['required', 'string', 'max:1000'],
@@ -41,7 +42,7 @@ class UpdateIdentitasRequest extends FormRequest
     {
         return [
             'telepon.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda hubung, dan awalan +.',
-            'favicon_website.mimes' => 'Favicon harus berupa file bertipe PNG, ICO, atau WEBP.',
+            'favicon_website.mimes' => 'Favicon harus berupa file bertipe PNG atau ICO.',
         ];
     }
 

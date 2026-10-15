@@ -333,7 +333,9 @@ describe('pratinjau dan frontend', function () {
             ->assertSee('--font-tema: "Poppins"; --ketebalan-judul: 700;', false)
             // Bayangan Tegas Monochrome: formulir shadow-md.
             ->assertSee('--bayangan-formulir: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;', false)
-            ->assertSee('Pratinjau template “Abu &lt;Hangat&gt;”', false);
+            ->assertSee('Pratinjau template “Abu &lt;Hangat&gt;”', false)
+            // Memakai layout publik, tetapi bukan halaman untuk mesin pencari.
+            ->assertSee('<meta name="robots" content="noindex">', false);
 
         expect(Template::count())->toBe(0);
     });

@@ -104,6 +104,7 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
    ADMIN_EMAIL=...
    ADMIN_PASSWORD='...'
    SESSION_SECURE_COOKIE=true
+   SEO_INDEKS=false         # selama tahap uji (data contoh); true setelah data real masuk
    ```
 5. ```bash
    chmod 600 .env
@@ -124,7 +125,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo & favicon), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel, 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
+- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo, favicon, meta deskripsi), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel, 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
   ```bash
   php artisan db:seed --class=CompanyProfileSeeder --force
   ```
@@ -140,6 +141,10 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   php artisan db:seed --class=TemplateSeeder --force
   ```
   Tanpa langkah ini website tetap tampil normal (TemaService memakai `config/tema.php`), tetapi daftar Pengaturan Sistem › Manajemen Template kosong. Aman dijalankan ulang; `CompanyProfileSeeder` juga menjalankannya.
+- **Fase 4 — SEO** (sekali saat deploy pertama fitur SEO):
+  1. Selama tahap uji, tutup pengindeksan: tambahkan `SEO_INDEKS=false` ke `.env` (nano), lalu `php artisan optimize`. Semua halaman publik bertanda `noindex` dan robots.txt tidak menyebut sitemap. Tanpa baris ini situs terbuka untuk mesin pencari (bawaan `true`).
+  2. Cek dari laptop: `curl -I https://www.karyaanakbangsa.co.id` harus `301` ke alamat tanpa www (aturan di `public/.htaccess`), dan https://karyaanakbangsa.co.id/robots.txt harus berisi `Disallow: /admin`. Bila robots.txt masih berisi lama (`Disallow:` kosong), CDN Hostinger masih menyimpan berkas statis lama: kosongkan cache CDN lewat hPanel (pengaturan CDN situs).
+  3. **Saat data real masuk** (akhir tahap uji): ganti menjadi `SEO_INDEKS=true` + `php artisan optimize`, lalu daftarkan situs di Google Search Console (properti Domain, verifikasi lewat data TXT DNS di hPanel) dan kirim `https://karyaanakbangsa.co.id/sitemap.xml`. Opsional: Bing Webmaster Tools (bisa impor dari Search Console).
 
 ## Reset Data Produksi (boleh diulang selama tahap uji)
 
@@ -200,4 +205,5 @@ Riwayat reset: 2026-10-10 (logo persegi lama dan tombol hero ke `/portofolio` ya
 - **Beranda error 500 `Unable to locate file in Vite manifest: resources/css/web.css`** atau **`Font alias [...] is not defined`** → `public/build` yang terunggah berasal dari build lama. Build ulang dari commit yang sama lalu unggah seluruh `public\build`.
 - **Identitas diubah langsung di database** (bukan lewat admin) tidak langsung tampil di beranda karena di-cache → `php artisan cache:forget company-profile.identitas`. Perubahan lewat admin/seeder membuang cache otomatis; `php artisan optimize` tidak menghapus cache ini.
 - **Tema beranda tertukar antarpengunjung** → bila kelak LiteSpeed Cache diaktifkan di hPanel, kecualikan halaman publik dari cache (HTML berbeda per cookie `tema`).
-- **HTTPS**: pengalihan HTTP → HTTPS sudah ditangani Hostinger; `public/.htaccess` tidak perlu diubah.
+- **HTTPS & www**: pengalihan HTTP → HTTPS ditangani Hostinger; `www.` → tanpa www (301) ditangani aturan `RewriteCond %{HTTP_HOST} ^www\.` di `public/.htaccess`, ikut ter-deploy lewat `git pull`.
+- **robots.txt & sitemap.xml** dibuat Laravel (`Web\SeoController`). Jangan membuat `public/robots.txt`: berkas statis didahulukan server sehingga aturan dari aplikasi tidak terpakai.

@@ -17,11 +17,11 @@
                 <x-admin.form-input name="nama_perusahaan" label="Nama Perusahaan" :value="$identitas->nama_perusahaan"
                     :required="true" maxlength="150" />
                 <x-admin.form-input name="judul_website" label="Judul Website" :value="$identitas->judul_website"
-                    :required="true" maxlength="150" hint="Tampil di tab browser dan judul hasil pencarian." />
+                    :required="true" maxlength="150" hint="Judul beranda di tab browser dan hasil pencarian. Halaman lain diakhiri nama perusahaan." />
                 <x-admin.form-input name="alamat_website" type="url" label="Alamat Website" :value="$identitas->alamat_website"
                     :required="true" maxlength="255" placeholder="https://karyaanakbangsa.co.id" />
                 <x-admin.form-textarea name="meta_deskripsi" label="Meta Deskripsi" :value="$identitas->meta_deskripsi"
-                    rows="3" maxlength="255" hint="Ringkasan website di hasil pencarian Google, idealnya 150–160 karakter." />
+                    rows="3" maxlength="255" hint="Ringkasan website di hasil pencarian Google dan footer, idealnya 150–160 karakter." />
                 <x-admin.form-input name="meta_keyword" label="Meta Keyword" :value="$identitas->meta_keyword"
                     maxlength="255" placeholder="mis. jasa pembuatan website, pelatihan IT, bootcamp" hint="Pisahkan dengan koma." />
             </x-admin.card>
@@ -36,8 +36,8 @@
                 <div class="pratinjau-gambar">
                     <img src="{{ $identitas->favicon_url }}" alt="Favicon saat ini">
                 </div>
-                <x-admin.form-file name="favicon_website" label="Favicon" accept=".png,.ico,.webp"
-                    hint="PNG, ICO, atau WEBP berbentuk persegi (mis. 512×512 px), maks. 512 KB." />
+                <x-admin.form-file name="favicon_website" label="Favicon" accept=".png,.ico"
+                    hint="PNG atau ICO persegi (mis. 512×512 px), maks. 512 KB; WEBP tidak ditampilkan Google." />
             </x-admin.card>
 
             <x-admin.card title="Kontak" subtitle="Tampil di halaman kontak dan footer website.">

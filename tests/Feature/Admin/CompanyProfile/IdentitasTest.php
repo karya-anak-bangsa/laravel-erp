@@ -138,6 +138,8 @@ it('memvalidasi isian identitas', function (array $data, string $kolom) {
     'logo bukan gambar' => [['logo_website' => UploadedFile::fake()->create('logo.pdf', 10, 'application/pdf')], 'logo_website'],
     'logo lebih dari 2 MB' => [['logo_website' => UploadedFile::fake()->image('logo.png')->size(2049)], 'logo_website'],
     'favicon bertipe svg' => [['favicon_website' => UploadedFile::fake()->create('favicon.svg', 2, 'image/svg+xml')], 'favicon_website'],
+    // Google Search tidak menampilkan favicon WEBP di hasil pencarian.
+    'favicon bertipe webp' => [['favicon_website' => UploadedFile::fake()->image('favicon.webp', 64, 64)], 'favicon_website'],
     'favicon lebih dari 512 KB' => [['favicon_website' => UploadedFile::fake()->image('favicon.png')->size(513)], 'favicon_website'],
 ]);
 
@@ -158,6 +160,8 @@ it('membuat baris identitas awal beserta logo dan favicon dari seeder', function
     $identitas = Identitas::sole();
     expect($identitas->nama_perusahaan)->toBe('PT. Teknologi Karya Anak Bangsa')
         ->and($identitas->alamat_website)->toBe('https://karyaanakbangsa.co.id')
+        ->and($identitas->meta_deskripsi)->toStartWith('Kami membantu bisnis tumbuh')
+        ->and(mb_strlen($identitas->meta_deskripsi))->toBeLessThanOrEqual(160)
         ->and($identitas->email)->toBe('info@karyaanakbangsa.co.id')
         ->and($identitas->link_whatsapp)->toBe('https://wa.me/6281234567890')
         ->and($identitas->link_youtube)->toBeNull()

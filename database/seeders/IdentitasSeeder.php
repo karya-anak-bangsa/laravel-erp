@@ -24,6 +24,8 @@ class IdentitasSeeder extends Seeder
             'nama_perusahaan' => 'PT. Teknologi Karya Anak Bangsa',
             'judul_website' => 'PT. Teknologi Karya Anak Bangsa',
             'alamat_website' => 'https://karyaanakbangsa.co.id',
+            // Ringkasan situs untuk hasil pencarian dan footer semua halaman; teksnya sama dengan deskripsi hero aktif.
+            'meta_deskripsi' => 'Kami membantu bisnis tumbuh lewat website dan aplikasi mobile, serta menyiapkan talenta IT melalui pelatihan, sertifikasi, dan bootcamp.',
             // Logo lebar berlatar transparan: tema Monochrome menghitamkannya dan footer memutihkannya lewat filter CSS.
             'logo_website' => $this->salinBerkasAwal(database_path('seeders/berkas/identitas/logo-tkab.webp'), Identitas::FOLDER, Identitas::DISK),
             'favicon_website' => $this->salinBerkasAwal(public_path('favicon.png'), Identitas::FOLDER, Identitas::DISK),

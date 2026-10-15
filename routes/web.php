@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
+use App\Http\Controllers\Web\SeoController;
 use Illuminate\Routing\RedirectController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,11 @@ Route::post('kontak', [KontakKamiController::class, 'store'])
 Route::get('kontak', RedirectController::class)
     ->defaults('destination', '/#kontak')
     ->defaults('status', 302);
+
+// Untuk perayap mesin pencari, dibentuk dari APP_URL. public/robots.txt sengaja tidak ada: berkas statis
+// didahulukan server sehingga rute ini tidak akan terpakai.
+Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'create'])->name('login');

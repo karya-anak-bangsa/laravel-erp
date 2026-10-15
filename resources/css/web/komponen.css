@@ -457,6 +457,25 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .isi-artikel h2 { @apply text-[1.375rem]/snug sm:text-2xl/snug; margin-top: 1.75em; }
 .isi-artikel h3 { @apply text-xl/snug; margin-top: 1.5em; }
 .isi-artikel li + li { margin-top: .5em; }
+/* Tombol bagikan di akhir isi (<x-web.bagikan>, pilihan pemilik 2026-10-15): label bergaya label seksi, tombol ikon-saja
+   44px seperti tombol menu. Full Color: ikon berwarna merek (kontras ≥4,5:1 di latar putih); Monochrome hitam. */
+.bagikan { @apply mx-auto mt-12 flex max-w-[45rem] flex-wrap items-center gap-x-5 gap-y-3 border-t pt-8 sm:mt-14; }
+.label-bagikan { @apply font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
+.daftar-bagikan { @apply flex items-center gap-2; }
+.tombol-bagikan { @apply size-11; }
+.tombol-bagikan svg { @apply size-[18px]; }
+/* Logo merek padat memenuhi kotak 24 unit, ikon garis hanya ±20 unit: diperkecil agar tampak sama besar. */
+.tombol-bagikan .logo-merek { @apply size-4; }
+.tombol-bagikan .ikon-tersalin, .tombol-bagikan[data-tersalin] .ikon-salin { display: none; }
+.tombol-bagikan[data-tersalin] .ikon-tersalin { display: block; }
+.status-salin { @apply text-sm font-medium; }
+.status-salin[data-gagal] { @apply text-red-700; }
+[data-tema=full_color] .tombol-bagikan[data-tujuan=whatsapp] { color: #15803D; }
+[data-tema=full_color] .tombol-bagikan[data-tujuan=facebook] { color: #0866FF; }
+[data-tema=full_color] .tombol-bagikan[data-tujuan=linkedin] { color: #0A66C2; }
+[data-tema=full_color] .tombol-bagikan[data-salin-tautan] { color: var(--utama-teks); }
+[data-tema=full_color] :is(.tombol-bagikan[data-tersalin], .status-salin:not([data-gagal])) { @apply text-emerald-700; }
+[data-tema=monochrome] .status-salin:not([data-gagal]) { @apply text-foreground; }
 
 /* Isi di bawah kepala halaman (daftar artikel); ruang bawah = jarak antarseksi. */
 .isi-halaman { @apply pb-20 sm:pb-24 lg:pb-28; }

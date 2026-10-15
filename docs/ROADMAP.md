@@ -55,7 +55,7 @@ Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — di
 - [x] Halaman artikel (2026-10-15): daftar `/artikel` (9 per halaman, paginasi) + detail `/artikel/{slug}` (kolom baca, artikel lainnya, band ajakan); kartu artikel beranda bertautan + tombol "Lihat semua artikel"; menu Artikel di navbar & footer ke halaman daftar; slug artikel dikunci setelah terbit
 - [ ] Halaman: portofolio, kontak
 - [x] Form kontak → `tb_kontak_kami` (rate limit 3/menit per IP, honeypot) — dikerjakan bersama langkah 2a; notifikasi email (opsional, butuh SMTP) belum dibuat
-- [ ] SEO: meta title/description dari identitas (sudah di langkah 2a; halaman artikel memakai judul & ringkasan artikel), Open Graph + tombol bagikan artikel (WhatsApp, salin tautan), `sitemap.xml`, `robots.txt`
+- [x] SEO (2026-10-15): judul (akhiran nama perusahaan) & deskripsi per halaman, alamat kanonis dari `APP_URL` + `www` dialihkan 301, Open Graph & Twitter Card (gambar bawaan = hero aktif, artikel memakai gambarnya sendiri), JSON-LD (Organization, WebSite, BlogPosting, BreadcrumbList), `sitemap.xml` & `robots.txt` dinamis, sakelar `SEO_INDEKS` (noindex selama tahap uji), noindex panel admin/login/pratinjau; tombol bagikan artikel (WhatsApp, Facebook, LinkedIn, salin tautan); Meta Deskripsi identitas terisi; favicon hanya PNG/ICO
 - [ ] Performa: lazy-load gambar (sudah di langkah 2a), ukuran gambar dioptimalkan, impor Basecoat selektif (`web.css` kini ±39 KB gzip), font woff2 saja (plugin font Laravel 3.2 membuat blok `@font-face` woff2 & woff terpisah sehingga browser mengunduh `.woff`)
 
 ## Fase 5 — Penguatan Kualitas
