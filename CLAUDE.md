@@ -291,8 +291,13 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 
 ### Acuan tampilan (pilihan pemilik 2026-10-15)
 - Tampilan situs per 2026-10-15, frontend publik kedua tema maupun panel admin, adalah **acuan dasar**. Potretnya ada di `laravel-erp-prototipe/acuan/` (di luar repo; buka `index.html`), dibuat `alat/potret-acuan.mjs` dari daftar `alat/daftar-acuan.json` dengan data seeder (§2.4). Prototipe awal (`tema-ganda.html`) sudah pensiun. Cara pakai: `laravel-erp-prototipe/README.md`.
-- Setiap perubahan tampilan dicek dengan `node alat/banding-acuan.mjs` dari folder itu (opsi `--saring=`, `--lebar=`, `--bagian=`; laporan di `banding/laporan.md`). Yang berubah hanya boleh bagian yang diminta; beda lain adalah regresi dan diperbaiki dulu.
-- Acuan selalu mengikuti tampilan terbaru: setiap perubahan tampilan, baik perbaikan detail maupun fitur baru, diakhiri dengan `node alat/potret-acuan.mjs --perbarui` setelah banding bersih. Perintah itu juga mengosongkan `banding/`, yang di luar itu dibiarkan. Halaman atau modul baru ditambahkan dulu ke `daftar-acuan.json`. Bila data seeder berubah, acuan dipotret ulang.
+- Setiap perubahan tampilan dicek dengan `node alat/banding-acuan.mjs` dari folder itu (laporan di `banding/laporan.md`). Yang berubah hanya boleh bagian yang diminta; beda lain adalah regresi dan diperbaiki dulu.
+- Cakupan pemeriksaan sebanding dengan perubahannya, tidak *over engineering* (pilihan pemilik 2026-10-16). Dari diff, tentukan halaman yang benar-benar menampilkan apa yang berubah, lalu batasi kedua alat dengan `--saring=` (cocok sebagian dengan nama potret, mis. `--saring=beranda,artikel` = seksi artikel beranda + halaman artikel publik & admin), `--lebar=`, atau `--bagian=web|admin`.
+  - Logika, test, atau docs saja → tanpa potret.
+  - Isi/data seeder saja (teks, gambar) → tanpa banding karena bedanya pasti hanya di isi itu; potret ulang halaman yang memuat data itu, lalu lihat satu atau dua potretnya (1536 & 390). Identitas dan layanan tampil di navbar/footer sehingga cakupannya semua halaman publik.
+  - Tampilan satu modul → modul itu di semua lebar, ditambah beranda bila modulnya punya seksi di sana.
+  - Seluruh situs hanya bila yang berubah bagian bersama: layout, komponen Blade bersama, `token.css`/`komponen.css`/`admin.scss`, `TemaService`, atau paket npm.
+- Acuan selalu mengikuti tampilan terbaru: setiap perubahan tampilan, baik perbaikan detail maupun fitur baru, diakhiri dengan `node alat/potret-acuan.mjs --perbarui` dengan saringan yang sama setelah banding bersih. Perintah itu juga mengosongkan `banding/`, yang di luar itu dibiarkan. Halaman atau modul baru ditambahkan dulu ke `daftar-acuan.json`.
 
 ## 10. Keamanan
 
@@ -323,8 +328,8 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - [ ] Form Request untuk store & update, pesan berbahasa Indonesia
 - [ ] Controller, rute bernama, entri menu `config/menu.php`
 - [ ] View memakai layout & komponen admin, responsif (desktop, tablet, ponsel)
-- [ ] Frontend publik: `npm run build`, lalu cek visual kedua tema (Full Color & Monochrome) di 1536, 390 & 360 px
-- [ ] Tampilan dibandingkan dengan acuan (`banding-acuan.mjs`): hanya bagian yang diminta yang berubah; lalu acuan diperbarui mengikuti tampilan terbaru (§9 › Acuan tampilan)
+- [ ] Frontend publik: `npm run build`, lalu cek visual halaman yang terdampak di kedua tema (Full Color & Monochrome) di 1536, 390 & 360 px
+- [ ] Tampilan dibandingkan dengan acuan (`banding-acuan.mjs`) sebatas halaman yang terdampak: hanya bagian yang diminta yang berubah; lalu acuan halaman itu diperbarui mengikuti tampilan terbaru (§9 › Acuan tampilan)
 - [ ] Feature test: akses tamu ditolak, validasi, create/read/update/delete berhasil
 - [ ] Unit test untuk setiap Service yang memuat logika
 - [ ] `composer check` lulus tanpa error
