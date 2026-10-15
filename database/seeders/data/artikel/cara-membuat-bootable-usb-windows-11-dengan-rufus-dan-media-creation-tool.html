@@ -1,48 +1,48 @@
-<p>Ada banyak alasan untuk menyiapkan flashdisk instalasi Windows 11: laptop yang makin lambat dan ingin diinstal bersih, SSD baru yang masih kosong, atau PC rakitan yang belum punya sistem operasi. Flashdisk seperti ini juga berguna sebagai alat darurat ketika Windows gagal menyala.</p>
-<p>Dua alat yang paling sering dipakai adalah Media Creation Tool buatan Microsoft dan Rufus. Artikel ini membahas persiapannya, langkah memakai keduanya, opsi khusus di Rufus, serta beberapa peringatan yang sering diabaikan.</p>
-<h2>Yang Perlu Disiapkan</h2>
+<p>Ada banyak alasan untuk menyiapkan <em>flashdisk</em> instalasi Windows 11: laptop yang makin lambat dan memerlukan instalasi bersih, SSD baru yang masih kosong, atau PC rakitan yang belum memiliki sistem operasi. <em>Flashdisk</em> seperti ini juga berguna sebagai alat darurat ketika Windows gagal menyala.</p>
+<p>Pengguna paling sering memakai dua alat, yaitu Media Creation Tool buatan Microsoft dan Rufus. Artikel ini membahas persiapannya, langkah memakai keduanya, opsi khusus di Rufus, serta beberapa peringatan yang sering luput dari perhatian.</p>
+<h2>Yang Perlu Anda Siapkan</h2>
 <ul>
-<li><p>Flashdisk minimal 8 GB, sesuai syarat Microsoft. Kapasitas 16 GB lebih lega. Seluruh isinya akan dihapus, jadi pindahkan dulu file penting di dalamnya.</p></li>
-<li><p>PC Windows dengan koneksi internet untuk membuat media. Media Creation Tool harus dijalankan dengan hak administrator, sedangkan Rufus memerlukan Windows 8 atau yang lebih baru.</p></li>
-<li><p>Lisensi Windows 11, atau perangkat Windows 10 yang memenuhi syarat upgrade. PC yang sebelumnya sudah aktif dengan lisensi digital biasanya teraktivasi otomatis setelah instal ulang.</p></li>
-<li><p>Cadangan data dari PC tujuan, karena instal bersih menghapus isi partisi tempat Windows dipasang.</p></li>
+<li><p><em>Flashdisk</em> minimal 8 GB sesuai dengan syarat Microsoft. Kapasitas 16 GB lebih lega. Pembuatan media akan menghapus seluruh isi <em>flashdisk</em>. Oleh karena itu, pindahkan dulu berkas penting di dalamnya.</p></li>
+<li><p>PC Windows dengan koneksi internet untuk membuat media. Anda harus menjalankan Media Creation Tool dengan hak administrator, sedangkan Rufus memerlukan Windows 8 atau yang lebih baru.</p></li>
+<li><p>Lisensi Windows 11 atau perangkat Windows 10 yang memenuhi syarat <em>upgrade</em>. PC yang sebelumnya sudah aktif dengan lisensi digital biasanya teraktivasi otomatis setelah instalasi ulang.</p></li>
+<li><p>Cadangan data dari PC tujuan karena instalasi bersih menghapus isi partisi tempat Anda memasang Windows.</p></li>
 </ul>
-<p>Perlu dicatat, Media Creation Tool hanya membuat media untuk PC berprosesor x64 dan tidak bisa dipakai untuk PC berbasis Arm. Laptop Snapdragon memakai arsitektur Arm, seperti dibahas di artikel <a href="/artikel/intel-amd-atau-snapdragon-prosesor-mana-yang-pas-untuk-laptop-tipis">Intel, AMD, atau Snapdragon</a>. Untuk perangkat seperti ini, Microsoft menyediakan ISO Arm64 di halaman terpisah.</p>
+<p>Perhatikan bahwa Media Creation Tool hanya membuat media untuk PC berprosesor x64, bukan untuk PC berbasis Arm. Laptop Snapdragon memakai arsitektur Arm, seperti penjelasan dalam artikel <a href="/artikel/intel-amd-atau-snapdragon-prosesor-mana-yang-pas-untuk-laptop-tipis">Intel, AMD, atau Snapdragon</a>. Microsoft menyediakan ISO Arm64 untuk perangkat seperti ini di halaman terpisah.</p>
 <h2>Cara Pertama: Media Creation Tool</h2>
-<p>Media Creation Tool adalah cara paling sederhana karena alat ini mengunduh Windows 11 sekaligus menuliskannya ke flashdisk. Alat ini tersedia di <a href="https://www.microsoft.com/software-download/windows11">halaman unduhan Windows 11 resmi</a>, pada bagian Create Windows 11 Installation Media.</p>
+<p>Media Creation Tool adalah cara paling sederhana karena alat ini mengunduh Windows 11 sekaligus menuliskannya ke <em>flashdisk</em>. Alat ini tersedia di <a href="https://www.microsoft.com/software-download/windows11">halaman unduhan resmi Windows 11</a> pada bagian <strong>Create Windows 11 Installation Media</strong>.</p>
 <ol>
 <li><p>Unduh lalu jalankan Media Creation Tool, kemudian setujui lisensinya dengan memilih <strong>Accept</strong>.</p></li>
-<li><p>Jika alat menanyakan apa yang ingin Anda lakukan, pilih <strong>Create installation media for another PC</strong>, lalu <strong>Next</strong>.</p></li>
-<li><p>Pilih bahasa, edisi, dan arsitektur 64-bit, atau biarkan opsi yang direkomendasikan untuk PC ini.</p></li>
-<li><p>Pilih <strong>USB flash drive</strong>, tentukan flashdisk yang dipakai, lalu klik <strong>Next</strong>.</p></li>
-<li><p>Tunggu proses unduh dan penulisan selesai. Lamanya bergantung pada kecepatan internet Anda.</p></li>
+<li><p>Jika alat ini menanyakan apa yang ingin Anda lakukan, pilih <strong>Create installation media for another PC</strong>, lalu klik <strong>Next</strong>.</p></li>
+<li><p>Pilih bahasa, edisi, dan arsitektur 64-bit, atau biarkan opsi rekomendasi untuk PC ini.</p></li>
+<li><p>Pilih <strong>USB flash drive</strong>, tentukan <em>flashdisk</em> yang akan Anda pakai, lalu klik <strong>Next</strong>.</p></li>
+<li><p>Tunggu hingga proses pengunduhan dan penulisan selesai. Lamanya bergantung pada kecepatan internet Anda.</p></li>
 </ol>
 <h2>Cara Kedua: Rufus</h2>
-<p>Rufus adalah aplikasi open source berukuran kecil yang bisa langsung dipakai tanpa instalasi. Versi terbarunya saat artikel ini ditulis adalah Rufus 4.15 yang dirilis 30 Juni 2026, tersedia untuk Windows x64, x86, dan ARM64. Unduh hanya dari <a href="https://rufus.ie/en/">situs resmi Rufus</a> atau halaman GitHub proyeknya, bukan dari situs kumpulan software yang bisa saja menyisipkan installer tambahan.</p>
-<p>Berbeda dengan Media Creation Tool, Rufus memerlukan file ISO. Unduh ISO Windows 11 dari halaman resmi Microsoft yang sama, pada bagian Download Windows 11 Disk Image (ISO) for x64 devices. Hindari ISO modifikasi dari sumber tak jelas karena bisa saja disisipi malware.</p>
+<p>Rufus adalah aplikasi sumber terbuka berukuran kecil yang bisa langsung berjalan tanpa instalasi. Saat artikel ini terbit, versi terbarunya adalah Rufus 4.15 yang meluncur pada 30 Juni 2026 untuk Windows x64, x86, dan ARM64. Unduh hanya dari <a href="https://rufus.ie/en/">situs resmi Rufus</a> atau halaman GitHub proyeknya, bukan dari situs kumpulan perangkat lunak. Situs semacam itu bisa saja menyisipkan penginstal tambahan.</p>
+<p>Berbeda dengan Media Creation Tool, Rufus memerlukan berkas ISO. Unduh ISO Windows 11 dari halaman resmi Microsoft yang sama pada bagian <strong>Download Windows 11 Disk Image (ISO) for x64 devices</strong>. Hindari ISO modifikasi dari sumber tak jelas karena pembuatnya bisa saja menyisipkan <em>malware</em>.</p>
 <ol>
-<li><p>Colokkan flashdisk, buka Rufus, lalu pilih flashdisk tersebut di kolom <strong>Device</strong>.</p></li>
-<li><p>Pada <strong>Boot selection</strong>, klik <strong>SELECT</strong> dan pilih file ISO Windows 11.</p></li>
-<li><p>Untuk PC modern, pastikan <strong>Partition scheme</strong> bernilai GPT dan <strong>Target system</strong> bernilai UEFI (non CSM). Kolom lain bisa dibiarkan sesuai bawaan.</p></li>
-<li><p>Klik <strong>START</strong>, pilih opsi di jendela Windows User Experience yang muncul, lalu klik <strong>OK</strong>.</p></li>
-<li><p>Setujui peringatan bahwa semua data di flashdisk akan dihapus, lalu tunggu hingga status berubah menjadi READY.</p></li>
+<li><p>Colokkan <em>flashdisk</em>, buka Rufus, lalu pilih <em>flashdisk</em> tersebut di kolom <strong>Device</strong>.</p></li>
+<li><p>Pada <strong>Boot selection</strong>, klik <strong>SELECT</strong> dan pilih berkas ISO Windows 11.</p></li>
+<li><p>Pastikan <strong>Partition scheme</strong> bernilai GPT dan <strong>Target system</strong> bernilai UEFI (non CSM) untuk PC modern. Biarkan kolom lain sesuai bawaan.</p></li>
+<li><p>Klik <strong>START</strong>, pilih opsi di jendela <strong>Windows User Experience</strong> yang muncul, lalu klik <strong>OK</strong>.</p></li>
+<li><p>Setujui peringatan bahwa Rufus akan menghapus semua data di <em>flashdisk</em>, lalu tunggu hingga status berubah menjadi <strong>READY</strong>.</p></li>
 </ol>
 <h2>Memahami Opsi Windows User Experience</h2>
-<p>Jendela inilah yang membuat Rufus populer di kalangan teknisi. Opsi-opsinya mengatur instalasi Windows 11 agar lebih ringkas, dan baru muncul setelah tombol START ditekan.</p>
+<p>Jendela inilah yang membuat Rufus populer di kalangan teknisi. Opsi-opsinya mengatur instalasi Windows 11 agar lebih ringkas. Semua opsi ini baru muncul setelah Anda menekan tombol <strong>START</strong>.</p>
 <ul>
 <li><p><strong>Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong> melewati pemeriksaan syarat perangkat keras saat instalasi.</p></li>
-<li><p><strong>Remove requirement for an online Microsoft account</strong> dan <strong>Create a local account with username</strong> memungkinkan instalasi memakai akun lokal.</p></li>
+<li><p><strong>Remove requirement for an online Microsoft account</strong> dan <strong>Create a local account with username</strong> memungkinkan Anda memakai akun lokal saat instalasi.</p></li>
 <li><p><strong>Disable data collection (Skip privacy questions)</strong> melewati rangkaian pertanyaan privasi saat penyiapan awal.</p></li>
 <li><p><strong>Disable BitLocker automatic device encryption</strong> mencegah enkripsi perangkat aktif secara otomatis.</p></li>
 </ul>
-<p>FAQ Rufus menyarankan agar koneksi internet diputus saat instalasi sampai di halaman pembuatan akun, supaya Windows tidak memaksa penggunaan akun Microsoft. Sejak versi 4.14, Rufus juga punya opsi instalasi senyap yang memasang Windows ke disk pertama tanpa konfirmasi. Jangan mencentangnya kecuali Anda benar-benar paham risikonya.</p>
-<h2>Peringatan Sebelum Memakai Opsi Bypass</h2>
-<p>Melewati syarat TPM dan Secure Boot memang membuat Windows 11 bisa terpasang di PC lama, tetapi ada konsekuensinya. Microsoft menyatakan PC yang tidak memenuhi syarat minimum tidak didukung, tidak dijamin menerima update termasuk update keamanan, dan kerusakan akibat ketidakcocokan tidak ditanggung garansi pabrikan. Desktopnya juga akan diberi tanda air.</p>
-<p>Ada pula batas yang tidak bisa dilewati. Sejak versi 24H2, Windows 11 benar-benar mewajibkan prosesor yang mendukung instruksi POPCNT dan SSE4.2. FAQ Rufus menegaskan batasan ini tidak bisa diakali, sehingga PC yang sangat tua tetap tidak bisa menjalankan Windows 11 versi terbaru.</p>
-<p>Terakhir, berhati-hatilah saat memilih partisi di layar instalasi. Menghapus atau memformat partisi yang salah bisa melenyapkan data yang belum dicadangkan.</p>
-<h2>Booting dari Flashdisk</h2>
-<p>Jika Windows di PC tujuan masih berjalan, buka <strong>Settings &gt; System &gt; Recovery</strong>, klik <strong>Restart now</strong> di bagian Advanced startup, lalu pilih <strong>Use a device</strong> dan tentukan flashdisk. Di Windows 10, menunya ada di Settings &gt; Update &amp; Security &gt; Recovery.</p>
-<p>Jika PC tidak bisa masuk Windows, tekan tombol boot menu sesaat setelah PC dinyalakan. Tombolnya berbeda di tiap merek, umumnya F12, F11, F8, atau Esc. Bila flashdisk tidak muncul, periksa pengaturan boot di BIOS/UEFI.</p>
-<h2>Jadi, Pilih yang Mana?</h2>
-<p>Pilih Media Creation Tool jika Anda ingin cara paling resmi dan sederhana untuk PC yang memenuhi syarat Windows 11. Pilih Rufus jika butuh fleksibilitas lebih, misalnya ingin memakai akun lokal, melewati pertanyaan privasi, atau menulis ISO Arm64 ke flashdisk.</p>
-<p>Apa pun alatnya, simpan flashdisk yang sudah jadi di tempat yang mudah ditemukan. Saat Windows bermasalah suatu hari nanti, Anda tidak perlu panik mencari PC lain untuk membuatnya.</p>
+<p>FAQ Rufus menyarankan Anda memutus koneksi internet saat instalasi sampai di halaman pembuatan akun agar Windows tidak memaksa penggunaan akun Microsoft. Sejak versi 4.14, Rufus juga memiliki opsi instalasi senyap yang memasang Windows ke <em>disk</em> pertama tanpa konfirmasi. Jangan mencentangnya kecuali Anda benar-benar memahami risikonya.</p>
+<h2>Peringatan Sebelum Memakai Opsi <em>Bypass</em></h2>
+<p>Melewati syarat TPM dan <em>Secure Boot</em> memang membuat Windows 11 bisa terpasang di PC lama, tetapi ada konsekuensinya. Microsoft menyatakan tidak mendukung PC yang tidak memenuhi syarat minimum dan tidak menjamin PC tersebut menerima pembaruan, termasuk pembaruan keamanan. Microsoft juga menegaskan bahwa garansi pabrikan tidak menanggung kerusakan akibat ketidakcocokan. Selain itu, Windows akan menampilkan tanda air di <em>desktop</em>.</p>
+<p>Ada pula batas yang tidak bisa Anda lewati. Sejak versi 24H2, Windows 11 benar-benar mewajibkan prosesor yang mendukung instruksi POPCNT dan SSE4.2. FAQ Rufus menegaskan bahwa tidak ada cara untuk mengakali batasan ini sehingga PC yang sangat tua tetap tidak bisa menjalankan Windows 11 versi terbaru.</p>
+<p>Terakhir, berhati-hatilah saat memilih partisi di layar instalasi. Menghapus atau memformat partisi yang salah bisa melenyapkan data yang belum Anda cadangkan.</p>
+<h2><em>Booting</em> dari <em>Flashdisk</em></h2>
+<p>Jika Windows di PC tujuan masih berjalan, buka <strong>Settings &gt; System &gt; Recovery</strong>, klik <strong>Restart now</strong> di bagian <strong>Advanced startup</strong>, lalu pilih <strong>Use a device</strong> dan tentukan <em>flashdisk</em>. Di Windows 10, menu tersebut berada di <strong>Settings &gt; Update &amp; Security &gt; Recovery</strong>.</p>
+<p>Jika PC tidak bisa masuk ke Windows, tekan tombol <em>boot menu</em> sesaat setelah Anda menyalakan PC. Tombolnya berbeda pada setiap merek, umumnya F12, F11, F8, atau Esc. Bila <em>flashdisk</em> tidak muncul, periksa pengaturan <em>boot</em> di BIOS/UEFI.</p>
+<h2>Pilih yang Mana?</h2>
+<p>Pilih Media Creation Tool jika Anda menginginkan cara paling resmi dan sederhana untuk PC yang memenuhi syarat Windows 11. Pilih Rufus jika Anda membutuhkan fleksibilitas lebih, misalnya ingin memakai akun lokal, melewati pertanyaan privasi, atau menulis ISO Arm64 ke <em>flashdisk</em>.</p>
+<p>Apa pun alatnya, simpan <em>flashdisk</em> yang sudah jadi di tempat yang mudah Anda temukan. Saat Windows bermasalah suatu hari nanti, Anda tidak perlu panik mencari PC lain untuk membuatnya.</p>

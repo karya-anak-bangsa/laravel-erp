@@ -1,47 +1,47 @@
-<p>Banyak developer pemula di Windows tersandung bukan saat menulis kode, melainkan saat menyiapkan lingkungan kerja: versi PHP tidak cocok, Composer belum terpasang, atau database menolak koneksi. Laragon memangkas sebagian besar kerepotan itu karena PHP, MySQL, Composer, dan Node.js sudah tersedia dalam satu paket yang bisa dinyalakan dengan sekali klik.</p>
-<p>Panduan ini membahas dua cara memasang Laravel 13 di Laragon, yaitu lewat fitur Quick app dan lewat terminal. Setelah itu, kita akan menyambungkan proyek ke MySQL, menjalankan migrasi, membuka aplikasi di browser, dan mengenali galat yang paling sering muncul.</p>
+<p>Banyak pengembang pemula di Windows tersandung bukan saat menulis kode, melainkan saat menyiapkan lingkungan kerja: versi PHP tidak cocok, Composer belum terpasang, atau basis data menolak koneksi. Laragon memangkas sebagian besar kerepotan itu karena PHP, MySQL, Composer, dan Node.js sudah tersedia dalam satu paket yang bisa Anda nyalakan dengan sekali klik.</p>
+<p>Panduan ini membahas dua cara memasang Laravel 13 di Laragon, yaitu lewat fitur <em>Quick app</em> dan lewat terminal. Setelah itu, kita akan menyambungkan proyek ke MySQL, menjalankan migrasi, membuka aplikasi di peramban, dan mengenali galat yang paling sering muncul.</p>
 <h2>Kenali Dulu Kebutuhan Laravel 13</h2>
-<p>Laravel 13 dirilis pada 17 Maret 2026 dan membutuhkan minimal PHP 8.3, dengan dukungan resmi untuk PHP 8.3 hingga 8.5. Perbaikan bug untuk versi ini dijadwalkan sampai kuartal ketiga 2027 dan perbaikan keamanan sampai 17 Maret 2028, jadi Laravel 13 adalah pilihan yang aman untuk proyek baru.</p>
-<p>Selain PHP, Anda membutuhkan Composer untuk mengelola paket PHP, serta Node.js dan npm untuk membangun aset frontend lewat Vite. Laragon edisi Full sudah membawa semuanya, sehingga tugas Anda tinggal memastikan versinya sesuai.</p>
+<p>Laravel 13 hadir pada 17 Maret 2026. Versi ini membutuhkan minimal PHP 8.3 dan resmi mendukung PHP 8.3 hingga 8.5. Tim Laravel menjadwalkan perbaikan <em>bug</em> untuk versi ini sampai kuartal ketiga 2027 dan perbaikan keamanan sampai 17 Maret 2028. Dengan demikian, Laravel 13 merupakan pilihan yang aman untuk proyek baru.</p>
+<p>Selain PHP, Anda membutuhkan Composer untuk mengelola paket PHP, serta Node.js dan npm untuk membangun aset <em>frontend</em> lewat Vite. Laragon edisi Full sudah membawa semuanya sehingga tugas Anda tinggal memastikan versinya sesuai.</p>
 <h2>Menyiapkan Laragon</h2>
 <ol>
 <li><p>Unduh Laragon edisi Full dari situs resminya, pasang seperti aplikasi biasa, lalu buka dan klik <strong>Start All</strong> untuk menyalakan Apache dan MySQL.</p></li>
-<li><p>Buka terminal bawaan Laragon lewat <strong>Menu &gt; Laragon &gt; Terminal</strong>. Terminal ini sudah mengenali PHP, Composer, dan npm milik Laragon tanpa perlu mengatur PATH sendiri.</p></li>
+<li><p>Buka terminal bawaan Laragon lewat <strong>Menu &gt; Laragon &gt; Terminal</strong>. Terminal ini sudah mengenali PHP, Composer, dan npm milik Laragon sehingga Anda tidak perlu mengatur PATH sendiri.</p></li>
 <li><p>Periksa versinya dengan <strong>php -v</strong>, <strong>composer -V</strong>, dan <strong>node -v</strong>. Pastikan PHP menunjukkan versi 8.3 atau lebih baru.</p></li>
 <li><p>Jika PHP masih di bawah 8.3, tambahkan versi baru lewat <strong>Menu &gt; Tools &gt; Quick add</strong>, lalu aktifkan di <strong>Menu &gt; PHP &gt; Version</strong>.</p></li>
 </ol>
-<p>Langkah keempat sering dilewatkan, padahal akibatnya menjebak. Composer selalu memilih versi paket yang cocok dengan PHP yang sedang aktif, sehingga dengan PHP 8.2 instalasi tetap berhasil, tetapi yang terpasang justru Laravel 12. Banyak orang baru menyadarinya setelah proyek berjalan beberapa hari.</p>
+<p>Pengguna sering melewatkan langkah keempat, padahal akibatnya menjebak. Composer selalu memilih versi paket yang cocok dengan PHP yang sedang aktif. Jika PHP yang aktif masih versi 8.2, instalasi tetap berhasil, tetapi yang terpasang justru Laravel 12. Banyak orang baru menyadarinya setelah proyek berjalan beberapa hari.</p>
 <h2>Membuat Proyek Laravel 13</h2>
-<h3>Cara Tercepat dengan Quick App</h3>
-<p>Fitur Quick app membuat proyek Laravel hanya dengan beberapa klik. Pilih <strong>Menu &gt; Quick app &gt; Laravel</strong>, isi nama proyek, misalnya inventaris, lalu tunggu hingga proses unduh selesai.</p>
-<p>Di balik layar, Laragon menjalankan <strong>composer create-project laravel/laravel inventaris --prefer-dist</strong> di folder C:\laragon\www. Laragon juga dapat membuat database MySQL bernama sama secara otomatis, sekaligus menyiapkan alamat http://inventaris.test.</p>
-<p>Buka alamat itu di browser, dan halaman sambutan Laravel akan tampil karena Laragon mengarahkan <em>virtual host</em> ke folder public milik proyek. Jika alamat .test belum bisa dibuka, klik tombol <strong>Reload</strong> di Laragon.</p>
+<h3>Cara Tercepat dengan <em>Quick App</em></h3>
+<p>Fitur <em>Quick app</em> membuat proyek Laravel hanya dengan beberapa klik. Pilih <strong>Menu &gt; Quick app &gt; Laravel</strong>, isi nama proyek, misalnya inventaris, lalu tunggu hingga proses unduh selesai.</p>
+<p>Di balik layar, Laragon menjalankan <strong>composer create-project laravel/laravel inventaris --prefer-dist</strong> di folder C:\laragon\www. Laragon juga dapat membuat basis data MySQL bernama sama secara otomatis, sekaligus menyiapkan alamat http://inventaris.test.</p>
+<p>Buka alamat itu di peramban. Halaman sambutan Laravel akan tampil karena Laragon mengarahkan <em>virtual host</em> ke folder public milik proyek. Jika alamat .test belum terbuka, klik tombol <strong>Reload</strong> di Laragon.</p>
 <h3>Cara Manual lewat Terminal</h3>
-<p>Bila ingin kendali penuh, buat proyek sendiri dari terminal Laragon. Pindah ke folder kerja dengan <strong>cd C:\laragon\www</strong>, lalu jalankan <strong>composer create-project laravel/laravel inventaris</strong>.</p>
-<p>Alternatifnya, pakai Laravel installer resmi. Pasang sekali dengan <strong>composer global require laravel/installer</strong>, lalu buat proyek dengan <strong>laravel new inventaris</strong>. Installer akan mengajukan beberapa pertanyaan, termasuk pilihan <em>starter kit</em> React, Svelte, Vue, atau Livewire yang sudah berisi halaman login dan registrasi. Untuk belajar dasar-dasarnya, memulai tanpa starter kit juga tidak masalah.</p>
-<p>Jika perintah laravel tidak dikenali, folder bin global Composer belum masuk PATH. Lokasinya bisa dilihat dengan <strong>composer global config bin-dir --absolute</strong>, lalu tambahkan folder tersebut ke Environment Variables Windows.</p>
-<p>Setelah proyek jadi, klik <strong>Reload</strong> di Laragon agar alamat http://inventaris.test dibuat. Pastikan juga versinya benar dengan <strong>php artisan --version</strong> dari dalam folder proyek; hasilnya harus diawali Laravel Framework 13.</p>
+<p>Bila Anda menginginkan kendali penuh, buat proyek sendiri dari terminal Laragon. Pindah ke folder kerja dengan <strong>cd C:\laragon\www</strong>, lalu jalankan <strong>composer create-project laravel/laravel inventaris</strong>.</p>
+<p>Alternatifnya, pakai Laravel installer resmi. Pasang sekali dengan <strong>composer global require laravel/installer</strong>, lalu buat proyek dengan <strong>laravel new inventaris</strong>. Penginstal ini akan mengajukan beberapa pertanyaan, termasuk pilihan <em>starter kit</em> React, Svelte, Vue, atau Livewire. Semua <em>starter kit</em> itu sudah berisi halaman <em>login</em> dan registrasi. Bila Anda baru mempelajari dasar-dasarnya, memulai tanpa <em>starter kit</em> juga tidak masalah.</p>
+<p>Jika terminal tidak mengenali perintah laravel, folder bin global Composer belum masuk PATH. Lihat lokasinya dengan <strong>composer global config bin-dir --absolute</strong>, lalu tambahkan folder tersebut ke <strong>Environment Variables</strong> Windows.</p>
+<p>Setelah proyek terbentuk, klik <strong>Reload</strong> agar Laragon membuat alamat http://inventaris.test. Pastikan juga versinya benar dengan menjalankan <strong>php artisan --version</strong> dari dalam folder proyek. Hasilnya harus berawalan Laravel Framework 13.</p>
 <h2>Menghubungkan Proyek ke MySQL Laragon</h2>
-<p>Proyek Laravel baru memakai SQLite secara bawaan. Untuk beralih ke MySQL, buka berkas .env di folder proyek, hapus tanda # di depan baris DB_ yang masih dikomentari, lalu sesuaikan isinya:</p>
+<p>Proyek Laravel baru memakai SQLite secara bawaan. Buka berkas .env di folder proyek untuk beralih ke MySQL. Hapus tanda # di depan baris DB_ yang masih berupa komentar, lalu sesuaikan isinya:</p>
 <ul>
-<li><p><strong>DB_CONNECTION=mysql</strong> untuk memakai driver MySQL.</p></li>
-<li><p><strong>DB_HOST=127.0.0.1</strong> dan <strong>DB_PORT=3306</strong>, alamat dan port bawaan MySQL di Laragon.</p></li>
-<li><p><strong>DB_DATABASE=inventaris</strong> sebagai nama database proyek.</p></li>
-<li><p><strong>DB_USERNAME=root</strong> dan <strong>DB_PASSWORD=</strong> yang dibiarkan kosong, sesuai akun bawaan MySQL Laragon.</p></li>
+<li><p><strong>DB_CONNECTION=mysql</strong> untuk memakai <em>driver</em> MySQL.</p></li>
+<li><p><strong>DB_HOST=127.0.0.1</strong> dan <strong>DB_PORT=3306</strong>, alamat dan <em>port</em> bawaan MySQL di Laragon.</p></li>
+<li><p><strong>DB_DATABASE=inventaris</strong> sebagai nama basis data proyek.</p></li>
+<li><p><strong>DB_USERNAME=root</strong> dan <strong>DB_PASSWORD=</strong> yang tetap kosong, sesuai dengan akun bawaan MySQL Laragon.</p></li>
 </ul>
-<p>Selagi membuka .env, ubah juga APP_URL menjadi http://inventaris.test agar tautan yang dibuat Laravel memakai alamat yang benar. Ingat bahwa .env menyimpan kredensial, jadi jangan pernah ikut diunggah ke repositori Git. Kebiasaan sederhana ini termasuk dasar dalam <a href="/artikel/cara-menjaga-keamanan-website-perusahaan">menjaga keamanan website</a>.</p>
+<p>Selagi membuka .env, ubah juga APP_URL menjadi http://inventaris.test agar Laravel membuat tautan dengan alamat yang benar. Ingat bahwa berkas .env menyimpan kredensial. Jangan pernah mengunggahnya ke repositori Git. Kebiasaan sederhana ini termasuk dasar dalam <a href="/artikel/cara-menjaga-keamanan-website-perusahaan">menjaga keamanan <em>website</em></a>.</p>
 <h2>Menjalankan Migrasi dan Membuka Aplikasi</h2>
-<p>Jalankan <strong>php artisan migrate</strong> untuk membuat tabel bawaan seperti users, sessions, dan jobs. Jika database inventaris belum ada, Laravel akan menawarkan untuk membuatnya; jawab yes dan migrasi akan berlanjut.</p>
-<p>Berikutnya, pasang dependensi frontend dengan <strong>npm install</strong>, lalu bangun asetnya dengan <strong>npm run build</strong>. Aplikasi kini bisa dibuka di http://inventaris.test tanpa server tambahan, karena Apache milik Laragon sudah melayaninya.</p>
-<p>Saat aktif menulis kode, jalankan <strong>npm run dev</strong> agar perubahan CSS dan JavaScript langsung terlihat di browser. Pilihan lainnya adalah <strong>composer run dev</strong>, yang menyalakan server PHP, antrean, dan Vite sekaligus, dengan aplikasi diakses di http://localhost:8000.</p>
+<p>Jalankan <strong>php artisan migrate</strong> untuk membuat tabel bawaan seperti users, sessions, dan jobs. Jika basis data inventaris belum ada, Laravel akan menawarkan untuk membuatnya. Jawab yes agar migrasi berlanjut.</p>
+<p>Berikutnya, pasang dependensi <em>frontend</em> dengan <strong>npm install</strong>, lalu bangun asetnya dengan <strong>npm run build</strong>. Kini Anda bisa membuka aplikasi di http://inventaris.test tanpa server tambahan karena Apache milik Laragon sudah melayaninya.</p>
+<p>Saat aktif menulis kode, jalankan <strong>npm run dev</strong> agar perubahan CSS dan JavaScript langsung terlihat di peramban. Pilihan lainnya adalah <strong>composer run dev</strong>. Perintah ini menyalakan server PHP, antrean, dan Vite sekaligus. Aplikasinya kemudian tersedia di http://localhost:8000.</p>
 <h2>Masalah yang Sering Muncul</h2>
 <ul>
-<li><p>Composer menampilkan pesan bahwa sebuah paket membutuhkan php ^8.3, misalnya saat memasang dependensi proyek milik orang lain: ganti versi PHP di Laragon, lalu buka terminal baru agar perubahannya terbaca.</p></li>
-<li><p>Galat SQLSTATE[HY000] [1045] Access denied: nama user atau password di .env tidak cocok. Akun bawaan MySQL Laragon adalah root tanpa password.</p></li>
-<li><p>Alamat .test tidak terbuka: klik Reload, pastikan folder proyek berada langsung di C:\laragon\www, lalu coba jalankan Laragon sebagai administrator agar ia bisa menulis ke berkas hosts Windows.</p></li>
-<li><p>Perubahan .env tidak terbaca: jalankan <strong>php artisan config:clear</strong>, terutama bila sebelumnya pernah menjalankan config:cache.</p></li>
-<li><p>Muncul galat Vite manifest not found, biasanya pada proyek dengan starter kit: jalankan npm run build atau biarkan npm run dev tetap berjalan.</p></li>
+<li><p>Composer menampilkan pesan bahwa sebuah paket membutuhkan php ^8.3, misalnya saat Anda memasang dependensi proyek milik orang lain: ganti versi PHP di Laragon, lalu buka terminal baru agar perubahannya terbaca.</p></li>
+<li><p>Galat SQLSTATE[HY000] [1045] Access denied: nama pengguna atau <em>password</em> di .env tidak cocok. Akun bawaan MySQL Laragon adalah root tanpa <em>password</em>.</p></li>
+<li><p>Alamat .test tidak terbuka: klik <strong>Reload</strong>, pastikan folder proyek berada langsung di C:\laragon\www, lalu coba jalankan Laragon sebagai administrator agar aplikasi itu bisa menulis ke berkas hosts Windows.</p></li>
+<li><p>Perubahan .env tidak terbaca: jalankan <strong>php artisan config:clear</strong>, terutama bila Anda pernah menjalankan config:cache.</p></li>
+<li><p>Muncul galat Vite manifest not found, biasanya pada proyek dengan <em>starter kit</em>: jalankan npm run build atau biarkan npm run dev tetap berjalan.</p></li>
 </ul>
 <h2>Langkah Berikutnya</h2>
-<p>Sampai di sini Anda sudah punya proyek Laravel 13 yang tersambung ke MySQL dan bisa diakses lewat alamat .test yang rapi. Langkah logis berikutnya adalah membuat model dan migration pertama, misalnya tabel barang untuk aplikasi inventaris, lalu menampilkannya di halaman sederhana.</p>
-<p>Simpan juga tautan <a href="https://laravel.com/docs/13.x/installation">dokumentasi instalasi Laravel 13</a> sebagai rujukan, karena pertanyaan installer bisa sedikit berubah di versi yang lebih baru. Terakhir, biasakan mencatat setiap perubahan dengan Git sejak hari pertama agar eksperimen mudah dilacak dan dibatalkan.</p>
+<p>Sampai di sini, Anda sudah memiliki proyek Laravel 13 yang tersambung ke MySQL dan tersedia di alamat .test yang rapi. Langkah logis berikutnya adalah membuat model dan migrasi pertama, misalnya tabel barang untuk aplikasi inventaris, lalu menampilkannya di halaman sederhana.</p>
+<p>Simpan juga tautan <a href="https://laravel.com/docs/13.x/installation">dokumentasi instalasi Laravel 13</a> sebagai rujukan karena pertanyaan dari Laravel installer bisa sedikit berubah di versi yang lebih baru. Terakhir, biasakan mencatat setiap perubahan dengan Git sejak hari pertama agar Anda mudah melacak dan membatalkan eksperimen.</p>

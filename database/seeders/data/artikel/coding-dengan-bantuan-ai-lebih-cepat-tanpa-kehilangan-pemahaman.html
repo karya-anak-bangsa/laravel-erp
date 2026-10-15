@@ -1,46 +1,46 @@
-<p>Banyak developer kini membuka chatbot AI atau asisten di editor sebelum membuka dokumentasi. Hasilnya memang terasa cepat: fungsi jadi dalam hitungan detik dan pesan error dijelaskan dengan bahasa sederhana. Masalahnya, kode yang cepat jadi belum tentu benar, aman, atau benar-benar Anda pahami.</p>
-<p>Artikel ini membahas di mana AI paling membantu, risiko yang sering terlewat, kebiasaan aman saat memakainya, serta saran khusus untuk mahasiswa dan developer pemula. Tujuannya sederhana: bekerja lebih cepat tanpa kehilangan kemampuan berpikir sendiri.</p>
-<h2>Di Mana AI Benar-benar Membantu</h2>
-<p>Asisten coding hadir dalam beberapa bentuk, dari saran kode otomatis di editor, chatbot AI umum, sampai agen yang bisa membaca banyak berkas sekaligus dan menjalankan perintah di terminal. Pekerjaan yang paling terasa terbantu biasanya berikut ini.</p>
+<p>Banyak pengembang kini membuka <em>chatbot</em> AI atau asisten di editor sebelum membuka dokumentasi. Hasilnya memang terasa cepat: fungsi rampung dalam hitungan detik dan AI menjelaskan pesan galat dengan bahasa sederhana. Masalahnya, kode yang cepat rampung belum tentu benar, aman, atau benar-benar Anda pahami.</p>
+<p>Artikel ini membahas di mana AI paling membantu, risiko yang sering terlewat, kebiasaan aman saat memakainya, serta saran khusus untuk mahasiswa dan pengembang pemula. Tujuannya sederhana: bekerja lebih cepat tanpa kehilangan kemampuan berpikir sendiri.</p>
+<h2>Di Mana AI Benar-Benar Membantu</h2>
+<p>Asisten <em>coding</em> hadir dalam beberapa bentuk, mulai dari saran kode otomatis di editor, <em>chatbot</em> AI umum, sampai agen yang bisa membaca banyak berkas sekaligus dan menjalankan perintah di terminal. Bantuan AI biasanya paling terasa pada pekerjaan berikut.</p>
 <ul>
-<li><p>Boilerplate: kerangka controller, validasi form, berkas konfigurasi, atau skrip kecil yang polanya sudah umum.</p></li>
-<li><p>Menjelaskan kode: tempel fungsi lama yang tidak berdokumentasi, minta penjelasan baris per baris, lalu cocokkan dengan perilaku aslinya.</p></li>
-<li><p>Membuat test: AI cukup terampil menyusun kasus uji, termasuk kasus tepi yang sering terlupa seperti input kosong, angka negatif, atau teks yang sangat panjang.</p></li>
-<li><p>Refactor: memberi nama variabel yang lebih jelas, memecah fungsi yang terlalu panjang, atau mengubah pola lama ke sintaks yang lebih modern.</p></li>
-<li><p>Belajar pustaka baru: minta contoh pemakaian sederhana atau perbandingan dua pendekatan, lalu buktikan dengan membaca dokumentasi resminya.</p></li>
+<li><p><em>Boilerplate</em>: kerangka <em>controller</em>, validasi formulir, berkas konfigurasi, atau skrip kecil yang polanya sudah umum.</p></li>
+<li><p>Menjelaskan kode: tempelkan fungsi lama yang tidak berdokumentasi, minta penjelasan baris per baris, lalu cocokkan dengan perilaku aslinya.</p></li>
+<li><p>Membuat tes: AI cukup terampil menyusun kasus uji, termasuk kasus tepi yang sering terlupa, seperti input kosong, angka negatif, atau teks yang sangat panjang.</p></li>
+<li><p><em>Refactor</em>: memberi nama variabel yang lebih jelas, memecah fungsi yang terlalu panjang, atau mengubah pola lama menjadi sintaks yang lebih modern.</p></li>
+<li><p>Mempelajari pustaka baru: minta contoh pemakaian sederhana atau perbandingan dua pendekatan, lalu buktikan dengan membaca dokumentasi resminya.</p></li>
 </ul>
-<p>Contohnya, Anda butuh fungsi untuk memvalidasi nomor HP Indonesia. Minta AI membuat fungsinya sekaligus test untuk nomor berawalan 08, nomor berawalan +62, dan nomor yang terlalu pendek. Dalam beberapa menit Anda punya draf yang bisa langsung diuji, bukan kode yang harus dipercaya begitu saja.</p>
-<p>Polanya sama: AI paling berguna untuk pekerjaan yang hasilnya mudah Anda periksa. Semakin sulit hasilnya diverifikasi, semakin besar risiko yang Anda tanggung.</p>
+<p>Misalnya, Anda membutuhkan fungsi untuk memvalidasi nomor ponsel Indonesia. Minta AI membuat fungsinya sekaligus tes untuk nomor berawalan 08, nomor berawalan +62, dan nomor yang terlalu pendek. Dalam beberapa menit, Anda sudah memiliki draf yang bisa langsung Anda uji, bukan kode yang harus Anda percayai begitu saja.</p>
+<p>Polanya sama: AI paling berguna untuk pekerjaan yang hasilnya mudah Anda periksa. Semakin sulit Anda memverifikasi hasilnya, semakin besar risiko yang Anda tanggung.</p>
 <h2>Risiko yang Sering Terlewat</h2>
 <h3>API dan Pustaka Karangan</h3>
-<p>Model AI bisa menyarankan fungsi yang tidak pernah ada, parameter yang sudah dihapus di versi terbaru, atau nama paket yang tidak terdaftar di registry. Kasus terakhir punya sisi berbahaya. <a href="https://arxiv.org/abs/2406.10279">Penelitian tentang halusinasi paket</a> yang diterima di konferensi USENIX Security 2025 menggolongkannya sebagai bentuk baru serangan <em>package confusion</em>: penyerang bisa mendaftarkan nama paket karangan itu dan mengisinya dengan kode berbahaya.</p>
-<p>Risiko ini makin besar bila AI tidak tahu versi yang Anda pakai. Sebutkan versi bahasa, framework, dan pustaka di awal percakapan, lalu cocokkan nama fungsi yang disarankan dengan dokumentasi resmi versi tersebut. Pesan error tentang fungsi atau modul yang tidak ditemukan setelah menempel kode AI patut dicurigai sebagai tanda halusinasi.</p>
+<p>Model AI bisa menyarankan fungsi yang tidak pernah ada, parameter yang sudah hilang dari versi terbaru, atau nama paket yang tidak terdaftar di <em>registry</em>. Kasus terakhir memiliki sisi berbahaya. <a href="https://arxiv.org/abs/2406.10279">Penelitian tentang halusinasi paket</a> yang lolos seleksi konferensi USENIX Security 2025 menggolongkan kasus ini sebagai bentuk baru serangan <em>package confusion</em>. Penyerang bisa mendaftarkan nama paket karangan itu dan mengisinya dengan kode berbahaya.</p>
+<p>Risiko ini makin besar bila AI tidak tahu versi yang Anda pakai. Sebutkan versi bahasa pemrograman, <em>framework</em>, dan pustaka di awal percakapan. Kemudian, cocokkan nama fungsi usulan AI dengan dokumentasi resmi versi tersebut. Setelah menempelkan kode AI, curigai pesan galat tentang fungsi atau modul yang tidak ditemukan sebagai tanda halusinasi.</p>
 <h3>Celah Keamanan</h3>
-<p>Kode yang berjalan belum tentu aman. AI bisa saja menyusun query dengan menyambung input pengguna, menulis API key langsung di kode, atau melewatkan validasi. Di Laravel, misalnya, <strong>DB::select("select * from users where email = '$email'")</strong> rawan SQL injection, sedangkan <strong>DB::select('select * from users where email = ?', [$email])</strong> memakai parameter binding yang aman. Prinsip dasar <a href="/artikel/cara-menjaga-keamanan-website-perusahaan">menjaga keamanan website</a> tetap berlaku, siapa pun yang menulis kodenya.</p>
+<p>Kode yang berjalan belum tentu aman. AI bisa saja menyusun <em>query</em> dengan menyambungkan input pengguna, menulis kunci API langsung di kode, atau melewatkan validasi. Di Laravel, misalnya, <strong>DB::select("select * from users where email = '$email'")</strong> rawan injeksi SQL, sedangkan <strong>DB::select('select * from users where email = ?', [$email])</strong> memakai <em>parameter binding</em> yang aman. Prinsip dasar <a href="/artikel/cara-menjaga-keamanan-website-perusahaan">menjaga keamanan <em>website</em></a> tetap berlaku, siapa pun yang menulis kodenya.</p>
 <h3>Lisensi Kode</h3>
-<p>Saran AI kadang mirip dengan kode publik yang punya lisensi tertentu. Beberapa alat, misalnya GitHub Copilot, menyediakan pengaturan untuk memblokir saran yang cocok dengan kode publik atau <a href="https://docs.github.com/en/copilot/how-tos/get-code-suggestions/find-matching-code">menampilkan rujukan beserta jenis lisensinya</a>. Untuk proyek klien atau produk komersial, ikuti kebijakan kantor soal alat AI yang boleh dipakai.</p>
+<p>Saran AI kadang mirip dengan kode publik yang memiliki lisensi tertentu. Beberapa alat, misalnya GitHub Copilot, menyediakan pengaturan untuk memblokir saran yang cocok dengan kode publik atau <a href="https://docs.github.com/en/copilot/how-tos/get-code-suggestions/find-matching-code">menampilkan rujukan beserta jenis lisensinya</a>. Ikuti kebijakan kantor tentang alat AI yang boleh Anda pakai untuk proyek klien atau produk komersial.</p>
 <h3>Ketergantungan</h3>
-<p>Risiko paling halus justru ada pada diri sendiri. Jika setiap error langsung ditempel ke chatbot, kemampuan membaca pesan error, menelusuri dokumentasi, dan memecah masalah lama-lama tumpul. Padahal kemampuan itulah yang Anda butuhkan saat AI memberi jawaban salah dengan nada yakin.</p>
+<p>Risiko paling halus justru ada pada diri Anda sendiri. Jika Anda langsung menempelkan setiap galat ke <em>chatbot</em>, kemampuan membaca pesan galat, menelusuri dokumentasi, dan memecahkan masalah lama-kelamaan akan tumpul. Kemampuan itulah yang paling Anda butuhkan saat AI memberi jawaban salah dengan nada yakin.</p>
 <p>AI juga tidak mengenal konteks bisnis proyek Anda, seperti aturan diskon atau alur persetujuan di kantor, kecuali Anda menjelaskannya. Keputusan desain tetap harus datang dari orang yang memahami kebutuhan pengguna.</p>
 <h2>Kebiasaan Aman Saat Memakai AI</h2>
 <ol>
-<li><p>Minta potongan kecil. Satu fungsi atau satu perubahan per permintaan jauh lebih mudah diperiksa daripada satu modul utuh.</p></li>
-<li><p>Review setiap baris. Perlakukan kode AI seperti pull request dari rekan baru: baca, pahami, dan tolak bila ragu.</p></li>
-<li><p>Pahami sebelum menerima. Jika Anda belum bisa menjelaskan kodenya ke orang lain, jangan di-commit. Minta AI menjelaskan, lalu cocokkan penjelasannya dengan dokumentasi resmi.</p></li>
-<li><p>Jalankan test. Pastikan test benar-benar bisa gagal ketika kodenya salah, bukan sekadar lulus karena tidak memeriksa apa-apa.</p></li>
-<li><p>Cek setiap paket baru. Pastikan paket itu ada, aktif dirawat, dan namanya tidak salah ketik. Untuk npm, perintah seperti <strong>npm view dayjs</strong> menampilkan versi terbaru, lisensi, pengelola, dan kapan paket terakhir diterbitkan.</p></li>
-<li><p>Jaga rahasia. Jangan menempelkan password, API key, atau data pelanggan ke chatbot, dan pakai hanya alat yang diizinkan kantor.</p></li>
+<li><p>Minta potongan kecil. Anda jauh lebih mudah memeriksa satu fungsi atau satu perubahan per permintaan daripada satu modul utuh.</p></li>
+<li><p>Tinjau setiap baris. Perlakukan kode AI seperti <em>pull request</em> dari rekan baru: baca, pahami, dan tolak bila ragu.</p></li>
+<li><p>Pahami sebelum menerima. Jika Anda belum bisa menjelaskan kodenya kepada orang lain, jangan masukkan kode itu ke <em>commit</em>. Minta AI menjelaskan, lalu cocokkan penjelasannya dengan dokumentasi resmi.</p></li>
+<li><p>Jalankan tes. Pastikan tes benar-benar bisa gagal ketika kodenya salah, bukan sekadar lulus karena tidak memeriksa apa-apa.</p></li>
+<li><p>Cek setiap paket baru. Pastikan paket itu ada, pengelolanya masih aktif merawatnya, dan namanya tidak salah ketik. Perintah seperti <strong>npm view dayjs</strong> menampilkan versi terbaru, lisensi, pengelola, dan waktu terbit terakhir sebuah paket npm.</p></li>
+<li><p>Jaga rahasia. Jangan menempelkan <em>password</em>, kunci API, atau data pelanggan ke <em>chatbot</em>. Pakai hanya alat yang sudah mendapat izin kantor.</p></li>
 </ol>
-<p>Untuk agen AI yang bisa mengubah banyak berkas dan menjalankan perintah, tambahkan satu lapis pengaman. Pastikan pekerjaan sudah di-commit sebelum agen mulai, minta agen bekerja di branch terpisah, lalu baca diff-nya sebelum digabungkan. Jangan izinkan agen menjalankan perintah yang menghapus data atau menyentuh server produksi tanpa persetujuan Anda.</p>
-<h2>Saran untuk Mahasiswa dan Developer Pemula</h2>
-<p>Bagi yang masih belajar, tujuan utamanya adalah membangun pemahaman, bukan sekadar menyelesaikan tugas. AI bisa menjadi tutor yang sabar, asalkan dipakai dengan cara yang tepat.</p>
+<p>Tambahkan satu lapis pengaman untuk agen AI yang bisa mengubah banyak berkas dan menjalankan perintah. Pastikan pekerjaan Anda sudah tersimpan dalam <em>commit</em> sebelum agen mulai bekerja. Minta agen bekerja di cabang terpisah, lalu baca <em>diff</em>-nya sebelum Anda menggabungkan hasilnya. Jangan izinkan agen menjalankan perintah yang menghapus data atau menyentuh server produksi tanpa persetujuan Anda.</p>
+<h2>Saran untuk Mahasiswa dan Pengembang Pemula</h2>
+<p>Selama masih belajar, tujuan utama Anda adalah membangun pemahaman, bukan sekadar menyelesaikan tugas. AI bisa menjadi tutor yang sabar asalkan Anda memakainya dengan cara yang tepat.</p>
 <ul>
-<li><p>Coba kerjakan sendiri dulu. Saat buntu, minta petunjuk atau pertanyaan pancingan, bukan jawaban lengkap.</p></li>
-<li><p>Setelah mendapat solusi, tutup jendela chat dan tulis ulang kodenya dari ingatan. Jika macet, berarti bagian itu belum Anda pahami.</p></li>
+<li><p>Cobalah mengerjakan tugas sendiri lebih dulu. Saat buntu, minta petunjuk atau pertanyaan pancingan, bukan jawaban lengkap.</p></li>
+<li><p>Setelah mendapat solusi, tutup jendela percakapan dan tulis ulang kodenya dari ingatan. Bila Anda macet, bagian itulah yang belum Anda pahami.</p></li>
 <li><p>Pakai AI untuk menjelaskan konsep dengan analogi dan membuat soal latihan, misalnya saat mempelajari <a href="/artikel/memahami-asyncawait-di-javascript-lewat-contoh-sehari-hari">async/await di JavaScript</a>.</p></li>
-<li><p>Ikuti aturan dosen atau kampus tentang penggunaan AI, dan jujurlah bila memakainya.</p></li>
-<li><p>Pastikan Anda bisa menjelaskan setiap baris kode di portofolio. Pertanyaan "kenapa memakai cara ini?" hampir pasti muncul saat wawancara kerja atau review kode.</p></li>
+<li><p>Ikuti aturan dosen atau kampus tentang penggunaan AI dan jujurlah bila Anda memakainya.</p></li>
+<li><p>Pastikan Anda bisa menjelaskan setiap baris kode di portofolio. Pertanyaan "mengapa memakai cara ini?" hampir pasti muncul saat wawancara kerja atau tinjauan kode.</p></li>
 </ul>
 <h2>Cepat Boleh, Paham Wajib</h2>
-<p>AI membuat coding lebih cepat, terutama untuk pekerjaan yang polanya jelas dan hasilnya mudah diperiksa. Namun, tanggung jawab atas kode tetap ada pada Anda: kode yang di-commit adalah kode Anda, bukan kode AI.</p>
-<p>Biasakan meminta potongan kecil, membaca setiap baris, menjalankan test, dan mengecek setiap paket baru. Dengan kebiasaan itu, AI menjadi pengungkit produktivitas, bukan jalan pintas yang membuat pemahaman Anda tertinggal.</p>
+<p>AI mempercepat <em>coding</em>, terutama untuk pekerjaan yang polanya jelas dan hasilnya mudah Anda periksa. Namun, tanggung jawab atas kode tetap ada pada Anda: kode yang Anda masukkan ke <em>commit</em> adalah kode Anda, bukan kode AI.</p>
+<p>Biasakan meminta potongan kecil, membaca setiap baris, menjalankan tes, dan mengecek setiap paket baru. Dengan kebiasaan itu, AI menjadi pengungkit produktivitas, bukan jalan pintas yang membuat pemahaman Anda tertinggal.</p>
