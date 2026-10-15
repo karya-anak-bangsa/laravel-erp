@@ -8,10 +8,10 @@
         'FAQ' => route('beranda').'#faq',
         'Kontak' => route('beranda').'#kontak',
     ];
-    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail artikel).
+    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail & kategori artikel).
     $menuAktif = fn (string $label): ?string => match (true) {
         $label === 'Artikel' && request()->routeIs('artikel.index') => 'page',
-        $label === 'Artikel' && request()->routeIs('artikel.show') => 'true',
+        $label === 'Artikel' && request()->routeIs('artikel.show', 'kategori-artikel.show') => 'true',
         default => null,
     };
 @endphp

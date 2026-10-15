@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Web\CompanyProfile;
 use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyProfile\Artikel;
+use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\Layanan;
 use Illuminate\View\View;
 
 class ArtikelController extends Controller
 {
     // Lima baris dua kartu di kolom utama Full Color: halaman penuh tanpa kartu yatim (pilihan pemilik 2026-10-15).
+    // Dipakai juga halaman kategori artikel.
     public const PER_HALAMAN = 10;
 
     // Artikel terbaru di kolom samping detail artikel.
@@ -23,10 +25,11 @@ class ArtikelController extends Controller
         // Nomor halaman di luar jangkauan (mis. ?page=99) bukan halaman kosong yang sah.
         abort_if($artikel->isEmpty() && $artikel->currentPage() > 1, 404);
 
+        $daftarKategori = KategoriArtikel::untukSamping();
         // "Layanan kami" di kolom samping; footer memakai koleksi yang sama sehingga SitusComposer tidak query ulang.
         $layanan = Layanan::untukTautan();
 
-        return view('web.artikel.index', compact('artikel', 'layanan'));
+        return view('web.artikel.index', compact('artikel', 'daftarKategori', 'layanan'));
     }
 
     public function show(Artikel $artikel): View
@@ -39,8 +42,9 @@ class ArtikelController extends Controller
         $artikelTerbaru = Artikel::query()->terbaru()->whereKeyNot($artikel->getKey())
             ->limit(self::JUMLAH_TERBARU)
             ->get(['id_artikel', 'judul', 'slug', 'gambar', 'tanggal']);
+        $daftarKategori = KategoriArtikel::untukSamping();
         $layanan = Layanan::untukTautan();
 
-        return view('web.artikel.show', compact('artikel', 'artikelTerbaru', 'layanan'));
+        return view('web.artikel.show', compact('artikel', 'artikelTerbaru', 'daftarKategori', 'layanan'));
     }
 }

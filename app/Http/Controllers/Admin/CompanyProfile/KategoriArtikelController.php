@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CompanyProfile\StoreKategoriArtikelRequest;
 use App\Http\Requests\Admin\CompanyProfile\UpdateKategoriArtikelRequest;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Services\CompanyProfile\KategoriArtikelService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,7 +19,8 @@ class KategoriArtikelController extends Controller
 
         $kategoriArtikel = KategoriArtikel::query()
             ->when($q !== '', fn ($query) => $query->where('nama_kategori', 'like', "%{$q}%"))
-            ->withCount('artikel')
+            // Artikel terbit menentukan apakah halaman kategori sudah tayang (modal detail).
+            ->withCount(['artikel', 'artikelTerbit'])
             // Data master diurutkan abjad.
             ->orderBy('nama_kategori')
             ->paginate(25)
@@ -32,9 +34,9 @@ class KategoriArtikelController extends Controller
         return view('admin.company-profile.kategori-artikel.create', ['kategoriArtikel' => new KategoriArtikel]);
     }
 
-    public function store(StoreKategoriArtikelRequest $request): RedirectResponse
+    public function store(StoreKategoriArtikelRequest $request, KategoriArtikelService $kategoriArtikelService): RedirectResponse
     {
-        KategoriArtikel::create($request->validated());
+        $kategoriArtikelService->simpan($request->validated());
 
         return redirect()->route('admin.kategori-artikel.index')->with('success', 'Kategori artikel berhasil ditambahkan.');
     }
@@ -44,9 +46,9 @@ class KategoriArtikelController extends Controller
         return view('admin.company-profile.kategori-artikel.edit', compact('kategoriArtikel'));
     }
 
-    public function update(UpdateKategoriArtikelRequest $request, KategoriArtikel $kategoriArtikel): RedirectResponse
+    public function update(UpdateKategoriArtikelRequest $request, KategoriArtikel $kategoriArtikel, KategoriArtikelService $kategoriArtikelService): RedirectResponse
     {
-        $kategoriArtikel->update($request->validated());
+        $kategoriArtikelService->perbarui($kategoriArtikel, $request->validated());
 
         return redirect()->route('admin.kategori-artikel.index')->with('success', 'Kategori artikel berhasil diperbarui.');
     }

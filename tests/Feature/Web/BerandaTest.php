@@ -255,12 +255,19 @@ describe('isi', function () {
             ->assertDontSee('<script>alert(1)</script>', false);
     });
 
-    it('menautkan kartu artikel ke halaman detail dan menyediakan tombol Lihat semua artikel', function () {
+    it('menautkan kartu artikel ke halaman detail dan menyediakan tombol Lihat semua artikel di bawah daftar', function () {
         Artikel::factory()->terbit()->create(['judul' => 'Artikel Bertautan', 'slug' => 'artikel-bertautan']);
 
         $this->get('/')
             ->assertSee('<h3 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-bertautan').'" class="tautan-rentang">Artikel Bertautan</a></h3>', false)
-            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-sedang" data-variant="outline">Lihat semua artikel</a>', false);
+            // Tombol padat berwarna template di bawah daftar, bukan lagi tombol garis di kepala seksi (pilihan pemilik 2026-10-15).
+            ->assertSeeInOrder([
+                '<div class="daftar-artikel">',
+                'Artikel Bertautan',
+                '<div class="aksi-artikel">',
+                '<a href="'.route('artikel.index').'" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>',
+            ], false)
+            ->assertDontSee('kepala-artikel', false);
     });
 
     it('tidak menautkan ke halaman portofolio yang belum ada', function () {

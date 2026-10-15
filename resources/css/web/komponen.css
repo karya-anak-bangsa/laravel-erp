@@ -239,14 +239,15 @@
 .aksi-ajakan { @apply flex shrink-0 flex-col gap-3 sm:flex-row; }
 
 /* ---------- Artikel ---------- */
-/* Kepala seksi + "Lihat semua artikel" (pilihan pemilik 2026-10-15): Full Color bertumpuk rata tengah seperti kepala
-   seksinya, Monochrome tombol di kanan kepala seksi mulai md (prototipe). */
-.kepala-artikel { @apply flex flex-col gap-6; }
-.kepala-artikel .btn { @apply shrink-0 self-start; }
-[data-tema=full_color] .kepala-artikel .btn { @apply self-center; }
-[data-tema=monochrome] .kepala-artikel { @apply md:flex-row md:items-end md:justify-between; }
-[data-tema=monochrome] .kepala-artikel .btn { @apply md:self-auto; }
 .daftar-artikel { @apply mt-12; }
+/* "Lihat semua artikel" di bawah daftar beranda (pilihan pemilik 2026-10-15): rata tengah di Full Color dan rata kiri di
+   Monochrome, mengikuti kepala seksinya. */
+.aksi-artikel { @apply mt-10 flex sm:mt-12; }
+[data-tema=full_color] .aksi-artikel { @apply justify-center; }
+/* Tombol "Lihat semua artikel" (beranda & kolom samping) padat berwarna template (pilihan pemilik 2026-10-15): Full Color
+   warna utama seperti pita kategori, Monochrome --primary dari nada dasar (tombol bawaan Basecoat). */
+[data-tema=full_color] .btn.tombol-semua-artikel { background-color: var(--utama-teks); color: #fff; }
+@media (hover: hover) { [data-tema=full_color] .btn.tombol-semua-artikel:hover { background-color: var(--utama-gelap); } }
 [data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5 transition duration-300; box-shadow: var(--bayangan-kartu); }
 /* Efek sorot hanya untuk kartu yang bisa diklik (judul bertautan ke halaman detail). */
 [data-tema=full_color] .kartu-artikel:has(.tautan-rentang) { @apply hover:-translate-y-1; }
@@ -257,23 +258,20 @@
 /* Ruang dalam kartu utama sama dengan kartu portofolio; kartu samping diatur di struktur.css. */
 [data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
 .kartu-artikel-gambar img { @apply size-full object-cover; }
-.kartu-artikel-meta { @apply flex flex-wrap items-center text-sm; }
-/* Tanggal di bawah ringkasan (pilihan pemilik 2026-10-11): meta dilebur agar lencana & tanggal menjadi anak kolom isi
-   yang bisa diurutkan; markup tetap satu untuk kedua tema. Lencana & tanggal Geist Mono 13px di kedua tema. */
-[data-tema=full_color] .kartu-artikel-meta { display: contents; }
+/* Tanggal di bawah ringkasan di kedua tema (pilihan pemilik 2026-10-11 & 2026-10-15): meta dilebur agar lencana & tanggal
+   menjadi anak kolom isi (Full Color) atau sel grid kartu (Monochrome, struktur.css); markup tetap satu untuk kedua tema.
+   Lencana & tanggal Geist Mono 13px di kedua tema. */
+.kartu-artikel-meta { @apply text-sm; display: contents; }
 .lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
-[data-tema=full_color] .lencana-artikel { @apply self-start bg-(--utama-50); border-color: var(--utama-100); }
 .tanggal-artikel { @apply font-mono text-[13px] text-muted-foreground; }
 [data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3; }
-[data-tema=monochrome] .tanggal-artikel { @apply -order-1; }
 .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground; }
-[data-tema=full_color] .kartu-artikel-judul { @apply mt-2 transition; }
+[data-tema=full_color] .kartu-artikel-judul { @apply transition; }
 @media (hover: hover) { [data-tema=full_color] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { color: var(--aksen-teks); } }
-/* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh. */
-.kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-teks; }
+/* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh; tidak menyisakan satu
+   kata di baris terakhir. */
+.kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-pretty text-teks; }
 [data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2; }
-/* Daftar artikel: ringkasan tidak menyisakan satu kata di baris terakhir. */
-.grid-artikel .kartu-artikel-ringkasan { @apply text-pretty; }
 .tautan-rentang::after { content: ""; @apply absolute inset-0; }
 [data-tema=full_color] .tautan-rentang::after { border-radius: var(--sudut-kartu); }
 .tautan-rentang:focus-visible { outline: none; }
@@ -281,26 +279,23 @@
 [data-tema=monochrome] :is(.daftar-artikel, .grid-artikel) { @apply border-y; }
 [data-tema=monochrome] .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
 [data-tema=monochrome] .kartu-artikel-gambar img { @apply block aspect-4/3; }
-[data-tema=monochrome] .kartu-artikel-meta { @apply gap-x-3 gap-y-2 lg:flex-col lg:items-start lg:gap-3 lg:pt-1; }
 [data-tema=monochrome] .kartu-artikel-judul { @apply underline-offset-4; }
 [data-tema=monochrome] .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
 @media (hover: hover) {
   [data-tema=monochrome] .kartu-artikel:has(.tautan-rentang):hover .kartu-artikel-judul { @apply underline; }
 }
 /* Pita kategori (varian B1 pilihan pemilik 2026-10-15): bendera yang melipat di tepi kanan, sehingga nama panjang tetap
-   utuh. Dipakai di kartu daftar artikel (<x-web.kartu-artikel :pita="true">) dan bingkai gambar detail artikel. Ukuran sama
-   di setiap pemakaian dan di kedua tema; warnanya dari token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu
-   Monochrome baru berpita mulai 640px: di bawahnya thumbnail hanya 6rem, kategori tetap lencana di atas judul. Klik
-   diteruskan ke tautan kartu di bawahnya. */
-:is([data-tema=full_color] .kartu-artikel[data-pita], .bingkai-artikel) .lencana-artikel { @apply pointer-events-none absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-:is([data-tema=full_color] .kartu-artikel[data-pita], .bingkai-artikel) .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+   utuh. Dipakai di semua kartu artikel (beranda, daftar & kategori artikel) dan bingkai gambar detail artikel; keluar dari
+   alur kartu sehingga judul menjadi baris pertama isi. Ukuran sama di setiap pemakaian dan di kedua tema; warnanya dari
+   token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu Monochrome baru berpita mulai 640px: di bawahnya
+   thumbnail hanya 6rem, kategori tetap lencana di atas judul. Klik diteruskan ke tautan kartu di bawahnya. */
+:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel { @apply pointer-events-none absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 @media (min-width: 640px) {
   /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu Monochrome (py-8). */
-  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel { @apply pointer-events-none absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-  [data-tema=monochrome] .kartu-artikel[data-pita] .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+  [data-tema=monochrome] .kartu-artikel .lencana-artikel { @apply pointer-events-none absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+  [data-tema=monochrome] .kartu-artikel .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 }
-/* Lencana keluar dari alur kartu: judul menjadi baris pertama isi. */
-[data-tema=full_color] .kartu-artikel[data-pita] .kartu-artikel-judul { @apply mt-0; }
 
 /* ---------- FAQ ---------- */
 .tata-faq { @apply grid gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-16; }
@@ -509,10 +504,6 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 [data-tema=full_color] .judul-samping { @apply text-foreground; }
 [data-tema=monochrome] .judul-samping { @apply text-muted-foreground; }
 .kotak-samping > .btn { @apply mt-4 w-full; }
-/* "Lihat semua artikel" Full Color berwarna utama padat seperti pita kategori (pilihan pemilik 2026-10-15); tombol garis
-   putih tampak tak berwarna di dalam kotak putih. Monochrome tetap tombol garis. */
-[data-tema=full_color] .kotak-samping > .btn { border-color: transparent; background-color: var(--utama-teks); color: #fff; --tw-shadow: var(--bayangan-tombol); }
-@media (hover: hover) { [data-tema=full_color] .kotak-samping > .btn[data-variant=outline]:hover { border-color: transparent; background-color: var(--utama-gelap); } }
 /* Artikel terbaru: seluruh baris (thumbnail 4:3, judul, tanggal) satu tautan; garis pemisah antarbaris. */
 .daftar-terbaru { @apply mt-2; }
 .daftar-terbaru > li + li { @apply border-t; }
@@ -523,17 +514,21 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .isi-terbaru { @apply min-w-0 flex-1; }
 .judul-terbaru { @apply block text-[15px]/snug font-medium text-pretty text-foreground transition-colors; }
 .tanggal-terbaru { @apply mt-1.5 block font-mono text-[13px] text-muted-foreground; }
-/* Layanan kami: baris tautan berpanah setinggi 44px seperti sasaran sentuh lain; garis di bawah setiap baris, termasuk
-   baris terakhir (pilihan pemilik 2026-10-15). */
-.daftar-layanan-samping { @apply mt-2; }
-.daftar-layanan-samping > li { @apply border-b; }
-.tautan-layanan-samping { @apply flex min-h-11 items-center justify-between gap-3 py-2 text-[15px] font-medium text-foreground transition-colors; }
-.tautan-layanan-samping svg { @apply size-4 shrink-0 text-muted-foreground transition; }
+/* Kategori & Layanan kami: baris tautan setinggi 44px seperti sasaran sentuh lain; garis di bawah setiap baris, termasuk
+   baris terakhir (pilihan pemilik 2026-10-15). Kategori diakhiri jumlah artikel terbitnya, layanan diakhiri panah. */
+.daftar-tautan-samping { @apply mt-2; }
+.daftar-tautan-samping > li { @apply border-b; }
+.tautan-samping { @apply flex min-h-11 items-center justify-between gap-3 py-2 text-[15px] font-medium text-foreground transition-colors; }
+.tautan-samping svg { @apply size-4 shrink-0 text-muted-foreground transition; }
+.jumlah-kategori { @apply shrink-0 font-mono text-[13px] text-muted-foreground; }
+/* Kategori yang sedang dibuka (aria-current di halaman kategori): seperti menu navbar, ukuran tetap. */
+[data-tema=full_color] .tautan-samping[aria-current] { color: var(--aksen-teks); }
+[data-tema=monochrome] .tautan-samping[aria-current] > :first-child { @apply underline underline-offset-4; }
 @media (hover: hover) {
   [data-tema=full_color] .tautan-terbaru:hover .judul-terbaru,
-  [data-tema=full_color] .tautan-layanan-samping:hover,
-  [data-tema=full_color] .tautan-layanan-samping:hover svg { color: var(--aksen-teks); }
-  [data-tema=monochrome] :is(.tautan-terbaru:hover .judul-terbaru, .tautan-layanan-samping:hover span) { @apply underline underline-offset-4; }
+  [data-tema=full_color] .tautan-samping:hover,
+  [data-tema=full_color] .tautan-samping:hover svg { color: var(--aksen-teks); }
+  [data-tema=monochrome] :is(.tautan-terbaru:hover .judul-terbaru, .tautan-samping:hover > :first-child) { @apply underline underline-offset-4; }
 }
 /* Kartu konsultasi (slot promosi sementara): gelap seperti band ajakan — Full Color kotak bergradasi berhias, Monochrome
    polos. Hanya mulai 1024px dan menempel di bawah navbar saat halaman digulir. */

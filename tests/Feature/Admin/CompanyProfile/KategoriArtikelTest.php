@@ -74,26 +74,74 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
         ->assertSee('Kategori artikel tidak ditemukan');
 });
 
-it('menambah kategori artikel', function () {
+it('menambah kategori artikel beserta slug halaman kategorinya', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-artikel.create'))
         ->assertOk()
-        ->assertSee('name="nama_kategori"', false);
+        ->assertSee('name="nama_kategori"', false)
+        ->assertSee('Alamat halaman kategori (slug) dibuat otomatis dari nama dan tidak berubah lagi setelah kategori dipakai artikel terbit.');
 
     $this->actingAs($this->admin)
-        ->post(route('admin.kategori-artikel.store'), ['nama_kategori' => 'Teknologi'])
+        ->post(route('admin.kategori-artikel.store'), ['nama_kategori' => 'Tips & Tutorial'])
         ->assertRedirect(route('admin.kategori-artikel.index'))
         ->assertSessionHas('success');
 
-    expect(KategoriArtikel::sole()->nama_kategori)->toBe('Teknologi');
+    expect(KategoriArtikel::sole())
+        ->nama_kategori->toBe('Tips & Tutorial')
+        ->slug->toBe('tips-tutorial');
 });
 
-it('boleh memakai ulang nama kategori yang sudah dihapus', function () {
-    KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi'])->delete();
+it('mengubah slug mengikuti nama hanya selama kategori belum punya artikel terbit', function () {
+    $kategori = KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi', 'slug' => 'teknologi']);
+    Artikel::factory()->draf()->for($kategori)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-artikel.edit', $kategori))
+        ->assertSee('Alamat halaman kategori: /artikel/kategori/teknologi — ikut berubah bila nama diubah selama belum ada artikel terbit di kategori ini.');
+    $this->actingAs($this->admin)
+        ->put(route('admin.kategori-artikel.update', $kategori), ['nama_kategori' => 'Teknologi Informasi'])
+        ->assertSessionHasNoErrors();
+
+    expect($kategori->refresh()->slug)->toBe('teknologi-informasi');
+
+    // Halaman kategori sudah tayang: slug dikunci agar tautannya tidak rusak.
+    Artikel::factory()->terbit()->for($kategori)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-artikel.edit', $kategori))
+        ->assertSee('Alamat halaman kategori: /artikel/kategori/teknologi-informasi — tetap meskipun nama diubah, agar tautan yang sudah tersebar tidak rusak.');
+    $this->actingAs($this->admin)
+        ->put(route('admin.kategori-artikel.update', $kategori), ['nama_kategori' => 'Teknologi Terkini'])
+        ->assertSessionHasNoErrors();
+
+    expect($kategori->refresh())
+        ->nama_kategori->toBe('Teknologi Terkini')
+        ->slug->toBe('teknologi-informasi');
+});
+
+it('menampilkan alamat halaman kategori di modal detail', function () {
+    $tayang = KategoriArtikel::factory()->create(['nama_kategori' => 'Kategori Tayang', 'slug' => 'kategori-tayang']);
+    Artikel::factory()->terbit()->for($tayang)->create();
+    $belumTayang = KategoriArtikel::factory()->create(['nama_kategori' => 'Kategori Draf', 'slug' => 'kategori-draf']);
+    Artikel::factory()->draf()->for($belumTayang)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-artikel.index'))
+        ->assertSeeInOrder([
+            'Kategori Draf', '<td>/artikel/kategori/kategori-draf</td>', 'Belum tayang (belum ada artikel terbit)',
+            'Kategori Tayang', '<td>/artikel/kategori/kategori-tayang</td>', 'href="'.route('kategori-artikel.show', 'kategori-tayang').'"',
+        ], false);
+});
+
+it('boleh memakai ulang nama kategori yang sudah dihapus dengan slug baru', function () {
+    KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi', 'slug' => 'teknologi'])->delete();
 
     $this->actingAs($this->admin)
         ->post(route('admin.kategori-artikel.store'), ['nama_kategori' => 'Teknologi'])
         ->assertSessionHasNoErrors();
+
+    // Slug kategori terhapus tetap dicadangkan agar tidak bentrok bila kelak dipulihkan.
+    expect(KategoriArtikel::sole()->slug)->toBe('teknologi-2');
 });
 
 it('memperbarui kategori artikel dengan nama sendiri', function () {
@@ -186,8 +234,12 @@ it('boleh menghapus kategori yang artikelnya sudah dihapus semua', function () {
     $this->assertSoftDeleted($kategori);
 });
 
-it('membuat empat kategori awal dari seeder tanpa menimpa isian admin', function () {
+it('membuat empat kategori awal beserta slugnya dari seeder tanpa menimpa isian admin', function () {
     $this->seed(KategoriArtikelSeeder::class);
+
+    expect(KategoriArtikel::orderBy('id_kategori_artikel')->pluck('slug')->all())
+        ->toBe(['teknologi', 'pelatihan-sertifikasi', 'tips-tutorial', 'kabar-perusahaan']);
+
     KategoriArtikel::query()->where('nama_kategori', 'Teknologi')->update(['nama_kategori' => 'Teknologi Informasi']);
 
     $this->seed(KategoriArtikelSeeder::class);

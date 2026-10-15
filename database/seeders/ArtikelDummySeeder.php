@@ -6,6 +6,7 @@ use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\KategoriArtikel;
 use App\Services\CompanyProfile\ArtikelService;
+use App\Services\CompanyProfile\KategoriArtikelService;
 use App\Support\TeksHtml;
 use Database\Seeders\Concerns\MenyalinBerkasAwal;
 use Illuminate\Database\Seeder;
@@ -20,7 +21,7 @@ class ArtikelDummySeeder extends Seeder
      * Semua artikel memakai satu ilustrasi artikel sementara (pilihan pemilik 2026-10-11) sampai ilustrasi
      * dari animator tersedia; tiap artikel tetap mendapat salinan berkasnya sendiri.
      */
-    public function run(ArtikelService $artikelService): void
+    public function run(ArtikelService $artikelService, KategoriArtikelService $kategoriArtikelService): void
     {
         foreach ($this->daftarArtikel() as [$tanggal, $kategori, $judul, $status, $bagian]) {
             // Berdasarkan judul agar aman dijalankan ulang dan tidak menyalin gambar dua kali.
@@ -28,8 +29,12 @@ class ArtikelDummySeeder extends Seeder
                 continue;
             }
 
+            // Kategori awal dibuat KategoriArtikelSeeder; dibuat di sini hanya bila tidak ada (mis. namanya diubah admin).
+            $kategoriArtikel = KategoriArtikel::query()->firstWhere('nama_kategori', $kategori)
+                ?? $kategoriArtikelService->simpan(['nama_kategori' => $kategori]);
+
             Artikel::create([
-                'id_kategori_artikel' => KategoriArtikel::firstOrCreate(['nama_kategori' => $kategori])->id_kategori_artikel,
+                'id_kategori_artikel' => $kategoriArtikel->id_kategori_artikel,
                 'judul' => $judul,
                 'slug' => $artikelService->buatSlug($judul),
                 'deskripsi' => $this->isi($bagian),

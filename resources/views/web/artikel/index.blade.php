@@ -25,18 +25,7 @@
     <div class="isi-halaman">
         <div class="wadah tata-samping">
             <div>
-                @if ($artikel->isEmpty())
-                    <p class="kosong-halaman">Belum ada artikel yang diterbitkan. Silakan kunjungi lagi nanti.</p>
-                @else
-                    {{-- Full Color: dua kartu per baris mulai 768px; Monochrome: daftar editorial. Kategori tampil sebagai pita. --}}
-                    <div class="grid-artikel">
-                        @foreach ($artikel as $item)
-                            <x-web.kartu-artikel :artikel="$item" tag-judul="h2" :pita="true" />
-                        @endforeach
-                    </div>
-
-                    <x-web.paginasi :paginator="$artikel" />
-                @endif
+                @include('web.artikel.daftar')
             </div>
 
             @include('web.artikel.samping')

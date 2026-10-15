@@ -4,12 +4,14 @@ namespace App\Support;
 
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Identitas;
+use App\Models\CompanyProfile\KategoriArtikel;
 use Illuminate\Support\Str;
 
 /**
  * Data terstruktur schema.org (JSON-LD) untuk mesin pencari, dirender <x-web.data-terstruktur>. Organisasi & situs
- * hanya di beranda sesuai anjuran Google; halaman artikel memuat artikel dan remah rotinya. FAQPage sengaja tidak
- * dipakai: sejak Agustus 2023 Google hanya menampilkan hasil kaya FAQ untuk situs pemerintah dan kesehatan.
+ * hanya di beranda sesuai anjuran Google; halaman artikel memuat artikel dan remah rotinya, halaman daftar & kategori
+ * artikel cukup remah rotinya. FAQPage sengaja tidak dipakai: sejak Agustus 2023 Google hanya menampilkan hasil kaya
+ * FAQ untuk situs pemerintah dan kesehatan.
  */
 class DataTerstruktur
 {
@@ -54,6 +56,17 @@ class DataTerstruktur
     public static function daftarArtikel(): array
     {
         return self::dokumen([self::remahRoti(['Beranda' => Seo::alamat()], 'Artikel')]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function kategoriArtikel(KategoriArtikel $kategoriArtikel): array
+    {
+        return self::dokumen([self::remahRoti([
+            'Beranda' => Seo::alamat(),
+            'Artikel' => Seo::alamat(route('artikel.index', [], false)),
+        ], $kategoriArtikel->nama_kategori)]);
     }
 
     /**

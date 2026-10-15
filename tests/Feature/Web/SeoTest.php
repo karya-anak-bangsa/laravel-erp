@@ -99,9 +99,10 @@ describe('judul, deskripsi, dan alamat kanonis', function () {
 
 describe('robots', function () {
     it('mengizinkan pengindeksan halaman publik secara bawaan', function () {
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-terindeks']);
+        Artikel::factory()->terbit()->for(KategoriArtikel::factory()->create(['slug' => 'kategori-terindeks']), 'kategoriArtikel')
+            ->create(['slug' => 'artikel-terindeks']);
 
-        foreach (['/', '/artikel', '/artikel/artikel-terindeks'] as $alamat) {
+        foreach (['/', '/artikel', '/artikel/kategori/kategori-terindeks', '/artikel/artikel-terindeks'] as $alamat) {
             $this->get($alamat)
                 ->assertSee('<meta name="robots" content="max-image-preview:large">', false)
                 ->assertDontSee('noindex', false);
@@ -110,9 +111,10 @@ describe('robots', function () {
 
     it('menandai semua halaman publik noindex bila pengindeksan ditutup', function () {
         config(['seo.indeks' => false]);
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-tertutup']);
+        Artikel::factory()->terbit()->for(KategoriArtikel::factory()->create(['slug' => 'kategori-tertutup']), 'kategoriArtikel')
+            ->create(['slug' => 'artikel-tertutup']);
 
-        foreach (['/', '/artikel', '/artikel/artikel-tertutup'] as $alamat) {
+        foreach (['/', '/artikel', '/artikel/kategori/kategori-tertutup', '/artikel/artikel-tertutup'] as $alamat) {
             $this->get($alamat)
                 ->assertSee('<meta name="robots" content="noindex">', false)
                 ->assertDontSee('max-image-preview', false);
@@ -222,6 +224,20 @@ describe('data terstruktur', function () {
         expect($daftar['@graph'][0]['itemListElement'])->toHaveCount(2);
     });
 
+    it('menjelaskan remah roti halaman kategori', function () {
+        $kategori = KategoriArtikel::factory()->create(['nama_kategori' => 'Tips & Tutorial', 'slug' => 'tips-tutorial']);
+        Artikel::factory()->terbit()->for($kategori, 'kategoriArtikel')->create();
+
+        [$data] = jsonLdHalaman($this->get('/artikel/kategori/tips-tutorial')->getContent());
+
+        expect($data['@graph'])->toHaveCount(1)
+            ->and($data['@graph'][0]['itemListElement'])->toBe([
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $this->akar],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Artikel', 'item' => $this->akar.'/artikel'],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => 'Tips & Tutorial'],
+            ]);
+    });
+
     it('tidak bisa ditutup paksa oleh judul artikel', function () {
         Artikel::factory()->terbit()->create(['judul' => '</script><script>alert(1)</script>', 'slug' => 'judul-jahat']);
 
@@ -233,11 +249,15 @@ describe('data terstruktur', function () {
 });
 
 describe('sitemap.xml', function () {
-    it('memuat beranda, daftar artikel, dan artikel terbit saja', function () {
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-lama', 'tanggal' => '2026-09-01', 'updated_at' => '2026-10-01 10:00:00']);
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-baru', 'tanggal' => '2026-10-01', 'updated_at' => '2026-10-05 08:30:00']);
-        Artikel::factory()->draf()->create(['slug' => 'artikel-draf']);
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-terhapus'])->delete();
+    it('memuat beranda, daftar artikel, kategori berartikel terbit, dan artikel terbit saja', function () {
+        $kategori = KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi', 'slug' => 'teknologi', 'updated_at' => '2026-09-01 07:00:00']);
+        $berita = KategoriArtikel::factory()->create(['nama_kategori' => 'Berita', 'slug' => 'berita', 'updated_at' => '2026-10-08 09:00:00']);
+        $hanyaDraf = KategoriArtikel::factory()->create(['slug' => 'hanya-draf']);
+        $terhapus = KategoriArtikel::factory()->create(['slug' => 'kategori-terhapus']);
+        Artikel::factory()->terbit()->for($kategori, 'kategoriArtikel')->create(['slug' => 'artikel-lama', 'tanggal' => '2026-09-01', 'updated_at' => '2026-10-01 10:00:00']);
+        Artikel::factory()->terbit()->for($berita, 'kategoriArtikel')->create(['slug' => 'artikel-baru', 'tanggal' => '2026-10-01', 'updated_at' => '2026-10-05 08:30:00']);
+        Artikel::factory()->draf()->for($hanyaDraf, 'kategoriArtikel')->create(['slug' => 'artikel-draf']);
+        Artikel::factory()->terbit()->for($terhapus, 'kategoriArtikel')->create(['slug' => 'artikel-terhapus'])->delete();
 
         $respons = $this->get('/sitemap.xml')
             ->assertOk()
@@ -252,9 +272,12 @@ describe('sitemap.xml', function () {
             $url[(string) $item->loc] = (string) $item->lastmod;
         }
 
+        // Kategori urut abjad; lastmod = perubahan terakhir kategorinya (nama) atau artikel terbitnya.
         expect($url)->toBe([
             $this->akar => '',
             $this->akar.'/artikel' => '2026-10-05T08:30:00+07:00',
+            $this->akar.'/artikel/kategori/berita' => '2026-10-08T09:00:00+07:00',
+            $this->akar.'/artikel/kategori/teknologi' => '2026-10-01T10:00:00+07:00',
             $this->akar.'/artikel/artikel-baru' => '2026-10-05T08:30:00+07:00',
             $this->akar.'/artikel/artikel-lama' => '2026-10-01T10:00:00+07:00',
         ]);

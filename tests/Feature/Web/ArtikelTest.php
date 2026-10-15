@@ -68,13 +68,6 @@ describe('daftar artikel', function () {
             ->assertDontSee('class="paginasi"', false);
     });
 
-    it('menampilkan kategori sebagai pita hanya di kartu halaman daftar', function () {
-        Artikel::factory()->terbit()->create();
-
-        expect($this->get(route('artikel.index'))->getContent())->toMatch('#<article class="kartu-artikel"\s+data-pita\s*>#');
-        // Kartu artikel beranda tidak berubah.
-        $this->get('/')->assertDontSee('data-pita', false);
-    });
 });
 
 describe('detail artikel', function () {
@@ -146,7 +139,7 @@ describe('detail artikel', function () {
             ->assertDontSee('Lain Satu')
             ->assertDontSee('Lain Draf')
             ->assertDontSee('<span class="judul-terbaru">Artikel Dibaca</span>', false)
-            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-sedang" data-variant="outline">Lihat semua artikel</a>', false);
+            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>', false);
     });
 
     it('tidak menampilkan artikel terbaru di kolom samping bila tidak ada artikel terbit lain', function () {
@@ -179,8 +172,8 @@ describe('kolom samping', function () {
             $this->get($alamat)
                 ->assertSee('<h2 id="judul-layanan-kami" class="judul-samping">Layanan kami</h2>', false)
                 ->assertSeeInOrder(['Layanan Pertama', 'Layanan Kedua'])
-                ->assertSee('href="'.route('beranda').'#layanan-'.$pertama->id_layanan.'" class="tautan-layanan-samping"', false)
-                ->assertSee('href="'.route('beranda').'#layanan-'.$kedua->id_layanan.'" class="tautan-layanan-samping"', false)
+                ->assertSee('href="'.route('beranda').'#layanan-'.$pertama->id_layanan.'" class="tautan-samping"', false)
+                ->assertSee('href="'.route('beranda').'#layanan-'.$kedua->id_layanan.'" class="tautan-samping"', false)
                 // Tombol yang sama juga ada di band ajakan; urutan memastikan tombol kartu ada sebelum band.
                 ->assertSeeInOrder(['<h2 class="judul-ajakan-samping">Konsultasi gratis</h2>', '<a href="'.$identitas->link_whatsapp.'" target="_blank" rel="noopener" class="btn btn-besar">', '<section id="ajakan"'], false);
         }

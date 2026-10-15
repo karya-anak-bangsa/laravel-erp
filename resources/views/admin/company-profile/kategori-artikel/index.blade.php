@@ -54,6 +54,24 @@
                                                             <td>{{ $item->artikel_count }}</td>
                                                         </tr>
                                                         <tr>
+                                                            <th scope="row">Alamat halaman</th>
+                                                            <td>/artikel/kategori/{{ $item->slug }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Halaman</th>
+                                                            <td>
+                                                                @if ($item->artikel_terbit_count > 0)
+                                                                    <a href="{{ route('kategori-artikel.show', $item) }}" target="_blank" rel="noopener"
+                                                                        class="btn btn-info btn-sm">
+                                                                        <x-admin.icon name="eye" />
+                                                                        Buka halaman
+                                                                    </a>
+                                                                @else
+                                                                    Belum tayang (belum ada artikel terbit)
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
                                                             <th scope="row">Dibuat</th>
                                                             <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
                                                         </tr>

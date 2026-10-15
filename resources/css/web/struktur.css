@@ -115,11 +115,14 @@ body { background: var(--background); color: var(--teks); }
 
 /* ---------- Artikel ----------
    Full Color: artikel pertama kartu utama (CSS :first-child, markup tiap item identik).
-   Monochrome: daftar editorial (meta · judul · ringkasan · thumbnail); .kartu-artikel-isi memakai
+   Monochrome: daftar editorial (judul · ringkasan · tanggal · thumbnail); .kartu-artikel-isi memakai
    display: contents agar anak-anaknya menjadi sel grid kartu. */
 [data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
-/* Kartu samping: thumbnail 6rem di bawah 1024px (5rem di <390px) agar lencana Geist Mono 13px tetap satu baris
+/* Kartu samping (gambar di kiri): pita kategori berada di atas kolom teks, sejajar pita kartu utama (1.25rem dari atas
+   kartu, tinggi ±1.8rem), jadi judul dimulai di bawah pita. */
+[data-tema=full_color] .daftar-artikel > :not(:first-child):has(.lencana-artikel) .kartu-artikel-isi { padding-top: 3rem; }
+/* Kartu samping: thumbnail 6rem di bawah 1024px (5rem di <390px) agar pita kategori (Geist Mono 13px) tetap satu baris
    (pilihan pemilik 2026-10-11); ukuran teks sama dengan kartu utama. */
 @media (max-width: 767.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) { flex-direction: row; align-items: flex-start; }
@@ -140,7 +143,7 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 40%; flex-shrink: 0; aspect-ratio: 4 / 3; }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
 }
-/* Tablet: thumbnail sebesar mungkin dengan kolom teks tetap 14.25rem agar lencana terpanjang satu baris (min 6rem, maks 40%). */
+/* Tablet: thumbnail sebesar mungkin dengan kolom teks tetap 14.25rem agar pita kategori terpanjang satu baris (min 6rem, maks 40%). */
 @media (min-width: 768px) and (max-width: 1023.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: clamp(6rem, calc(100% - 14.25rem), 40%); }
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: 1rem; }
@@ -157,31 +160,22 @@ body { background: var(--background); color: var(--teks); }
 @media (min-width: 768px) {
   [data-tema=full_color] .grid-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
 }
-[data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan"; align-items: start; }
+/* Monochrome, beranda, daftar & kategori artikel: tanggal di bawah ringkasan (pilihan pemilik 2026-10-15). Meta dilebur
+   (komponen.css) agar lencana & tanggal menjadi sel grid kartu; di ponsel lencana di atas judul. Mulai 640px kategori
+   menjadi pita dan thumbnail 14rem agar pita terpanjang muat. */
+[data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan" "tanggal tanggal"; align-items: start; }
 [data-tema=monochrome] .kartu-artikel-isi { display: contents; }
-[data-tema=monochrome] .kartu-artikel-meta { grid-area: meta; }
 [data-tema=monochrome] .kartu-artikel-judul { grid-area: judul; }
 [data-tema=monochrome] .kartu-artikel-ringkasan { grid-area: ringkasan; }
+[data-tema=monochrome] .kartu-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
 [data-tema=monochrome] .kartu-artikel-gambar { grid-area: gambar; }
 [data-tema=monochrome] .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
-@media (min-width: 640px) {
-  [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 11rem; grid-template-rows: auto auto 1fr; grid-template-areas: "meta gambar" "judul gambar" "ringkasan gambar"; }
-}
-@media (min-width: 1024px) {
-  /* Kolom meta 14rem: lencana 13px seperti "Pelatihan & Sertifikasi" tetap satu baris. */
-  [data-tema=monochrome] .kartu-artikel { grid-template-columns: 14rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
-}
-/* Daftar artikel Monochrome: tanggal di bawah ringkasan (pilihan pemilik 2026-10-15). Meta dilebur agar lencana & tanggal
-   menjadi sel grid kartu; di ponsel lencana tetap di atas judul. Mulai 640px kategori menjadi pita dan thumbnail 14rem agar
-   pita terpanjang muat; susunan tiga kolom beranda tidak dipakai karena kolom utama (8/12) terlalu sempit untuk teksnya. */
-[data-tema=monochrome] .grid-artikel .kartu-artikel { grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan" "tanggal tanggal"; }
-[data-tema=monochrome] .grid-artikel .kartu-artikel-meta { display: contents; }
-[data-tema=monochrome] .grid-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
 @media (max-width: 639.98px) {
-  [data-tema=monochrome] .grid-artikel .lencana-artikel { grid-area: meta; }
+  /* Hanya di ponsel: mulai 640px lencana menjadi pita yang diposisikan terhadap kartu, bukan sel grid. */
+  [data-tema=monochrome] .kartu-artikel .lencana-artikel { grid-area: meta; }
 }
 @media (min-width: 640px) {
-  [data-tema=monochrome] .grid-artikel .kartu-artikel { grid-template-columns: minmax(0, 1fr) 14rem; grid-template-rows: auto auto 1fr; grid-template-areas: "judul gambar" "ringkasan gambar" "tanggal gambar"; }
+  [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 14rem; grid-template-rows: auto auto 1fr; grid-template-areas: "judul gambar" "ringkasan gambar" "tanggal gambar"; }
 }
 /* ---------- Halaman artikel: kolom utama + kolom samping (pilihan pemilik 2026-10-15) ----------
    Mulai 1024px kolom utama 8/12 dan kolom samping 4/12; di bawahnya kolom samping turun ke bawah isi, kotaknya dua

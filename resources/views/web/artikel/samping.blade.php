@@ -1,8 +1,11 @@
 {{--
     Kolom samping halaman artikel (pilihan pemilik 2026-10-15): di samping isi mulai 1024px, di bawahnya turun ke bawah
-    isi. Artikel terbaru hanya di detail artikel. Kartu konsultasi menjadi slot promosi sementara; ia menempel saat
-    halaman digulir dan hanya tampil mulai 1024px, karena di bawahnya langsung disusul band ajakan yang sama tujuannya.
-    Pakai: @include('web.artikel.samping', ['artikelTerbaru' => $artikelTerbaru]) — $layanan dari controller.
+    isi. Urutan kotak: Artikel terbaru (hanya di detail artikel) → Kategori → Layanan kami → Konsultasi. Kategori hanya
+    yang punya artikel terbit; di halaman kategori, kategori yang sedang dibuka ditandai. Kartu konsultasi menjadi slot
+    promosi sementara; ia menempel saat halaman digulir dan hanya tampil mulai 1024px, karena di bawahnya langsung disusul
+    band ajakan yang sama tujuannya.
+    Pakai: @include('web.artikel.samping', ['artikelTerbaru' => $artikelTerbaru, 'kategoriAktif' => $kategoriArtikel])
+    — $daftarKategori dan $layanan dari controller.
 --}}
 <aside class="kolom-samping" aria-label="Informasi tambahan">
     @if (isset($artikelTerbaru) && $artikelTerbaru->isNotEmpty())
@@ -22,18 +25,34 @@
                     </li>
                 @endforeach
             </ul>
-            <a href="{{ route('artikel.index') }}" class="btn btn-sedang" data-variant="outline">Lihat semua artikel</a>
+            <a href="{{ route('artikel.index') }}" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>
         </div>
+    @endif
+
+    @if ($daftarKategori->isNotEmpty())
+        <nav class="kotak-samping" aria-labelledby="judul-kategori-samping">
+            <h2 id="judul-kategori-samping" class="judul-samping">Kategori</h2>
+            <ul class="daftar-tautan-samping">
+                @foreach ($daftarKategori as $item)
+                    <li>
+                        <a href="{{ route('kategori-artikel.show', $item) }}" class="tautan-samping" @if (isset($kategoriAktif) && $kategoriAktif->is($item)) aria-current="page" @endif>
+                            <span>{{ $item->nama_kategori }}</span>
+                            <span class="jumlah-kategori">{{ $item->artikel_terbit_count }}<span class="sr-only"> artikel</span></span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
     @endif
 
     @if ($layanan->isNotEmpty())
         <nav class="kotak-samping" aria-labelledby="judul-layanan-kami">
             <h2 id="judul-layanan-kami" class="judul-samping">Layanan kami</h2>
-            <ul class="daftar-layanan-samping">
+            <ul class="daftar-tautan-samping">
                 @foreach ($layanan as $item)
                     {{-- Ke kartu layanannya di beranda, sama dengan kolom Layanan di footer. --}}
                     <li>
-                        <a href="{{ route('beranda') }}#layanan-{{ $item->id_layanan }}" class="tautan-layanan-samping">
+                        <a href="{{ route('beranda') }}#layanan-{{ $item->id_layanan }}" class="tautan-samping">
                             <span>{{ $item->judul }}</span>
                             <x-web.ikon nama="panah-kanan" />
                         </a>

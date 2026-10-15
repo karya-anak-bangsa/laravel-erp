@@ -101,7 +101,10 @@ Catatan implementasi: slug dibuat sistem sehingga memakai constraint UNIQUE di d
 |---|---|---|
 | id_kategori_artikel | BIGINT UNSIGNED PK | |
 | nama_kategori | VARCHAR(100) | |
+| slug | VARCHAR(220) UNIQUE | **(+)** URL halaman kategori di frontend (`/artikel/kategori/{slug}`), dibuat otomatis dari nama oleh `KategoriArtikelService` (disetujui pemilik 2026-10-15) |
 | created_at, updated_at, deleted_at | | |
+
+Catatan implementasi: slug memakai `SlugService` dengan aturan yang sama seperti slug artikel — UNIQUE di database termasuk baris terhapus, akhiran angka bila sudah dipakai. Halaman kategori hanya ada selama kategori punya artikel terbit, jadi slug ikut berubah saat nama diubah **hanya selama kategori belum punya artikel terbit**; setelah itu dikunci agar tautan yang sudah tersebar tidak rusak — tanpa kolom tambahan.
 
 ### tb_artikel
 | Kolom | Tipe | Keterangan |
