@@ -36,7 +36,7 @@ it('membaca dua template bawaan dari config selama belum ada template aktif di d
             'nama' => 'TKAB Monochrome',
             'warna_utama' => null,
             'warna_aksen' => null,
-            'nada_dasar' => NadaDasar::Netral,
+            'nada_dasar' => NadaDasar::Cokelat,
             'font' => FontTemplate::Geist,
             'sudut' => SudutTemplate::Sedang,
             'skala' => SkalaTemplate::Standar,
@@ -60,7 +60,7 @@ it('menyediakan nilai bawaan per jenis sebagai isian form pengaturan Default', f
         'lebar_konten' => 'standar',
     ])
         ->and($layanan->nilaiBawaan(JenisTemplate::Monochrome))->toBe([
-            'nada_dasar' => 'netral',
+            'nada_dasar' => 'cokelat',
             'font' => 'geist',
             'ketebalan_judul' => 'semibold',
             'sudut' => 'sedang',
@@ -74,7 +74,7 @@ it('memakai nilai bawaan cadangan untuk pengaturan Default bila config tidak val
     Log::spy();
     config(['tema.template.monochrome' => ['nada_dasar' => 'zinc', 'font' => 'geist', 'sudut' => 'sedang']]);
 
-    expect((new TemaService)->nilaiBawaan(JenisTemplate::Monochrome))->toMatchArray(['nada_dasar' => 'netral', 'bayangan' => 'tanpa']);
+    expect((new TemaService)->nilaiBawaan(JenisTemplate::Monochrome))->toMatchArray(['nada_dasar' => 'cokelat', 'bayangan' => 'tanpa']);
     Log::shouldHaveReceived('warning')->withArgs(fn (string $pesan) => str_contains($pesan, 'config/tema.php tidak valid'))->once();
 });
 
@@ -179,8 +179,8 @@ it('merender token lengkap kedua template', function () {
 
     expect($css)
         ->toContain("html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: \"Geist\"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; {$bayanganWarna} --tinggi-navbar: 4.25rem; --tinggi-logo: 1.875rem; --teks-menu: .875rem; --tinggi-tombol: 2.75rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.375rem; --lebar-konten: 80rem; }")
-        ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);')
-        ->toContain('--nada-950: oklch(14.5% 0 0); --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem;')
+        ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0.003 55);')
+        ->toContain('--nada-950: oklch(14.5% 0.042 55); --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem;')
         ->toContain("--sudut-isian: .5rem; {$bayanganMono} --tinggi-navbar: 4.25rem;")
         // Sebelas deklarasi skala nada; rujukan var(--nada-*) di --garis-kartu tidak dihitung.
         ->and(preg_match_all('/--nada-\d+:/', $css))->toBe(11);

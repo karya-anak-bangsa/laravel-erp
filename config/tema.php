@@ -11,7 +11,7 @@
 | "Default" di form template, sekaligus cadangan bila database tidak terbaca atau belum ada
 | template aktif. View tidak membaca config ini langsung — selalu lewat
 | App\Services\CompanyProfile\TemaService. Nilai sekarang = data template lokal yang
-| ditetapkan pemilik sebagai bawaan (2026-10-14).
+| ditetapkan pemilik sebagai bawaan (2026-10-14; nada dasar Monochrome Cokelat sejak 2026-10-15).
 |
 */
 
@@ -40,7 +40,7 @@ return [
             'nama' => 'TKAB Monochrome',
             'warna_utama' => null,
             'warna_aksen' => null,
-            'nada_dasar' => 'netral',
+            'nada_dasar' => 'cokelat',
             'font' => 'geist',
             'sudut' => 'sedang',
             'skala' => 'standar',

@@ -1,6 +1,6 @@
 /*
  * Entri CSS frontend publik (Tailwind v4 + Basecoat UI), terpisah dari admin.scss.
- * Satu markup, dua tema: <html data-tema="full_color|monochrome">. Acuan: prototipe tema-ganda.html.
+ * Satu markup, dua tema: <html data-tema="full_color|monochrome">. Acuan tampilan: CLAUDE.md §9 › Acuan tampilan.
  *
  * Semua @import di atas (wajib menurut spesifikasi CSS). Urutan berkas tak berlapis menentukan siapa yang
  * menang: leaflet.css → token → struktur → komponen.

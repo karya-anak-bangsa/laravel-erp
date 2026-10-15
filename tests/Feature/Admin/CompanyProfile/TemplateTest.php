@@ -94,7 +94,7 @@ it('menampilkan pengaturan Default di rincian template yang memakai nilai bawaan
 
     $this->actingAs($this->admin)
         ->get(route('admin.template.index'))
-        ->assertSeeInOrder(['<th scope="row">Pengaturan</th>', '<td>Default</td>', 'Netral (hitam-putih)'], false);
+        ->assertSeeInOrder(['<th scope="row">Pengaturan</th>', '<td>Default</td>', 'Cokelat (abu kecokelatan)'], false);
 });
 
 it('mencari template berdasarkan nama serta memfilter jenis dan status', function () {
@@ -186,7 +186,7 @@ it('mengembalikan template ke nilai bawaan lewat pengaturan Default dan mengabai
         ->assertRedirect(route('admin.template.index'));
 
     $template->refresh();
-    expect($template->nada_dasar)->toBe(NadaDasar::Netral)
+    expect($template->nada_dasar)->toBe(NadaDasar::Cokelat)
         ->and($template->bayangan)->toBe(BayanganTemplate::Tanpa)
         ->and($template->skala->value)->toBe('standar')
         ->and($template->font->value)->toBe('geist')
@@ -345,7 +345,7 @@ describe('pratinjau dan frontend', function () {
             ->get(route('admin.template.pratinjau', ['nama' => 'Baru', 'jenis' => 'monochrome', 'pengaturan' => 'bawaan']))
             ->assertOk()
             ->assertSee('<html lang="id" data-tema="monochrome">', false)
-            ->assertSee('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0 0);', false)
+            ->assertSee('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0.003 55);', false)
             ->assertSee('--garis-kartu: var(--nada-300);', false);
     });
 

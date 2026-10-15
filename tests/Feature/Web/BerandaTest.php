@@ -57,7 +57,7 @@ describe('tema', function () {
             ->assertSee('<style id="token-template"', false)
             ->assertSee('--warna-utama: #15253f; --warna-aksen: #cb1839;', false)
             ->assertSee('--aksen-kontras: #ffffff;', false)
-            ->assertSee('--nada-950: oklch(14.5% 0 0);', false)
+            ->assertSee('--nada-950: oklch(14.5% 0.042 55);', false)
             ->assertSee('--sudut-tombol: .5rem;', false);
 
         // Kedua template memakai Geist (pilihan pemilik 2026-10-11).

@@ -34,7 +34,7 @@ class TemaService
     // config/tema.php.
     private const BAWAAN = [
         'full_color' => ['nama' => 'TKAB Full Color', 'warna_utama' => '#15253F', 'warna_aksen' => '#CB1839', 'nada_dasar' => null, 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'standar', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'halus'],
-        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'netral', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'standar', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'tanpa'],
+        'monochrome' => ['nama' => 'TKAB Monochrome', 'warna_utama' => null, 'warna_aksen' => null, 'nada_dasar' => 'cokelat', 'font' => 'geist', 'sudut' => 'sedang', 'skala' => 'standar', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'semibold', 'bayangan' => 'tanpa'],
     ];
 
     /** @var array<string, NilaiTemplate> */
