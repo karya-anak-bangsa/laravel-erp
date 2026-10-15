@@ -1,14 +1,16 @@
 {{--
-    Kartu artikel (beranda, daftar artikel, artikel lainnya). Markup identik di kedua tema; susunannya diatur CSS menurut
-    wadahnya: .daftar-artikel (beranda: kartu utama + kartu samping) atau .grid-artikel (kartu seragam). Monochrome
-    menyusunnya sebagai baris editorial. Judul h3 di bawah kepala seksi; h2 di halaman daftar (di bawah h1).
-    Pakai: <x-web.kartu-artikel :artikel="$item" tag-judul="h2" />
+    Kartu artikel (beranda dan daftar artikel). Markup identik di kedua tema; susunannya diatur CSS menurut wadahnya:
+    .daftar-artikel (beranda: kartu utama + kartu samping) atau .grid-artikel (daftar artikel). Monochrome menyusunnya
+    sebagai baris editorial. Judul h3 di bawah kepala seksi; h2 di halaman daftar (di bawah h1). :pita="true" (daftar
+    artikel) menampilkan lencana kategori sebagai pita di tepi kanan kartu: Full Color di semua lebar, Monochrome mulai
+    640px (di bawahnya tetap lencana di atas judul).
+    Pakai: <x-web.kartu-artikel :artikel="$item" tag-judul="h2" :pita="true" />
 --}}
-@props(['artikel', 'tagJudul' => 'h3'])
+@props(['artikel', 'tagJudul' => 'h3', 'pita' => false])
 
 @use('App\Support\TeksHtml')
 
-<article class="kartu-artikel">
+<article class="kartu-artikel" @if ($pita) data-pita @endif>
     <div class="kartu-artikel-gambar"><img src="{{ $artikel->gambar_url }}" width="800" height="600" loading="lazy" decoding="async" alt="{{ $artikel->judul }}" class="gambar-konten"></div>
     <div class="kartu-artikel-isi">
         <div class="kartu-artikel-meta">

@@ -46,17 +46,23 @@ class Artikel extends Model
     }
 
     /**
-     * Artikel untuk kartu frontend (beranda, daftar artikel, artikel lainnya): hanya yang terbit, terbaru lebih
-     * dulu menurut tanggal (id memecah tanggal kembar), beserta nama kategorinya.
+     * Artikel terbit, terbaru lebih dulu menurut tanggal (id memecah tanggal kembar).
+     *
+     * @param  Builder<Artikel>  $query
+     */
+    public function scopeTerbaru(Builder $query): void
+    {
+        $query->terbit()->orderByDesc('tanggal')->orderByDesc('id_artikel');
+    }
+
+    /**
+     * Artikel untuk kartu frontend (beranda, daftar artikel): artikel terbaru beserta nama kategorinya.
      *
      * @param  Builder<Artikel>  $query
      */
     public function scopeUntukKartu(Builder $query): void
     {
-        $query->terbit()
-            ->with('kategoriArtikel:id_kategori_artikel,nama_kategori')
-            ->orderByDesc('tanggal')
-            ->orderByDesc('id_artikel');
+        $query->terbaru()->with('kategoriArtikel:id_kategori_artikel,nama_kategori');
     }
 
     /**

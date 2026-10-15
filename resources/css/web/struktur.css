@@ -149,19 +149,13 @@ body { background: var(--background); color: var(--teks); }
 @media (min-width: 768px) and (max-width: 1279.98px) {
   [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-ringkasan { display: none; }
 }
-/* Daftar artikel (/artikel) & artikel lainnya, Full Color: ponsel kartu bersusun, tablet kartu mendatar satu kolom (tanpa
-   kartu yatim 2+1), desktop grid 3 kolom; tanggal rata bawah agar sejajar antarkartu sebaris. Monochrome memakai daftar
-   editorial yang sama dengan beranda (aturan .kartu-artikel di bawah). */
+/* Daftar artikel (/artikel), Full Color: ponsel kartu bersusun, mulai 768px dua kartu per baris dengan gambar di atas
+   (pilihan pemilik 2026-10-15; 10 per halaman sehingga halaman penuh tanpa kartu yatim); tanggal rata bawah agar sejajar
+   antarkartu sebaris. Monochrome memakai daftar editorial (aturan .kartu-artikel di bawah). */
 [data-tema=full_color] .grid-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 [data-tema=full_color] .grid-artikel .tanggal-artikel { margin-top: auto; padding-top: .75rem; }
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  [data-tema=full_color] .grid-artikel { gap: 1.5rem; }
-  [data-tema=full_color] .grid-artikel > .kartu-artikel { flex-direction: row; }
-  [data-tema=full_color] .grid-artikel .kartu-artikel-gambar { width: 40%; flex-shrink: 0; align-self: flex-start; aspect-ratio: 4 / 3; }
-  [data-tema=full_color] .grid-artikel .kartu-artikel-isi { padding: .5rem .75rem .5rem 1.5rem; }
-}
-@media (min-width: 1024px) {
-  [data-tema=full_color] .grid-artikel { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+@media (min-width: 768px) {
+  [data-tema=full_color] .grid-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
 }
 [data-tema=monochrome] .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan"; align-items: start; }
 [data-tema=monochrome] .kartu-artikel-isi { display: contents; }
@@ -176,6 +170,25 @@ body { background: var(--background); color: var(--teks); }
 @media (min-width: 1024px) {
   /* Kolom meta 14rem: lencana 13px seperti "Pelatihan & Sertifikasi" tetap satu baris. */
   [data-tema=monochrome] .kartu-artikel { grid-template-columns: 14rem minmax(0, 1fr) 12rem; grid-template-rows: auto 1fr; grid-template-areas: "meta judul gambar" "meta ringkasan gambar"; }
+}
+/* Daftar artikel Monochrome mulai 640px: tanggal di atas judul dan thumbnail 14rem agar pita kategori terpanjang muat;
+   susunan tiga kolom beranda tidak dipakai karena kolom utama (8/12) terlalu sempit untuk teksnya. */
+@media (min-width: 640px) {
+  [data-tema=monochrome] .grid-artikel .kartu-artikel { grid-template-columns: minmax(0, 1fr) 14rem; grid-template-rows: auto auto 1fr; grid-template-areas: "meta gambar" "judul gambar" "ringkasan gambar"; }
+  [data-tema=monochrome] .grid-artikel .kartu-artikel-meta { flex-direction: row; align-items: center; padding-top: 0; }
+}
+/* ---------- Halaman artikel: kolom utama + kolom samping (pilihan pemilik 2026-10-15) ----------
+   Mulai 1024px kolom utama 8/12 dan kolom samping 4/12; di bawahnya kolom samping turun ke bawah isi, kotaknya dua
+   kolom di tablet. Kolom samping flex (bukan grid) agar kartu konsultasi yang sticky bisa bergerak sepanjang kolom:
+   anak grid hanya bisa menempel di dalam area grid-nya sendiri. */
+:root { --celah-samping: 3rem; }
+.tata-samping { display: grid; gap: 4rem; grid-template-columns: minmax(0, 1fr); }
+.kolom-samping { display: flex; flex-direction: column; gap: 1.5rem; }
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .kolom-samping { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); align-items: start; }
+}
+@media (min-width: 1024px) {
+  .tata-samping { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: var(--celah-samping); }
 }
 
 /* ---------- Kontak: susunan sama di kedua tema (pilihan pemilik 2026-10-11), urutan DOM tetap ----------

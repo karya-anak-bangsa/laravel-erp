@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
@@ -71,7 +72,7 @@ describe('judul, deskripsi, dan alamat kanonis', function () {
     });
 
     it('memberi halaman paginasi alamat kanonisnya sendiri', function () {
-        Artikel::factory()->terbit()->count(10)->create();
+        Artikel::factory()->terbit()->count(ArtikelController::PER_HALAMAN + 1)->create();
 
         $this->get('/artikel?page=2')->assertSee('<link rel="canonical" href="'.$this->akar.'/artikel?page=2">', false);
         $this->get('/artikel?page=1')->assertSee('<link rel="canonical" href="'.$this->akar.'/artikel">', false);

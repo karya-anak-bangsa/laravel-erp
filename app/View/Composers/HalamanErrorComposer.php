@@ -48,7 +48,7 @@ class HalamanErrorComposer
     private function dataSitus(): array
     {
         try {
-            return ['identitas' => $this->identitasService->untukSitus(), 'layanan' => Layanan::untukFooter()];
+            return ['identitas' => $this->identitasService->untukSitus(), 'layanan' => Layanan::untukTautan()];
         } catch (Throwable $e) {
             Log::warning('Data situs tidak terbaca saat merender halaman error; memakai tampilan ringkas.', ['galat' => $e->getMessage()]);
 

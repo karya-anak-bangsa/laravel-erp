@@ -36,7 +36,7 @@ class SitusComposer
 
         // Daftar layanan di footer: halaman yang sudah memuat layanan (beranda) tidak perlu query ulang.
         if ($view->name() === 'layouts.web.footer' && ! $view->offsetExists('layanan')) {
-            $view->with('layanan', Layanan::untukFooter());
+            $view->with('layanan', Layanan::untukTautan());
         }
     }
 }

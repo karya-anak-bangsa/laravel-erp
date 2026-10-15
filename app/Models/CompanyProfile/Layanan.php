@@ -46,11 +46,12 @@ class Layanan extends Model
     }
 
     /**
-     * Judul layanan untuk kolom Layanan di footer publik (SitusComposer & halaman error).
+     * Judul layanan untuk daftar tautan publik: kolom Layanan di footer (SitusComposer & halaman error) dan
+     * "Layanan kami" di kolom samping halaman artikel.
      *
      * @return Collection<int, static>
      */
-    public static function untukFooter(): Collection
+    public static function untukTautan(): Collection
     {
         return static::query()->berurutan()->get(['id_layanan', 'judul']);
     }

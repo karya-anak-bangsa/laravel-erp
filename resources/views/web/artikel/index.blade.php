@@ -23,19 +23,23 @@
     </x-web.kepala-halaman>
 
     <div class="isi-halaman">
-        <div class="wadah">
-            @if ($artikel->isEmpty())
-                <p class="kosong-halaman">Belum ada artikel yang diterbitkan. Silakan kunjungi lagi nanti.</p>
-            @else
-                {{-- Full Color: grid kartu seragam; Monochrome: daftar editorial seperti di beranda. --}}
-                <div class="grid-artikel">
-                    @foreach ($artikel as $item)
-                        <x-web.kartu-artikel :artikel="$item" tag-judul="h2" />
-                    @endforeach
-                </div>
+        <div class="wadah tata-samping">
+            <div>
+                @if ($artikel->isEmpty())
+                    <p class="kosong-halaman">Belum ada artikel yang diterbitkan. Silakan kunjungi lagi nanti.</p>
+                @else
+                    {{-- Full Color: dua kartu per baris mulai 768px; Monochrome: daftar editorial. Kategori tampil sebagai pita. --}}
+                    <div class="grid-artikel">
+                        @foreach ($artikel as $item)
+                            <x-web.kartu-artikel :artikel="$item" tag-judul="h2" :pita="true" />
+                        @endforeach
+                    </div>
 
-                <x-web.paginasi :paginator="$artikel" />
-            @endif
+                    <x-web.paginasi :paginator="$artikel" />
+                @endif
+            </div>
+
+            @include('web.artikel.samping')
         </div>
     </div>
 

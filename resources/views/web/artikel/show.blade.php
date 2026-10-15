@@ -40,32 +40,21 @@
             </x-slot>
         </x-web.kepala-halaman>
 
-        <div class="wadah badan-artikel">
-            {{-- Gambar utuh (rasio asli) dalam bingkai seperti gambar hero; di atas lipatan, jadi tidak lazy. --}}
-            <div class="bingkai-artikel">
-                <img src="{{ $artikel->gambar_url }}" width="800" height="600" fetchpriority="high" decoding="async" alt="{{ $artikel->judul }}">
+        <div class="isi-halaman">
+            <div class="wadah tata-samping">
+                <div class="badan-artikel">
+                    {{-- Gambar utuh (rasio asli) dalam bingkai seperti gambar hero; di atas lipatan, jadi tidak lazy. --}}
+                    <div class="bingkai-artikel">
+                        <img src="{{ $artikel->gambar_url }}" width="800" height="600" fetchpriority="high" decoding="async" alt="{{ $artikel->judul }}">
+                    </div>
+                    <div class="isi-artikel konten-html">{!! $artikel->deskripsi !!}</div>
+                    <x-web.bagikan :alamat="$alamatKanonis" :judul="$artikel->judul" />
+                </div>
+
+                @include('web.artikel.samping', ['artikelTerbaru' => $artikelTerbaru])
             </div>
-            <div class="isi-artikel konten-html">{!! $artikel->deskripsi !!}</div>
-            <x-web.bagikan :alamat="$alamatKanonis" :judul="$artikel->judul" />
         </div>
     </article>
-
-    @if ($artikelLain->isNotEmpty())
-        <section class="seksi seksi-redup" aria-labelledby="judul-artikel-lain">
-            <div class="wadah">
-                <div class="kepala-artikel">
-                    <x-web.kepala-seksi id="judul-artikel-lain" label="Baca juga" judul="Artikel lainnya" rata="tengah" />
-                    <a href="{{ route('artikel.index') }}" class="btn btn-sedang" data-variant="outline">Lihat semua artikel</a>
-                </div>
-
-                <div class="grid-artikel">
-                    @foreach ($artikelLain as $item)
-                        <x-web.kartu-artikel :artikel="$item" />
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
 
     @include('web.beranda.ajakan')
 @endsection
