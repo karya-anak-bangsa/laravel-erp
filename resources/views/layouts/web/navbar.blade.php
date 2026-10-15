@@ -1,6 +1,19 @@
 @php
-    // Anchor ke beranda agar tetap berfungsi dari halaman publik lain (kelak).
-    $menuUtama = ['beranda' => 'Beranda', 'layanan' => 'Layanan', 'portofolio' => 'Portofolio', 'artikel' => 'Artikel', 'faq' => 'FAQ', 'kontak' => 'Kontak'];
+    // Seksi beranda lewat alamat beranda + anchor agar tetap berfungsi dari halaman publik lain; Artikel punya halaman sendiri.
+    $menuUtama = [
+        'Beranda' => route('beranda').'#beranda',
+        'Layanan' => route('beranda').'#layanan',
+        'Portofolio' => route('beranda').'#portofolio',
+        'Artikel' => route('artikel.index'),
+        'FAQ' => route('beranda').'#faq',
+        'Kontak' => route('beranda').'#kontak',
+    ];
+    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail artikel).
+    $menuAktif = fn (string $label): ?string => match (true) {
+        $label === 'Artikel' && request()->routeIs('artikel.index') => 'page',
+        $label === 'Artikel' && request()->routeIs('artikel.show') => 'true',
+        default => null,
+    };
 @endphp
 
 <header class="kepala-situs">
@@ -14,8 +27,8 @@
 
         <nav aria-label="Menu utama" class="menu-utama">
             <ul>
-                @foreach ($menuUtama as $anchor => $label)
-                    <li><a href="{{ route('beranda') }}#{{ $anchor }}" class="tautan-menu">{{ $label }}</a></li>
+                @foreach ($menuUtama as $label => $url)
+                    <li><a href="{{ $url }}" class="tautan-menu" @if ($menuAktif($label)) aria-current="{{ $menuAktif($label) }}" @endif>{{ $label }}</a></li>
                 @endforeach
             </ul>
         </nav>
@@ -42,8 +55,8 @@
     <div id="menu-ponsel" class="menu-ponsel" hidden>
         <nav aria-label="Menu utama (ponsel)">
             <ul>
-                @foreach ($menuUtama as $anchor => $label)
-                    <li><a href="{{ route('beranda') }}#{{ $anchor }}">{{ $label }}</a></li>
+                @foreach ($menuUtama as $label => $url)
+                    <li><a href="{{ $url }}" @if ($menuAktif($label)) aria-current="{{ $menuAktif($label) }}" @endif>{{ $label }}</a></li>
                 @endforeach
             </ul>
 

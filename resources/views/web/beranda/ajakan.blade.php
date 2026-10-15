@@ -11,7 +11,8 @@
                 <h2 id="judul-ajakan" class="judul-ajakan">Punya ide proyek atau rencana pelatihan untuk tim Anda?</h2>
                 <p class="deskripsi-ajakan">Ceritakan kebutuhan Anda, kami bantu menyusun solusi yang sesuai.</p>
             </div>
-            {{-- Cukup satu ajakan WhatsApp (pilihan pemilik 2026-10-11); Kirim Pesan hanya cadangan bila link WhatsApp di Identitas kosong. --}}
+            {{-- Cukup satu ajakan WhatsApp (pilihan pemilik 2026-10-11); Kirim Pesan hanya cadangan bila link WhatsApp di Identitas kosong.
+                 Band ini juga dipakai di halaman artikel, jadi formulir dituju lewat alamat beranda. --}}
             <div class="aksi-ajakan">
                 @if (filled($identitas->link_whatsapp))
                     <x-web.tautan-luar :href="$identitas->link_whatsapp" class="btn btn-besar">
@@ -19,7 +20,7 @@
                         Chat via WhatsApp
                     </x-web.tautan-luar>
                 @else
-                    <a href="#kontak" class="btn btn-besar">Kirim Pesan</a>
+                    <a href="{{ route('beranda') }}#kontak" class="btn btn-besar">Kirim Pesan</a>
                 @endif
             </div>
         </div>

@@ -175,6 +175,33 @@ it('menampilkan form ubah berisi data tersimpan', function () {
         ->assertSee(Storage::disk('public')->url($artikel->gambar));
 });
 
+it('menjelaskan kebijakan slug di form sesuai status artikel', function () {
+    $this->actingAs($this->admin)
+        ->get(route('admin.artikel.create'))
+        ->assertSee('dibuat otomatis dari judul dan tidak berubah lagi setelah artikel terbit.');
+
+    $draf = Artikel::factory()->for($this->kategori)->draf()->create(['slug' => 'artikel-draf']);
+    $this->actingAs($this->admin)
+        ->get(route('admin.artikel.edit', $draf))
+        ->assertSee('/artikel/artikel-draf — ikut berubah bila judul diubah selama artikel masih draf.');
+
+    $terbit = Artikel::factory()->for($this->kategori)->terbit()->create(['slug' => 'artikel-terbit']);
+    $this->actingAs($this->admin)
+        ->get(route('admin.artikel.edit', $terbit))
+        ->assertSee('/artikel/artikel-terbit — tetap meskipun judul diubah, agar tautan yang sudah dibagikan tidak rusak.');
+});
+
+it('menyediakan tombol Buka halaman di modal detail hanya untuk artikel terbit', function () {
+    Artikel::factory()->for($this->kategori)->terbit()->create(['slug' => 'sudah-tayang']);
+    Artikel::factory()->for($this->kategori)->draf()->create(['slug' => 'belum-tayang']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.artikel.index'))
+        ->assertSee('href="'.route('artikel.show', 'sudah-tayang').'" target="_blank" rel="noopener"', false)
+        ->assertDontSee('href="'.route('artikel.show', 'belum-tayang').'"', false)
+        ->assertSee('Belum tayang (draf)');
+});
+
 it('memperbarui artikel tanpa mengganti gambar', function () {
     $lain = KategoriArtikel::factory()->create();
     $artikel = Artikel::factory()->for($this->kategori)->terbit()->create();

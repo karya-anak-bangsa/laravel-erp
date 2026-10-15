@@ -46,6 +46,20 @@ class Artikel extends Model
     }
 
     /**
+     * Artikel untuk kartu frontend (beranda, daftar artikel, artikel lainnya): hanya yang terbit, terbaru lebih
+     * dulu menurut tanggal (id memecah tanggal kembar), beserta nama kategorinya.
+     *
+     * @param  Builder<Artikel>  $query
+     */
+    public function scopeUntukKartu(Builder $query): void
+    {
+        $query->terbit()
+            ->with('kategoriArtikel:id_kategori_artikel,nama_kategori')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id_artikel');
+    }
+
+    /**
      * @return BelongsTo<KategoriArtikel, $this>
      */
     public function kategoriArtikel(): BelongsTo

@@ -2,6 +2,7 @@
 
 namespace App\Services\CompanyProfile;
 
+use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Models\CompanyProfile\Artikel;
 use App\Services\Shared\FileUploadService;
 use App\Services\Shared\SlugService;
@@ -33,8 +34,9 @@ class ArtikelService
     {
         return $this->fileUpload->simpanDenganBerkas($artikel, $data, ['gambar'], Artikel::FOLDER, Artikel::DISK,
             function (array $data) use ($artikel): Artikel {
-                // Slug mengikuti judul; frontend belum tayang sehingga belum ada tautan yang rusak (tinjau di Fase 4).
-                if ($data['judul'] !== $artikel->judul) {
+                // Slug mengikuti judul hanya selama artikel masih draf; setelah terbit slug dikunci agar tautan yang sudah
+                // dibagikan tidak rusak (pilihan pemilik 2026-10-15).
+                if ($data['judul'] !== $artikel->judul && $artikel->status_publikasi === StatusPublikasi::Draf) {
                     $data['slug'] = $this->buatSlug($data['judul'], $artikel);
                 }
 

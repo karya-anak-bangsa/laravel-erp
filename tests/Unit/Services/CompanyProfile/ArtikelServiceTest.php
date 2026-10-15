@@ -60,14 +60,24 @@ it('mempertahankan slug bila judul tidak berubah', function () {
         ->and($artikel->status_publikasi)->toBe(StatusPublikasi::Draf);
 });
 
-it('memperbarui slug tanpa bentrok dengan artikel lain saat judul berubah', function () {
+it('memperbarui slug artikel draf tanpa bentrok dengan artikel lain saat judul berubah, termasuk saat langsung diterbitkan', function () {
     Artikel::factory()->create(['slug' => 'judul-baru']);
-    $artikel = Artikel::factory()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
+    $artikel = Artikel::factory()->draf()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
 
     $this->artikel->perbarui($artikel, dataArtikelUji(['judul' => 'Judul Baru', 'gambar' => null]));
 
-    expect($artikel->refresh()->slug)->toBe('judul-baru-2');
+    expect($artikel->refresh()->slug)->toBe('judul-baru-2')
+        ->and($artikel->status_publikasi)->toBe(StatusPublikasi::Terbit);
 });
+
+it('mengunci slug artikel yang sudah terbit meskipun judulnya diubah', function (string $statusBaru) {
+    $artikel = Artikel::factory()->terbit()->create(['judul' => 'Judul Terbit', 'slug' => 'judul-terbit']);
+
+    $this->artikel->perbarui($artikel, dataArtikelUji(['judul' => 'Judul Diganti', 'gambar' => null, 'status_publikasi' => $statusBaru]));
+
+    expect($artikel->refresh()->slug)->toBe('judul-terbit')
+        ->and($artikel->judul)->toBe('Judul Diganti');
+})->with(['tetap terbit' => 'terbit', 'dikembalikan ke draf' => 'draf']);
 
 it('mengganti gambar dan menghapus gambar lama', function () {
     Storage::disk('public')->put('company-profile/artikel/lama.webp', 'isi');

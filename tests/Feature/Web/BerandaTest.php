@@ -209,8 +209,8 @@ describe('isi', function () {
             ->assertDontSee('id="tombol-wa"', false)
             ->assertDontSee('wa.me')
             ->assertSee('data-wa=""', false)
-            // Ajakan tetap punya tombol: cadangan ke formulir kontak.
-            ->assertSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
+            // Ajakan tetap punya tombol: cadangan ke formulir kontak (lewat alamat beranda karena band ini juga tampil di halaman artikel).
+            ->assertSee('<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
             // Kartu telepon jadi cadangan kontak WhatsApp di seksi kontak dan footer.
             ->assertSee('<span class="label-kontak">Telepon</span>', false)
             ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon).'</a>', false);
@@ -243,7 +243,7 @@ describe('isi', function () {
         // Tombol kirim formulir kontak juga berlabel "Kirim Pesan", jadi yang diperiksa tautan ajakannya.
         $this->get('/')
             ->assertSee('Chat via WhatsApp')
-            ->assertDontSee('<a href="#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
+            ->assertDontSee('<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
     });
 
     it('merender HTML editor yang sudah disanitasi dan meng-escape teks biasa', function () {
@@ -255,15 +255,22 @@ describe('isi', function () {
             ->assertDontSee('<script>alert(1)</script>', false);
     });
 
-    it('tidak menautkan ke halaman publik yang belum ada', function () {
+    it('menautkan kartu artikel ke halaman detail dan menyediakan tombol Lihat semua artikel', function () {
+        Artikel::factory()->terbit()->create(['judul' => 'Artikel Bertautan', 'slug' => 'artikel-bertautan']);
+
+        $this->get('/')
+            ->assertSee('<h3 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-bertautan').'" class="tautan-rentang">Artikel Bertautan</a></h3>', false)
+            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-sedang" data-variant="outline">Lihat semua artikel</a>', false);
+    });
+
+    it('tidak menautkan ke halaman portofolio yang belum ada', function () {
         Hero::factory()->aktif()->create();
         Portofolio::factory()->create();
-        Artikel::factory()->terbit()->create();
 
-        $html = $this->get('/')->assertDontSee('Lihat semua artikel')->getContent();
+        $html = $this->get('/')->getContent();
 
-        // Gambar di /storage/company-profile/artikel/… boleh; yang dilarang tautan ke halaman /portofolio atau /artikel.
-        expect($html)->not->toMatch('#href="(?:'.preg_quote(url('/'), '#').')?/(?:portofolio|artikel)\b#');
+        // Gambar di /storage/company-profile/portofolio/… boleh; yang dilarang tautan ke halaman /portofolio.
+        expect($html)->not->toMatch('#href="(?:'.preg_quote(url('/'), '#').')?/portofolio\b#');
     });
 
     it('menampilkan tautan Instagram dan YouTube identitas di footer bila diisi', function () {

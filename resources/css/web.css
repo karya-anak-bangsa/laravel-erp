@@ -18,6 +18,7 @@
 @source "../views/layouts/web";
 @source "../views/web";
 @source "../views/components/web";
+@source "../views/vendor/pagination/web.blade.php";
 @source "../js/web.js";
 @source "../js/web";
 

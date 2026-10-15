@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
 use Illuminate\Routing\RedirectController;
@@ -8,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 // Frontend publik: di luar grup guest agar admin yang sedang login tetap bisa melihat situs.
 Route::get('/', BerandaController::class)->name('beranda');
+
+Route::get('artikel', [ArtikelController::class, 'index'])->name('artikel.index');
+Route::get('artikel/{artikel:slug}', [ArtikelController::class, 'show'])->name('artikel.show');
 
 Route::post('kontak', [KontakKamiController::class, 'store'])
     ->middleware('throttle:kontak')

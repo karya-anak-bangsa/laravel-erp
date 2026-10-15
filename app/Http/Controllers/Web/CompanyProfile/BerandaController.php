@@ -21,13 +21,7 @@ class BerandaController extends Controller
         $portofolio = Portofolio::query()->latest()->latest('id_portofolio')->limit(6)->get()
             ->sortBy(fn (Portofolio $item): array => Portofolio::kunciUrutKategori($item->kategori))
             ->values();
-        $artikel = Artikel::query()
-            ->terbit()
-            ->with('kategoriArtikel:id_kategori_artikel,nama_kategori')
-            ->orderByDesc('tanggal')
-            ->orderByDesc('id_artikel')
-            ->limit(3)
-            ->get();
+        $artikel = Artikel::query()->untukKartu()->limit(3)->get();
         $faq = Faq::query()->berurutan()->get();
 
         return view('web.beranda', compact('hero', 'layanan', 'portofolio', 'artikel', 'faq'));

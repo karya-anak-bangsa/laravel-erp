@@ -6,9 +6,11 @@
     <x-admin.card title="Konten Artikel" subtitle="Tampil di halaman artikel website beserta halaman detailnya.">
         <x-admin.form-input name="judul" label="Judul" :value="$artikel->judul" :required="true" maxlength="200"
             placeholder="mis. 5 Alasan Bisnis Kecil Perlu Website Sendiri"
-            :hint="$artikel->exists
-                ? 'Alamat halaman detail: /artikel/'.$artikel->slug.' — ikut berubah bila judul diubah.'
-                : 'Alamat halaman detail (slug) dibuat otomatis dari judul.'" />
+            :hint="match (true) {
+                ! $artikel->exists => 'Alamat halaman detail (slug) dibuat otomatis dari judul dan tidak berubah lagi setelah artikel terbit.',
+                $artikel->status_publikasi === StatusPublikasi::Terbit => 'Alamat halaman detail: /artikel/'.$artikel->slug.' — tetap meskipun judul diubah, agar tautan yang sudah dibagikan tidak rusak.',
+                default => 'Alamat halaman detail: /artikel/'.$artikel->slug.' — ikut berubah bila judul diubah selama artikel masih draf.',
+            }" />
         <x-admin.form-editor name="deskripsi" label="Isi Artikel" :value="$artikel->deskripsi" :required="true"
             :maks="StoreArtikelRequest::PANJANG_ISI_MAKS" :judul-bagian="true" :baris="15"
             hint="Gunakan sub-judul (H2/H3) untuk membagi artikel menjadi beberapa bagian." />

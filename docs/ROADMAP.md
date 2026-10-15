@@ -52,9 +52,10 @@ Dua tema dalam satu markup — **Full Color** (bawaan) dan **Monochrome** — di
 - [x] Langkah 3a — Manajemen Template (Pengaturan Sistem): `tb_template`, tambah/ubah/hapus, aktivasi satu template per jenis (template aktif tidak bisa dihapus/dinonaktifkan/diganti jenisnya), pratinjau beranda di tab baru termasuk isian yang belum disimpan; tema frontend diambil dari template aktif (cadangan `config/tema.php`); semua font pilihan dibangun sampai bobot 800; ketebalan judul
 - [x] Langkah 3b — Pilihan bayangan template (tanpa/halus/tegas) untuk tombol, isian, kartu, dan bingkai gambar hero di kedua tema (Full Color juga navbar, kotak ajakan, ikon kontak); elemen melayang tetap berbayangan; Halus identik dengan tampilan sebelumnya
 - [x] Langkah 3c — Perbaikan dari review pemilik (2026-10-14): nada dasar Monochrome yang bedanya terlihat (Netral, Biru, Hijau, Ungu, Cokelat); pilihan Pengaturan Default/Custom di form template (Default mengunci isian dan memakai nilai bawaan); nilai bawaan `config/tema.php` = data template lokal
-- [ ] Halaman: portofolio, artikel + detail (slug), kontak
+- [x] Halaman artikel (2026-10-15): daftar `/artikel` (9 per halaman, paginasi) + detail `/artikel/{slug}` (kolom baca, artikel lainnya, band ajakan); kartu artikel beranda bertautan + tombol "Lihat semua artikel"; menu Artikel di navbar & footer ke halaman daftar; slug artikel dikunci setelah terbit
+- [ ] Halaman: portofolio, kontak
 - [x] Form kontak → `tb_kontak_kami` (rate limit 3/menit per IP, honeypot) — dikerjakan bersama langkah 2a; notifikasi email (opsional, butuh SMTP) belum dibuat
-- [ ] SEO: meta title/description dari identitas (sudah di langkah 2a), Open Graph, `sitemap.xml`, `robots.txt`
+- [ ] SEO: meta title/description dari identitas (sudah di langkah 2a; halaman artikel memakai judul & ringkasan artikel), Open Graph + tombol bagikan artikel (WhatsApp, salin tautan), `sitemap.xml`, `robots.txt`
 - [ ] Performa: lazy-load gambar (sudah di langkah 2a), ukuran gambar dioptimalkan, impor Basecoat selektif (`web.css` kini ±39 KB gzip), font woff2 saja (plugin font Laravel 3.2 membuat blok `@font-face` woff2 & woff terpisah sehingga browser mengunduh `.woff`)
 
 ## Fase 5 — Penguatan Kualitas

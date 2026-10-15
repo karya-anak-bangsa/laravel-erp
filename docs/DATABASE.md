@@ -116,7 +116,7 @@ Catatan implementasi: slug dibuat sistem sehingga memakai constraint UNIQUE di d
 | status_publikasi | VARCHAR(20) DEFAULT 'draf' | **(+)** enum `StatusPublikasi`: draf, terbit |
 | created_at, updated_at, deleted_at | | |
 
-Catatan implementasi: slug dibuat `SlugService` (dipakai bersama portofolio) dengan aturan sama seperti portofolio — UNIQUE di database, akhiran angka, ikut berubah saat judul diubah. `deskripsi` = isi artikel dari editor WYSIWYG dengan sub-judul H2/H3. Hanya artikel `terbit` yang tampil di frontend. Kategori yang masih dipakai artikel (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
+Catatan implementasi: slug dibuat `SlugService` (dipakai bersama portofolio) dengan aturan sama seperti portofolio — UNIQUE di database, akhiran angka. Sejak halaman detail tayang (Fase 4, pilihan pemilik 2026-10-15) slug hanya ikut berubah saat judul diubah selama artikel masih **draf**; artikel yang sudah terbit slugnya dikunci (juga bila dikembalikan ke draf pada perubahan yang sama) agar tautan yang sudah dibagikan tidak rusak — tanpa kolom tambahan. `deskripsi` = isi artikel dari editor WYSIWYG dengan sub-judul H2/H3. Hanya artikel `terbit` yang tampil di frontend. Kategori yang masih dipakai artikel (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
 
 ### tb_faq
 | Kolom | Tipe | Keterangan |

@@ -94,6 +94,20 @@
                                                                 <td>/artikel/{{ $item->slug }}</td>
                                                             </tr>
                                                             <tr>
+                                                                <th scope="row">Halaman</th>
+                                                                <td>
+                                                                    @if ($item->status_publikasi === StatusPublikasi::Terbit)
+                                                                        <a href="{{ route('artikel.show', $item->slug) }}" target="_blank" rel="noopener"
+                                                                            class="btn btn-info btn-sm">
+                                                                            <x-admin.icon name="eye" />
+                                                                            Buka halaman
+                                                                        </a>
+                                                                    @else
+                                                                        Belum tayang (draf)
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <th scope="row">Isi</th>
                                                                 <td class="konten-html">{!! $item->deskripsi !!}</td>
                                                             </tr>
