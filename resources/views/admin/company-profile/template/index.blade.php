@@ -20,7 +20,7 @@
         </select>
     </x-admin.filter-bar>
 
-    <x-admin.card title="Template" :flush="true">
+    <x-admin.card title="Manajemen Template" :flush="true">
         <x-slot:aksi>
             <a href="{{ route('admin.template.create') }}" class="btn btn-success">
                 <x-admin.icon name="plus" />
@@ -44,6 +44,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>Warna</th>
                             <th class="kolom-lebar">Template</th>
                             <th>Jenis</th>
                             <th>Font</th>
@@ -54,14 +55,10 @@
                     <tbody>
                         @foreach ($template as $item)
                             <tr>
+                                <td>@include('admin.company-profile.template._contoh-warna', ['contoh' => $item])</td>
                                 <td>
-                                    <div class="nama-template">
-                                        @include('admin.company-profile.template._contoh-warna', ['contoh' => $item])
-                                        <div>
-                                            <div class="cell-strong">{{ $item->nama }}</div>
-                                            <div class="card-subtitle">Sudut {{ Str::lower($item->sudut->label()) }} · skala {{ Str::lower($item->skala->label()) }} · judul {{ Str::lower($item->ketebalan_judul->name) }} · {{ $item->bayangan === BayanganTemplate::Tanpa ? 'tanpa bayangan' : 'bayangan '.Str::lower($item->bayangan->label()) }}</div>
-                                        </div>
-                                    </div>
+                                    <div class="cell-strong">{{ $item->nama }}</div>
+                                    <div class="card-subtitle">Sudut {{ Str::lower($item->sudut->label()) }} · skala {{ Str::lower($item->skala->label()) }} · judul {{ Str::lower($item->ketebalan_judul->name) }} · {{ $item->bayangan === BayanganTemplate::Tanpa ? 'tanpa bayangan' : 'bayangan '.Str::lower($item->bayangan->label()) }}</div>
                                 </td>
                                 <td>{{ $item->jenis->label() }}</td>
                                 <td>{{ $item->font->label() }}</td>
