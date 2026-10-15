@@ -9,22 +9,14 @@
 
     <x-admin.card title="FAQ" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.faq.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah FAQ
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.faq.create')" />
         </x-slot>
 
         @if ($faq->isEmpty())
             @if (request()->filled('q'))
                 <x-admin.empty-state title="FAQ tidak ditemukan" description="Coba ubah kata kunci pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada FAQ" description="FAQ tampil sebagai daftar tanya jawab di website, sesuai urutannya.">
-                    <a href="{{ route('admin.faq.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah FAQ Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada FAQ" description="FAQ tampil sebagai daftar tanya jawab di website, sesuai urutannya." />
             @endif
         @else
             <div class="table-responsive">

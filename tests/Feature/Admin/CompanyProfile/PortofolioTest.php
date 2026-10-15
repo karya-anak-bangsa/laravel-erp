@@ -112,7 +112,8 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.index'))
         ->assertSee('Belum ada portofolio')
-        ->assertSee('Tambah Portofolio Pertama');
+        ->assertDontSee('Tambah Portofolio Pertama')
+        ->assertSee('<a href="'.route('admin.portofolio.create').'" class="btn btn-success tombol-tambah"', false);
 
     Portofolio::factory()->create(['kategori' => 'Website']);
 

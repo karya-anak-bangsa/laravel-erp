@@ -255,18 +255,15 @@ describe('isi', function () {
             ->assertDontSee('<script>alert(1)</script>', false);
     });
 
-    it('menautkan kartu artikel ke halaman detail dan menyediakan tombol Lihat semua artikel di bawah daftar', function () {
+    it('menautkan kartu artikel ke halaman detail tanpa tombol Lihat semua artikel', function () {
         Artikel::factory()->terbit()->create(['judul' => 'Artikel Bertautan', 'slug' => 'artikel-bertautan']);
 
         $this->get('/')
             ->assertSee('<h3 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-bertautan').'" class="tautan-rentang">Artikel Bertautan</a></h3>', false)
-            // Tombol padat berwarna template di bawah daftar, bukan lagi tombol garis di kepala seksi (pilihan pemilik 2026-10-15).
-            ->assertSeeInOrder([
-                '<div class="daftar-artikel">',
-                'Artikel Bertautan',
-                '<div class="aksi-artikel">',
-                '<a href="'.route('artikel.index').'" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>',
-            ], false)
+            // Halaman daftar cukup dicapai lewat menu Artikel di navbar (pilihan pemilik 2026-10-15).
+            ->assertSee('<a href="'.route('artikel.index').'" class="tautan-menu"', false)
+            ->assertDontSee('Lihat semua artikel')
+            ->assertDontSee('aksi-artikel', false)
             ->assertDontSee('kepala-artikel', false);
     });
 

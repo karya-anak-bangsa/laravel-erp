@@ -1,0 +1,47 @@
+<p>Halaman daftar artikel yang dulu terbuka dalam sekejap tiba-tiba terasa berat setelah datanya mencapai ratusan baris. Sering kali penyebabnya bukan server yang kurang kuat, melainkan puluhan hingga ratusan query kecil yang dijalankan diam-diam oleh Eloquent.</p>
+<p>Artikel ini mengulas empat relasi Eloquent yang paling sering dipakai, lalu membedah masalah N+1 query: dari mana asalnya, cara memperbaikinya dengan <em>eager loading</em>, dan cara mendeteksinya sebelum dirasakan pengguna.</p>
+<h2>Empat Relasi yang Paling Sering Dipakai</h2>
+<p>Relasi di Eloquent ditulis sebagai method di dalam model. Laravel menebak nama kolom dari konvensi, jadi tabel posts cukup punya kolom user_id agar terhubung ke tabel users tanpa konfigurasi tambahan.</p>
+<ul>
+<li><p>hasOne, untuk satu baris yang punya tepat satu pasangan, misalnya user dengan profilnya. Di model User: <strong>return $this-&gt;hasOne(Profile::class);</strong></p></li>
+<li><p>hasMany, untuk satu baris yang punya banyak pasangan, misalnya satu penulis dengan banyak artikel: <strong>return $this-&gt;hasMany(Post::class);</strong></p></li>
+<li><p>belongsTo, kebalikan dari keduanya, dipasang di model yang menyimpan foreign key. Di model Post: <strong>return $this-&gt;belongsTo(User::class);</strong></p></li>
+<li><p>belongsToMany, untuk relasi banyak ke banyak lewat tabel perantara, misalnya artikel dan tag. Laravel mengharapkan tabel post_tag, yaitu gabungan nama kedua model menurut urutan abjad: <strong>return $this-&gt;belongsToMany(Tag::class);</strong></p></li>
+</ul>
+<p>Bila tabel tidak mengikuti konvensi, misalnya kolom penulis bernama author_id, sebutkan foreign key-nya secara eksplisit sebagai argumen kedua: <strong>return $this-&gt;belongsTo(User::class, 'author_id');</strong>. Kebiasaan ini juga membuat kode lebih mudah dibaca oleh developer yang baru bergabung.</p>
+<p>Setelah didefinisikan, relasi diakses seperti properti biasa, misalnya <strong>$post-&gt;user-&gt;name</strong>. Kemudahan inilah yang membuat Eloquent nyaman dipakai, sekaligus menjadi sumber masalah yang akan kita bahas.</p>
+<h2>Bagaimana N+1 Query Terjadi</h2>
+<p>Bayangkan controller mengambil data dengan <strong>$posts = Post::latest()-&gt;take(50)-&gt;get();</strong>, lalu view menampilkan nama penulis di setiap baris lewat $post-&gt;user-&gt;name di dalam perulangan.</p>
+<p>Query pertama mengambil 50 artikel. Karena relasi user belum dimuat, Eloquent menjalankan satu query tambahan setiap kali sebuah baris mengakses penulisnya. Totalnya 51 query: satu untuk daftar, ditambah N untuk setiap baris. Dari situlah nama N+1 berasal.</p>
+<p>Di laptop pengembang dengan sepuluh baris data, masalah ini nyaris tak terasa. Di server produksi, halaman yang sekaligus menampilkan penulis, kategori, jumlah komentar, dan tag bisa menjalankan ratusan query untuk sekali buka, dan semuanya bertambah seiring jumlah data.</p>
+<p>N+1 juga sering bersembunyi di tempat yang tidak langsung terlihat, misalnya accessor model, komponen Blade, atau API Resource yang mengakses relasi untuk setiap item. Kodenya tampak rapi, tetapi tetap memicu satu query per baris.</p>
+<h2>Eager Loading dengan with()</h2>
+<p>Solusinya adalah memberi tahu Eloquent sejak awal relasi apa saja yang dibutuhkan. Ubah query menjadi <strong>Post::with('user')-&gt;latest()-&gt;take(50)-&gt;get()</strong>, dan Eloquent hanya menjalankan dua query: satu untuk artikel dan satu lagi untuk semua penulisnya sekaligus, memakai klausa WHERE id IN (...).</p>
+<p>Beberapa relasi bisa dimuat bersamaan dengan array, misalnya <strong>Post::with(['user', 'tags'])-&gt;get()</strong>. Relasi bersarang memakai tanda titik: <strong>Post::with('comments.user')-&gt;get()</strong> memuat komentar beserta penulis tiap komentar.</p>
+<p>Jika tabel users punya banyak kolom, batasi yang diambil dengan <strong>Post::with('user:id,name')-&gt;get()</strong>. Sertakan selalu kolom id dan kolom kunci relasi yang dibutuhkan, karena tanpa itu Eloquent tidak bisa memasangkan data induk dengan relasinya.</p>
+<p>Eager loading juga bisa diberi syarat. Untuk memuat komentar yang sudah disetujui saja, gunakan closure: <strong>Post::with(['comments' =&gt; fn ($query) =&gt; $query-&gt;where('approved', true)])-&gt;get()</strong>. Jumlah query tetap dua, tetapi data yang dibawa ke memori lebih sedikit.</p>
+<h2>load(), loadMissing(), dan withCount()</h2>
+<p>Kadang model sudah telanjur diambil, misalnya lewat route model binding. Untuk kasus seperti ini gunakan <em>lazy eager loading</em>: <strong>$post-&gt;load('comments.user');</strong> memuat relasi dalam satu langkah, sedangkan loadMissing() hanya memuat relasi yang belum ada sehingga aman dipanggil berulang.</p>
+<p>Untuk menampilkan jumlah komentar, jangan memuat semua komentar lalu menghitungnya di PHP. Pakai <strong>Post::withCount('comments')-&gt;get()</strong>; hasilnya tersedia di atribut <strong>$post-&gt;comments_count</strong> dan dihitung langsung oleh database lewat subquery.</p>
+<h2>Mencegah Lazy Loading sejak Pengembangan</h2>
+<p>Cara paling ampuh adalah membuat Laravel menolak lazy loading selama pengembangan. Tambahkan <strong>Model::preventLazyLoading(! $this-&gt;app-&gt;isProduction());</strong> di method boot pada AppServiceProvider, dengan Model diimpor dari Illuminate\Database\Eloquent\Model.</p>
+<p>Setelah itu, setiap relasi yang dimuat diam-diam akan memicu LazyLoadingViolationException, sehingga N+1 ketahuan saat Anda membuka halaman di laptop sendiri, bukan saat pelanggan mengeluh. Argumen di dalamnya memastikan aturan ini tidak aktif di produksi. Bila ingin tetap memantaunya di sana, catat pelanggaran ke log lewat Model::handleLazyLoadingViolationUsing().</p>
+<p>Sejak Laravel 12.8 juga tersedia eager loading otomatis lewat <strong>Model::automaticallyEagerLoadRelationships();</strong>. Saat fitur ini aktif dan satu model dalam koleksi mengakses relasi yang belum dimuat, Laravel memuat relasi itu untuk seluruh koleksi sekaligus. Jika tidak ingin mengaktifkannya untuk semua model, panggil withRelationshipAutoloading() pada koleksi tertentu saja.</p>
+<p>Fitur otomatis ini praktis sebagai jaring pengaman. Namun with() yang ditulis eksplisit tetap lebih mudah dipahami rekan setim, karena kebutuhan data terlihat langsung di query.</p>
+<h2>Alat untuk Mendeteksi Query Berlebih</h2>
+<ul>
+<li><p>Laravel Debugbar, kini dengan nama paket fruitcake/laravel-debugbar, menampilkan jumlah dan isi query di setiap halaman. Pasang hanya untuk pengembangan: <strong>composer require fruitcake/laravel-debugbar --dev</strong>.</p></li>
+<li><p>Laravel Telescope mencatat setiap query beserta durasinya, cocok untuk menelusuri request yang terasa lambat.</p></li>
+<li><p>Laravel Pulse menyediakan kartu Slow Queries untuk memantau query lambat di aplikasi yang sudah berjalan.</p></li>
+<li><p>Tanpa paket tambahan, <strong>DB::listen(fn ($query) =&gt; logger($query-&gt;sql));</strong> di AppServiceProvider menulis setiap query ke berkas log.</p></li>
+</ul>
+<p>Selain jumlah query, periksa juga indeksnya. Eager loading untuk relasi hasMany menghasilkan query berbentuk WHERE post_id IN (...), sehingga kolom foreign key seperti post_id perlu diindeks. Kabar baiknya, di MySQL kolom yang dibuat dengan foreignId()-&gt;constrained() otomatis mendapat indeks karena InnoDB mewajibkannya. Pembahasan lengkapnya ada di artikel <a href="/artikel/mengenal-indeks-di-mysql-agar-query-tidak-lambat">mengenal indeks di MySQL</a>.</p>
+<h2>Kesimpulan</h2>
+<p>N+1 query adalah masalah yang tumbuh diam-diam bersama data. Beberapa kebiasaan kecil berikut sudah cukup untuk mencegahnya:</p>
+<ul>
+<li><p>Setiap kali view menampilkan data relasi di dalam perulangan, muat relasinya dengan with().</p></li>
+<li><p>Gunakan withCount() untuk angka dan with('relasi:kolom') untuk membatasi kolom yang diambil.</p></li>
+<li><p>Aktifkan preventLazyLoading() di lingkungan pengembangan.</p></li>
+<li><p>Pantau jumlah query dengan Debugbar atau Telescope sebelum fitur dirilis.</p></li>
+</ul>
+<p>Detail setiap jenis relasi, termasuk relasi polimorfik dan has-many-through, bisa Anda pelajari di <a href="https://laravel.com/docs/13.x/eloquent-relationships">dokumentasi Eloquent Relationships</a>.</p>

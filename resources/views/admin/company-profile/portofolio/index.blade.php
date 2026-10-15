@@ -16,22 +16,14 @@
 
     <x-admin.card title="Portofolio" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.portofolio.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Portofolio
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.portofolio.create')" />
         </x-slot>
 
         @if ($portofolio->isEmpty())
             @if (request()->anyFilled(['q', 'kategori']))
                 <x-admin.empty-state title="Portofolio tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada portofolio" description="Portofolio menampilkan hasil karya perusahaan di website.">
-                    <a href="{{ route('admin.portofolio.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Portofolio Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada portofolio" description="Portofolio menampilkan hasil karya perusahaan di website." />
             @endif
         @else
             <div class="table-responsive">

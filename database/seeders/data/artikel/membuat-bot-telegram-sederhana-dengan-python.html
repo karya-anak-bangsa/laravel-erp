@@ -1,0 +1,42 @@
+<p>Pemilik toko kue rumahan yang setiap hari ditanya soal jam buka, cara memesan, dan status pesanan lama-lama akan kewalahan membalas satu per satu. Pertanyaan berulang seperti itu sebenarnya bisa dijawab oleh bot Telegram, dan membuat versi sederhananya tidak serumit yang dibayangkan.</p>
+<p>Artikel ini memandu Anda membuat bot pertama dengan Python dan pustaka python-telegram-bot: mendaftarkan bot lewat BotFather, menyimpan token dengan aman, menulis perintah /start dan balasan otomatis, memahami beda polling dan webhook, sampai ide pengembangan berikutnya.</p>
+<h2>Mendaftarkan Bot lewat BotFather</h2>
+<p>Setiap bot Telegram dibuat lewat BotFather, akun resmi milik Telegram untuk mengelola bot. Prosesnya hanya beberapa menit:</p>
+<ol>
+<li><p>Buka Telegram, cari akun @BotFather, lalu kirim perintah <strong>/newbot</strong>.</p></li>
+<li><p>Masukkan nama tampilan bot, misalnya Toko Kue Sari. Nama ini muncul di daftar obrolan dan boleh mengandung spasi.</p></li>
+<li><p>Masukkan username bot sepanjang 5 sampai 32 karakter, hanya berisi huruf Latin, angka, dan garis bawah, serta wajib berakhiran bot, misalnya TokoKueSariBot atau toko_kue_sari_bot.</p></li>
+<li><p>BotFather membalas dengan token berupa deretan angka dan huruf yang dipisahkan titik dua. Salin dan simpan baik-baik.</p></li>
+</ol>
+<p>Perlakukan token seperti kata sandi, karena siapa pun yang memegangnya bisa mengendalikan bot Anda. Jangan menaruhnya di kode, tangkapan layar, atau grup diskusi. Bila telanjur bocor, buat token baru dengan perintah /token di BotFather. Penjelasan lengkap fitur BotFather tersedia di <a href="https://core.telegram.org/bots/features">dokumentasi resmi Telegram</a>.</p>
+<h2>Menyiapkan Proyek dan Menyimpan Token</h2>
+<p>Siapkan folder proyek dengan virtual environment seperti dibahas di panduan <a href="/artikel/belajar-python-dari-nol-instalasi-virtual-environment-dan-program-pertama">belajar Python dari nol</a>, lalu pasang pustakanya dengan <strong>python -m pip install python-telegram-bot</strong>. Per pertengahan September 2026, rilis terbarunya adalah versi 22.8 yang terbit 12 Juni 2026 dan membutuhkan Python 3.10 atau lebih baru.</p>
+<p>Token disimpan di variabel lingkungan, bukan di dalam kode. Di PowerShell, jalankan <strong>$env:TELEGRAM_BOT_TOKEN = "token-dari-BotFather"</strong> dengan token asli Anda. Di Command Prompt, gunakan <strong>set TELEGRAM_BOT_TOKEN=token-dari-BotFather</strong>, sedangkan di macOS dan Linux <strong>export TELEGRAM_BOT_TOKEN="token-dari-BotFather"</strong>.</p>
+<p>Pengaturan itu hanya berlaku di jendela terminal tempat perintahnya dijalankan. Untuk proyek jangka panjang, Anda bisa memakai berkas .env yang dibaca pustaka python-dotenv. Pastikan berkas tersebut tercantum di .gitignore agar tidak ikut terunggah ke repositori.</p>
+<h2>Menulis Bot Pertama Langkah demi Langkah</h2>
+<p>Buat berkas bernama bot.py. Sejak versi 20, python-telegram-bot sepenuhnya memakai asyncio, sehingga fungsi penangan pesan ditulis dengan async def dan setiap pemanggilan ke Telegram diawali await. Konsepnya mirip dengan <a href="/artikel/memahami-asyncawait-di-javascript-lewat-contoh-sehari-hari">async/await di JavaScript</a>: program tidak membeku saat menunggu jawaban server.</p>
+<ol>
+<li><p>Di bagian atas berkas, tulis tiga baris impor: <strong>import os</strong>, <strong>from telegram import Update</strong>, dan <strong>from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters</strong>.</p></li>
+<li><p>Buat fungsi untuk perintah /start yang diawali baris <strong>async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -&gt; None:</strong>. Isinya cukup satu baris yang menjorok empat spasi: <strong>await update.message.reply_text("Halo! Saya bot pertama Anda. Kirim pesan apa saja.")</strong>.</p></li>
+<li><p>Buat fungsi kedua dengan pola yang sama, beri nama balas, lalu isi dengan <strong>await update.message.reply_text(f"Anda menulis: {update.message.text}")</strong> agar bot memantulkan pesan pengguna.</p></li>
+<li><p>Di luar kedua fungsi, bangun aplikasinya dengan <strong>app = Application.builder().token(os.environ["TELEGRAM_BOT_TOKEN"]).build()</strong>. Bila variabel lingkungan belum diisi, baris ini langsung berhenti dengan KeyError, sehingga kesalahan cepat ketahuan.</p></li>
+<li><p>Daftarkan penangan perintah dengan <strong>app.add_handler(CommandHandler("start", start))</strong>, lalu penangan pesan teks yang bukan perintah dengan <strong>app.add_handler(MessageHandler(filters.TEXT &amp; ~filters.COMMAND, balas))</strong>.</p></li>
+<li><p>Tutup berkas dengan <strong>app.run_polling()</strong>, kemudian jalankan <strong>python bot.py</strong> dari terminal yang sudah berisi token.</p></li>
+</ol>
+<p>Buka bot Anda di Telegram dan tekan tombol Start. Bot akan menyapa, lalu membalas setiap pesan teks dengan isi yang sama. Untuk menghentikannya, tekan Ctrl+C di terminal.</p>
+<h2>Polling atau Webhook?</h2>
+<p>Bot di atas memakai polling: program terus bertanya ke server Telegram apakah ada pesan baru. Cara ini paling mudah karena bisa berjalan di mana saja, termasuk laptop di jaringan rumah, tanpa alamat publik maupun sertifikat HTTPS. Kekurangannya, program harus terus menyala dan aktif bertanya.</p>
+<p>Pada webhook, giliran Telegram yang mengirim setiap pesan ke alamat HTTPS milik Anda. Cara ini lebih cocok untuk bot yang berjalan di server, tetapi membutuhkan domain dengan HTTPS, dan Telegram hanya mendukung port 443, 80, 88, atau 8443. Di python-telegram-bot, webhook dijalankan dengan app.run_webhook dan membutuhkan paket tambahan dari <strong>python -m pip install "python-telegram-bot[webhooks]"</strong>.</p>
+<p>Kedua cara ini tidak bisa dipakai bersamaan untuk satu bot. Saat bot sedang mati, Telegram menyimpan pembaruan yang masuk paling lama 24 jam, jadi pesan yang tertunda masih bisa diproses ketika bot kembali menyala. Mulailah dengan polling selama belajar, lalu pertimbangkan webhook ketika bot sudah dipakai banyak orang.</p>
+<h2>Ide Pengembangan Berikutnya</h2>
+<p>Setelah bot dasar berjalan, ada banyak arah yang bisa dicoba:</p>
+<ul>
+<li><p>Daftarkan daftar perintah lewat /setcommands di BotFather agar muncul sebagai saran ketika pengguna mengetik garis miring.</p></li>
+<li><p>Buat perintah berargumen, misalnya /cek 12345 untuk status pesanan. Kata-kata setelah perintah tersedia di context.args sebagai daftar teks.</p></li>
+<li><p>Kirim pengingat atau laporan terjadwal dengan JobQueue, yang membutuhkan paket tambahan python-telegram-bot[job-queue].</p></li>
+<li><p>Hubungkan bot dengan database atau spreadsheet agar bisa menjawab pertanyaan stok dan status pesanan secara otomatis.</p></li>
+</ul>
+<p>Bila bot dimasukkan ke grup, perlu diingat bahwa secara bawaan ia berjalan dalam privacy mode, kecuali dijadikan admin. Dalam mode ini bot tidak membaca seluruh obrolan; yang diterimanya terbatas pada perintah yang ditujukan kepadanya, balasan atas pesannya, dan pesan layanan seperti kabar anggota baru.</p>
+<h2>Kesimpulan</h2>
+<p>Membuat bot Telegram dengan Python hanya butuh tiga bahan: token dari BotFather, pustaka python-telegram-bot, dan beberapa fungsi async untuk menangani pesan. Simpan token di variabel lingkungan, mulai dengan polling, dan tambahkan fitur sedikit demi sedikit sesuai kebutuhan nyata pengguna Anda.</p>
+<p>Untuk melangkah lebih jauh, <a href="https://docs.python-telegram-bot.org/en/stable/">dokumentasi python-telegram-bot</a> menyediakan banyak contoh bot siap pakai, mulai dari tombol pilihan sampai percakapan bertahap, yang bisa Anda pelajari dan modifikasi.</p>

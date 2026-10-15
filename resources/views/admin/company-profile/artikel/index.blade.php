@@ -23,22 +23,14 @@
 
     <x-admin.card title="Artikel" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.artikel.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Artikel
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.artikel.create')" />
         </x-slot>
 
         @if ($artikel->isEmpty())
             @if (request()->anyFilled(['q', 'kategori', 'status']))
                 <x-admin.empty-state title="Artikel tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada artikel" description="Artikel berstatus Terbit tampil di halaman artikel website.">
-                    <a href="{{ route('admin.artikel.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Artikel Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada artikel" description="Artikel berstatus Terbit tampil di halaman artikel website." />
             @endif
         @else
             <div class="table-responsive">

@@ -9,22 +9,14 @@
 
     <x-admin.card title="Layanan" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.layanan.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Layanan
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.layanan.create')" />
         </x-slot>
 
         @if ($layanan->isEmpty())
             @if (request()->filled('q'))
                 <x-admin.empty-state title="Layanan tidak ditemukan" description="Coba ubah kata kunci pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada layanan" description="Layanan tampil sebagai kartu di beranda website, sesuai urutannya.">
-                    <a href="{{ route('admin.layanan.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Layanan Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada layanan" description="Layanan tampil sebagai kartu di beranda website, sesuai urutannya." />
             @endif
         @else
             <div class="table-responsive">

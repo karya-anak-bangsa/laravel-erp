@@ -22,22 +22,14 @@
 
     <x-admin.card title="Manajemen Template" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.template.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Template
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.template.create')" />
         </x-slot>
 
         @if ($template->isEmpty())
             @if (request()->anyFilled(['q', 'jenis', 'status']))
                 <x-admin.empty-state title="Template tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada template" description="Template mengatur warna, huruf, dan bentuk website. Selama belum ada template aktif, website memakai tampilan bawaan.">
-                    <a href="{{ route('admin.template.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Template Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada template" description="Template mengatur warna, huruf, dan bentuk website. Selama belum ada template aktif, website memakai tampilan bawaan." />
             @endif
         @else
             <div class="table-responsive">

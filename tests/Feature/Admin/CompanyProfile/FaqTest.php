@@ -95,7 +95,8 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
     $this->actingAs($this->admin)
         ->get(route('admin.faq.index'))
         ->assertSee('Belum ada FAQ')
-        ->assertSee('Tambah FAQ Pertama');
+        ->assertDontSee('Tambah FAQ Pertama')
+        ->assertSee('<a href="'.route('admin.faq.create').'" class="btn btn-success tombol-tambah"', false);
 
     Faq::factory()->create();
 

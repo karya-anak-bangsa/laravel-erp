@@ -112,7 +112,8 @@ it('mencari template berdasarkan nama serta memfilter jenis dan status', functio
 it('membedakan empty state data kosong dan hasil filter kosong', function () {
     $this->actingAs($this->admin)->get(route('admin.template.index'))
         ->assertSee('Belum ada template')
-        ->assertSee('Tambah Template Pertama');
+        ->assertDontSee('Tambah Template Pertama')
+        ->assertSee('<a href="'.route('admin.template.create').'" class="btn btn-success tombol-tambah"', false);
 
     Template::factory()->create();
 

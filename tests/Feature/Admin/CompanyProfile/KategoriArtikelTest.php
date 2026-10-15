@@ -65,7 +65,8 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-artikel.index'))
         ->assertSee('Belum ada kategori artikel')
-        ->assertSee('Tambah Kategori Pertama');
+        ->assertDontSee('Tambah Kategori Pertama')
+        ->assertSee('<a href="'.route('admin.kategori-artikel.create').'" class="btn btn-success tombol-tambah"', false);
 
     KategoriArtikel::factory()->create();
 
@@ -234,16 +235,25 @@ it('boleh menghapus kategori yang artikelnya sudah dihapus semua', function () {
     $this->assertSoftDeleted($kategori);
 });
 
-it('membuat empat kategori awal beserta slugnya dari seeder tanpa menimpa isian admin', function () {
+it('membuat sepuluh kategori awal beserta slug dan ilustrasinya dari seeder tanpa menimpa isian admin', function () {
     $this->seed(KategoriArtikelSeeder::class);
 
-    expect(KategoriArtikel::orderBy('id_kategori_artikel')->pluck('slug')->all())
-        ->toBe(['teknologi', 'pelatihan-sertifikasi', 'tips-tutorial', 'kabar-perusahaan']);
+    $slug = [
+        'database', 'flutter', 'javascript', 'keamanan-siber', 'kecerdasan-buatan',
+        'laptop-gaming', 'laptop-thin-and-light', 'laravel', 'python', 'sistem-operasi',
+    ];
 
-    KategoriArtikel::query()->where('nama_kategori', 'Teknologi')->update(['nama_kategori' => 'Teknologi Informasi']);
+    expect(KategoriArtikel::orderBy('id_kategori_artikel')->pluck('slug')->all())->toBe($slug);
+    // Artikel contoh memakai ilustrasi sementara per kategori.
+    foreach ($slug as $item) {
+        expect(database_path("seeders/berkas/artikel/{$item}.webp"))->toBeFile();
+    }
+
+    KategoriArtikel::query()->where('nama_kategori', 'Python')->update(['nama_kategori' => 'Python 3']);
 
     $this->seed(KategoriArtikelSeeder::class);
 
-    expect(KategoriArtikel::orderBy('nama_kategori')->pluck('nama_kategori')->all())
-        ->toBe(['Kabar Perusahaan', 'Pelatihan & Sertifikasi', 'Teknologi Informasi', 'Tips & Tutorial']);
+    expect(KategoriArtikel::count())->toBe(10)
+        ->and(KategoriArtikel::where('nama_kategori', 'Python 3')->exists())->toBeTrue()
+        ->and(KategoriArtikel::where('nama_kategori', 'Python')->exists())->toBeFalse();
 });

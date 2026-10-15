@@ -240,12 +240,9 @@
 
 /* ---------- Artikel ---------- */
 .daftar-artikel { @apply mt-12; }
-/* "Lihat semua artikel" di bawah daftar beranda (pilihan pemilik 2026-10-15): rata tengah di Full Color dan rata kiri di
-   Monochrome, mengikuti kepala seksinya. */
-.aksi-artikel { @apply mt-10 flex sm:mt-12; }
-[data-tema=full_color] .aksi-artikel { @apply justify-center; }
-/* Tombol "Lihat semua artikel" (beranda & kolom samping) padat berwarna template (pilihan pemilik 2026-10-15): Full Color
-   warna utama seperti pita kategori, Monochrome --primary dari nada dasar (tombol bawaan Basecoat). */
+/* Tombol "Lihat semua artikel" di kotak Artikel terbaru kolom samping, padat berwarna template (pilihan pemilik
+   2026-10-15): Full Color warna utama seperti pita kategori, Monochrome --primary dari nada dasar (tombol bawaan
+   Basecoat). Beranda tidak memakainya lagi karena menu Artikel di navbar sudah mewakilinya. */
 [data-tema=full_color] .btn.tombol-semua-artikel { background-color: var(--utama-teks); color: #fff; }
 @media (hover: hover) { [data-tema=full_color] .btn.tombol-semua-artikel:hover { background-color: var(--utama-gelap); } }
 [data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5 transition duration-300; box-shadow: var(--bayangan-kartu); }
@@ -531,8 +528,9 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
   [data-tema=monochrome] :is(.tautan-terbaru:hover .judul-terbaru, .tautan-samping:hover > :first-child) { @apply underline underline-offset-4; }
 }
 /* Kartu konsultasi (slot promosi sementara): gelap seperti band ajakan — Full Color kotak bergradasi berhias, Monochrome
-   polos. Hanya mulai 1024px dan menempel di bawah navbar saat halaman digulir. */
-.ajakan-samping { @apply relative isolate hidden overflow-hidden rounded-kartu bg-background p-6 lg:sticky lg:block; top: calc(var(--tinggi-navbar) + 1.5rem); }
+   polos. Hanya mulai 1024px, sebagai kotak pertama kolom samping dan tidak menempel saat digulir (pilihan pemilik
+   2026-10-15): bila menempel di posisi pertama, kotak di bawahnya bergulir di balik kartu dan tertutup. */
+.ajakan-samping { @apply relative isolate hidden overflow-hidden rounded-kartu bg-background p-6 lg:block; }
 [data-tema=full_color] .ajakan-samping { background-image: linear-gradient(to bottom right, var(--utama-teks), color-mix(in oklab, var(--utama-teks) 82%, #000), var(--utama-gelap)); box-shadow: var(--bayangan-ajakan); }
 .judul-ajakan-samping { @apply text-xl font-semibold tracking-tight text-balance text-foreground; }
 .deskripsi-ajakan-samping { @apply mt-2 text-[15px]/[1.65] text-pretty text-muted-foreground; }

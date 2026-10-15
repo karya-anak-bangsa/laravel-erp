@@ -98,6 +98,12 @@ document.addEventListener('submit', async (event) => {
 
     event.preventDefault();
 
+    // Sudah dikonfirmasi dan sedang dikirim (pola paradiplomasi-v2): klik atau Enter berikutnya sebelum halaman
+    // berpindah diabaikan, agar data tidak tersimpan dua kali dan hapus kedua tidak berujung 404.
+    if (form.dataset.terkirim) {
+        return;
+    }
+
     const varian = form.dataset.confirmVariant || 'danger';
     const berbahaya = varian === 'danger';
 
@@ -121,7 +127,23 @@ document.addEventListener('submit', async (event) => {
     });
 
     if (isConfirmed) {
+        form.dataset.terkirim = '1';
+        form.querySelectorAll('[type="submit"]').forEach((tombol) => {
+            tombol.disabled = true;
+        });
         // form.submit() tidak memicu event submit lagi, jadi tidak berulang.
         form.submit();
     }
+});
+
+// Dibuka kembali setiap kali halaman tampil, bukan hanya saat dipulihkan dari bfcache (tombol Back): menurut MDN,
+// Firefox versi lama juga memulihkan status disabled tombol saat halaman dimuat ulang, padahal penanda terkirim
+// sudah hilang.
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form[data-confirm]').forEach((form) => {
+        delete form.dataset.terkirim;
+        form.querySelectorAll('[type="submit"]').forEach((tombol) => {
+            tombol.disabled = false;
+        });
+    });
 });

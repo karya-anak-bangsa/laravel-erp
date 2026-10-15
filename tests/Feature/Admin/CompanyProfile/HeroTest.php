@@ -123,7 +123,8 @@ it('membedakan empty state data kosong dan hasil filter kosong', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.hero.index'))
         ->assertSee('Belum ada hero')
-        ->assertSee('Tambah Hero Pertama');
+        ->assertDontSee('Tambah Hero Pertama')
+        ->assertSee('<a href="'.route('admin.hero.create').'" class="btn btn-success tombol-tambah"', false);
 
     Hero::factory()->create();
 

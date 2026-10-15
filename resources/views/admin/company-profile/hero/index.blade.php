@@ -16,22 +16,14 @@
 
     <x-admin.card title="Hero" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.hero.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Hero
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.hero.create')" />
         </x-slot>
 
         @if ($hero->isEmpty())
             @if (request()->anyFilled(['q', 'status']))
                 <x-admin.empty-state title="Hero tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada hero" description="Hero adalah bagian paling atas beranda: judul, deskripsi, gambar, dan tombol ajakan.">
-                    <a href="{{ route('admin.hero.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Hero Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada hero" description="Hero adalah bagian paling atas beranda: judul, deskripsi, gambar, dan tombol ajakan." />
             @endif
         @else
             <div class="table-responsive">

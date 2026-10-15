@@ -1,0 +1,45 @@
+<p>Begitu membuat proyek pertama dengan <strong>flutter create belajar_widget</strong>, Anda langsung disambut aplikasi penghitung: tombol plus yang menambah angka di layar. Kodenya pendek, tetapi di dalamnya ada dua jenis kelas yang sering membingungkan pemula, yaitu StatelessWidget dan StatefulWidget.</p>
+<p>Memahami keduanya adalah fondasi sebelum melangkah ke topik lain di Flutter. Artikel ini membahas konsep widget, perbedaan kedua jenis widget tersebut, method build dan setState, siklus hidup State, bedah kode penghitung, kapan memakai yang mana, sampai pengantar singkat state management.</p>
+<h2>Semua Tampilan di Flutter Adalah Widget</h2>
+<p>Di Flutter, teks, tombol, jarak antarelemen, sampai satu halaman penuh adalah widget. Widget adalah deskripsi sebagian tampilan, misalnya "di sini ada teks berukuran 18" atau "di bawahnya ada tombol". Widget-widget kecil itu disusun bertingkat membentuk pohon widget (<em>widget tree</em>).</p>
+<p>Setiap widget punya method <strong>build</strong> yang mengembalikan susunan widget lain. Widget sendiri bersifat <em>immutable</em>, artinya tidak bisa diubah setelah dibuat. Ketika tampilan perlu berubah, Flutter membuat widget baru, lalu mencocokkannya dengan yang lama untuk memperbarui layar secara efisien.</p>
+<p>Lalu, dari mana Flutter tahu kapan tampilan harus berubah? Jawabannya ada pada perbedaan StatelessWidget dan StatefulWidget.</p>
+<h2>StatelessWidget dan StatefulWidget, Apa Bedanya?</h2>
+<p>StatelessWidget adalah widget yang tidak menyimpan data yang bisa berubah. Tampilannya hanya bergantung pada data yang dikirim lewat konstruktor dan konteks tempatnya berada, misalnya tema aplikasi. Contohnya logo, label judul, atau kartu produk yang menampilkan nama dan harga kiriman induknya.</p>
+<p>Method build milik StatelessWidget biasanya hanya dipanggil dalam tiga kondisi: saat widget pertama kali dipasang, saat induknya mengirim konfigurasi baru, dan saat InheritedWidget yang dipakainya berubah, misalnya Theme.</p>
+<p>StatefulWidget dipakai untuk tampilan yang bisa berubah sendiri selama dipakai, misalnya penghitung, checkbox, isian form, atau data yang sedang dimuat dari internet. Uniknya, StatefulWidget terdiri dari dua kelas. Kelas widget-nya tetap immutable, sedangkan data yang berubah disimpan di objek State yang dibuat lewat method createState.</p>
+<p>Untuk memberi tahu Flutter bahwa data berubah, panggil <strong>setState</strong>. Flutter lalu menjadwalkan build ulang sehingga tampilan ikut diperbarui. Mengubah variabel tanpa setState hanya mengubah nilai di memori; layar tidak tahu bahwa ia harus digambar ulang.</p>
+<h2>Membedah Aplikasi Penghitung</h2>
+<p>Buka berkas lib/main.dart dari proyek tadi. Alurnya bisa dibaca dalam lima langkah.</p>
+<ol>
+<li><p>MyApp adalah StatelessWidget yang menyiapkan MaterialApp dan tema. Bagian ini tidak pernah berubah, jadi tidak membutuhkan state.</p></li>
+<li><p>MyHomePage adalah StatefulWidget dengan properti title. Judul ini dikirim induknya dan disimpan sebagai final, sedangkan method createState-nya membuat objek _MyHomePageState.</p></li>
+<li><p>Di dalam _MyHomePageState ada variabel <strong>int _counter = 0;</strong>. Garis bawah di depan nama membuat variabel itu privat, hanya bisa diakses dari berkas (library) tersebut.</p></li>
+<li><p>Method _incrementCounter berisi <strong>setState(() { _counter++; });</strong>. Nilai bertambah satu, lalu Flutter menjadwalkan build ulang.</p></li>
+<li><p>FloatingActionButton memanggil _incrementCounter lewat onPressed, sedangkan widget Text di dalam build menampilkan nilai _counter. Setiap kali tombol ditekan, build berjalan lagi dan angka di layar ikut naik.</p></li>
+</ol>
+<p>Coba eksperimen kecil: ubah isi _incrementCounter menjadi <strong>_counter++;</strong> saja, tanpa setState. Variabelnya tetap bertambah, tetapi angka di layar diam. Angka baru melompat ke nilai terbaru setelah ada yang memicu build ulang, misalnya hot reload.</p>
+<h2>Siklus Hidup State</h2>
+<p>Objek State hidup lebih lama daripada widget-nya, dan Flutter memanggil sejumlah method pada momen tertentu. Untuk pemula, empat method berikut yang paling penting.</p>
+<ul>
+<li><p>Method initState dipanggil sekali, saat State pertama kali masuk ke pohon widget. Di sinilah tempat menyiapkan controller, memulai timer, atau mengambil data awal. Awali isinya dengan super.initState().</p></li>
+<li><p>Method build bisa dipanggil berkali-kali, jadi isinya harus ringan dan bebas dari pekerjaan berat seperti memanggil API.</p></li>
+<li><p>Method didUpdateWidget dipanggil saat induk mengirim konfigurasi baru untuk widget yang sama, misalnya judulnya berganti. Setelah itu build selalu dijalankan.</p></li>
+<li><p>Method dispose dipanggil saat State dibuang selamanya. Lepaskan semua sumber daya di sini, misalnya <strong>_controller.dispose();</strong> untuk TextEditingController, lalu akhiri dengan super.dispose().</p></li>
+</ul>
+<p>Ada juga didChangeDependencies, yang berjalan tepat setelah initState dan setiap kali InheritedWidget yang dipakai berubah. Untuk awal, cukup ketahui keberadaannya.</p>
+<p>Satu jebakan klasik: memanggil setState setelah dispose adalah error. Kasus ini sering muncul saat data dari internet baru tiba ketika pengguna sudah meninggalkan halaman. Biasakan menulis <strong>if (!mounted) return;</strong> setelah await dan sebelum setState.</p>
+<h2>Kapan Memakai yang Mana?</h2>
+<p>Pegangan sederhananya: mulailah dengan StatelessWidget, lalu ubah menjadi StatefulWidget hanya jika ada data yang berubah dan memang dimiliki widget itu sendiri. Dokumentasi Flutter menyebut data seperti ini <em>ephemeral state</em>, contohnya tab yang sedang dipilih atau progres sebuah animasi.</p>
+<ul>
+<li><p>Data hanya datang dari induk dan tidak diubah di dalam widget: pakai StatelessWidget.</p></li>
+<li><p>Butuh controller, animasi, timer, atau langganan stream: pakai StatefulWidget agar semuanya bisa dibersihkan di dispose.</p></li>
+<li><p>Hanya sebagian kecil halaman yang berubah: jadikan bagian itu widget stateful tersendiri, supaya yang dibangun ulang bukan seluruh halaman.</p></li>
+<li><p>Lebih baik memecah tampilan menjadi widget kecil daripada method pembantu yang mengembalikan widget, karena widget terpisah bisa dibangun ulang sendiri-sendiri.</p></li>
+</ul>
+<p>Saran tersebut sejalan dengan bagian pertimbangan performa di <a href="https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html">dokumentasi resmi StatefulWidget</a>, yang juga menganjurkan widget const. Widget yang dibuat dengan const, misalnya <strong>const SizedBox(height: 16)</strong>, memungkinkan Flutter melewati sebagian besar pekerjaan build ulang. Untuk widget buatan sendiri, sediakan konstruktor seperti <strong>const KartuProduk({super.key, required this.nama});</strong> dengan semua properti bertipe final.</p>
+<p>Bagi yang datang dari JavaScript, hati-hati: const di Dart berarti nilai konstan yang sudah pasti saat kompilasi, jauh lebih ketat daripada <a href="/artikel/perbedaan-var-let-dan-const-di-javascript-dan-kapan-memakainya">const di JavaScript</a>. Padanan const JavaScript di Dart justru lebih dekat ke final. Agar tidak lupa memberi const, aktifkan aturan lint prefer_const_constructors di berkas analysis_options.yaml.</p>
+<h2>Langkah Berikutnya: Mengenal State Management</h2>
+<p>Untuk state lokal, setState sudah sangat cukup. Masalah baru muncul ketika data perlu dipakai di banyak halaman, misalnya isi keranjang belanja atau status login. Mengoper data lewat konstruktor dari satu widget ke widget lain akan cepat merepotkan.</p>
+<p>Flutter menyediakan alat bawaan seperti InheritedWidget dan ValueNotifier, sementara komunitas menyediakan banyak paket state management. Tiga nama yang sering Anda temui adalah Provider, yang membungkus InheritedWidget agar lebih mudah dipakai; Riverpod, buatan penulis Provider dengan pendekatan yang lebih fleksibel; dan Bloc, yang memisahkan logika bisnis dari tampilan lewat alur event dan state.</p>
+<p>Tidak perlu terburu-buru memilih. Kuasai dulu StatelessWidget, StatefulWidget, setState, dan siklus hidup State, karena semua paket tadi tetap bertumpu pada konsep yang sama. Setelah itu, coba satu paket di proyek kecil, misalnya aplikasi daftar belanja, dan rasakan apakah cara kerjanya cocok untuk Anda.</p>

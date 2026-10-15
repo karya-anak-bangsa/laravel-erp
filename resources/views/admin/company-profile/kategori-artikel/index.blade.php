@@ -7,22 +7,14 @@
 
     <x-admin.card title="Kategori Artikel" :flush="true">
         <x-slot:aksi>
-            <a href="{{ route('admin.kategori-artikel.create') }}" class="btn btn-success">
-                <x-admin.icon name="plus" />
-                Tambah Kategori
-            </a>
+            <x-admin.tombol-tambah :href="route('admin.kategori-artikel.create')" />
         </x-slot>
 
         @if ($kategoriArtikel->isEmpty())
             @if (request()->filled('q'))
                 <x-admin.empty-state title="Kategori artikel tidak ditemukan" description="Coba ubah kata kunci pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada kategori artikel" description="Kategori dipakai untuk mengelompokkan artikel di website.">
-                    <a href="{{ route('admin.kategori-artikel.create') }}" class="btn btn-success">
-                        <x-admin.icon name="plus" />
-                        Tambah Kategori Pertama
-                    </a>
-                </x-admin.empty-state>
+                <x-admin.empty-state title="Belum ada kategori artikel" description="Kategori dipakai untuk mengelompokkan artikel di website." />
             @endif
         @else
             <div class="table-responsive">

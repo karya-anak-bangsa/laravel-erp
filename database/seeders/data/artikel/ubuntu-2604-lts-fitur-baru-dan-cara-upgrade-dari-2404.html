@@ -1,0 +1,42 @@
+<p>Pengguna Ubuntu 24.04 LTS yang rajin membuka Software Updater mungkin sudah melihat tawaran baru: upgrade ke Ubuntu 26.04 LTS. Jalur upgrade dari 24.04 resmi dibuka pada 29 September 2026, menyusul rilis titik pertama, Ubuntu 26.04.1, yang terbit pada 27 Agustus 2026.</p>
+<p>Lompatan dari satu LTS ke LTS berikutnya membawa perubahan dua tahun sekaligus, jadi ada baiknya Anda tahu apa yang akan berubah sebelum menekan tombol upgrade. Artikel ini merangkum fitur baru yang paling terasa, perubahan penting bagi developer, dan langkah upgrade yang aman.</p>
+<h2>Sekilas Ubuntu 26.04 LTS</h2>
+<p>Ubuntu 26.04 LTS berkode nama Resolute Raccoon dirilis pada 23 April 2026. Edisi Desktop, Server, Cloud, dan Core mendapat pembaruan keamanan dan perbaikan bug kritis selama lima tahun, hingga 2031. Dengan langganan Ubuntu Pro, cakupan Expanded Security Maintenance (ESM) bisa diperpanjang hingga sepuluh tahun. Flavour seperti Kubuntu dan Xubuntu mendapat dukungan tiga tahun.</p>
+<p>Kebutuhan perangkat kerasnya ikut naik. Untuk versi desktop, Canonical merekomendasikan prosesor dual-core 2 GHz, RAM minimal 6 GB, dan ruang penyimpanan 25 GB. Laptop lama dengan RAM 4 GB yang selama ini lancar menjalankan 24.04 perlu dipertimbangkan ulang sebelum di-upgrade.</p>
+<h2>Fitur Baru yang Paling Terasa</h2>
+<p>Ubuntu 26.04 memakai kernel Linux 7.0, naik dari 6.8 di 24.04, sehingga dukungan untuk perangkat keras baru ikut membaik. Desktopnya memakai GNOME 50, dan sesi desktop kini hanya berjalan di Wayland. Aplikasi lama berbasis X11 tetap bisa dibuka lewat XWayland.</p>
+<p>Beberapa aplikasi bawaan juga berganti. Penampil dokumen kini Papers, penampil gambar Loupe, terminal Ptyxis, pemantau sistem Resources, dan pemutar video Showtime. Aplikasi Software &amp; Updates tidak lagi terpasang secara bawaan, tetapi masih bisa dipasang dengan perintah <strong>sudo apt install software-properties-gtk</strong>. Aplikasi lain ikut diperbarui, misalnya LibreOffice versi 25.8 dan GIMP 3.2.</p>
+<p>Dari sisi keamanan, installer kini mendukung enkripsi disk penuh berbasis TPM. Perintah sudo bawaan diganti sudo-rs, versi yang ditulis ulang dengan bahasa Rust, sedangkan banyak utilitas inti seperti ls kini berasal dari rust-coreutils. Utilitas cp, mv, dan rm masih memakai versi GNU.</p>
+<p>AppArmor juga membawa banyak profil baru untuk membatasi akses aplikasi, dan OpenSSL kini menyertakan algoritma kriptografi pascakuantum. Di sisi perangkat keras, Canonical menyebut dukungan untuk prosesor Intel Core Ultra Series 3 (Panther Lake) serta perluasan layanan Livepatch ke arsitektur Arm64.</p>
+<h2>Perubahan Penting bagi Developer</h2>
+<p>Bagi developer, paket bawaan yang ikut naik versi bisa memengaruhi proyek yang sedang berjalan. Berikut yang paling perlu dicek sebelum upgrade.</p>
+<ul>
+<li><p>Python naik dari 3.12 ke 3.14, GCC ke 15.2, dan OpenJDK bawaan ke versi 25.</p></li>
+<li><p>PHP kini versi 8.5, sedangkan Django di repositori naik ke 5.2 LTS.</p></li>
+<li><p>MySQL naik dari 8.0 ke 8.4 LTS. Akun yang masih memakai mysql_native_password akan terkunci secara bawaan, jadi ubah metode autentikasinya atau aktifkan kembali plugin tersebut.</p></li>
+<li><p>PostgreSQL menjadi versi 18, dan APT 3 menghapus perintah apt-key.</p></li>
+</ul>
+<p>Jika Anda sedang menimbang database untuk proyek baru, perbandingan <a href="/artikel/mysql-vs-postgresql-mana-yang-cocok-untuk-aplikasi-anda">MySQL vs PostgreSQL</a> bisa menjadi bahan pertimbangan. Selain itu, toolkit NVIDIA CUDA kini bisa dipasang langsung dari repositori Ubuntu, kabar baik bagi Anda yang sedang belajar machine learning.</p>
+<p>Pengelola server perlu mencermati dua hal lagi. OpenSSH versi 10.2 tidak lagi mendukung kunci DSA, sehingga kunci lama jenis ini harus diganti. Chrony juga menggantikan systemd-timesyncd sebagai layanan sinkronisasi waktu, tetapi hanya pada instalasi baru; sistem hasil upgrade perlu dipindahkan secara manual bila ingin memakainya.</p>
+<h2>Kapan Upgrade dari 24.04 Dibuka</h2>
+<p>Seperti biasa, upgrade otomatis antar-LTS baru dibuka setelah rilis titik pertama. Kali ini prosesnya juga menunggu perbaikan regresi pada rust-coreutils. Pengumuman resmi pada 29 September 2026 menyebut tawaran upgrade dibagikan bertahap lewat Update Manager selama beberapa hari, jadi wajar bila komputer Anda belum menerimanya.</p>
+<p>Ubuntu hanya mendukung upgrade berurutan. Pengguna 24.04 bisa langsung naik ke 26.04, sedangkan pengguna 22.04 harus naik dulu ke 24.04.</p>
+<h2>Persiapan Sebelum Upgrade</h2>
+<ul>
+<li><p>Cadangkan data pribadi ke drive eksternal. Jika Anda menjalankan MySQL lokal, buat dump database seperti di panduan <a href="/artikel/backup-database-mysql-otomatis-kebiasaan-kecil-yang-menyelamatkan-data">backup database MySQL otomatis</a>.</p></li>
+<li><p>Pastikan ada ruang kosong beberapa gigabita dan sambungkan laptop ke charger selama proses berlangsung.</p></li>
+<li><p>Catat PPA dan repositori pihak ketiga yang Anda pakai, karena semuanya bisa dinonaktifkan selama upgrade.</p></li>
+</ul>
+<h2>Langkah Upgrade dari Ubuntu 24.04</h2>
+<p>Cara termudah adalah lewat aplikasi Software Updater. Buka aplikasinya, pasang semua pembaruan yang tersedia, lalu restart bila diminta. Setelah itu, buka lagi Software Updater. Jika muncul pemberitahuan bahwa Ubuntu 26.04 tersedia, klik <strong>Upgrade</strong> dan ikuti wizard-nya.</p>
+<p>Jika lebih nyaman di terminal, jalankan perintah berikut secara berurutan.</p>
+<ol>
+<li><p><strong>sudo apt update</strong> untuk memperbarui daftar paket.</p></li>
+<li><p><strong>sudo apt upgrade</strong> untuk memasang semua pembaruan 24.04.</p></li>
+<li><p><strong>systemctl reboot</strong> untuk menyalakan ulang komputer bila diperlukan.</p></li>
+<li><p><strong>sudo do-release-upgrade</strong> untuk memulai upgrade ke 26.04.</p></li>
+</ol>
+<p>Prosesnya interaktif dan bisa memakan waktu hingga satu jam, tergantung kecepatan internet dan performa komputer. Jika muncul peringatan tentang paket pihak ketiga, baca dengan teliti sebelum melanjutkan. Setelah komputer menyala ulang, jalankan <strong>lsb_release -a</strong> untuk memastikan versi yang terpasang sudah 26.04, lalu aktifkan kembali PPA yang masih Anda butuhkan.</p>
+<h2>Perlu Upgrade Sekarang?</h2>
+<p>Ubuntu 24.04 LTS masih mendapat dukungan standar hingga 2029, jadi tidak ada keharusan upgrade hari ini. Untuk PC pribadi dan laptop developer, 26.04.1 sudah cukup matang, terutama bila Anda butuh kernel baru, GNOME 50, atau versi Python dan PHP terbaru.</p>
+<p>Untuk server produksi, uji dulu aplikasi Anda di mesin virtual atau server terpisah, baca catatan di <a href="https://documentation.ubuntu.com/release-notes/26.04/">rilis resmi Ubuntu 26.04</a>, dan jadwalkan upgrade di luar jam sibuk.</p>

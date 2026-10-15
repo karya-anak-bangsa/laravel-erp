@@ -103,7 +103,8 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
     $this->actingAs($this->admin)
         ->get(route('admin.layanan.index'))
         ->assertSee('Belum ada layanan')
-        ->assertSee('Tambah Layanan Pertama');
+        ->assertDontSee('Tambah Layanan Pertama')
+        ->assertSee('<a href="'.route('admin.layanan.create').'" class="btn btn-success tombol-tambah"', false);
 
     Layanan::factory()->create();
 

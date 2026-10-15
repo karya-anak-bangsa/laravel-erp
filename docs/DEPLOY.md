@@ -125,7 +125,7 @@ Company Profile sudah dilakukan 2026-10-09 — langkahnya disimpan sebagai refer
   ln -s ../storage/app/public public/storage
   ```
   File unggahan berada di `storage/app/public` (tidak masuk Git), sehingga aman dari `git pull`.
-- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo, favicon, meta deskripsi), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 4 kategori artikel, 6 artikel, 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
+- **Company Profile — data awal** (setelah `php artisan migrate --force` dan symlink di atas) — mengisi data yang sama persis dengan lokal: identitas (logo, favicon, meta deskripsi), 5 hero (1 aktif), 5 layanan, 7 portofolio, 5 FAQ, 10 kategori artikel, 32 artikel (30 terbit, 2 draf), 2 template tampilan aktif (Full Color & Monochrome). Kotak masuk Kontak Kami sengaja kosong.
   ```bash
   php artisan db:seed --class=CompanyProfileSeeder --force
   ```

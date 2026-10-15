@@ -179,8 +179,7 @@ body { background: var(--background); color: var(--teks); }
 }
 /* ---------- Halaman artikel: kolom utama + kolom samping (pilihan pemilik 2026-10-15) ----------
    Mulai 1024px kolom utama 8/12 dan kolom samping 4/12; di bawahnya kolom samping turun ke bawah isi, kotaknya dua
-   kolom di tablet. Kolom samping flex (bukan grid) agar kartu konsultasi yang sticky bisa bergerak sepanjang kolom:
-   anak grid hanya bisa menempel di dalam area grid-nya sendiri. */
+   kolom di tablet. Kotak kolom samping bertumpuk (flex) dengan jarak tetap. */
 :root { --celah-samping: 3rem; }
 .tata-samping { display: grid; gap: 4rem; grid-template-columns: minmax(0, 1fr); }
 .kolom-samping { display: flex; flex-direction: column; gap: 1.5rem; }

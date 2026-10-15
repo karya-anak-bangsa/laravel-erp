@@ -119,8 +119,23 @@ it('merender filter-bar dengan kata kunci dan tombol reset saat filter aktif', f
         ->assertSee('method="GET" action="/admin/uji"', false)
         ->assertSee('name="q" value="laravel"', false)
         ->assertSee('<select name="kategori"></select>', false)
-        ->assertSee('Terapkan')
-        ->assertSee('href="/admin/uji" class="btn btn-ghost"', false);
+        // Terapkan bergaya tombol Batal, Reset bergaya tombol Hapus, dalam satu wadah agar sama tinggi & lebar.
+        ->assertSeeInOrder([
+            '<div class="aksi-filter">',
+            '<button type="submit" class="btn btn-secondary">',
+            'fa-filter',
+            'Terapkan',
+            '<a href="/admin/uji" class="btn btn-danger">',
+            'fa-clock-rotate-left',
+            'Reset',
+        ], false);
+});
+
+it('merender tombol-tambah dengan label yang disembunyikan CSS di ponsel dan nama di title & aria-label', function () {
+    $this->blade('<x-admin.tombol-tambah href="/admin/uji/create" />')
+        ->assertSee('<a href="/admin/uji/create" class="btn btn-success tombol-tambah" title="Tambah Data"', false)
+        ->assertSee('aria-label="Tambah Data"', false)
+        ->assertSee('<span class="label-tombol">Tambah Data</span>', false);
 });
 
 it('menyembunyikan tombol reset filter-bar bila tidak ada filter', function () {

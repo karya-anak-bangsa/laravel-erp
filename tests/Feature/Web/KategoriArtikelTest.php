@@ -139,17 +139,26 @@ describe('kotak Kategori di kolom samping', function () {
         expect($this->get(route('artikel.index'))->getContent())->not->toMatch('#class="tautan-samping"\s+aria-current#');
     });
 
-    it('menyusun kotak kolom samping detail: artikel terbaru, kategori, layanan, lalu konsultasi', function () {
+    it('menyusun kotak kolom samping: konsultasi, layanan, kategori, lalu artikel terbaru khusus di detail', function () {
         Layanan::factory()->create();
-        Artikel::factory()->terbit()->create(['slug' => 'artikel-dibaca', 'tanggal' => '2026-10-10']);
+        $dibaca = Artikel::factory()->terbit()->create(['slug' => 'artikel-dibaca', 'tanggal' => '2026-10-10']);
         Artikel::factory()->terbit()->create(['tanggal' => '2026-10-01']);
 
-        $this->get('/artikel/artikel-dibaca')->assertSeeInOrder([
-            '<h2 class="judul-samping">Artikel terbaru</h2>',
-            '<h2 id="judul-kategori-samping" class="judul-samping">Kategori</h2>',
-            '<h2 id="judul-layanan-kami" class="judul-samping">Layanan kami</h2>',
+        // Urutan pilihan pemilik 2026-10-15, sama di daftar, kategori, dan detail.
+        $urutan = [
             '<h2 class="judul-ajakan-samping">Konsultasi gratis</h2>',
-        ], false);
+            '<h2 id="judul-layanan-kami" class="judul-samping">Layanan kami</h2>',
+            '<h2 id="judul-kategori-samping" class="judul-samping">Kategori</h2>',
+        ];
+
+        foreach ([route('artikel.index'), route('kategori-artikel.show', $dibaca->kategoriArtikel)] as $alamat) {
+            $this->get($alamat)
+                ->assertSeeInOrder($urutan, false)
+                ->assertDontSee('<h2 class="judul-samping">Artikel terbaru</h2>', false);
+        }
+
+        $this->get('/artikel/artikel-dibaca')
+            ->assertSeeInOrder([...$urutan, '<h2 class="judul-samping">Artikel terbaru</h2>'], false);
     });
 
     it('tidak menampilkan kotak Kategori bila belum ada artikel terbit', function () {

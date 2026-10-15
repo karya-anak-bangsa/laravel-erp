@@ -1,0 +1,37 @@
+<p>Controller yang awalnya hanya belasan baris bisa membengkak jadi ratusan baris begitu aturan validasi, pesan galat, dan pengecekan hak akses ikut ditumpuk di dalamnya. Akibatnya kode sulit dibaca, susah diuji, dan aturan yang sama sering tersalin di beberapa tempat.</p>
+<p>Laravel punya solusi yang rapi untuk masalah ini, yaitu Form Request. Kita akan membuatnya dari nol, mengisi aturan dan otorisasi, menyesuaikan pesan galat, merapikan input sebelum divalidasi, menangani aturan unik saat update, hingga menampilkan pesan dalam Bahasa Indonesia.</p>
+<h2>Apa Itu Form Request</h2>
+<p>Form Request adalah kelas khusus yang mewakili satu jenis permintaan, misalnya menyimpan artikel baru. Otorisasi dan validasi berjalan otomatis sebelum method controller dieksekusi, sehingga controller hanya menerima data yang sudah pasti valid.</p>
+<p>Bila validasi gagal pada formulir biasa, Laravel mengarahkan pengguna kembali ke halaman sebelumnya dan menyimpan pesan galat di session agar bisa ditampilkan. Bila permintaannya berupa AJAX atau meminta JSON, Laravel membalas dengan status 422 berisi daftar galat. Semua itu terjadi tanpa satu baris kode pun di controller.</p>
+<p>Di sisi tampilan, pesan galat ditampilkan dengan direktif @error('title') di Blade, sedangkan isian yang sudah diketik pengguna dikembalikan lewat old('title'). Pengguna cukup memperbaiki bagian yang salah tanpa mengisi ulang formulir dari awal.</p>
+<h2>Membuat Form Request Pertama</h2>
+<p>Buat kelasnya lewat Artisan: <strong>php artisan make:request StorePostRequest</strong>. Berkas baru akan muncul di folder app/Http/Requests dengan dua method, authorize() dan rules().</p>
+<p>Isi rules() dengan aturan yang biasanya Anda tulis di controller, misalnya <strong>'title' =&gt; ['required', 'string', 'max:200']</strong> dan <strong>'category_id' =&gt; ['required', 'exists:categories,id']</strong>. Aturan exists memastikan kategori yang dikirim benar-benar ada di tabel, bukan angka asal yang diketik lewat alat pengembang di browser.</p>
+<p>Letakkan aturan bail di awal daftar aturan sebuah field bila ingin pemeriksaan field itu berhenti di kegagalan pertama. Misalnya dengan <strong>['bail', 'required', 'integer', 'exists:categories,id']</strong>, query exists tidak dijalankan bila nilainya ternyata bukan angka.</p>
+<p>Perhatikan juga authorize(). Pada kelas hasil generator, method ini mengembalikan false, sehingga setiap permintaan langsung ditolak dengan status 403 dan pesan This action is unauthorized. Banyak pemula terjebak di sini: aturan validasinya sudah benar, tetapi formulir selalu gagal.</p>
+<p>Isi authorize() dengan logika hak akses yang sesuai. Jika Anda punya policy untuk model Post, cukup tulis <strong>return $this-&gt;user()-&gt;can('create', Post::class);</strong>. Jika otorisasi sudah ditangani di tempat lain, misalnya middleware, kembalikan true atau hapus method tersebut.</p>
+<h2>Controller yang Lebih Ramping</h2>
+<p>Ganti type-hint Request di method controller dengan kelas buatan Anda: <strong>public function store(StorePostRequest $request)</strong>. Laravel menjalankan otorisasi dan validasi lebih dulu, dan isi method hanya berjalan jika keduanya lolos.</p>
+<p>Ambil data yang sudah tervalidasi lalu simpan: <strong>Post::create($request-&gt;validated());</strong>. Method validated() hanya mengembalikan field yang tercantum di rules(), jadi field liar yang disisipkan pengguna, misalnya is_admin, tidak ikut tersimpan. Bila hanya butuh sebagian field, gunakan <strong>$request-&gt;safe()-&gt;only(['title', 'body'])</strong>.</p>
+<p>Sejak Laravel 13.4, Form Request bahkan bisa diminta menolak field yang tidak dikenal dengan menambahkan atribut <strong>#[FailOnUnknownFields]</strong> di atas kelas. Fitur ini berguna untuk API yang ingin tegas terhadap data yang tidak semestinya dikirim.</p>
+<p>Satu tip menghemat waktu: perintah <strong>php artisan make:controller PostController --resource --model=Post --requests</strong> membuat controller sekaligus StorePostRequest dan UpdatePostRequest yang sudah terpasang di method store dan update.</p>
+<h2>Pesan, Nama Atribut, dan Merapikan Input</h2>
+<p>Method messages() mengganti pesan untuk aturan tertentu, misalnya <strong>'title.required' =&gt; 'Judul artikel wajib diisi.'</strong>. Sementara itu, attributes() mengganti nama field yang muncul di pesan bawaan, misalnya <strong>'category_id' =&gt; 'kategori'</strong>, sehingga pengguna tidak melihat nama kolom database yang membingungkan.</p>
+<p>Input dari pengguna juga sering perlu dirapikan dulu. Method prepareForValidation() berjalan sebelum validasi, cocok untuk membuat slug dari judul: <strong>$this-&gt;merge(['slug' =&gt; Str::slug($this-&gt;title)]);</strong>, dengan Str diimpor dari Illuminate\Support\Str.</p>
+<p>Jangan lupa menambahkan aturan untuk slug di rules(). Selain agar keunikannya ikut diperiksa, field yang tidak punya aturan tidak akan muncul di hasil validated().</p>
+<h2>Validasi Unik saat Update</h2>
+<p>Aturan unique sering bermasalah saat mengubah data: artikel yang sedang diedit dianggap bentrok dengan dirinya sendiri. Solusinya, buat UpdatePostRequest terpisah dan abaikan baris yang sedang diubah: <strong>Rule::unique('posts', 'slug')-&gt;ignore($this-&gt;route('post'))</strong>.</p>
+<p>Kelas Rule berasal dari namespace Illuminate\Validation\Rule, dan method ignore() bisa menerima model utuh dari route model binding seperti contoh di atas. Jangan pernah mengisinya dengan nilai dari input pengguna, misalnya id yang dikirim lewat form, karena dokumentasi Laravel memperingatkan risiko SQL injection.</p>
+<p>Bila tabel memakai soft delete dan slug lama boleh dipakai ulang, tambahkan withoutTrashed() agar baris yang sudah dihapus tidak ikut dihitung. Pastikan juga kolom slug tidak memakai indeks UNIQUE biasa di database, karena baris yang dihapus secara soft delete sebenarnya masih tersimpan di tabel.</p>
+<h2>Pesan Validasi Berbahasa Indonesia</h2>
+<p>Secara bawaan pesan validasi berbahasa Inggris, dan proyek Laravel baru tidak menyertakan folder lang. Jalankan <strong>php artisan lang:publish</strong> untuk membuat folder lang/en berisi berkas bahasa bawaan, lalu ikuti langkah berikut:</p>
+<ol>
+<li><p>Salin lang/en/validation.php menjadi lang/id/validation.php.</p></li>
+<li><p>Terjemahkan pesan yang dibutuhkan, misalnya <strong>'required' =&gt; ':attribute wajib diisi.'</strong>.</p></li>
+<li><p>Isi array attributes di berkas yang sama, misalnya 'title' =&gt; 'judul', agar nama field ikut berbahasa Indonesia di semua formulir.</p></li>
+<li><p>Ubah APP_LOCALE menjadi id di berkas .env, lalu jalankan php artisan config:clear bila konfigurasi pernah di-cache.</p></li>
+</ol>
+<p>Pesan yang ditulis di messages() milik Form Request tetap didahulukan. Jadi, gunakan berkas bahasa untuk pesan umum yang berlaku di seluruh aplikasi, dan messages() untuk kalimat khusus satu formulir.</p>
+<h2>Mulai dari Satu Formulir</h2>
+<p>Form Request memindahkan validasi dan otorisasi ke tempat yang semestinya. Controller kembali ramping, aturan bisa dipakai ulang, dan pengujian jadi lebih mudah karena setiap kelas hanya punya satu tanggung jawab.</p>
+<p>Mulailah dari formulir yang paling sering berubah di proyek Anda, lalu pindahkan validasinya satu per satu. Daftar lengkap aturan yang tersedia ada di <a href="https://laravel.com/docs/13.x/validation">dokumentasi validasi Laravel 13</a>. Bila proyeknya belum ada, ikuti dulu panduan <a href="/artikel/cara-install-laravel-13-di-windows-dengan-laragon">instalasi Laravel 13 di Windows dengan Laragon</a>.</p>

@@ -1,0 +1,45 @@
+<p>Aplikasi kasir yang lancar di bulan pertama sering mulai tersendat setelah tabel transaksinya berisi ratusan ribu baris. Kodenya tidak berubah dan servernya sama, tetapi laporan harian yang dulu muncul seketika kini membuat pengguna menunggu.</p>
+<p>Penyebab yang paling umum adalah query yang terpaksa membaca seluruh tabel karena tidak ada indeks yang bisa dipakai. Artikel ini menjelaskan cara kerja indeks di MySQL, kolom mana yang layak diberi indeks, cara memeriksa query dengan EXPLAIN, dan kesalahan penulisan query yang membuat indeks diabaikan.</p>
+<h2>Cara Kerja Indeks, Mirip Indeks di Belakang Buku</h2>
+<p>Bayangkan mencari kata normalisasi di buku basis data setebal 500 halaman. Tanpa daftar indeks di bagian belakang buku, Anda harus membalik halaman satu per satu. Dengan indeks, Anda langsung tahu kata itu ada di halaman berapa saja.</p>
+<p>Indeks di MySQL bekerja dengan prinsip yang sama. Sebagian besar indeks, termasuk PRIMARY KEY, UNIQUE, dan INDEX biasa, disimpan dalam struktur B-tree: nilainya tersusun urut dan bercabang, sehingga MySQL cukup menelusuri beberapa tingkat untuk menemukan baris yang dicari, alih-alih memeriksa jutaan baris.</p>
+<p>Di InnoDB, mesin penyimpanan bawaan MySQL, data tabel sendiri tersusun menurut primary key. Indeks lain menyimpan nilai primary key sebagai penunjuk ke baris aslinya. Karena itu primary key sebaiknya ringkas, misalnya bilangan bulat yang bertambah otomatis.</p>
+<h2>Kolom yang Layak Diberi Indeks</h2>
+<p>Indeks paling berguna pada kolom yang sering muncul di tiga tempat berikut:</p>
+<ul>
+<li><p>Klausa WHERE, misalnya pencarian pesanan berdasarkan status atau nomor invoice.</p></li>
+<li><p>Kolom penghubung pada JOIN, terutama foreign key seperti id_pelanggan di tabel pesanan. InnoDB otomatis membuat indeks untuk kolom yang diberi constraint FOREIGN KEY bila indeksnya belum ada.</p></li>
+<li><p>Klausa ORDER BY dan GROUP BY, karena data yang sudah urut di indeks bisa dibaca tanpa proses pengurutan tambahan.</p></li>
+</ul>
+<p>Perhatikan juga selektivitasnya. Kolom dengan banyak nilai berbeda, seperti email atau nomor invoice, sangat cocok diberi indeks. Kolom yang nilainya hanya dua atau tiga macam jarang membantu bila berdiri sendiri. Query-nya tetap harus membaca sebagian besar tabel, dan dalam kasus seperti itu MySQL sering memilih membaca seluruh tabel secara berurutan karena justru lebih cepat.</p>
+<p>Membuat indeks cukup dengan satu perintah: <strong>CREATE INDEX idx_pesanan_status ON pesanan (status);</strong></p>
+<h2>Indeks Gabungan dan Aturan Prefiks Paling Kiri</h2>
+<p>Satu indeks bisa mencakup beberapa kolom sekaligus, hingga 16 kolom. Misalnya laporan kasir sering memfilter berdasarkan status lalu mengurutkan tanggal pesanan: <strong>CREATE INDEX idx_status_tanggal ON pesanan (status, tanggal_pesan);</strong></p>
+<p>Urutan kolom di indeks gabungan sangat menentukan. MySQL hanya bisa memakai indeks itu untuk mencari baris bila query menyertakan kolom dari sisi paling kiri. Untuk indeks di atas:</p>
+<ul>
+<li><p><strong>WHERE status = 'lunas'</strong> memakai indeks.</p></li>
+<li><p><strong>WHERE status = 'lunas' AND tanggal_pesan &gt;= '2026-08-01'</strong> memakai kedua kolom indeks.</p></li>
+<li><p><strong>WHERE tanggal_pesan &gt;= '2026-08-01'</strong> saja tidak bisa memakai indeks itu untuk mencari baris, karena kolom status di depannya tidak disebut.</p></li>
+</ul>
+<p>Aturan praktisnya: letakkan kolom yang dibandingkan dengan tanda sama dengan di depan, lalu kolom rentang atau pengurutan di belakang. MySQL 8.0.13 ke atas memang punya optimasi skip scan yang kadang bisa melompati kolom pertama, tetapi syaratnya sempit, jadi jangan dijadikan andalan saat merancang indeks.</p>
+<h2>Membaca Hasil EXPLAIN</h2>
+<p>Jangan menebak apakah sebuah query memakai indeks. Tambahkan EXPLAIN di depannya, misalnya <strong>EXPLAIN SELECT * FROM pesanan WHERE status = 'lunas' ORDER BY tanggal_pesan DESC;</strong>, lalu perhatikan beberapa kolom hasilnya:</p>
+<ul>
+<li><p>type: nilai ALL berarti seluruh tabel dibaca. Nilai seperti const, eq_ref, ref, dan range menandakan indeks dipakai untuk mencari baris.</p></li>
+<li><p>key: nama indeks yang benar-benar dipakai. Bila isinya NULL, tidak ada indeks yang digunakan.</p></li>
+<li><p>rows: perkiraan jumlah baris yang harus diperiksa. Makin kecil, makin baik.</p></li>
+<li><p>Extra: waspadai Using filesort dan Using temporary, tanda MySQL butuh kerja tambahan untuk mengurutkan atau mengelompokkan data.</p></li>
+</ul>
+<p>Untuk angka yang lebih nyata, MySQL 8.0.18 ke atas menyediakan EXPLAIN ANALYZE yang benar-benar menjalankan query, lalu melaporkan waktu dan jumlah baris aktualnya. Karena query-nya sungguh dieksekusi, hindari memakainya untuk query berat di server produksi saat jam sibuk. Penjelasan setiap kolom bisa dibaca di <a href="https://dev.mysql.com/doc/refman/8.4/en/explain-output.html">dokumentasi resmi EXPLAIN</a>.</p>
+<h2>Kesalahan yang Membuat Indeks Tidak Terpakai</h2>
+<p>Indeks yang sudah dibuat bisa saja diabaikan karena cara query ditulis. Kesalahan pertama adalah membungkus kolom dengan fungsi. Query <strong>WHERE YEAR(tanggal_pesan) = 2026</strong> memaksa MySQL menghitung YEAR() untuk setiap baris, sehingga indeks pada tanggal_pesan tidak bisa dipakai untuk mencari.</p>
+<p>Tulis ulang kondisinya sebagai rentang: <strong>WHERE tanggal_pesan &gt;= '2026-01-01' AND tanggal_pesan &lt; '2027-01-01'</strong>. Bila fungsi memang tidak bisa dihindari, MySQL 8.0.13 ke atas mendukung indeks fungsional seperti <strong>CREATE INDEX idx_tahun ON pesanan ((YEAR(tanggal_pesan)));</strong>. Perhatikan tanda kurung gandanya, karena ekspresi di dalam definisi indeks wajib diapit kurung.</p>
+<p>Kesalahan kedua adalah LIKE dengan wildcard di depan. Pencarian <strong>WHERE nama LIKE 'budi%'</strong> masih bisa memakai indeks karena awal katanya diketahui. Sebaliknya, LIKE '%budi' atau '%budi%' membuat MySQL memeriksa semua baris. Untuk mencari kata di dalam teks panjang seperti deskripsi produk, pertimbangkan indeks FULLTEXT dengan MATCH ... AGAINST.</p>
+<p>Kesalahan ketiga lebih halus: membandingkan kolom dengan tipe data berbeda. Kolom nomor_hp bertipe teks yang dibandingkan dengan angka tanpa tanda kutip memaksa MySQL mengonversi nilai di setiap baris, sehingga indeksnya tidak terpakai untuk pencarian.</p>
+<h2>Indeks Juga Ada Biayanya</h2>
+<p>Indeks bukan makan siang gratis. Setiap INSERT, UPDATE, dan DELETE harus ikut memperbarui semua indeks di tabel tersebut, dan setiap indeks memakan ruang disk serta memori. Tabel log yang terus ditulisi bisa melambat bila diberi terlalu banyak indeks yang jarang dipakai.</p>
+<p>Sebelum menghapus indeks yang tampak tidak berguna, uji dulu dengan menjadikannya tak terlihat: <strong>ALTER TABLE pesanan ALTER INDEX idx_pesanan_status INVISIBLE;</strong>. Optimizer akan mengabaikannya, tetapi indeks tetap diperbarui dan bisa diaktifkan kembali seketika dengan VISIBLE. View sys.schema_unused_indexes juga membantu menemukan indeks yang tidak pernah dipakai sejak server terakhir dinyalakan.</p>
+<p>Menambah indeks pada tabel besar di server produksi juga perlu direncanakan. Lakukan di luar jam sibuk dan pastikan ada cadangan terbaru sebelum mengubah struktur tabel; panduannya ada di artikel <a href="/artikel/backup-database-mysql-otomatis-kebiasaan-kecil-yang-menyelamatkan-data">backup database MySQL otomatis</a>.</p>
+<h2>Rangkuman</h2>
+<p>Indeks yang tepat sering membuat query yang tadinya lambat kembali terasa instan, tanpa perlu mengganti server. Kuncinya adalah mengikuti pola query yang sebenarnya, bukan menambahkan indeks di semua kolom.</p>
+<p>Mulailah dari query yang paling sering dijalankan atau paling lambat, periksa dengan EXPLAIN, lalu tambahkan indeks yang sesuai dengan pola WHERE, JOIN, dan ORDER BY-nya. Ulangi pemeriksaan setelah indeks dibuat untuk memastikan hasilnya, dan rawat indeks seperti Anda merawat kode: hapus yang tidak lagi terpakai.</p>

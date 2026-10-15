@@ -1,0 +1,38 @@
+<p>Banyak pemilik usaha baru sadar website-nya diretas ketika pelanggan bertanya mengapa hasil pencarian Google menampilkan halaman judi online atas nama perusahaan mereka. Pada titik itu kerusakan sudah terjadi: reputasi tercoreng, peringkat pencarian anjlok, dan pemulihannya memakan waktu serta biaya.</p>
+<p>Kabar baiknya, sebagian besar serangan bisa dicegah dengan kebiasaan dasar yang dijalankan secara konsisten. Panduan ini ditujukan bagi pemilik bisnis dan tim IT kecil, mulai dari update rutin, HTTPS, pengamanan akun admin, backup, perlindungan tambahan, hingga pemantauan.</p>
+<h2>Rutin Update CMS, Plugin, dan Framework</h2>
+<p>Banyak peretasan memanfaatkan celah yang sebenarnya sudah ditambal pengembangnya, hanya saja pemilik website belum memasang update. Website WordPress dengan plugin dan tema yang jarang diperbarui adalah contoh yang paling umum. Hal yang sama berlaku untuk aplikasi buatan sendiri yang memakai framework seperti Laravel, beserta paket Composer dan npm di dalamnya.</p>
+<p>Jadwalkan pemeriksaan update setidaknya sekali seminggu, uji dulu di salinan website (staging) bila memungkinkan, lalu hapus plugin dan tema yang tidak dipakai. Hindari juga tema atau plugin berbayar versi bajakan (nulled), karena sering sudah disisipi kode jahat sejak awal.</p>
+<p>Bagi developer, jalankan <strong>composer audit</strong> dan <strong>npm audit</strong> secara rutin. Kedua perintah ini memeriksa apakah paket yang dipakai proyek punya kerentanan yang sudah diketahui, sehingga Anda tahu paket mana yang perlu segera diperbarui.</p>
+<h2>Pasang HTTPS dan Rapikan Konfigurasi Server</h2>
+<p>HTTPS mengenkripsi data antara pengunjung dan server, termasuk isian formulir dan login admin. Sertifikat SSL/TLS kini bisa didapat gratis dari Let's Encrypt, dan banyak penyedia hosting sudah menyediakannya dalam beberapa klik. Pastikan semua alamat HTTP dialihkan ke HTTPS.</p>
+<p>Setelah itu, rapikan konfigurasi. Matikan mode debug di server produksi, misalnya <strong>APP_DEBUG=false</strong> pada Laravel, agar pesan error tidak membocorkan detail sistem. Tambahkan header keamanan seperti HSTS dan Content-Security-Policy, dan pastikan berkas cadangan atau berkas .env tidak bisa diunduh publik.</p>
+<h2>Kunci Pintu Admin: Password, 2FA, dan Hak Akses Minimum</h2>
+<p>Halaman login admin adalah pintu yang paling sering dicoba penyerang, biasanya dengan menebak password secara otomatis. Perkuat pintu ini dengan kebiasaan berikut.</p>
+<ul>
+<li><p>Gunakan password panjang dan unik untuk setiap akun admin, simpan di pengelola password, dan jangan memakai satu akun bersama-sama.</p></li>
+<li><p>Aktifkan autentikasi dua faktor (2FA) untuk admin website, panel hosting, dan email domain.</p></li>
+<li><p>Terapkan prinsip hak akses minimum: penulis konten cukup diberi akses editor, bukan administrator.</p></li>
+<li><p>Hapus akun karyawan atau vendor yang sudah tidak bekerja sama, dan batasi jumlah percobaan login.</p></li>
+</ul>
+<p>Jangan lupakan akses di luar CMS, seperti panel hosting, FTP, dan akun pendaftaran domain. Penyerang yang menguasai akun domain bisa mengalihkan seluruh website dan email perusahaan.</p>
+<h2>Backup 3-2-1 dan Uji Pemulihan</h2>
+<p>Backup adalah jaring pengaman terakhir ketika semua lapisan lain gagal, termasuk saat terkena ransomware. Pegang aturan 3-2-1: simpan tiga salinan data, di dua jenis media berbeda, dan satu salinan berada di luar lokasi server, misalnya di penyimpanan cloud terpisah.</p>
+<p>Backup harus mencakup berkas website dan database. Untuk database MySQL, panduan <a href="/artikel/backup-database-mysql-otomatis-kebiasaan-kecil-yang-menyelamatkan-data">backup database MySQL otomatis</a> bisa langsung diterapkan. Yang sering terlupa adalah uji pemulihan. Cobalah memulihkan backup ke server uji secara berkala, karena backup yang tidak pernah diuji belum tentu bisa dipakai saat dibutuhkan.</p>
+<p>Tentukan pula berapa lama backup disimpan, misalnya harian untuk seminggu terakhir dan mingguan untuk sebulan terakhir. Peretasan sering baru ketahuan beberapa minggu kemudian, jadi Anda perlu salinan yang dibuat sebelum website tercemar.</p>
+<h2>Tambah Lapisan Perlindungan dan Validasi Input</h2>
+<p>Web Application Firewall (WAF) menyaring lalu lintas berbahaya sebelum sampai ke server, seperti percobaan injeksi atau serbuan login otomatis. Banyak layanan CDN menyediakan WAF dan perlindungan DDoS sekaligus mempercepat website. Namun, WAF hanya lapisan tambahan, bukan pengganti kode yang aman.</p>
+<p>Di sisi kode, jadikan <a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a> sebagai acuan. Edisi terbarunya, OWASP Top 10:2025, tetap menempatkan Broken Access Control di urutan pertama, menaikkan Security Misconfiguration ke urutan kedua, dan memperluas kategori komponen usang menjadi Software Supply Chain Failures. Artinya, kesalahan pengaturan hak akses dan konfigurasi kini dipandang sebagai risiko keamanan aplikasi web yang paling utama.</p>
+<p>Praktik dasarnya sederhana: validasi semua input di sisi server, gunakan query berparameter untuk mencegah SQL injection, escape setiap output untuk mencegah XSS, dan periksa hak akses pengguna pada setiap aksi, bukan hanya dengan menyembunyikan tombol di tampilan.</p>
+<h2>Pantau Log dan Tanda-tanda Peretasan</h2>
+<p>Peretasan yang tidak terdeteksi bisa berlangsung lama. Aktifkan pemantauan uptime agar Anda tahu saat website tidak bisa diakses, daftarkan website ke Google Search Console untuk menerima peringatan masalah keamanan, dan simpan log akses serta log aplikasi di tempat yang tidak bisa dihapus penyerang.</p>
+<p>Biasakan memeriksa riwayat login admin, perubahan berkas yang tidak dikenal, dan akun admin baru yang muncul tiba-tiba. Sesekali ketik <strong>site:namadomainanda.com</strong> di Google untuk melihat apakah ada halaman asing, misalnya halaman judi online, yang ikut terindeks atas nama website Anda. Siapkan juga rencana sederhana bila terjadi insiden: siapa yang dihubungi, bagaimana mengisolasi website, dan dari backup mana pemulihan dilakukan.</p>
+<h2>Mulai dari Daftar Periksa Ini</h2>
+<p>Keamanan website bukan proyek sekali jadi, melainkan kebiasaan. Jika semuanya terasa banyak, mulailah dari lima langkah berikut minggu ini.</p>
+<ol>
+<li><p>Perbarui CMS, plugin, tema, dan dependensi, lalu hapus yang tidak terpakai.</p></li>
+<li><p>Pastikan HTTPS aktif dan mode debug di server produksi mati.</p></li>
+<li><p>Aktifkan 2FA untuk semua akun admin dan rapikan hak aksesnya.</p></li>
+<li><p>Jadwalkan backup otomatis dengan aturan 3-2-1 dan uji pemulihannya.</p></li>
+<li><p>Pasang pemantauan uptime dan daftarkan website ke Google Search Console.</p></li>
+</ol>

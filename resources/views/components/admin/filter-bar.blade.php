@@ -23,16 +23,19 @@
 
     {{ $slot }}
 
-    <button type="submit" class="btn btn-outline">
-        <x-admin.icon name="filter" />
-        Terapkan
-    </button>
+    {{-- Terapkan bergaya tombol Batal, Reset bergaya tombol Hapus; keduanya sama ukuran (pola paradiplomasi-v2, pilihan pemilik). --}}
+    <div class="aksi-filter">
+        <button type="submit" class="btn btn-secondary">
+            <x-admin.icon name="filter" />
+            Terapkan
+        </button>
 
-    @if ($adaFilter)
-        <a href="{{ $action }}" class="btn btn-ghost">
-            <x-admin.icon name="xmark" />
-            Reset
-        </a>
-    @endif
+        @if ($adaFilter)
+            <a href="{{ $action }}" class="btn btn-danger">
+                <x-admin.icon name="clock-rotate-left" />
+                Reset
+            </a>
+        @endif
+    </div>
 </form>
 </div>

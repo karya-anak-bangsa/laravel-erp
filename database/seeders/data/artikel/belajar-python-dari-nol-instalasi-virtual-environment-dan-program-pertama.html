@@ -1,0 +1,40 @@
+<p>Banyak orang ingin belajar Python, entah untuk mengolah data kantor, membuat bot, atau sekadar memahami dasar pemrograman, tetapi langsung tersandung di langkah pertama. Perintah python tidak dikenali, paket terpasang ke tempat yang salah, atau tutorial yang diikuti ternyata sudah usang.</p>
+<p>Panduan ini membahas cara memasang Python di Windows sesuai cara yang kini dianjurkan python.org, membuat virtual environment, memasang paket dengan pip, menulis program pertama, dan menyiapkan VS Code. Semua langkah ditulis per Juli 2026.</p>
+<h2>Versi Mana yang Sebaiknya Dipasang?</h2>
+<p>Per awal Juli 2026, rilis stabil terbaru adalah Python 3.14.6 yang terbit pada 10 Juni 2026. Python 3.15 memang sudah bisa diunduh, tetapi masih berstatus beta dan ditujukan untuk pengujian, bukan untuk belajar atau proyek sungguhan. Jadi, pilih seri 3.14.</p>
+<p>Jangan khawatir soal angka di belakang titik. Rilis seperti 3.14.6 hanya berisi perbaikan bug dan keamanan, sehingga materi belajar untuk seri 3.14 berlaku sama di semua rilis perbaikannya. Install manager juga memudahkan Anda memperbarui ke rilis perbaikan terbaru kapan saja.</p>
+<h2>Memasang Python dengan Python Install Manager</h2>
+<p>Cara memasang Python di Windows berubah sejak seri 3.14. Halaman unduhan python.org kini mengarahkan pengguna Windows ke Python install manager, aplikasi kecil yang mengurus pemasangan dan pembaruan versi Python. Penginstal tradisional berformat .exe masih tersedia selama seri 3.14 dan 3.15, tetapi tidak akan dibuat lagi mulai Python 3.16.</p>
+<ol>
+<li><p>Buka <a href="https://www.python.org/downloads/">halaman unduhan python.org</a>, klik <strong>Download Python install manager</strong>, jalankan berkas MSIX yang terunduh, lalu pilih <strong>Install</strong>. Alternatifnya, pasang aplikasi yang sama dari Microsoft Store.</p></li>
+<li><p>Buka PowerShell atau Windows Terminal, lalu ketik <strong>python</strong>. Bila belum ada versi Python sama sekali, install manager otomatis memasang rilis stabil terbaru, kemudian membuka mode interaktif. Ketik exit() untuk keluar.</p></li>
+<li><p>Pastikan pemasangan berhasil dengan <strong>python --version</strong>. Perintah <strong>py list</strong> menampilkan semua versi yang terpasang, sedangkan <strong>py install 3.14</strong> memasang versi tertentu secara eksplisit.</p></li>
+</ol>
+<p>Saat pertama memasang sebuah versi, Anda mungkin ditawari menambahkan folder perintah Python ke PATH. Langkah ini opsional dan berguna bila Anda ingin memakai perintah berversi seperti python3.14. Install manager membutuhkan Windows 10 atau yang lebih baru. Bila sebelumnya pernah memasang Python dengan penginstal lama, copot dulu Python Launcher bawaannya, karena keduanya sama-sama memakai perintah py.</p>
+<h2>Membuat dan Mengaktifkan Virtual Environment</h2>
+<p>Virtual environment, atau venv, adalah folder berisi lingkungan Python khusus untuk satu proyek. Paket yang dipasang di dalamnya tidak bercampur dengan proyek lain, sehingga proyek A bisa memakai versi pustaka yang berbeda dari proyek B tanpa saling merusak. Biasakan membuat satu venv untuk setiap proyek sejak hari pertama.</p>
+<ol>
+<li><p>Buat folder proyek dengan <strong>mkdir belajar-python</strong>, lalu masuk ke dalamnya dengan <strong>cd belajar-python</strong>.</p></li>
+<li><p>Buat venv dengan <strong>python -m venv .venv</strong>. Nama .venv adalah konvensi yang umum dipakai dan dikenali otomatis oleh VS Code.</p></li>
+<li><p>Aktifkan di PowerShell dengan <strong>.venv\Scripts\Activate.ps1</strong>, atau di Command Prompt dengan <strong>.venv\Scripts\activate.bat</strong>. Bila berhasil, awal baris terminal berubah menjadi (.venv).</p></li>
+<li><p>Setelah selesai bekerja, ketik <strong>deactivate</strong> untuk keluar dari venv.</p></li>
+</ol>
+<p>Bila PowerShell menolak dengan pesan bahwa menjalankan skrip dinonaktifkan di sistem ini, izinkan skrip lokal untuk akun Anda dengan <strong>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</strong>, lalu ulangi perintah aktivasi. Pengaturan ini juga yang dianjurkan dokumentasi resmi Python, dan hanya berlaku untuk akun Anda sendiri.</p>
+<h2>Memasang Paket dengan pip</h2>
+<p>Dengan venv aktif, paket dipasang lewat pip. Biasakan memakai bentuk python -m pip agar paket pasti masuk ke Python yang sedang aktif. Misalnya, <strong>python -m pip install requests</strong> memasang requests, pustaka populer untuk mengambil data dari internet.</p>
+<p>Catat daftar paket proyek dengan <strong>python -m pip freeze &gt; requirements.txt</strong>. Rekan kerja, atau Anda sendiri di laptop lain, cukup membuat venv baru lalu menjalankan <strong>python -m pip install -r requirements.txt</strong> untuk mendapatkan paket yang sama persis. Folder .venv sendiri tidak perlu disalin atau dimasukkan ke Git.</p>
+<h2>Menulis Program Pertama</h2>
+<p>Buat berkas bernama halo.py di folder proyek, lalu isi dengan dua baris. Baris pertama, <strong>nama = input("Siapa nama Anda? ")</strong>, meminta pengguna mengetik nama. Baris kedua, <strong>print(f"Halo, {nama}! Selamat belajar Python.")</strong>, menampilkan sapaan dengan f-string, cara praktis menyisipkan isi variabel ke dalam teks.</p>
+<p>Jalankan dengan <strong>python halo.py</strong> dari terminal yang venv-nya aktif. Program akan bertanya, menunggu Anda mengetik, lalu membalas dengan sapaan. Ingat juga bahwa Python memakai indentasi untuk menandai blok kode, jadi sejak awal biasakan memakai empat spasi dan jangan mencampurnya dengan tab.</p>
+<p>Untuk mencoba paket yang tadi dipasang, buat berkas cek.py berisi baris <strong>import requests</strong> dan <strong>print(requests.get("https://www.python.org").status_code)</strong>. Bila tercetak angka 200, Python berhasil menghubungi situs python.org lewat pustaka requests.</p>
+<h2>Menyiapkan VS Code</h2>
+<p>Notepad sebenarnya cukup untuk menulis kode, tetapi editor yang tepat membuat belajar jauh lebih nyaman. Visual Studio Code gratis, ringan, dan banyak dipakai untuk Python.</p>
+<ol>
+<li><p>Pasang VS Code, buka panel Extensions, lalu pasang ekstensi Python buatan Microsoft. Ekstensi pendukung seperti Pylance dan Python Debugger ikut terpasang otomatis.</p></li>
+<li><p>Buka folder proyek lewat menu <strong>File &gt; Open Folder</strong>.</p></li>
+<li><p>Tekan Ctrl+Shift+P, jalankan <strong>Python: Select Interpreter</strong>, lalu pilih Python yang berada di folder .venv.</p></li>
+<li><p>Buka halo.py dan klik tombol <strong>Run Python File</strong> di pojok kanan atas editor. Terminal akan terbuka di bagian bawah dan program langsung berjalan.</p></li>
+</ol>
+<h2>Langkah Berikutnya</h2>
+<p>Sampai di sini Anda sudah punya fondasi yang benar: Python terbaru yang dikelola install manager, venv untuk setiap proyek, pip, dan editor yang siap pakai. Berikutnya, pelajari tipe data dasar, percabangan if, perulangan for, fungsi, dan cara membaca berkas. <a href="https://docs.python.org/3.14/tutorial/index.html">Tutorial resmi Python</a> menyajikan materi itu secara runtut dan gratis.</p>
+<p>Cara belajar paling efektif adalah memecahkan masalah nyata yang Anda temui sehari-hari, misalnya merapikan nama berkas foto, merekap pengeluaran bulanan, atau mengambil data dari sebuah API. Satu proyek kecil yang selesai jauh lebih berharga daripada sepuluh tutorial yang ditonton setengah jalan.</p>

@@ -4,6 +4,8 @@ use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\Pengguna;
+use App\Services\Shared\HtmlSanitizerService;
+use App\Support\TeksHtml;
 use Database\Seeders\ArtikelDummySeeder;
 use Database\Seeders\KategoriArtikelSeeder;
 use Illuminate\Http\UploadedFile;
@@ -105,7 +107,8 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
     $this->actingAs($this->admin)
         ->get(route('admin.artikel.index'))
         ->assertSee('Belum ada artikel')
-        ->assertSee('Tambah Artikel Pertama');
+        ->assertDontSee('Tambah Artikel Pertama')
+        ->assertSee('<a href="'.route('admin.artikel.create').'" class="btn btn-success tombol-tambah"', false);
 
     Artikel::factory()->for($this->kategori)->create();
 
@@ -270,8 +273,34 @@ it('membuat artikel contoh dari seeder dummy tanpa menggandakan saat dijalankan 
     $this->seed(ArtikelDummySeeder::class);
     $this->seed(ArtikelDummySeeder::class);
 
-    expect(Artikel::count())->toBe(6)
+    expect(Artikel::count())->toBe(32)
         ->and(Artikel::where('status_publikasi', 'draf')->count())->toBe(2)
-        ->and(Artikel::where('judul', '5 Alasan Bisnis Kecil Perlu Website Sendiri')->value('deskripsi'))->toContain('<h2>');
-    Artikel::all()->each(fn (Artikel $artikel) => Storage::disk('public')->assertExists($artikel->gambar));
+        // Tiga artikel terbit di setiap kategori awal (kategori Teknologi dari beforeEach tidak dihitung).
+        ->and(KategoriArtikel::whereIn('nama_kategori', KategoriArtikelSeeder::NAMA)->withCount('artikelTerbit')
+            ->pluck('artikel_terbit_count')->all())->toBe(array_fill(0, count(KategoriArtikelSeeder::NAMA), 3))
+        ->and(Artikel::where('judul', 'Windows 11 26H2 Resmi Masuk Release Preview, Begini Cara Mencobanya')->value('deskripsi'))
+        ->toStartWith('<p>')->toContain('<h2>');
+
+    // Setiap artikel mendapat salinan ilustrasi kategorinya sendiri.
+    Artikel::with('kategoriArtikel')->get()->each(function (Artikel $artikel) {
+        expect(Storage::disk('public')->get($artikel->gambar))
+            ->toBe(file_get_contents(database_path("seeders/berkas/artikel/{$artikel->kategoriArtikel->slug}.webp")));
+    });
+});
+
+it('menulis isi artikel seeder hanya dengan format yang didukung editor', function () {
+    $sanitizer = app(HtmlSanitizerService::class);
+    $tag = fn (string $html): array => preg_match_all('#</?[a-z0-9]+#', $html, $cocok) ? $cocok[0] : [];
+    $semuaBerkas = glob(database_path('seeders/data/artikel/*.html'));
+
+    expect($semuaBerkas)->toHaveCount(32);
+
+    foreach ($semuaBerkas as $berkas) {
+        $html = implode('', array_map('trim', file($berkas, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)));
+        $bersih = (string) $sanitizer->bersihkan($html, judulBagian: true);
+
+        // Sanitizer hanya menyeragamkan entitas; tidak ada tag maupun teks yang dibuang.
+        expect($tag($bersih))->toBe($tag($html), basename($berkas))
+            ->and(TeksHtml::polos($bersih))->toBe(TeksHtml::polos($html));
+    }
 });
