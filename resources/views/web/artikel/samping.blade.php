@@ -75,7 +75,7 @@
                     </li>
                 @endforeach
             </ul>
-            <a href="{{ route('artikel.index') }}" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>
+            <a href="{{ route('artikel.index') }}" class="btn btn-besar tombol-semua-artikel">Lihat semua artikel</a>
         </div>
     @endif
 </aside>

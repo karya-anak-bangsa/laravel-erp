@@ -259,7 +259,7 @@ describe('isi', function () {
         Artikel::factory()->terbit()->create(['judul' => 'Artikel Bertautan', 'slug' => 'artikel-bertautan']);
 
         $this->get('/')
-            ->assertSee('<h3 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-bertautan').'" class="tautan-rentang">Artikel Bertautan</a></h3>', false)
+            ->assertSee('<h3 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-bertautan').'">Artikel Bertautan</a></h3>', false)
             // Halaman daftar cukup dicapai lewat menu Artikel di navbar (pilihan pemilik 2026-10-15).
             ->assertSee('<a href="'.route('artikel.index').'" class="tautan-menu"', false)
             ->assertDontSee('Lihat semua artikel')

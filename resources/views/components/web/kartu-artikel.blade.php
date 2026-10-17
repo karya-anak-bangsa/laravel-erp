@@ -21,8 +21,9 @@
                  1024px hanya tanggal). Tanggal tidak dipatah. Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
             <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}"><span class="awalan-tanggal mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
         </div>
-        {{-- Tautan judul direntangkan (::after) sehingga seluruh kartu bisa diklik. --}}
-        <{{ $tagJudul }} class="kartu-artikel-judul"><a href="{{ route('artikel.show', $artikel->slug) }}" class="tautan-rentang">{{ $artikel->judul }}</a></{{ $tagJudul }}>
+        {{-- Hanya judul yang bertautan ke detail (pilihan pemilik 2026-10-17): kartu yang bisa diklik di mana saja terlalu
+             mudah terklik. --}}
+        <{{ $tagJudul }} class="kartu-artikel-judul"><a href="{{ route('artikel.show', $artikel->slug) }}">{{ $artikel->judul }}</a></{{ $tagJudul }}>
         {{-- Maksimal 150 karakter termasuk spasi, dipotong di akhir kata (pilihan pemilik 2026-10-11). --}}
         <p class="kartu-artikel-ringkasan">{{ TeksHtml::potongDiAkhirKata(TeksHtml::ringkasan($artikel->deskripsi), 150) }}</p>
     </div>

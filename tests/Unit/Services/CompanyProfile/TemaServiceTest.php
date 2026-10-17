@@ -178,7 +178,7 @@ it('merender token lengkap kedua template', function () {
     $bayanganMono = deklarasiToken(BayanganTemplate::Tanpa->token(JenisTemplate::Monochrome));
 
     expect($css)
-        ->toContain("html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-kontras: #ffffff; --font-tema: \"Geist\"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; {$bayanganWarna} --tinggi-navbar: 4.25rem; --tinggi-logo: 1.875rem; --teks-menu: .875rem; --tinggi-tombol: 2.75rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.375rem; --lebar-konten: 80rem; }")
+        ->toContain("html[data-tema=full_color] { --warna-utama: #15253f; --warna-aksen: #cb1839; --utama-teks: #15253f; --aksen-teks: #cb1839; --aksen-teks-lembut: #cb1839; --aksen-kontras: #ffffff; --font-tema: \"Geist\"; --ketebalan-judul: 600; --sudut-kartu: .75rem; --sudut-dalam: .5rem; --sudut-tombol: .5rem; --sudut-lencana: .375rem; --sudut-isian: .5rem; {$bayanganWarna} --tinggi-navbar: 4.25rem; --tinggi-logo: 1.875rem; --teks-menu: .875rem; --tinggi-tombol: 2.75rem; --teks-tombol: .875rem; --teks-judul-seksi: 2.375rem; --lebar-konten: 80rem; }")
         ->toContain('html[data-tema=monochrome] { --nada-50: oklch(98.5% 0.003 55);')
         ->toContain('--nada-950: oklch(14.5% 0.042 55); --font-tema: "Geist"; --ketebalan-judul: 600; --sudut-kartu: .75rem;')
         ->toContain("--sudut-isian: .5rem; {$bayanganMono} --tinggi-navbar: 4.25rem;")
@@ -262,7 +262,8 @@ it('menghitung turunan kontras dari warna template', function () {
     config(['tema.template.full_color.warna_aksen' => '#f59e0b', 'tema.template.full_color.sudut' => 'bulat']);
 
     expect((new TemaService)->tokenCss())
-        ->toContain('--warna-aksen: #f59e0b; --utama-teks: #15253f; --aksen-teks: #9f6607; --aksen-kontras: #0f172a;')
+        // Teks di atas latar aksen lembut digelapkan lebih jauh (ambang 5,2:1) agar tetap ≥4,5:1 di atas latar itu.
+        ->toContain('--warna-aksen: #f59e0b; --utama-teks: #15253f; --aksen-teks: #9f6607; --aksen-teks-lembut: #956007; --aksen-kontras: #0f172a;')
         ->toContain('--sudut-tombol: 9999px;');
 });
 

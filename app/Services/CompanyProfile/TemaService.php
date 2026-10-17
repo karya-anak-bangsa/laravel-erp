@@ -91,6 +91,9 @@ class TemaService
             '--warna-aksen' => $aksen,
             '--utama-teks' => KontrasWarna::pastikanKontras($utama),
             '--aksen-teks' => KontrasWarna::pastikanKontras($aksen),
+            // Teks di atas latar --aksen-lembut (aksen 8%, token.css): ambang 5,2:1 di atas putih menjamin ≥4,5:1 di
+            // atas latar itu untuk warna aksen apa pun (terendah 4,65:1 pada sapuan kubus sRGB).
+            '--aksen-teks-lembut' => KontrasWarna::pastikanKontras($aksen, 5.2),
             '--aksen-kontras' => KontrasWarna::teksDiAtas($aksen),
             '--font-tema' => '"'.$warna['font']->family().'"',
             '--ketebalan-judul' => $warna['ketebalan_judul']->nilai(),

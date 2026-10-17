@@ -19,6 +19,7 @@ html[data-tema=full_color] {
   --utama-100: color-mix(in oklab, var(--warna-utama) 12%, #fff);
   --utama-gelap: color-mix(in oklab, var(--utama-teks) 58%, #000);
   --aksen-tua: color-mix(in oklab, var(--warna-aksen) 80%, #000);
+  /* Porsi 8% menjadi dasar jaminan kontras --aksen-teks-lembut (TemaService); ubah keduanya bersamaan. */
   --aksen-lembut: color-mix(in oklab, var(--warna-aksen) 8%, #fff);
   --kisi: color-mix(in oklab, var(--warna-utama) 7%, transparent);
   --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3);

@@ -28,7 +28,7 @@ describe('daftar artikel', function () {
             ->assertSeeInOrder(['<h1', 'Wawasan &amp; kabar terbaru', '</h1>'], false)
             ->assertSeeInOrder(['Artikel Baru', 'Artikel Lama'])
             // Di bawah h1 halaman, judul kartu menjadi h2.
-            ->assertSee('<h2 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-baru').'" class="tautan-rentang">Artikel Baru</a></h2>', false)
+            ->assertSee('<h2 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-baru').'">Artikel Baru</a></h2>', false)
             ->assertSee('<span class="lencana-artikel">Kategori Uji</span>', false)
             ->assertDontSee('Artikel Draf')
             ->assertDontSee('Artikel Terhapus');
@@ -139,7 +139,7 @@ describe('detail artikel', function () {
             ->assertDontSee('Lain Satu')
             ->assertDontSee('Lain Draf')
             ->assertDontSee('<span class="judul-terbaru">Artikel Dibaca</span>', false)
-            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-sedang tombol-semua-artikel">Lihat semua artikel</a>', false);
+            ->assertSee('<a href="'.route('artikel.index').'" class="btn btn-besar tombol-semua-artikel">Lihat semua artikel</a>', false);
     });
 
     it('tidak menampilkan artikel terbaru di kolom samping bila tidak ada artikel terbit lain', function () {

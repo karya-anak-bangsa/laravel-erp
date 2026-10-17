@@ -37,7 +37,7 @@ describe('halaman kategori', function () {
             // Remah roti sampai induknya; nama kategori menjadi h1 tepat di bawahnya.
             ->assertSeeInOrder(['<nav class="remah-roti"', 'href="'.route('artikel.index').'">Artikel</a>', '</nav>', '<h1', 'Tips &amp; Trik', '</h1>'], false)
             ->assertSeeInOrder(['Artikel Baru', 'Artikel Lama'])
-            ->assertSee('<h2 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-baru').'" class="tautan-rentang">Artikel Baru</a></h2>', false)
+            ->assertSee('<h2 class="kartu-artikel-judul"><a href="'.route('artikel.show', 'artikel-baru').'">Artikel Baru</a></h2>', false)
             ->assertSee('<span class="lencana-artikel">Tips &amp; Trik</span>', false)
             ->assertDontSee('Artikel Draf')
             ->assertDontSee('Artikel Terhapus')
