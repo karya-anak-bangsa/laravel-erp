@@ -31,7 +31,7 @@
                 <div>
                     {{-- Di atas lipatan, jadi gambar pertama tidak lazy. --}}
                     <div class="bingkai-artikel">
-                        <span class="pita-kategori">{{ $portofolio->kategori }}</span>
+                        <span class="pita-kategori">{{ $portofolio->kategoriPortofolio->nama_kategori }}</span>
                         @if ($daftarGambar->count() > 1)
                             {{-- Carousel (resources/js/web/carousel.js): panah & titik di atas gambar, panah di slide pertama dan
                                  terakhir disembunyikan (varian V1, pilihan pemilik 2026-10-18). --}}

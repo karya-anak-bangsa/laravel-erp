@@ -16,14 +16,9 @@
             :hint="$portofolio->exists
                 ? 'Alamat halaman detail: /portofolio/'.$portofolio->slug.' — tetap meskipun judul diubah, agar tautan yang sudah dibagikan tidak rusak.'
                 : 'Alamat halaman detail (slug) dibuat otomatis dari judul dan tidak berubah lagi setelah disimpan.'" />
-        <x-admin.form-input name="kategori" label="Kategori" :value="$portofolio->kategori" :required="true" maxlength="50"
-            list="saran-kategori" autocomplete="off" placeholder="mis. Website"
-            hint="Pilih dari saran agar penulisan kategori seragam, atau ketik kategori baru." />
-        <datalist id="saran-kategori">
-            @foreach ($daftarKategori as $kategori)
-                <option value="{{ $kategori }}"></option>
-            @endforeach
-        </datalist>
+        <x-admin.form-select name="id_kategori_portofolio" label="Kategori" :options="$opsiKategori"
+            :value="$portofolio->id_kategori_portofolio" :required="true"
+            :hint="$opsiKategori === [] ? 'Belum ada kategori. Tambahkan lebih dulu lewat menu Kategori Portofolio.' : null" />
         <x-admin.form-editor name="deskripsi" label="Deskripsi" :value="$portofolio->deskripsi" :required="true"
             :maks="5000" :baris="15" hint="Gambaran proyek, mis. klien, kebutuhan, fitur, dan teknologi yang dipakai." />
     </x-admin.card>

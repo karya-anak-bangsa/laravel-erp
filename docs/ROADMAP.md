@@ -39,6 +39,7 @@ Dilakukan **sendiri oleh pemilik proyek** setelah Fase 1a. Setelah itu, setiap f
 - [x] Layanan (urutan) + `LayananSeeder` (5 layanan perusahaan)
 - [x] Hero (repeater keyword & CTA, status aktif — boleh banyak, hanya satu aktif)
 - [x] Portofolio (slug otomatis, kategori teks bebas dengan saran & filter) + `PortofolioDummySeeder`
+- [x] Kategori Portofolio (2026-10-18): kategori teks bebas diganti data master `tb_kategori_portofolio` (menu Portofolio › Daftar Portofolio & Kategori Portofolio seperti Artikel; daftar abjad + jumlah portofolio, nama unik, tolak hapus bila masih dipakai); form portofolio memilih kategori dari daftar, filter daftar memuat semua kategori; `KategoriPortofolioSeeder` (Website, Mobile Apps, Pelatihan IT, Sertifikasi IT, Bootcamp); kartu beranda tetap urut layanan, kini menurut urutan kategori dibuat sehingga tidak terpengaruh perubahan nama; tampilan publik tidak berubah; daftar portofolio admin kini berurutan sama dengan website, termasuk data yang dibuat dalam detik yang sama
 - [x] FAQ (urutan, jawaban WYSIWYG) + `FaqSeeder` (5 FAQ awal)
 - [x] Kontak Kami (kotak masuk: filter, tandai dibaca/belum — otomatis saat modal detail dibuka, hapus) + badge jumlah belum dibaca di sidebar (kotak masuk awal kosong, diisi form kontak Fase 4)
 - [x] Data awal lokal & produksi seragam lewat `CompanyProfileSeeder`; migration Company Profile disusun ulang sebelum deploy pertama modul ini

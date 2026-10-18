@@ -16,11 +16,10 @@ beforeEach(function () {
 
 describe('daftar portofolio', function () {
     it('menampilkan portofolio terbaru lebih dulu dengan judul bertautan ke detailnya', function () {
-        Portofolio::factory()->create(['judul' => 'Proyek Lama', 'kategori' => 'Mobile Apps', 'created_at' => now()->subDay()]);
-        Portofolio::factory()->create([
+        Portofolio::factory()->kategori('Mobile Apps')->create(['judul' => 'Proyek Lama', 'created_at' => now()->subDay()]);
+        Portofolio::factory()->kategori('Website')->create([
             'judul' => 'Proyek Baru',
             'slug' => 'proyek-baru',
-            'kategori' => 'Website',
             'deskripsi' => '<p>Website profil dengan <strong>panel admin</strong>.</p>',
         ]);
         Portofolio::factory()->create(['judul' => 'Proyek Terhapus'])->delete();
@@ -77,10 +76,9 @@ describe('daftar portofolio', function () {
 
 describe('detail portofolio', function () {
     it('menampilkan portofolio beserta kategori, gambar, deskripsi, dan meta halaman', function () {
-        $portofolio = Portofolio::factory()->create([
+        $portofolio = Portofolio::factory()->kategori('Mobile Apps')->create([
             'judul' => 'Aplikasi Antrean Klinik',
             'slug' => 'aplikasi-antrean-klinik',
-            'kategori' => 'Mobile Apps',
             'deskripsi' => '<p>Pasien mengambil antrean dari rumah.</p><ul><li><p>Notifikasi giliran</p></li></ul>',
         ]);
 
@@ -158,7 +156,7 @@ describe('detail portofolio', function () {
     it('menampilkan lima portofolio terbaru lainnya di kolom samping tanpa portofolio yang sedang dibuka', function () {
         Portofolio::factory()->create(['judul' => 'Proyek Dibuka', 'slug' => 'proyek-dibuka']);
         foreach (['Lain Satu', 'Lain Dua', 'Lain Tiga', 'Lain Empat', 'Lain Lima', 'Lain Enam'] as $urutan => $judul) {
-            Portofolio::factory()->create(['judul' => $judul, 'slug' => Str::slug($judul), 'kategori' => 'Website', 'created_at' => now()->subDays(6 - $urutan)]);
+            Portofolio::factory()->kategori('Website')->create(['judul' => $judul, 'slug' => Str::slug($judul), 'created_at' => now()->subDays(6 - $urutan)]);
         }
         Portofolio::factory()->create(['judul' => 'Lain Terhapus', 'created_at' => now()->subHour()])->delete();
 

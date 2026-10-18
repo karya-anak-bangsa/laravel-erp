@@ -17,7 +17,7 @@ class PortofolioController extends Controller
 
     public function index(): View
     {
-        $portofolio = Portofolio::query()->terbaru()->paginate(self::PER_HALAMAN);
+        $portofolio = Portofolio::query()->untukKartu()->paginate(self::PER_HALAMAN);
 
         // Nomor halaman di luar jangkauan (mis. ?page=99) bukan halaman kosong yang sah.
         abort_if($portofolio->isEmpty() && $portofolio->currentPage() > 1, 404);
@@ -31,12 +31,12 @@ class PortofolioController extends Controller
     public function show(Portofolio $portofolio): View
     {
         // Gambar tambahan untuk carousel detail.
-        $portofolio->load('gambarPortofolio');
+        $portofolio->load(['gambarPortofolio', 'kategoriPortofolio']);
 
         // Tanpa kolom deskripsi: kolom samping hanya menampilkan gambar, judul, dan kategori.
-        $portofolioLainnya = Portofolio::query()->terbaru()->whereKeyNot($portofolio->getKey())
+        $portofolioLainnya = Portofolio::query()->untukKartu()->whereKeyNot($portofolio->getKey())
             ->limit(self::JUMLAH_LAINNYA)
-            ->get(['id_portofolio', 'judul', 'slug', 'gambar', 'kategori']);
+            ->get(['id_portofolio', 'id_kategori_portofolio', 'judul', 'slug', 'gambar']);
         $layanan = Layanan::untukTautan();
 
         return view('web.portofolio.show', compact('portofolio', 'portofolioLainnya', 'layanan'));

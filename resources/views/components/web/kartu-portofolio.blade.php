@@ -10,8 +10,8 @@
 @use('App\Support\AksenWarna')
 @use('App\Support\TeksHtml')
 
-<article class="kartu-portofolio {{ AksenWarna::untuk($portofolio->kategori) }}">
-    <span class="pita-kategori">{{ $portofolio->kategori }}</span>
+<article class="kartu-portofolio {{ AksenWarna::untuk($portofolio->kategoriPortofolio->nama_kategori) }}">
+    <span class="pita-kategori">{{ $portofolio->kategoriPortofolio->nama_kategori }}</span>
     <div class="kartu-portofolio-gambar"><img src="{{ $portofolio->gambar_url }}" width="800" height="600" loading="lazy" decoding="async" alt="{{ $portofolio->judul }}" class="gambar-konten"></div>
     <div class="kartu-portofolio-isi">
         {{-- Hanya judul yang bertautan ke detail, sama dengan kartu artikel (pilihan pemilik 2026-10-17). --}}

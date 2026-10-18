@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class Portofolio extends Model
 {
@@ -21,40 +21,11 @@ class Portofolio extends Model
 
     public const FOLDER = 'company-profile/portofolio';
 
-    /**
-     * Kategori layanan utama, sekaligus urutan kartu portofolio di beranda (keputusan pemilik 2026-10-11).
-     */
-    public const KATEGORI_UTAMA = ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'];
-
     protected $table = 'tb_portofolio';
 
     protected $primaryKey = 'id_portofolio';
 
-    protected $fillable = ['judul', 'slug', 'deskripsi', 'gambar', 'kategori'];
-
-    /**
-     * Kategori yang sedang dipakai, untuk saran isian dan filter daftar.
-     *
-     * @return list<string>
-     */
-    public static function daftarKategori(): array
-    {
-        return static::query()->distinct()->orderBy('kategori')->pluck('kategori')->all();
-    }
-
-    /**
-     * Kunci urut kategori untuk sortBy(): kategori utama menurut KATEGORI_UTAMA, kategori lain sesudahnya
-     * menurut abjad. Dicocokkan lewat slug karena kategori ditulis bebas (mis. "pelatihan it").
-     *
-     * @return array{int, string}
-     */
-    public static function kunciUrutKategori(string $kategori): array
-    {
-        $slug = Str::slug($kategori);
-        $posisi = array_search($slug, array_map(Str::slug(...), self::KATEGORI_UTAMA), true);
-
-        return $posisi === false ? [count(self::KATEGORI_UTAMA), $slug] : [$posisi, ''];
-    }
+    protected $fillable = ['id_kategori_portofolio', 'judul', 'slug', 'deskripsi', 'gambar'];
 
     /**
      * Terbaru lebih dulu (id memecah created_at kembar, mis. data seeder yang dibuat dalam detik yang sama).
@@ -64,6 +35,24 @@ class Portofolio extends Model
     public function scopeTerbaru(Builder $query): void
     {
         $query->latest()->latest('id_portofolio');
+    }
+
+    /**
+     * Portofolio untuk kartu & daftar frontend: terbaru lebih dulu beserta nama kategorinya (pita kategori).
+     *
+     * @param  Builder<Portofolio>  $query
+     */
+    public function scopeUntukKartu(Builder $query): void
+    {
+        $query->terbaru()->with('kategoriPortofolio:id_kategori_portofolio,nama_kategori');
+    }
+
+    /**
+     * @return BelongsTo<KategoriPortofolio, $this>
+     */
+    public function kategoriPortofolio(): BelongsTo
+    {
+        return $this->belongsTo(KategoriPortofolio::class, 'id_kategori_portofolio', 'id_kategori_portofolio');
     }
 
     /**

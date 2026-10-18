@@ -80,15 +80,27 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 | urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | INDEX |
 | created_at, updated_at, deleted_at | | |
 
+### tb_kategori_portofolio
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_kategori_portofolio | BIGINT UNSIGNED PK | |
+| nama_kategori | VARCHAR(100) | |
+| created_at, updated_at, deleted_at | | |
+
+Catatan implementasi:
+- Tanpa slug karena tidak ada halaman kategori portofolio di frontend (tab filter kategori ditolak pemilik 2026-10-11).
+- Kartu portofolio di beranda diurutkan menurut urutan kategori dibuat (`id_kategori_portofolio`), sehingga urutannya tetap walau nama diubah. Lima kategori awal dari `KategoriPortofolioSeeder` mengikuti urutan layanan: Website, Mobile Apps, Pelatihan IT, Sertifikasi IT, Bootcamp. Di admin, kategori tetap diurutkan abjad seperti data master lain.
+- Kategori yang masih dipakai portofolio (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
+
 ### tb_portofolio
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_portofolio | BIGINT UNSIGNED PK | |
+| id_kategori_portofolio | BIGINT UNSIGNED FK → tb_kategori_portofolio | `restrictOnDelete` |
 | judul | VARCHAR(200) | tidak wajib unik |
 | slug | VARCHAR(220) UNIQUE | URL detail di frontend, dibuat otomatis dari judul oleh `PortofolioService` |
 | deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG |
 | gambar | VARCHAR(255) | gambar utama: kartu, kolom samping, gambar saat dibagikan, dan slide pertama carousel detail |
-| kategori | VARCHAR(50) | INDEX. Teks bebas (mis. Website, Mobile Apps); form memberi saran kategori yang sudah ada (`<datalist>`) agar penulisannya seragam. Dinormalisasi ke tabel sendiri bila dibutuhkan |
 | created_at, updated_at, deleted_at | | |
 
 Slug dibuat sekali saat portofolio disimpan dan tidak ikut berubah saat judul diubah: portofolio tidak punya draf, jadi langsung tayang di `/portofolio/{slug}` dan tautannya bisa langsung tersebar.

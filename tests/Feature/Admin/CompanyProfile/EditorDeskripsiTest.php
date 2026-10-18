@@ -3,6 +3,7 @@
 use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\Pengguna;
@@ -36,7 +37,8 @@ function modulEditor(): array
             'judul' => 'Pembuatan Website', 'gambar' => $gambar(), 'urutan_ke' => 1,
         ], ['deskripsi' => 1000, 'keterangan' => 5000]],
         'portofolio' => ['admin.portofolio', fn () => [
-            'judul' => 'Website Sekolah', 'kategori' => 'Website', 'gambar' => $gambar(),
+            'judul' => 'Website Sekolah', 'id_kategori_portofolio' => KategoriPortofolio::factory()->create()->id_kategori_portofolio,
+            'gambar' => $gambar(),
         ], ['deskripsi' => 5000]],
         'faq' => ['admin.faq', fn () => [
             'pertanyaan' => 'Berapa lama pembuatan website?', 'urutan_ke' => 1,

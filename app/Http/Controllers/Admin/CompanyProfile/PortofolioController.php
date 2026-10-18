@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\CompanyProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CompanyProfile\StorePortofolioRequest;
 use App\Http\Requests\Admin\CompanyProfile\UpdatePortofolioRequest;
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\CompanyProfile\PortofolioService;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,22 +18,24 @@ class PortofolioController extends Controller
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim()->value();
-        $kategori = $request->string('kategori')->value();
+        $kategori = $request->integer('kategori');
 
         $portofolio = Portofolio::query()
+            ->with('kategoriPortofolio')
             ->when($q !== '', fn (Builder $query) => $query->where(fn (Builder $query) => $query
                 ->where('judul', 'like', "%{$q}%")
                 ->orWhere('deskripsi', 'like', "%{$q}%")))
-            ->when($kategori !== '', fn (Builder $query) => $query->where('kategori', $kategori))
+            ->when($kategori > 0, fn (Builder $query) => $query->where('id_kategori_portofolio', $kategori))
             // Jumlah gambar tambahan untuk modal Lihat.
             ->withCount('gambarPortofolio')
-            ->latest()
+            // Sama dengan urutan website, termasuk pemecah created_at kembar (data seeder dibuat dalam detik yang sama).
+            ->terbaru()
             ->paginate(25)
             ->withQueryString();
 
         return view('admin.company-profile.portofolio.index', [
             'portofolio' => $portofolio,
-            'daftarKategori' => Portofolio::daftarKategori(),
+            'opsiKategori' => KategoriPortofolio::opsi(),
         ]);
     }
 
@@ -40,7 +43,7 @@ class PortofolioController extends Controller
     {
         return view('admin.company-profile.portofolio.create', [
             'portofolio' => new Portofolio,
-            'daftarKategori' => Portofolio::daftarKategori(),
+            'opsiKategori' => KategoriPortofolio::opsi(),
         ]);
     }
 
@@ -55,7 +58,7 @@ class PortofolioController extends Controller
     {
         return view('admin.company-profile.portofolio.edit', [
             'portofolio' => $portofolio->load('gambarPortofolio'),
-            'daftarKategori' => Portofolio::daftarKategori(),
+            'opsiKategori' => KategoriPortofolio::opsi(),
         ]);
     }
 

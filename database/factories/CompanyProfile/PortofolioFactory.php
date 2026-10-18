@@ -2,6 +2,7 @@
 
 namespace Database\Factories\CompanyProfile;
 
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -21,11 +22,21 @@ class PortofolioFactory extends Factory
         $judul = fake()->unique()->sentence(4);
 
         return [
+            'id_kategori_portofolio' => KategoriPortofolio::factory(),
             'judul' => $judul,
             'slug' => Str::slug($judul),
             'deskripsi' => '<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>',
             'gambar' => Portofolio::FOLDER.'/'.fake()->uuid().'.webp',
-            'kategori' => fake()->randomElement(['Website', 'Mobile Apps', 'Pelatihan IT']),
         ];
+    }
+
+    /**
+     * Kategori berdasarkan nama, dipakai bersama bila sudah ada (mis. dari KategoriPortofolioSeeder).
+     */
+    public function kategori(string $nama): static
+    {
+        return $this->state(fn (): array => [
+            'id_kategori_portofolio' => KategoriPortofolio::firstOrCreate(['nama_kategori' => $nama])->id_kategori_portofolio,
+        ]);
     }
 }

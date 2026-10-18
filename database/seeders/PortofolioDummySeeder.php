@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\CompanyProfile\PortofolioService;
 use App\Support\TeksHtml;
@@ -19,6 +20,9 @@ class PortofolioDummySeeder extends Seeder
      */
     public function run(PortofolioService $portofolioService): void
     {
+        // Kategori dicocokkan lewat nama dari KategoriPortofolioSeeder, yang wajib dijalankan lebih dulu.
+        $idKategori = KategoriPortofolio::query()->pluck('id_kategori_portofolio', 'nama_kategori');
+
         foreach ($this->daftarPortofolio() as [$berkas, $judul, $kategori, $deskripsi, $galeri]) {
             // Berdasarkan judul agar aman dijalankan ulang dan tidak menyalin gambar dua kali.
             if (Portofolio::withTrashed()->where('judul', $judul)->exists()) {
@@ -27,8 +31,8 @@ class PortofolioDummySeeder extends Seeder
 
             $portofolio = Portofolio::create([
                 'judul' => $judul,
+                'id_kategori_portofolio' => $idKategori[$kategori],
                 'slug' => $portofolioService->buatSlug($judul),
-                'kategori' => $kategori,
                 'deskripsi' => TeksHtml::dariTeksPolos($deskripsi),
                 'gambar' => $this->salinBerkasAwal(database_path("seeders/berkas/layanan/{$berkas}.webp"), Portofolio::FOLDER, Portofolio::DISK),
             ]);

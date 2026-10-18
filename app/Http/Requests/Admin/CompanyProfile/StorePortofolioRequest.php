@@ -6,6 +6,8 @@ use App\Http\Requests\Concerns\MembersihkanHtml;
 use App\Rules\PanjangTeksHtml;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 
 class StorePortofolioRequest extends FormRequest
 {
@@ -25,13 +27,13 @@ class StorePortofolioRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, ValidationRule|string>>
+     * @return array<string, array<int, ValidationRule|Exists|string>>
      */
     public function rules(): array
     {
         return [
             'judul' => ['required', 'string', 'max:200'],
-            'kategori' => ['required', 'string', 'max:50'],
+            'id_kategori_portofolio' => ['required', 'integer', Rule::exists('tb_kategori_portofolio', 'id_kategori_portofolio')->withoutTrashed()],
             'deskripsi' => ['required', 'string', new PanjangTeksHtml(5000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'galeri' => ['nullable', 'array', 'max:'.(self::MAKS_GAMBAR - 1)],
@@ -57,7 +59,7 @@ class StorePortofolioRequest extends FormRequest
     {
         return [
             'judul' => 'judul',
-            'kategori' => 'kategori',
+            'id_kategori_portofolio' => 'kategori',
             'deskripsi' => 'deskripsi',
             'gambar' => 'gambar utama',
             'galeri' => 'gambar tambahan',

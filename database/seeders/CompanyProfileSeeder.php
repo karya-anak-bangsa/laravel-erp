@@ -19,6 +19,7 @@ class CompanyProfileSeeder extends Seeder
             HeroSeeder::class,
             HeroDummySeeder::class,
             LayananSeeder::class,
+            KategoriPortofolioSeeder::class,
             PortofolioDummySeeder::class,
             FaqSeeder::class,
             KategoriArtikelSeeder::class,

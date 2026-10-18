@@ -6,7 +6,8 @@ use Illuminate\Support\Str;
 
 /**
  * Corak warna kartu portofolio per kategori (kelas .corak-* di resources/css/web/token.css, hanya
- * berwarna di tema Full Color). Kategori teks bebas, jadi kategori baru tetap mendapat corak yang stabil.
+ * berwarna di tema Full Color). Dicocokkan lewat nama karena nama kategori bisa diubah dan ditambah admin; kategori
+ * baru tetap mendapat corak yang stabil.
  */
 class AksenWarna
 {

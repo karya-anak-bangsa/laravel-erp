@@ -49,8 +49,18 @@ return [
             [
                 'label' => 'Portofolio',
                 'ikon' => 'book',
-                'rute' => 'admin.portofolio.index',
-                'aktif' => 'admin.portofolio.*',
+                'sub' => [
+                    [
+                        'label' => 'Daftar Portofolio',
+                        'rute' => 'admin.portofolio.index',
+                        'aktif' => 'admin.portofolio.*',
+                    ],
+                    [
+                        'label' => 'Kategori Portofolio',
+                        'rute' => 'admin.kategori-portofolio.index',
+                        'aktif' => 'admin.kategori-portofolio.*',
+                    ],
+                ],
             ],
             [
                 'label' => 'Artikel',

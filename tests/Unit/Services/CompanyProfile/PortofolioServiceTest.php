@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CompanyProfile\GambarPortofolio;
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\CompanyProfile\PortofolioService;
 use Illuminate\Database\QueryException;
@@ -15,8 +16,8 @@ beforeEach(function () {
 function dataPortofolioUji(array $timpa = []): array
 {
     return [
+        'id_kategori_portofolio' => KategoriPortofolio::factory()->create()->id_kategori_portofolio,
         'judul' => 'Portofolio Uji',
-        'kategori' => 'Website',
         'deskripsi' => 'Deskripsi portofolio uji.',
         'gambar' => UploadedFile::fake()->image('portofolio.webp'),
         ...$timpa,
@@ -62,13 +63,16 @@ it('menyimpan portofolio baru beserta slug dan gambarnya', function () {
 
 it('mempertahankan slug walau judul diubah', function () {
     $portofolio = Portofolio::factory()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
+    $kategoriBaru = KategoriPortofolio::factory()->create();
 
-    $this->portofolio->perbarui($portofolio, dataPortofolioUji(['judul' => 'Judul Baru', 'gambar' => null, 'kategori' => 'Mobile Apps']));
+    $this->portofolio->perbarui($portofolio, dataPortofolioUji([
+        'judul' => 'Judul Baru', 'gambar' => null, 'id_kategori_portofolio' => $kategoriBaru->id_kategori_portofolio,
+    ]));
 
     // Portofolio tanpa draf langsung tayang, jadi tautannya mungkin sudah tersebar.
     expect($portofolio->refresh()->slug)->toBe('judul-lama')
         ->and($portofolio->judul)->toBe('Judul Baru')
-        ->and($portofolio->kategori)->toBe('Mobile Apps');
+        ->and($portofolio->id_kategori_portofolio)->toBe($kategoriBaru->id_kategori_portofolio);
 });
 
 it('mengganti gambar dan menghapus gambar lama', function () {
@@ -127,9 +131,9 @@ it('membiarkan gambar tambahan lama bila daftar yang dipertahankan tidak diberik
 });
 
 it('membersihkan gambar baru bila penyimpanan gagal', function () {
-    // Kategori melebihi VARCHAR(50) sehingga INSERT gagal di MySQL.
+    // Kategori tidak ada sehingga INSERT gagal di foreign key.
     expect(fn () => $this->portofolio->simpan(dataPortofolioUji([
-        'kategori' => str_repeat('a', 100),
+        'id_kategori_portofolio' => 999999,
         'galeri' => [UploadedFile::fake()->image('kedua.png')],
     ])))->toThrow(QueryException::class);
 
@@ -143,7 +147,7 @@ it('mempertahankan gambar tambahan yang akan dibuang bila penyimpanan perubahan 
     GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
 
     expect(fn () => $this->portofolio->perbarui($portofolio, dataPortofolioUji([
-        'kategori' => str_repeat('a', 100),
+        'id_kategori_portofolio' => 999999,
         'gambar' => null,
         // Tidak ada gambar lama yang dipertahankan.
         'galeri_lama' => [],

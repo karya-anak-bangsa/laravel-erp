@@ -8,8 +8,8 @@
     <x-admin.filter-bar :action="route('admin.portofolio.index')">
         <select name="kategori" class="form-control kolom-filter" aria-label="Filter kategori portofolio">
             <option value="">Semua kategori</option>
-            @foreach ($daftarKategori as $kategori)
-                <option value="{{ $kategori }}" @selected(request('kategori') === $kategori)>{{ $kategori }}</option>
+            @foreach ($opsiKategori as $id => $nama)
+                <option value="{{ $id }}" @selected(request('kategori') === (string) $id)>{{ $nama }}</option>
             @endforeach
         </select>
     </x-admin.filter-bar>
@@ -44,7 +44,7 @@
                                     <div class="cell-strong">{{ $item->judul }}</div>
                                     <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
                                 </td>
-                                <td>{{ $item->kategori }}</td>
+                                <td>{{ $item->kategoriPortofolio?->nama_kategori ?? '—' }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Portofolio" :ikon-saja="true">
@@ -58,7 +58,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Kategori</th>
-                                                                <td>{{ $item->kategori }}</td>
+                                                                <td>{{ $item->kategoriPortofolio?->nama_kategori ?? '—' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Alamat detail</th>

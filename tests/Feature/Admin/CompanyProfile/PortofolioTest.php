@@ -2,8 +2,10 @@
 
 use App\Http\Requests\Admin\CompanyProfile\StorePortofolioRequest;
 use App\Models\CompanyProfile\GambarPortofolio;
+use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\Pengguna;
+use Database\Seeders\KategoriPortofolioSeeder;
 use Database\Seeders\PortofolioDummySeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -11,13 +13,14 @@ use Illuminate\Support\Facades\Storage;
 beforeEach(function () {
     Storage::fake('public');
     $this->admin = Pengguna::factory()->create();
+    $this->kategori = KategoriPortofolio::factory()->create(['nama_kategori' => 'Website']);
 });
 
 function dataPortofolioValid(array $timpa = []): array
 {
     return [
+        'id_kategori_portofolio' => KategoriPortofolio::query()->value('id_kategori_portofolio'),
         'judul' => 'Website Profil Sekolah',
-        'kategori' => 'Website',
         'deskripsi' => 'Website profil sekolah dengan panel admin.',
         'gambar' => UploadedFile::fake()->image('portofolio.webp', 800, 600),
         ...$timpa,
@@ -37,13 +40,16 @@ it('mengarahkan tamu ke halaman login', function () {
 
 it('menampilkan daftar portofolio terbaru lebih dulu', function () {
     Portofolio::factory()->create(['judul' => 'Proyek Lama', 'created_at' => now()->subDay()]);
-    Portofolio::factory()->create(['judul' => 'Proyek Baru']);
+    // Dibuat dalam detik yang sama seperti data seeder: yang disimpan belakangan tetap di atas, sama dengan website.
+    Portofolio::factory()->create(['judul' => 'Proyek Baru Pertama', 'created_at' => now()]);
+    Portofolio::factory()->create(['judul' => 'Proyek Baru Kedua', 'created_at' => now()]);
 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.index'))
         ->assertOk()
-        ->assertSeeInOrder(['Proyek Baru', 'Proyek Lama'])
-        ->assertSee('class="nav-link active" href="'.route('admin.portofolio.index').'"', false);
+        ->assertSeeInOrder(['Proyek Baru Kedua', 'Proyek Baru Pertama', 'Proyek Lama'])
+        ->assertSee('class="nav-sublink active" href="'.route('admin.portofolio.index').'"', false)
+        ->assertSee('class="nav-tree open has-active"', false);
 });
 
 it('menyusun halaman daftar sesuai standar admin', function () {
@@ -61,10 +67,9 @@ it('menyusun halaman daftar sesuai standar admin', function () {
 });
 
 it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal', function () {
-    $portofolio = Portofolio::factory()->create([
+    $portofolio = Portofolio::factory()->kategori('Mobile Apps')->create([
         'judul' => 'Aplikasi Klinik',
         'slug' => 'aplikasi-klinik',
-        'kategori' => 'Mobile Apps',
         'deskripsi' => 'Antrean pasien dari rumah.',
         'created_at' => '2026-10-09 08:30:00',
     ]);
@@ -103,16 +108,19 @@ it('mencari portofolio berdasarkan judul atau deskripsi', function () {
         ->assertDontSee('Website Sekolah');
 });
 
-it('memfilter portofolio berdasarkan kategori yang tersedia', function () {
-    Portofolio::factory()->create(['judul' => 'Website Sekolah', 'kategori' => 'Website']);
-    Portofolio::factory()->create(['judul' => 'Aplikasi Klinik', 'kategori' => 'Mobile Apps']);
+it('memfilter portofolio berdasarkan kategori, dengan pilihan semua kategori urut abjad', function () {
+    $mobile = KategoriPortofolio::factory()->create(['nama_kategori' => 'Mobile Apps']);
+    KategoriPortofolio::factory()->create(['nama_kategori' => 'Bootcamp']);
+    Portofolio::factory()->for($this->kategori)->create(['judul' => 'Website Sekolah']);
+    Portofolio::factory()->for($mobile)->create(['judul' => 'Aplikasi Klinik']);
 
     $this->actingAs($this->admin)
-        ->get(route('admin.portofolio.index', ['kategori' => 'Mobile Apps']))
+        ->get(route('admin.portofolio.index', ['kategori' => $mobile->id_kategori_portofolio]))
         ->assertSee('Aplikasi Klinik')
         ->assertDontSee('Website Sekolah')
-        ->assertSee('<option value="Mobile Apps" selected>', false)
-        ->assertSeeInOrder(['Semua kategori', 'Mobile Apps', 'Website']);
+        ->assertSee('<option value="'.$mobile->id_kategori_portofolio.'" selected>Mobile Apps</option>', false)
+        // Kategori tanpa portofolio tetap bisa dipilih.
+        ->assertSeeInOrder(['Semua kategori', 'Bootcamp', 'Mobile Apps', 'Website']);
 });
 
 it('membedakan empty state data kosong dan hasil pencarian kosong', function () {
@@ -122,28 +130,39 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
         ->assertDontSee('Tambah Portofolio Pertama')
         ->assertSee('<a href="'.route('admin.portofolio.create').'" class="btn btn-success tombol-tambah"', false);
 
-    Portofolio::factory()->create(['kategori' => 'Website']);
+    Portofolio::factory()->for($this->kategori)->create();
+    $kategoriKosong = KategoriPortofolio::factory()->create();
 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.index', ['q' => 'tidak-ada']))
         ->assertSee('Portofolio tidak ditemukan');
 
     $this->actingAs($this->admin)
-        ->get(route('admin.portofolio.index', ['kategori' => 'Tidak Ada']))
+        ->get(route('admin.portofolio.index', ['kategori' => $kategoriKosong->id_kategori_portofolio]))
         ->assertSee('Portofolio tidak ditemukan');
 });
 
-it('menyarankan kategori yang sudah ada di form tambah', function () {
-    Portofolio::factory()->create(['kategori' => 'Mobile Apps']);
-    Portofolio::factory()->create(['kategori' => 'Mobile Apps']);
+it('menampilkan pilihan kategori urut abjad di form tambah', function () {
+    $mobile = KategoriPortofolio::factory()->create(['nama_kategori' => 'Mobile Apps']);
 
-    $respons = $this->actingAs($this->admin)
+    $this->actingAs($this->admin)
         ->get(route('admin.portofolio.create'))
         ->assertOk()
-        ->assertSee('list="saran-kategori"', false)
-        ->assertSee('<option value="Mobile Apps"></option>', false);
+        ->assertSee('<select id="id_kategori_portofolio" name="id_kategori_portofolio"', false)
+        ->assertSeeInOrder([
+            '<option value="">— Pilih —</option>',
+            '<option value="'.$mobile->id_kategori_portofolio.'" >Mobile Apps</option>',
+            '<option value="'.$this->kategori->id_kategori_portofolio.'" >Website</option>',
+        ], false)
+        ->assertDontSee('Belum ada kategori.');
+});
 
-    expect(substr_count($respons->getContent(), '<option value="Mobile Apps"></option>'))->toBe(1);
+it('mengarahkan ke menu Kategori Portofolio bila belum ada kategori', function () {
+    $this->kategori->forceDelete();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.portofolio.create'))
+        ->assertSee('Belum ada kategori. Tambahkan lebih dulu lewat menu Kategori Portofolio.');
 });
 
 it('menambah portofolio beserta slug dan gambarnya', function () {
@@ -155,7 +174,7 @@ it('menambah portofolio beserta slug dan gambarnya', function () {
     $portofolio = Portofolio::sole();
     expect($portofolio->judul)->toBe('Website Profil Sekolah')
         ->and($portofolio->slug)->toBe('website-profil-sekolah')
-        ->and($portofolio->kategori)->toBe('Website')
+        ->and($portofolio->id_kategori_portofolio)->toBe($this->kategori->id_kategori_portofolio)
         ->and($portofolio->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.webp$#');
     Storage::disk('public')->assertExists($portofolio->gambar);
 });
@@ -171,13 +190,14 @@ it('memberi akhiran angka pada slug bila judul sudah dipakai', function () {
 });
 
 it('menampilkan form ubah berisi data tersimpan dan alamat detail', function () {
-    $portofolio = Portofolio::factory()->create(['judul' => 'Aplikasi Klinik', 'slug' => 'aplikasi-klinik', 'kategori' => 'Mobile Apps']);
+    $mobile = KategoriPortofolio::factory()->create(['nama_kategori' => 'Mobile Apps']);
+    $portofolio = Portofolio::factory()->for($mobile)->create(['judul' => 'Aplikasi Klinik', 'slug' => 'aplikasi-klinik']);
 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.edit', $portofolio))
         ->assertOk()
         ->assertSee('value="Aplikasi Klinik"', false)
-        ->assertSee('value="Mobile Apps"', false)
+        ->assertSee('<option value="'.$mobile->id_kategori_portofolio.'" selected>Mobile Apps</option>', false)
         ->assertSee('/portofolio/aplikasi-klinik — tetap meskipun judul diubah')
         ->assertSee(Storage::disk('public')->url($portofolio->gambar));
 });
@@ -358,34 +378,35 @@ it('menolak mempertahankan gambar tambahan milik portofolio lain', function () {
     expect(GambarPortofolio::find($milikLain->id_gambar_portofolio))->not->toBeNull();
 });
 
-it('memvalidasi isian portofolio', function (array $data, string $kolom) {
+it('memvalidasi isian portofolio', function (Closure $data, string $kolom) {
     $this->actingAs($this->admin)
         ->from(route('admin.portofolio.create'))
-        ->post(route('admin.portofolio.store'), dataPortofolioValid($data))
+        ->post(route('admin.portofolio.store'), dataPortofolioValid($data()))
         ->assertRedirect(route('admin.portofolio.create'))
         ->assertSessionHasErrors($kolom);
 
     expect(Portofolio::count())->toBe(0);
 })->with([
-    'judul kosong' => [['judul' => ''], 'judul'],
-    'judul terlalu panjang' => [['judul' => str_repeat('a', 201)], 'judul'],
-    'kategori kosong' => [['kategori' => ''], 'kategori'],
-    'kategori terlalu panjang' => [['kategori' => str_repeat('a', 51)], 'kategori'],
-    'deskripsi kosong' => [['deskripsi' => ''], 'deskripsi'],
-    'deskripsi terlalu panjang' => [['deskripsi' => str_repeat('a', 5001)], 'deskripsi'],
-    'gambar kosong saat tambah' => [['gambar' => null], 'gambar'],
-    'gambar bukan gambar' => [['gambar' => UploadedFile::fake()->create('portofolio.pdf', 10, 'application/pdf')], 'gambar'],
-    'gambar lebih dari 2 MB' => [['gambar' => UploadedFile::fake()->image('portofolio.png')->size(2049)], 'gambar'],
-    'gambar tambahan bukan gambar' => [['galeri' => [UploadedFile::fake()->create('galeri.pdf', 10, 'application/pdf')]], 'galeri.0'],
-    'gambar tambahan lebih dari 2 MB' => [['galeri' => [UploadedFile::fake()->image('galeri.png')->size(2049)]], 'galeri.0'],
+    'judul kosong' => [fn () => ['judul' => ''], 'judul'],
+    'judul terlalu panjang' => [fn () => ['judul' => str_repeat('a', 201)], 'judul'],
+    'kategori kosong' => [fn () => ['id_kategori_portofolio' => ''], 'id_kategori_portofolio'],
+    'kategori tidak ada' => [fn () => ['id_kategori_portofolio' => 999999], 'id_kategori_portofolio'],
+    'kategori sudah dihapus' => [fn () => ['id_kategori_portofolio' => tap(KategoriPortofolio::factory()->create())->delete()->id_kategori_portofolio], 'id_kategori_portofolio'],
+    'deskripsi kosong' => [fn () => ['deskripsi' => ''], 'deskripsi'],
+    'deskripsi terlalu panjang' => [fn () => ['deskripsi' => str_repeat('a', 5001)], 'deskripsi'],
+    'gambar kosong saat tambah' => [fn () => ['gambar' => null], 'gambar'],
+    'gambar bukan gambar' => [fn () => ['gambar' => UploadedFile::fake()->create('portofolio.pdf', 10, 'application/pdf')], 'gambar'],
+    'gambar lebih dari 2 MB' => [fn () => ['gambar' => UploadedFile::fake()->image('portofolio.png')->size(2049)], 'gambar'],
+    'gambar tambahan bukan gambar' => [fn () => ['galeri' => [UploadedFile::fake()->create('galeri.pdf', 10, 'application/pdf')]], 'galeri.0'],
+    'gambar tambahan lebih dari 2 MB' => [fn () => ['galeri' => [UploadedFile::fake()->image('galeri.png')->size(2049)]], 'galeri.0'],
 ]);
 
 it('menampilkan pesan validasi berbahasa Indonesia', function () {
     $this->actingAs($this->admin)
-        ->post(route('admin.portofolio.store'), dataPortofolioValid(['judul' => '', 'kategori' => str_repeat('a', 51)]))
+        ->post(route('admin.portofolio.store'), dataPortofolioValid(['judul' => '', 'id_kategori_portofolio' => 999999]))
         ->assertSessionHasErrors([
             'judul' => 'Kolom judul wajib diisi.',
-            'kategori' => 'Kolom kategori tidak boleh lebih dari 50 karakter.',
+            'id_kategori_portofolio' => 'Kategori yang dipilih tidak valid.',
         ]);
 });
 
@@ -403,12 +424,17 @@ it('menghapus portofolio secara soft delete tanpa menghapus gambarnya', function
 });
 
 it('membuat portofolio contoh dari seeder dummy tanpa duplikat saat dijalankan ulang', function () {
+    $this->kategori->forceDelete();
+    $this->seed(KategoriPortofolioSeeder::class);
     $this->seed(PortofolioDummySeeder::class);
     $this->seed(PortofolioDummySeeder::class);
 
     expect(Portofolio::count())->toBe(7)
         ->and(Portofolio::pluck('slug')->unique())->toHaveCount(7)
-        ->and(GambarPortofolio::count())->toBe(7 * (StorePortofolioRequest::MAKS_GAMBAR - 1));
+        ->and(GambarPortofolio::count())->toBe(7 * (StorePortofolioRequest::MAKS_GAMBAR - 1))
+        // Setiap kategori awal punya contoh, dicocokkan lewat nama dari KategoriPortofolioSeeder.
+        ->and(KategoriPortofolio::withCount('portofolio')->orderBy('id_kategori_portofolio')->pluck('portofolio_count', 'nama_kategori')->all())
+        ->toBe(['Website' => 2, 'Mobile Apps' => 2, 'Pelatihan IT' => 1, 'Sertifikasi IT' => 1, 'Bootcamp' => 1]);
     Portofolio::with('gambarPortofolio')->get()->each(function (Portofolio $portofolio) {
         // Setiap portofolio contoh berisi gambar penuh (pilihan pemilik 2026-10-18).
         expect($portofolio->gambarPortofolio)->toHaveCount(StorePortofolioRequest::MAKS_GAMBAR - 1);

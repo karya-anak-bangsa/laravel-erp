@@ -8,6 +8,7 @@ use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\Pengguna;
+use Database\Seeders\KategoriPortofolioSeeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -158,18 +159,19 @@ describe('isi', function () {
             ->assertDontSee('Sub-judul');
     });
 
-    it('menampilkan enam portofolio terbaru menurut urutan kategori utama', function () {
-        Portofolio::factory()->create(['judul' => 'Portofolio Terlama', 'kategori' => 'Kategori Lama', 'created_at' => now()->subDays(10)]);
+    it('menampilkan enam portofolio terbaru menurut urutan kategori dibuat', function () {
+        // Kategori awal mengikuti urutan layanan; kategori yang ditambahkan admin di belakangnya.
+        $this->seed(KategoriPortofolioSeeder::class);
+        Portofolio::factory()->kategori('Kategori Lama')->create(['judul' => 'Portofolio Terlama', 'created_at' => now()->subDays(10)]);
         foreach ([
             ['Proyek Bootcamp', 'Bootcamp'],
             ['Proyek Website Baru', 'Website'],
             ['Proyek Lain', 'Kategori Lain'],
             ['Proyek Mobile', 'Mobile Apps'],
             ['Proyek Website Lama', 'Website'],
-            // Kategori ditulis bebas: dikenali sebagai kategori utama lewat slug.
-            ['Proyek Pelatihan', 'pelatihan it'],
+            ['Proyek Pelatihan', 'Pelatihan IT'],
         ] as $hari => [$judul, $kategori]) {
-            Portofolio::factory()->create(['judul' => $judul, 'kategori' => $kategori, 'created_at' => now()->subDays($hari + 1)]);
+            Portofolio::factory()->kategori($kategori)->create(['judul' => $judul, 'created_at' => now()->subDays($hari + 1)]);
         }
 
         $this->get('/')
@@ -179,8 +181,8 @@ describe('isi', function () {
     });
 
     it('menampilkan portofolio tanpa tab filter kategori', function () {
-        Portofolio::factory()->create(['kategori' => 'Website']);
-        Portofolio::factory()->create(['kategori' => 'Mobile Apps']);
+        Portofolio::factory()->kategori('Website')->create();
+        Portofolio::factory()->kategori('Mobile Apps')->create();
 
         $this->get('/')
             ->assertSee('class="daftar-portofolio', false)

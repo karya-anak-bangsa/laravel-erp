@@ -20,7 +20,7 @@
                             <span class="gambar-terbaru"><img src="{{ $item->gambar_url }}" width="800" height="600" loading="lazy" decoding="async" alt="" class="gambar-konten"></span>
                             <span class="isi-terbaru">
                                 <span class="judul-terbaru">{{ $item->judul }}</span>
-                                <span class="kategori-terbaru">{{ $item->kategori }}</span>
+                                <span class="kategori-terbaru">{{ $item->kategoriPortofolio->nama_kategori }}</span>
                             </span>
                         </a>
                     </li>
