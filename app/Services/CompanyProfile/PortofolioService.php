@@ -6,6 +6,7 @@ use App\Models\CompanyProfile\GambarPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\Shared\FileUploadService;
 use App\Services\Shared\SlugService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -35,16 +36,19 @@ class PortofolioService
     }
 
     /**
-     * @param  array<string, mixed>  $data  hasil validasi UpdatePortofolioRequest
+     * @param  array<string, mixed>  $data  hasil validasi UpdatePortofolioRequest; galeri_lama = id gambar tambahan lama
+     *                                      yang dipertahankan (tanpa kunci ini semua gambar tambahan lama tetap)
      */
     public function perbarui(Portofolio $portofolio, array $data): Portofolio
     {
         // Dicatat sebelum disimpan: berkasnya baru dihapus setelah data tersimpan, sama dengan gambar utama yang diganti.
-        $dibuang = $portofolio->gambarPortofolio()->whereKey($data['hapus_galeri'] ?? [])->get();
+        $dibuang = array_key_exists('galeri_lama', $data)
+            ? $portofolio->gambarPortofolio()->whereKeyNot(Arr::wrap($data['galeri_lama']))->get()
+            : new Collection;
 
         // Slug tidak ikut judul: portofolio tanpa draf langsung tayang, jadi tautannya mungkin sudah tersebar
         // (pilihan pemilik 2026-10-18).
-        $hasil = $this->fileUpload->simpanDenganBerkas($portofolio, Arr::except($data, 'hapus_galeri'), ['gambar', 'galeri'], Portofolio::FOLDER, Portofolio::DISK,
+        $hasil = $this->fileUpload->simpanDenganBerkas($portofolio, Arr::except($data, 'galeri_lama'), ['gambar', 'galeri'], Portofolio::FOLDER, Portofolio::DISK,
             fn (array $data): Portofolio => DB::transaction(function () use ($portofolio, $data, $dibuang): Portofolio {
                 $portofolio->update(Arr::except($data, 'galeri'));
                 GambarPortofolio::query()->whereKey($dibuang->modelKeys())->delete();

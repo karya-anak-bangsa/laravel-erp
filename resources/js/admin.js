@@ -15,6 +15,31 @@ pasangRepeater();
 pasangTandaiBaca();
 pasangFormTemplate();
 
+// Pratinjau berkas yang baru dipilih di baris gambar tambahan portofolio (admin/company-profile/portofolio/_baris-gambar).
+// Lewat delegasi karena barisnya bisa ditambah repeater.
+document.addEventListener('change', (event) => {
+    const isian = event.target;
+    if (!(isian instanceof HTMLInputElement) || !isian.matches('[data-pratinjau-sumber]')) {
+        return;
+    }
+
+    const gambar = isian.closest('[data-repeater-baris]')?.querySelector('[data-pratinjau-berkas]');
+    if (!(gambar instanceof HTMLImageElement)) {
+        return;
+    }
+
+    if (gambar.src.startsWith('blob:')) {
+        URL.revokeObjectURL(gambar.src);
+    }
+    const berkas = isian.files?.[0];
+    gambar.hidden = !berkas?.type.startsWith('image/');
+    if (gambar.hidden) {
+        gambar.removeAttribute('src');
+    } else {
+        gambar.src = URL.createObjectURL(berkas);
+    }
+});
+
 // Editor WYSIWYG cukup berat (TipTap + ProseMirror), jadi hanya dimuat di halaman form yang memakainya.
 if (document.querySelector('[data-editor]')) {
     import('./admin/editor.js').then(({ pasangEditor }) => pasangEditor());

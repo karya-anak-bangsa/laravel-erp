@@ -458,7 +458,7 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
    di atas latar abu muda. Panah & titik di atas gambar baru tampil setelah carousel.js terpasang. Ukuran sama di kedua
    tema. Lebar jalur dibulatkan ke piksel utuh: posisi gulir selalu bulat, jadi slide selebar pecahan piksel menyisakan
    garis slide sebelahnya. */
-.carousel { @apply relative; }
+.carousel-layar { @apply relative; }
 .carousel-jalur { @apply flex overflow-x-auto rounded-kartu border bg-muted; width: round(down, 100%, 1px); scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
 .carousel-jalur::-webkit-scrollbar { display: none; }
 .carousel-slide { @apply shrink-0 basis-full; scroll-snap-align: start; }
@@ -475,6 +475,18 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .carousel-titik { @apply absolute bottom-3 left-1/2 z-1 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5; }
 .carousel-titik button { @apply size-2 rounded-full bg-white/55 motion-safe:transition-[width]; }
 .carousel-titik [aria-current] { @apply w-5 bg-white; }
+/* Miniatur semua gambar di dalam bingkai, di bawah gambar utama (pilihan pemilik 2026-10-18): mulai 1024px, saat kolom
+   samping muncul, menggantikan titik. Lima kolom tetap (batas gambar per portofolio) sehingga ukurannya sama berapa pun
+   jumlah gambarnya. Cincin aktif digambar di dalam miniatur agar tidak menempel di tepi bingkai, dengan celah putih agar
+   tetap terlihat di atas gambar berwarna senada. */
+.carousel-miniatur { @apply mt-2 hidden grid-cols-5 gap-2; }
+.carousel-miniatur button { @apply relative cursor-pointer overflow-hidden rounded-kartu border bg-muted; }
+.carousel-miniatur [aria-current]::after { content: ""; @apply pointer-events-none absolute inset-0; border-radius: inherit; box-shadow: inset 0 0 0 2px var(--primary), inset 0 0 0 4px rgb(255 255 255 / .9); }
+.bingkai-artikel .carousel-miniatur img { @apply aspect-4/3 rounded-none border-0 object-cover; }
+@media (min-width: 1024px) {
+  .carousel-miniatur { @apply grid; }
+  .carousel-titik { @apply hidden; }
+}
 .isi-artikel { @apply mt-10 text-[17px]/[1.75] text-teks sm:mt-12 sm:text-lg/8; }
 /* Tanggal terbit di akhir isi (pilihan pemilik 2026-10-15), bergaya tanggal kartu artikel; berjarak seperti antarparagraf
    agar terbaca sebagai baris terakhir artikel, bukan bagian tombol bagikan. */

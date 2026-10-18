@@ -93,17 +93,18 @@ it('menyimpan gambar tambahan urut unggah bersama portofolio baru', function () 
     $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
 });
 
-it('membuang gambar tambahan terpilih beserta berkasnya dan menambah gambar baru', function () {
+it('membuang gambar tambahan yang tidak dipertahankan beserta berkasnya dan menambah gambar baru', function () {
     $portofolio = Portofolio::factory()->create();
     Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
     Storage::disk('public')->put('company-profile/portofolio/tetap.webp', 'isi');
-    $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
-    GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/tetap.webp']);
+    GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+    $tetap = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/tetap.webp']);
 
     $this->portofolio->perbarui($portofolio, dataPortofolioUji([
         'gambar' => null,
-        'hapus_galeri' => [$dibuang->id_gambar_portofolio],
-        'galeri' => [UploadedFile::fake()->image('baru.webp')],
+        'galeri_lama' => [$tetap->id_gambar_portofolio],
+        // Baris repeater tanpa berkas terkirim null.
+        'galeri' => [null, UploadedFile::fake()->image('baru.webp')],
     ]));
 
     expect($portofolio->gambarPortofolio()->pluck('gambar')->all())
@@ -114,6 +115,15 @@ it('membuang gambar tambahan terpilih beserta berkasnya dan menambah gambar baru
         );
     Storage::disk('public')->assertMissing('company-profile/portofolio/buang.webp');
     Storage::disk('public')->assertExists('company-profile/portofolio/tetap.webp');
+});
+
+it('membiarkan gambar tambahan lama bila daftar yang dipertahankan tidak diberikan', function () {
+    $portofolio = Portofolio::factory()->create();
+    GambarPortofolio::factory()->count(2)->for($portofolio)->create();
+
+    $this->portofolio->perbarui($portofolio, dataPortofolioUji(['gambar' => null]));
+
+    expect($portofolio->gambarPortofolio()->count())->toBe(2);
 });
 
 it('membersihkan gambar baru bila penyimpanan gagal', function () {
@@ -130,12 +140,13 @@ it('membersihkan gambar baru bila penyimpanan gagal', function () {
 it('mempertahankan gambar tambahan yang akan dibuang bila penyimpanan perubahan gagal', function () {
     $portofolio = Portofolio::factory()->create();
     Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
-    $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+    GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
 
     expect(fn () => $this->portofolio->perbarui($portofolio, dataPortofolioUji([
         'kategori' => str_repeat('a', 100),
         'gambar' => null,
-        'hapus_galeri' => [$dibuang->id_gambar_portofolio],
+        // Tidak ada gambar lama yang dipertahankan.
+        'galeri_lama' => [],
         'galeri' => [UploadedFile::fake()->image('baru.png')],
     ])))->toThrow(QueryException::class);
 

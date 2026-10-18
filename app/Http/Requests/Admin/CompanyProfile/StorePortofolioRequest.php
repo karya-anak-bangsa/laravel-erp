@@ -35,7 +35,8 @@ class StorePortofolioRequest extends FormRequest
             'deskripsi' => ['required', 'string', new PanjangTeksHtml(5000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'galeri' => ['nullable', 'array', 'max:'.(self::MAKS_GAMBAR - 1)],
-            'galeri.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            // Baris repeater yang belum diberi berkas terkirim kosong (null) dan dilewati FileUploadService.
+            'galeri.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 

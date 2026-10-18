@@ -75,7 +75,7 @@ class PortofolioDummySeeder extends Seeder
                 'mobile-apps',
                 'Aplikasi Antrean Klinik Sehat Sentosa',
                 'Mobile Apps',
-                'Pasien dapat mengambil nomor antrean dari rumah dan menerima notifikasi saat gilirannya hampir tiba, sehingga ruang tunggu klinik tidak lagi penuh.',
+                'Pasien dapat mengambil nomor antrean dari rumah dan menerima notifikasi saat gilirannya hampir tiba sehingga ruang tunggu klinik tidak lagi penuh.',
                 ['hero/mobile-apps', 'artikel/flutter', 'artikel/javascript', 'artikel/database'],
             ],
             [
@@ -97,7 +97,7 @@ class PortofolioDummySeeder extends Seeder
                 'sertifikasi-it',
                 'Sertifikasi Junior Web Developer Lulusan SMK',
                 'Sertifikasi IT',
-                'Pendampingan uji kompetensi bagi lulusan SMK, mulai dari pembekalan materi dan simulasi uji hingga pelaksanaan asesmen, sehingga peserta memperoleh sertifikat keahlian yang diakui industri.',
+                'Pendampingan uji kompetensi bagi lulusan SMK, mulai dari pembekalan materi dan simulasi uji hingga pelaksanaan asesmen sehingga peserta memperoleh sertifikat keahlian yang diakui industri.',
                 ['hero/sertifikasi-it', 'artikel/javascript', 'artikel/laravel', 'artikel/database'],
             ],
         ];

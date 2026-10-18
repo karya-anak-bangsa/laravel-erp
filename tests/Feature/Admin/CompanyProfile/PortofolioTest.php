@@ -223,6 +223,16 @@ it('menambah portofolio beserta gambar tambahannya urut unggah', function () {
     $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
 });
 
+it('mengabaikan baris gambar tambahan yang belum diberi berkas', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.portofolio.store'), dataPortofolioValid([
+            'galeri' => [null, UploadedFile::fake()->image('kedua.png'), null],
+        ]))
+        ->assertSessionHasNoErrors();
+
+    expect(Portofolio::sole()->gambarPortofolio)->toHaveCount(1);
+});
+
 it('menolak lebih dari empat gambar tambahan saat menambah', function () {
     $galeri = array_map(fn (int $nomor) => UploadedFile::fake()->image("galeri-{$nomor}.png"), range(1, StorePortofolioRequest::MAKS_GAMBAR));
 
@@ -234,34 +244,53 @@ it('menolak lebih dari empat gambar tambahan saat menambah', function () {
         ->and(Storage::disk('public')->allFiles(Portofolio::FOLDER))->toBe([]);
 });
 
-it('menampilkan gambar tambahan tersimpan beserta centang hapus di form ubah', function () {
+it('menampilkan gambar tambahan sebagai repeater dengan baris gambar tersimpan di form ubah', function () {
     $portofolio = Portofolio::factory()->create();
     $gambar = GambarPortofolio::factory()->for($portofolio)->create();
 
-    $this->actingAs($this->admin)
+    $respons = $this->actingAs($this->admin)
         ->get(route('admin.portofolio.edit', $portofolio))
         ->assertOk()
         ->assertSeeInOrder([
-            'Gambar Tambahan Saat Ini',
+            'data-repeater data-repeater-maks="4"',
             Storage::disk('public')->url($gambar->gambar),
-            'name="hapus_galeri[]" value="'.$gambar->id_gambar_portofolio.'"',
-            'name="galeri[]"',
+            'name="galeri_lama[0]" value="'.$gambar->id_gambar_portofolio.'"',
+            'aria-label="Buang gambar"',
+            'Belum ada gambar tambahan.',
+            '<template data-repeater-templat>',
+            'name="galeri[__i__]"',
+            'Tambah Gambar',
         ], false)
-        ->assertSee('multiple', false);
+        ->assertDontSee('multiple', false);
+
+    expect($respons->getContent())->toMatch('/data-repeater-kosong\s+hidden/');
 });
 
-it('membuang gambar tambahan terpilih beserta berkasnya dan menambah gambar baru di akhir', function () {
+it('tidak memunculkan lagi baris gambar tambahan yang sudah dibuang setelah validasi gagal', function () {
+    $portofolio = Portofolio::factory()->create();
+    $dibuang = GambarPortofolio::factory()->for($portofolio)->create();
+    $tetap = GambarPortofolio::factory()->for($portofolio)->create();
+
+    $this->actingAs($this->admin)
+        ->withSession(['_old_input' => ['judul' => '', 'galeri_lama' => [(string) $tetap->id_gambar_portofolio]]])
+        ->get(route('admin.portofolio.edit', $portofolio))
+        ->assertSee('value="'.$tetap->id_gambar_portofolio.'"', false)
+        ->assertDontSee(Storage::disk('public')->url($dibuang->gambar), false);
+});
+
+it('membuang gambar tambahan yang barisnya dibuang beserta berkasnya dan menambah gambar baru di akhir', function () {
     $portofolio = Portofolio::factory()->create();
     Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
     Storage::disk('public')->put('company-profile/portofolio/tetap.webp', 'isi');
     $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
     $tetap = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/tetap.webp']);
 
+    // Indeks mengikuti baris repeater: gambar lama di baris 1, unggahan baru di baris 2 & 3 (baris 3 belum diberi berkas).
     $this->actingAs($this->admin)
         ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
             'gambar' => null,
-            'hapus_galeri' => [$dibuang->id_gambar_portofolio],
-            'galeri' => [UploadedFile::fake()->image('baru.png')],
+            'galeri_lama' => [1 => $tetap->id_gambar_portofolio],
+            'galeri' => [2 => UploadedFile::fake()->image('baru.png'), 3 => null],
         ]))
         ->assertSessionHasNoErrors();
 
@@ -282,7 +311,11 @@ it('menghitung gambar tambahan lama saat membatasi unggahan baru di form ubah', 
 
     // 3 lama + 2 baru = 5 gambar tambahan, melewati batas 4.
     $this->actingAs($this->admin)
-        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid(['gambar' => null, 'galeri' => $baru()]))
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
+            'gambar' => null,
+            'galeri_lama' => $lama->modelKeys(),
+            'galeri' => $baru(),
+        ]))
         ->assertSessionHasErrors(['galeri' => 'Setiap portofolio paling banyak 5 gambar termasuk gambar utama, jadi gambar tambahan paling banyak 4.']);
     expect($portofolio->gambarPortofolio()->count())->toBe(3);
 
@@ -290,23 +323,37 @@ it('menghitung gambar tambahan lama saat membatasi unggahan baru di form ubah', 
     $this->actingAs($this->admin)
         ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
             'gambar' => null,
-            'hapus_galeri' => [$lama[0]->id_gambar_portofolio],
+            'galeri_lama' => [$lama[1]->id_gambar_portofolio, $lama[2]->id_gambar_portofolio],
             'galeri' => $baru(),
         ]))
         ->assertSessionHasNoErrors();
     expect($portofolio->gambarPortofolio()->count())->toBe(4);
 });
 
-it('menolak membuang gambar tambahan milik portofolio lain', function () {
+it('menghapus semua gambar tambahan bila semua barisnya dibuang', function () {
+    $portofolio = Portofolio::factory()->create();
+    Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
+    GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+
+    // Tanpa baris, galeri_lama tidak terkirim sama sekali.
+    $this->actingAs($this->admin)
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid(['gambar' => null]))
+        ->assertSessionHasNoErrors();
+
+    expect($portofolio->gambarPortofolio()->count())->toBe(0);
+    Storage::disk('public')->assertMissing('company-profile/portofolio/buang.webp');
+});
+
+it('menolak mempertahankan gambar tambahan milik portofolio lain', function () {
     $portofolio = Portofolio::factory()->create();
     $milikLain = GambarPortofolio::factory()->create();
 
     $this->actingAs($this->admin)
         ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
             'gambar' => null,
-            'hapus_galeri' => [$milikLain->id_gambar_portofolio],
+            'galeri_lama' => [$milikLain->id_gambar_portofolio],
         ]))
-        ->assertSessionHasErrors('hapus_galeri.0');
+        ->assertSessionHasErrors('galeri_lama.0');
 
     expect(GambarPortofolio::find($milikLain->id_gambar_portofolio))->not->toBeNull();
 });

@@ -1,12 +1,13 @@
 // Carousel gambar detail portofolio: jalur scroll-snap sehingga bisa digeser langsung di layar sentuh, ditambah panah dan
-// titik. Panah di slide pertama dan terakhir disembunyikan (pilihan pemilik 2026-10-18).
+// titik, atau miniatur di desktop. Panah di slide pertama dan terakhir disembunyikan (pilihan pemilik 2026-10-18).
 export function pasangCarousel() {
     document.querySelectorAll('[data-carousel]').forEach((carousel) => {
         const jalur = carousel.querySelector('[data-carousel-jalur]');
         const jumlah = jalur.children.length;
         const sebelumnya = carousel.querySelector('[data-carousel-sebelumnya]');
         const berikutnya = carousel.querySelector('[data-carousel-berikutnya]');
-        const titik = [...carousel.querySelectorAll('[data-carousel-titik]')];
+        // Penanda slide: titik (tablet & ponsel) dan miniatur (desktop), masing-masing urut sesuai slide.
+        const penanda = [carousel.querySelectorAll('[data-carousel-titik]'), carousel.querySelectorAll('[data-carousel-miniatur]')];
         // Keadaan slide pertama sudah dirender server.
         let aktif = 0;
         let menunggu = false;
@@ -22,13 +23,13 @@ export function pasangCarousel() {
                 return;
             }
             aktif = nomor;
-            titik.forEach((t, i) => {
+            penanda.forEach((daftar) => daftar.forEach((tombol, i) => {
                 if (i === nomor) {
-                    t.setAttribute('aria-current', 'true');
+                    tombol.setAttribute('aria-current', 'true');
                 } else {
-                    t.removeAttribute('aria-current');
+                    tombol.removeAttribute('aria-current');
                 }
-            });
+            }));
 
             // Panah yang akan disembunyikan tidak boleh memegang fokus: fokus pindah ke panah lawannya.
             const diAwal = nomor === 0;
@@ -60,7 +61,7 @@ export function pasangCarousel() {
 
         sebelumnya.addEventListener('click', () => ke(aktif - 1));
         berikutnya.addEventListener('click', () => ke(aktif + 1));
-        titik.forEach((t, i) => t.addEventListener('click', () => ke(i)));
+        penanda.forEach((daftar) => daftar.forEach((tombol, i) => tombol.addEventListener('click', () => ke(i))));
         carousel.dataset.siap = '';
     });
 }

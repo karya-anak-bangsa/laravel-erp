@@ -131,10 +131,20 @@ describe('detail portofolio', function () {
                 'aria-label="Gambar 1"',
                 'aria-current="true"',
                 'aria-label="Gambar 3"',
+                // Miniatur desktop: urutan sama, miniatur pertama aktif, semuanya lazy agar tidak diunduh di ponsel.
+                '<div class="carousel-miniatur">',
+                'data-carousel-miniatur aria-label="Gambar 1"',
+                'aria-current="true"',
+                '<img src="'.$portofolio->gambar_url.'" width="800" height="600" loading="lazy"',
+                'data-carousel-miniatur aria-label="Gambar 2"',
+                '<img src="'.$kedua->gambar_url.'" width="800" height="600" loading="lazy"',
+                'data-carousel-miniatur aria-label="Gambar 3"',
+                '<img src="'.$ketiga->gambar_url.'" width="800" height="600" loading="lazy"',
             ], false)
             ->assertDontSee('milik-lain.webp', false);
 
         expect(substr_count($respons->getContent(), 'data-carousel-titik'))->toBe(3)
+            ->and(substr_count($respons->getContent(), 'data-carousel-miniatur'))->toBe(3)
             ->and(substr_count($respons->getContent(), 'fetchpriority="high"'))->toBe(1);
     });
 

@@ -39,7 +39,7 @@
         <label class="form-label" id="{{ $id }}-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
-    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel 15 baris (pilihan pemilik). --}}
+    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel & deskripsi portofolio 15 baris (pilihan pemilik). --}}
     <div @class(['editor', 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}@if ((int) $baris !== 5) style="--editor-baris: {{ (int) $baris }}"@endif>
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)

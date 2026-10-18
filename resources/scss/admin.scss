@@ -296,7 +296,7 @@ a.btn:hover {
 }
 
 // Editor setinggi 5 baris teks (20px per baris + padding), seperti textarea rows="5"
-// (pilihan pemilik); isi artikel 15 baris lewat --editor-baris (prop baris). Isi lebih
+// (pilihan pemilik); isi artikel & deskripsi portofolio 15 baris lewat --editor-baris (prop baris). Isi lebih
 // panjang digulir; tinggi bisa ditarik seperti textarea.
 .editor-konten {
     height: calc(var(--editor-baris, 5) * 20px + 16px);
@@ -403,25 +403,6 @@ a.btn:hover {
 // Gambar foto (mis. hero) butuh pratinjau lebih tinggi daripada logo.
 .pratinjau-gambar-lebar {
     height: 180px;
-}
-
-// Gambar tambahan portofolio di form ubah: miniatur 4:3 dengan centang Hapus di bawahnya.
-.galeri-admin {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-    gap: 12px;
-    margin: 0 0 4px;
-    padding: 0;
-    list-style: none;
-
-    img {
-        display: block;
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        object-fit: cover;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius);
-    }
 }
 
 // Gambar mini di tabel daftar, rasio 3:2 seperti gambar hero.
@@ -625,6 +606,35 @@ table.table .kolom-sedang {
 
 .repeater-tambah {
     margin-top: 8px;
+}
+
+// Baris gambar tambahan portofolio: miniatur 4:3 di kiri, isian di tengah, tombol buang di kanan, semuanya di tengah
+// tinggi miniatur.
+.repeater-baris.baris-gambar {
+    align-items: center;
+}
+
+.pratinjau-gambar-baris {
+    flex: none;
+    width: 64px;
+    height: 48px;
+    margin-bottom: 0;
+    padding: 0;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    img[hidden] {
+        display: none;
+    }
+}
+
+.baris-gambar-keterangan {
+    color: var(--text-muted);
 }
 
 // .form-help mengatur display sendiri sehingga atribut hidden perlu ditegaskan.

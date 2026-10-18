@@ -10,21 +10,30 @@ use Illuminate\Validation\Validator;
 
 class UpdatePortofolioRequest extends StorePortofolioRequest
 {
+    protected function prepareForValidation(): void
+    {
+        parent::prepareForValidation();
+
+        // Form mengirim gambar tambahan lama yang dipertahankan; bila semua barisnya dibuang, isian ini tidak terkirim
+        // sama sekali sehingga artinya "tidak ada yang dipertahankan", bukan "tidak diubah".
+        $this->mergeIfMissing(['galeri_lama' => []]);
+    }
+
     public function rules(): array
     {
         return [
             ...parent::rules(),
             // Saat ubah, gambar lama dipakai bila tidak ada unggahan baru.
             'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            // Hanya gambar tambahan milik portofolio ini yang boleh dibuang.
-            'hapus_galeri' => ['nullable', 'array'],
-            'hapus_galeri.*' => ['integer', Rule::exists('tb_gambar_portofolio', 'id_gambar_portofolio')
+            // Hanya gambar tambahan milik portofolio ini yang bisa dipertahankan.
+            'galeri_lama' => ['present', 'array'],
+            'galeri_lama.*' => ['integer', 'distinct', Rule::exists('tb_gambar_portofolio', 'id_gambar_portofolio')
                 ->where('id_portofolio', $this->portofolioDiubah()->id_portofolio)],
         ];
     }
 
     /**
-     * Gambar tambahan yang tersisa setelah dibuang, ditambah unggahan baru, tetap dalam batas.
+     * Gambar tambahan lama yang dipertahankan ditambah unggahan baru tetap dalam batas.
      *
      * @return list<Closure(Validator): void>
      */
@@ -37,10 +46,12 @@ class UpdatePortofolioRequest extends StorePortofolioRequest
                     return;
                 }
 
-                $dibuang = array_filter((array) $this->input('hapus_galeri', []), is_numeric(...));
-                $sisa = $this->portofolioDiubah()->gambarPortofolio()->whereKeyNot($dibuang)->count();
+                $dipertahankan = array_filter(Arr::wrap($this->input('galeri_lama')), is_numeric(...));
+                $lama = $this->portofolioDiubah()->gambarPortofolio()->whereKey($dipertahankan)->count();
+                // Baris repeater tanpa berkas bernilai null, jadi tidak dihitung.
+                $baru = count(array_filter(Arr::wrap($validator->getData()['galeri'] ?? [])));
 
-                if ($sisa + count(Arr::wrap($this->file('galeri'))) > self::MAKS_GAMBAR - 1) {
+                if ($lama + $baru > self::MAKS_GAMBAR - 1) {
                     $validator->errors()->add('galeri', self::pesanBatasGambar());
                 }
             },
