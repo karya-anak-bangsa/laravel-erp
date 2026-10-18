@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\Portofolio;
 use App\Support\Seo;
 use Illuminate\Http\Response;
 
@@ -15,8 +16,8 @@ use Illuminate\Http\Response;
 class SeoController extends Controller
 {
     /**
-     * Beranda, daftar artikel, kategori yang punya artikel terbit, dan semua artikel terbit. Halaman paginasi tidak
-     * dimasukkan karena perayap menemukannya lewat tautan di halaman daftar.
+     * Beranda, daftar artikel, kategori yang punya artikel terbit, semua artikel terbit, daftar portofolio, dan semua
+     * portofolio. Halaman paginasi tidak dimasukkan karena perayap menemukannya lewat tautan di halaman daftar.
      */
     public function sitemap(): Response
     {
@@ -31,7 +32,9 @@ class SeoController extends Controller
             ->orderBy('nama_kategori')
             ->get(['id_kategori_artikel', 'slug', 'updated_at']);
 
-        return response()->view('seo.sitemap', compact('artikel', 'kategori'))
+        $portofolio = Portofolio::query()->terbaru()->get(['id_portofolio', 'slug', 'updated_at']);
+
+        return response()->view('seo.sitemap', compact('artikel', 'kategori', 'portofolio'))
             ->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 

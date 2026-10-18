@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use Database\Factories\CompanyProfile\PortofolioFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +53,16 @@ class Portofolio extends Model
         $posisi = array_search($slug, array_map(Str::slug(...), self::KATEGORI_UTAMA), true);
 
         return $posisi === false ? [count(self::KATEGORI_UTAMA), $slug] : [$posisi, ''];
+    }
+
+    /**
+     * Terbaru lebih dulu (id memecah created_at kembar, mis. data seeder yang dibuat dalam detik yang sama).
+     *
+     * @param  Builder<Portofolio>  $query
+     */
+    public function scopeTerbaru(Builder $query): void
+    {
+        $query->latest()->latest('id_portofolio');
     }
 
     /**

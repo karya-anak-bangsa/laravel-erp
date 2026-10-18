@@ -65,6 +65,16 @@
                                                                 <td>/portofolio/{{ $item->slug }}</td>
                                                             </tr>
                                                             <tr>
+                                                                <th scope="row">Halaman</th>
+                                                                <td>
+                                                                    <a href="{{ route('portofolio.show', $item->slug) }}" target="_blank" rel="noopener"
+                                                                        class="btn btn-info btn-sm">
+                                                                        <x-admin.icon name="eye" />
+                                                                        Buka halaman
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <th scope="row">Deskripsi</th>
                                                                 <td class="konten-html">{!! $item->deskripsi !!}</td>
                                                             </tr>

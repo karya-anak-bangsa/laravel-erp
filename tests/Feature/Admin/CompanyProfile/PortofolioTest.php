@@ -75,6 +75,8 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
             '<template id="detail-',
             'Mobile Apps',
             '/portofolio/aplikasi-klinik',
+            'href="'.route('portofolio.show', 'aplikasi-klinik').'" target="_blank" rel="noopener"',
+            'Buka halaman',
             'Antrean pasien dari rumah.',
             '09 Oktober 2026, 08:30',
             Storage::disk('public')->url($portofolio->gambar),
@@ -171,11 +173,11 @@ it('menampilkan form ubah berisi data tersimpan dan alamat detail', function () 
         ->assertOk()
         ->assertSee('value="Aplikasi Klinik"', false)
         ->assertSee('value="Mobile Apps"', false)
-        ->assertSee('/portofolio/aplikasi-klinik')
+        ->assertSee('/portofolio/aplikasi-klinik — tetap meskipun judul diubah')
         ->assertSee(Storage::disk('public')->url($portofolio->gambar));
 });
 
-it('memperbarui portofolio tanpa mengganti gambar dan menyesuaikan slug dengan judul baru', function () {
+it('memperbarui portofolio tanpa mengganti gambar maupun slugnya', function () {
     $portofolio = Portofolio::factory()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
     $gambarLama = $portofolio->gambar;
 
@@ -185,7 +187,7 @@ it('memperbarui portofolio tanpa mengganti gambar dan menyesuaikan slug dengan j
         ->assertSessionHasNoErrors();
 
     expect($portofolio->refresh()->judul)->toBe('Judul Baru')
-        ->and($portofolio->slug)->toBe('judul-baru')
+        ->and($portofolio->slug)->toBe('judul-lama')
         ->and($portofolio->gambar)->toBe($gambarLama);
 });
 

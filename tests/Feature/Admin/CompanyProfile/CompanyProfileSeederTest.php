@@ -47,7 +47,7 @@ it('membuat template aktif yang tampilannya sama dengan cadangan config', functi
 it('tidak memberi CTA hero tautan ke halaman publik yang belum ada', function () {
     $this->seed(CompanyProfileSeeder::class);
 
-    // Path internal (/portofolio dll.) menghasilkan 404; yang boleh hanya anchor beranda (#…) atau situs lain.
+    // Path internal (mis. /kontak) bisa menghasilkan 404; yang boleh hanya anchor beranda (#…) atau situs lain.
     $url = Hero::all()->flatMap(fn (Hero $hero) => array_column($hero->cta, 'url'));
 
     expect($url)->not->toBeEmpty()

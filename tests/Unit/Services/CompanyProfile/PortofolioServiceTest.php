@@ -39,12 +39,6 @@ it('menghitung slug portofolio yang sudah dihapus', function () {
     expect($this->portofolio->buatSlug('Aplikasi Klinik'))->toBe('aplikasi-klinik-2');
 });
 
-it('mengabaikan slug milik portofolio itu sendiri', function () {
-    $portofolio = Portofolio::factory()->create(['slug' => 'aplikasi-klinik']);
-
-    expect($this->portofolio->buatSlug('Aplikasi Klinik', $portofolio))->toBe('aplikasi-klinik');
-});
-
 it('memakai slug cadangan bila judul tidak menghasilkan slug', function () {
     expect($this->portofolio->buatSlug('???'))->toBe('portofolio');
 });
@@ -65,22 +59,15 @@ it('menyimpan portofolio baru beserta slug dan gambarnya', function () {
     Storage::disk('public')->assertExists($portofolio->gambar);
 });
 
-it('mempertahankan slug bila judul tidak berubah', function () {
-    $portofolio = Portofolio::factory()->create(['judul' => 'Portofolio Uji', 'slug' => 'slug-lama']);
-
-    $this->portofolio->perbarui($portofolio, dataPortofolioUji(['gambar' => null, 'kategori' => 'Mobile Apps']));
-
-    expect($portofolio->refresh()->slug)->toBe('slug-lama')
-        ->and($portofolio->kategori)->toBe('Mobile Apps');
-});
-
-it('memperbarui slug tanpa bentrok dengan portofolio lain saat judul berubah', function () {
-    Portofolio::factory()->create(['slug' => 'judul-baru']);
+it('mempertahankan slug walau judul diubah', function () {
     $portofolio = Portofolio::factory()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
 
-    $this->portofolio->perbarui($portofolio, dataPortofolioUji(['judul' => 'Judul Baru', 'gambar' => null]));
+    $this->portofolio->perbarui($portofolio, dataPortofolioUji(['judul' => 'Judul Baru', 'gambar' => null, 'kategori' => 'Mobile Apps']));
 
-    expect($portofolio->refresh()->slug)->toBe('judul-baru-2');
+    // Portofolio tanpa draf langsung tayang, jadi tautannya mungkin sudah tersebar.
+    expect($portofolio->refresh()->slug)->toBe('judul-lama')
+        ->and($portofolio->judul)->toBe('Judul Baru')
+        ->and($portofolio->kategori)->toBe('Mobile Apps');
 });
 
 it('mengganti gambar dan menghapus gambar lama', function () {

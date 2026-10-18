@@ -20,8 +20,8 @@
                 <h2 id="judul-kaki-tautan" class="judul-kaki">Tautan Cepat</h2>
                 <ul class="mt-3 grid">
                     @foreach (['beranda' => 'Beranda', 'layanan' => 'Layanan', 'portofolio' => 'Portofolio', 'artikel' => 'Artikel', 'faq' => 'FAQ', 'kontak' => 'Kontak'] as $anchor => $label)
-                        {{-- Sama dengan menu navbar: Artikel ke halamannya sendiri, sisanya seksi beranda. --}}
-                        <li><a href="{{ $anchor === 'artikel' ? route('artikel.index') : route('beranda').'#'.$anchor }}" class="tautan-kaki">{{ $label }}</a></li>
+                        {{-- Sama dengan menu navbar: Portofolio & Artikel ke halamannya sendiri, sisanya seksi beranda. --}}
+                        <li><a href="{{ in_array($anchor, ['portofolio', 'artikel'], true) ? route($anchor.'.index') : route('beranda').'#'.$anchor }}" class="tautan-kaki">{{ $label }}</a></li>
                     @endforeach
                 </ul>
             </nav>

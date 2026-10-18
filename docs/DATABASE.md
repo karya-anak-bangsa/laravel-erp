@@ -91,7 +91,7 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 | kategori | VARCHAR(50) | INDEX. Teks bebas (mis. Website, Mobile Apps); form memberi saran kategori yang sudah ada (`<datalist>`) agar penulisannya seragam. Dinormalisasi ke tabel sendiri bila dibutuhkan |
 | created_at, updated_at, deleted_at | | |
 
-Slug ikut berubah saat judul diubah; penguncian seperti artikel ditinjau saat halaman detail portofolio dibuat.
+Slug dibuat sekali saat portofolio disimpan dan tidak ikut berubah saat judul diubah: portofolio tidak punya draf, jadi langsung tayang di `/portofolio/{slug}` dan tautannya bisa langsung tersebar.
 
 ### tb_kategori_artikel
 | Kolom | Tipe | Keterangan |

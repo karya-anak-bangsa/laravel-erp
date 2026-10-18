@@ -4,8 +4,8 @@
         <x-admin.form-input name="judul" label="Judul" :value="$portofolio->judul" :required="true" maxlength="200"
             placeholder="mis. Website Profil Sekolah Harapan Bangsa"
             :hint="$portofolio->exists
-                ? 'Alamat halaman detail: /portofolio/'.$portofolio->slug.' — ikut berubah bila judul diubah.'
-                : 'Alamat halaman detail (slug) dibuat otomatis dari judul.'" />
+                ? 'Alamat halaman detail: /portofolio/'.$portofolio->slug.' — tetap meskipun judul diubah, agar tautan yang sudah dibagikan tidak rusak.'
+                : 'Alamat halaman detail (slug) dibuat otomatis dari judul dan tidak berubah lagi setelah disimpan.'" />
         <x-admin.form-input name="kategori" label="Kategori" :value="$portofolio->kategori" :required="true" maxlength="50"
             list="saran-kategori" autocomplete="off" placeholder="mis. Website"
             hint="Pilih dari saran agar penulisan kategori seragam, atau ketik kategori baru." />

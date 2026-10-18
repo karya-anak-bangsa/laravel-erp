@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
+use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\Portofolio;
 use App\Models\Pengguna;
 use App\Support\Seo;
 use Illuminate\Http\UploadedFile;
@@ -73,9 +75,12 @@ describe('judul, deskripsi, dan alamat kanonis', function () {
 
     it('memberi halaman paginasi alamat kanonisnya sendiri', function () {
         Artikel::factory()->terbit()->count(ArtikelController::PER_HALAMAN + 1)->create();
+        Portofolio::factory()->count(PortofolioController::PER_HALAMAN + 1)->create();
 
-        $this->get('/artikel?page=2')->assertSee('<link rel="canonical" href="'.$this->akar.'/artikel?page=2">', false);
-        $this->get('/artikel?page=1')->assertSee('<link rel="canonical" href="'.$this->akar.'/artikel">', false);
+        foreach (['artikel', 'portofolio'] as $daftar) {
+            $this->get("/{$daftar}?page=2")->assertSee('<link rel="canonical" href="'.$this->akar."/{$daftar}?page=2\">", false);
+            $this->get("/{$daftar}?page=1")->assertSee('<link rel="canonical" href="'.$this->akar."/{$daftar}\">", false);
+        }
     });
 
     it('memakai slug tersimpan sebagai alamat kanonis artikel', function () {
@@ -101,8 +106,9 @@ describe('robots', function () {
     it('mengizinkan pengindeksan halaman publik secara bawaan', function () {
         Artikel::factory()->terbit()->for(KategoriArtikel::factory()->create(['slug' => 'kategori-terindeks']), 'kategoriArtikel')
             ->create(['slug' => 'artikel-terindeks']);
+        Portofolio::factory()->create(['slug' => 'portofolio-terindeks']);
 
-        foreach (['/', '/artikel', '/artikel/kategori/kategori-terindeks', '/artikel/artikel-terindeks'] as $alamat) {
+        foreach (['/', '/artikel', '/artikel/kategori/kategori-terindeks', '/artikel/artikel-terindeks', '/portofolio', '/portofolio/portofolio-terindeks'] as $alamat) {
             $this->get($alamat)
                 ->assertSee('<meta name="robots" content="max-image-preview:large">', false)
                 ->assertDontSee('noindex', false);
@@ -113,8 +119,9 @@ describe('robots', function () {
         config(['seo.indeks' => false]);
         Artikel::factory()->terbit()->for(KategoriArtikel::factory()->create(['slug' => 'kategori-tertutup']), 'kategoriArtikel')
             ->create(['slug' => 'artikel-tertutup']);
+        Portofolio::factory()->create(['slug' => 'portofolio-tertutup']);
 
-        foreach (['/', '/artikel', '/artikel/kategori/kategori-tertutup', '/artikel/artikel-tertutup'] as $alamat) {
+        foreach (['/', '/artikel', '/artikel/kategori/kategori-tertutup', '/artikel/artikel-tertutup', '/portofolio', '/portofolio/portofolio-tertutup'] as $alamat) {
             $this->get($alamat)
                 ->assertSee('<meta name="robots" content="noindex">', false)
                 ->assertDontSee('max-image-preview', false);
@@ -131,13 +138,13 @@ describe('robots', function () {
 });
 
 describe('pratinjau tautan', function () {
-    it('memakai gambar hero aktif beserta ukurannya di beranda dan daftar artikel', function () {
+    it('memakai gambar hero aktif beserta ukurannya di beranda dan halaman daftar', function () {
         Hero::factory()->aktif()->create([
             'judul' => 'Hero & Uji',
             'gambar' => simpanGambarUji('company-profile/hero/hero-uji.webp', 1200, 630),
         ]);
 
-        foreach (['/', '/artikel'] as $alamat) {
+        foreach (['/', '/artikel', '/portofolio'] as $alamat) {
             $this->get($alamat)
                 ->assertSee('<meta property="og:image" content="'.$this->akar.'/storage/company-profile/hero/hero-uji.webp">', false)
                 ->assertSee('<meta property="og:image:width" content="1200">', false)
@@ -177,6 +184,26 @@ describe('pratinjau tautan', function () {
             ->assertSee('<meta property="article:published_time" content="2026-10-09T00:00:00+07:00">', false)
             ->assertSee('<meta property="article:modified_time" content="'.$artikel->updated_at->toIso8601String().'">', false)
             ->assertSee('<meta property="article:section" content="Teknologi">', false);
+    });
+
+    it('memakai judul dan gambar portofolio di halaman detail', function () {
+        Hero::factory()->aktif()->create(['gambar' => 'company-profile/hero/hero-lain.webp']);
+        Portofolio::factory()->create([
+            'judul' => 'Toko "Online" & Kerajinan',
+            'slug' => 'toko-online-kerajinan',
+            'gambar' => simpanGambarUji('company-profile/portofolio/portofolio-uji.webp', 800, 600),
+        ]);
+
+        // Dibuka dengan huruf besar: kanonis tetap dari slug tersimpan.
+        $this->get('/portofolio/TOKO-ONLINE-KERAJINAN')
+            ->assertOk()
+            ->assertSee('<link rel="canonical" href="'.$this->akar.'/portofolio/toko-online-kerajinan">', false)
+            ->assertSee('<meta property="og:type" content="website">', false)
+            ->assertSee('<title>Toko &quot;Online&quot; &amp; Kerajinan — PT Uji SEO</title>', false)
+            ->assertSee('<meta property="og:image" content="'.$this->akar.'/storage/company-profile/portofolio/portofolio-uji.webp">', false)
+            ->assertSee('<meta property="og:image:width" content="800">', false)
+            ->assertSee('<meta property="og:image:alt" content="Toko &quot;Online&quot; &amp; Kerajinan">', false)
+            ->assertDontSee('hero-lain.webp', false);
     });
 });
 
@@ -238,6 +265,24 @@ describe('data terstruktur', function () {
             ]);
     });
 
+    it('menjelaskan remah roti halaman daftar dan detail portofolio', function () {
+        Portofolio::factory()->create(['judul' => 'Proyek & Uji', 'slug' => 'proyek-uji']);
+
+        [$detail] = jsonLdHalaman($this->get('/portofolio/proyek-uji')->getContent());
+        [$daftar] = jsonLdHalaman($this->get('/portofolio')->getContent());
+
+        expect($detail['@graph'])->toHaveCount(1)
+            ->and($detail['@graph'][0]['itemListElement'])->toBe([
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $this->akar],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Portofolio', 'item' => $this->akar.'/portofolio'],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => 'Proyek & Uji'],
+            ])
+            ->and($daftar['@graph'][0]['itemListElement'])->toBe([
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $this->akar],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Portofolio'],
+            ]);
+    });
+
     it('tidak bisa ditutup paksa oleh judul artikel', function () {
         Artikel::factory()->terbit()->create(['judul' => '</script><script>alert(1)</script>', 'slug' => 'judul-jahat']);
 
@@ -249,7 +294,7 @@ describe('data terstruktur', function () {
 });
 
 describe('sitemap.xml', function () {
-    it('memuat beranda, daftar artikel, kategori berartikel terbit, dan artikel terbit saja', function () {
+    it('memuat beranda, artikel terbit beserta daftar & kategorinya, serta semua portofolio', function () {
         $kategori = KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi', 'slug' => 'teknologi', 'updated_at' => '2026-09-01 07:00:00']);
         $berita = KategoriArtikel::factory()->create(['nama_kategori' => 'Berita', 'slug' => 'berita', 'updated_at' => '2026-10-08 09:00:00']);
         $hanyaDraf = KategoriArtikel::factory()->create(['slug' => 'hanya-draf']);
@@ -258,6 +303,9 @@ describe('sitemap.xml', function () {
         Artikel::factory()->terbit()->for($berita, 'kategoriArtikel')->create(['slug' => 'artikel-baru', 'tanggal' => '2026-10-01', 'updated_at' => '2026-10-05 08:30:00']);
         Artikel::factory()->draf()->for($hanyaDraf, 'kategoriArtikel')->create(['slug' => 'artikel-draf']);
         Artikel::factory()->terbit()->for($terhapus, 'kategoriArtikel')->create(['slug' => 'artikel-terhapus'])->delete();
+        Portofolio::factory()->create(['slug' => 'portofolio-lama', 'created_at' => '2026-09-10 08:00:00', 'updated_at' => '2026-09-20 08:00:00']);
+        Portofolio::factory()->create(['slug' => 'portofolio-baru', 'created_at' => '2026-10-02 08:00:00', 'updated_at' => '2026-10-03 08:00:00']);
+        Portofolio::factory()->create(['slug' => 'portofolio-terhapus'])->delete();
 
         $respons = $this->get('/sitemap.xml')
             ->assertOk()
@@ -280,15 +328,21 @@ describe('sitemap.xml', function () {
             $this->akar.'/artikel/kategori/teknologi' => '2026-10-01T10:00:00+07:00',
             $this->akar.'/artikel/artikel-baru' => '2026-10-05T08:30:00+07:00',
             $this->akar.'/artikel/artikel-lama' => '2026-10-01T10:00:00+07:00',
+            // Daftar portofolio: lastmod = perubahan terakhir portofolio yang tampil; portofolio terbaru lebih dulu.
+            $this->akar.'/portofolio' => '2026-10-03T08:00:00+07:00',
+            $this->akar.'/portofolio/portofolio-baru' => '2026-10-03T08:00:00+07:00',
+            $this->akar.'/portofolio/portofolio-lama' => '2026-09-20T08:00:00+07:00',
         ]);
     });
 
-    it('tetap sah tanpa artikel terbit', function () {
+    it('tetap sah tanpa artikel terbit dan portofolio', function () {
         $xml = simplexml_load_string($this->get('/sitemap.xml')->getContent());
 
-        expect($xml->url)->toHaveCount(2)
+        expect($xml->url)->toHaveCount(3)
             ->and((string) $xml->url[1]->loc)->toBe($this->akar.'/artikel')
-            ->and(isset($xml->url[1]->lastmod))->toBeFalse();
+            ->and(isset($xml->url[1]->lastmod))->toBeFalse()
+            ->and((string) $xml->url[2]->loc)->toBe($this->akar.'/portofolio')
+            ->and(isset($xml->url[2]->lastmod))->toBeFalse();
     });
 });
 

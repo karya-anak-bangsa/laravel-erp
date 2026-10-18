@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
+use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
 use App\Http\Controllers\Web\SeoController;
 use Illuminate\Routing\RedirectController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,9 @@ Route::get('/', BerandaController::class)->name('beranda');
 Route::get('artikel', [ArtikelController::class, 'index'])->name('artikel.index');
 Route::get('artikel/{artikel:slug}', [ArtikelController::class, 'show'])->name('artikel.show');
 Route::get('artikel/kategori/{kategoriArtikel:slug}', [KategoriArtikelController::class, 'show'])->name('kategori-artikel.show');
+
+Route::get('portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
+Route::get('portofolio/{portofolio:slug}', [PortofolioController::class, 'show'])->name('portofolio.show');
 
 Route::post('kontak', [KontakKamiController::class, 'store'])
     ->middleware('throttle:kontak')

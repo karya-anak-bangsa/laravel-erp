@@ -2,7 +2,7 @@
 {!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
 {{-- Deklarasi XML wajib di awal dokumen: jangan menaruh apa pun di atasnya. Peta situs dari SeoController; lastmod
      hanya untuk halaman yang tanggal perubahannya pasti, yaitu artikel, daftarnya, dan kategorinya (berubah bila nama
-     kategori atau salah satu artikel terbitnya diubah). --}}
+     kategori atau salah satu artikel terbitnya diubah), serta portofolio dan daftarnya. --}}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>{{ Seo::alamat() }}</loc>
@@ -22,6 +22,18 @@
 @foreach ($artikel as $item)
     <url>
         <loc>{{ Seo::alamat(route('artikel.show', $item, false)) }}</loc>
+        <lastmod>{{ $item->updated_at->toAtomString() }}</lastmod>
+    </url>
+@endforeach
+    <url>
+        <loc>{{ Seo::alamat(route('portofolio.index', [], false)) }}</loc>
+@if ($portofolio->isNotEmpty())
+        <lastmod>{{ $portofolio->max('updated_at')->toAtomString() }}</lastmod>
+@endif
+    </url>
+@foreach ($portofolio as $item)
+    <url>
+        <loc>{{ Seo::alamat(route('portofolio.show', $item, false)) }}</loc>
         <lastmod>{{ $item->updated_at->toAtomString() }}</lastmod>
     </url>
 @endforeach

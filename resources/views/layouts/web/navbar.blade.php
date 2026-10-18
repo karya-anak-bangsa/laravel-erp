@@ -1,15 +1,19 @@
 @php
-    // Seksi beranda lewat alamat beranda + anchor agar tetap berfungsi dari halaman publik lain; Artikel punya halaman sendiri.
+    // Seksi beranda lewat alamat beranda + anchor agar tetap berfungsi dari halaman publik lain; Portofolio dan Artikel
+    // punya halaman sendiri.
     $menuUtama = [
         'Beranda' => route('beranda').'#beranda',
         'Layanan' => route('beranda').'#layanan',
-        'Portofolio' => route('beranda').'#portofolio',
+        'Portofolio' => route('portofolio.index'),
         'Artikel' => route('artikel.index'),
         'FAQ' => route('beranda').'#faq',
         'Kontak' => route('beranda').'#kontak',
     ];
-    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail & kategori artikel).
+    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail portofolio,
+    // detail & kategori artikel).
     $menuAktif = fn (string $label): ?string => match (true) {
+        $label === 'Portofolio' && request()->routeIs('portofolio.index') => 'page',
+        $label === 'Portofolio' && request()->routeIs('portofolio.show') => 'true',
         $label === 'Artikel' && request()->routeIs('artikel.index') => 'page',
         $label === 'Artikel' && request()->routeIs('artikel.show', 'kategori-artikel.show') => 'true',
         default => null,

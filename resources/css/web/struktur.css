@@ -112,6 +112,10 @@ body { background: var(--background); color: var(--teks); }
   [data-tema=full_color] .daftar-portofolio { justify-content: center; }
 }
 @media (min-width: 1024px) { .daftar-portofolio > * { width: calc((100% - 3rem) / 3); } }
+/* Daftar portofolio (/portofolio): kartu beranda di kolom utama, bersusun di ponsel dan dua per baris mulai 768px di
+   kedua tema (pilihan pemilik 2026-10-18), seperti daftar artikel Full Color; 10 per halaman sehingga tanpa kartu yatim. */
+.grid-portofolio { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) { .grid-portofolio { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; } }
 
 /* ---------- Artikel ----------
    Full Color: artikel pertama kartu utama (CSS :first-child, markup tiap item identik).

@@ -5,13 +5,14 @@ namespace App\Support;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\Portofolio;
 use Illuminate\Support\Str;
 
 /**
  * Data terstruktur schema.org (JSON-LD) untuk mesin pencari, dirender <x-web.data-terstruktur>. Organisasi & situs
  * hanya di beranda sesuai anjuran Google; halaman artikel memuat artikel dan remah rotinya, halaman daftar & kategori
- * artikel cukup remah rotinya. FAQPage sengaja tidak dipakai: sejak Agustus 2023 Google hanya menampilkan hasil kaya
- * FAQ untuk situs pemerintah dan kesehatan.
+ * artikel serta halaman portofolio cukup remah rotinya. FAQPage sengaja tidak dipakai: sejak Agustus 2023 Google hanya
+ * menampilkan hasil kaya FAQ untuk situs pemerintah dan kesehatan.
  */
 class DataTerstruktur
 {
@@ -97,6 +98,25 @@ class DataTerstruktur
                 'Artikel' => Seo::alamat(route('artikel.index', [], false)),
             ], $artikel->judul),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function daftarPortofolio(): array
+    {
+        return self::dokumen([self::remahRoti(['Beranda' => Seo::alamat()], 'Portofolio')]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function portofolio(Portofolio $portofolio): array
+    {
+        return self::dokumen([self::remahRoti([
+            'Beranda' => Seo::alamat(),
+            'Portofolio' => Seo::alamat(route('portofolio.index', [], false)),
+        ], $portofolio->judul)]);
     }
 
     /**

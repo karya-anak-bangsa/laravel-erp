@@ -174,7 +174,7 @@ describe('isi', function () {
 
         $this->get('/')
             ->assertSeeInOrder(['Proyek Website Baru', 'Proyek Website Lama', 'Proyek Mobile', 'Proyek Pelatihan', 'Proyek Bootcamp', 'Proyek Lain'])
-            ->assertSee('class="item-portofolio corak-indigo"', false)
+            ->assertSee('<article class="kartu-portofolio corak-indigo">', false)
             ->assertDontSee('Portofolio Terlama');
     });
 
@@ -267,14 +267,20 @@ describe('isi', function () {
             ->assertDontSee('kepala-artikel', false);
     });
 
-    it('tidak menautkan ke halaman portofolio yang belum ada', function () {
-        Hero::factory()->aktif()->create();
-        Portofolio::factory()->create();
+    it('menautkan judul kartu portofolio ke detailnya dengan ringkasan deskripsi tanpa tombol Lihat semua portofolio', function () {
+        Portofolio::factory()->create([
+            'judul' => 'Portofolio Bertautan',
+            'slug' => 'portofolio-bertautan',
+            'deskripsi' => '<p>'.str_repeat('abcdefg ', 25).'</p>',
+        ]);
 
-        $html = $this->get('/')->getContent();
-
-        // Gambar di /storage/company-profile/portofolio/… boleh; yang dilarang tautan ke halaman /portofolio.
-        expect($html)->not->toMatch('#href="(?:'.preg_quote(url('/'), '#').')?/portofolio\b#');
+        $this->get('/')
+            ->assertSee('<h3 class="judul-portofolio"><a href="'.route('portofolio.show', 'portofolio-bertautan').'">Portofolio Bertautan</a></h3>', false)
+            // Maksimal 150 karakter, dipotong di akhir kata seperti kartu artikel (pilihan pemilik 2026-10-18).
+            ->assertSee('<p class="deskripsi-portofolio">'.rtrim(str_repeat('abcdefg ', 18)).'...</p>', false)
+            // Halaman daftar cukup dicapai lewat menu Portofolio di navbar (pilihan pemilik 2026-10-18).
+            ->assertSee('<a href="'.route('portofolio.index').'" class="tautan-menu"', false)
+            ->assertDontSee('Lihat semua portofolio');
     });
 
     it('menampilkan tautan Instagram dan YouTube identitas di footer bila diisi', function () {
