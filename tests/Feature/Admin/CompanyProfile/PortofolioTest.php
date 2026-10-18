@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Requests\Admin\CompanyProfile\StorePortofolioRequest;
+use App\Models\CompanyProfile\GambarPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\Pengguna;
 use Database\Seeders\PortofolioDummySeeder;
@@ -66,6 +68,7 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
         'deskripsi' => 'Antrean pasien dari rumah.',
         'created_at' => '2026-10-09 08:30:00',
     ]);
+    GambarPortofolio::factory()->count(2)->for($portofolio)->create();
 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.index'))
@@ -78,6 +81,8 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
             'href="'.route('portofolio.show', 'aplikasi-klinik').'" target="_blank" rel="noopener"',
             'Buka halaman',
             'Antrean pasien dari rumah.',
+            '<th scope="row">Gambar tambahan</th>',
+            '<td>2 gambar</td>',
             '09 Oktober 2026, 08:30',
             Storage::disk('public')->url($portofolio->gambar),
             '</template>',
@@ -203,6 +208,109 @@ it('mengganti gambar portofolio dan menghapus gambar lama', function () {
     Storage::disk('public')->assertMissing('company-profile/portofolio/lama.webp');
 });
 
+it('menambah portofolio beserta gambar tambahannya urut unggah', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.portofolio.store'), dataPortofolioValid([
+            'galeri' => [UploadedFile::fake()->image('kedua.png'), UploadedFile::fake()->image('ketiga.jpg')],
+        ]))
+        ->assertRedirect(route('admin.portofolio.index'))
+        ->assertSessionHasNoErrors();
+
+    $gambar = Portofolio::sole()->gambarPortofolio;
+    expect($gambar)->toHaveCount(2)
+        ->and($gambar[0]->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.png$#')
+        ->and($gambar[1]->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.jpg$#');
+    $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
+});
+
+it('menolak lebih dari empat gambar tambahan saat menambah', function () {
+    $galeri = array_map(fn (int $nomor) => UploadedFile::fake()->image("galeri-{$nomor}.png"), range(1, StorePortofolioRequest::MAKS_GAMBAR));
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.portofolio.store'), dataPortofolioValid(['galeri' => $galeri]))
+        ->assertSessionHasErrors(['galeri' => 'Setiap portofolio paling banyak 5 gambar termasuk gambar utama, jadi gambar tambahan paling banyak 4.']);
+
+    expect(Portofolio::count())->toBe(0)
+        ->and(Storage::disk('public')->allFiles(Portofolio::FOLDER))->toBe([]);
+});
+
+it('menampilkan gambar tambahan tersimpan beserta centang hapus di form ubah', function () {
+    $portofolio = Portofolio::factory()->create();
+    $gambar = GambarPortofolio::factory()->for($portofolio)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.portofolio.edit', $portofolio))
+        ->assertOk()
+        ->assertSeeInOrder([
+            'Gambar Tambahan Saat Ini',
+            Storage::disk('public')->url($gambar->gambar),
+            'name="hapus_galeri[]" value="'.$gambar->id_gambar_portofolio.'"',
+            'name="galeri[]"',
+        ], false)
+        ->assertSee('multiple', false);
+});
+
+it('membuang gambar tambahan terpilih beserta berkasnya dan menambah gambar baru di akhir', function () {
+    $portofolio = Portofolio::factory()->create();
+    Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
+    Storage::disk('public')->put('company-profile/portofolio/tetap.webp', 'isi');
+    $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+    $tetap = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/tetap.webp']);
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
+            'gambar' => null,
+            'hapus_galeri' => [$dibuang->id_gambar_portofolio],
+            'galeri' => [UploadedFile::fake()->image('baru.png')],
+        ]))
+        ->assertSessionHasNoErrors();
+
+    $gambar = $portofolio->refresh()->gambarPortofolio;
+    expect($gambar)->toHaveCount(2)
+        ->and($gambar[0]->is($tetap))->toBeTrue()
+        ->and($gambar[1]->gambar)->toEndWith('.png')
+        ->and(GambarPortofolio::find($dibuang->id_gambar_portofolio))->toBeNull();
+    Storage::disk('public')->assertMissing('company-profile/portofolio/buang.webp');
+    Storage::disk('public')->assertExists('company-profile/portofolio/tetap.webp');
+    Storage::disk('public')->assertExists($gambar[1]->gambar);
+});
+
+it('menghitung gambar tambahan lama saat membatasi unggahan baru di form ubah', function () {
+    $portofolio = Portofolio::factory()->create();
+    $lama = GambarPortofolio::factory()->count(3)->for($portofolio)->create();
+    $baru = fn () => [UploadedFile::fake()->image('a.png'), UploadedFile::fake()->image('b.png')];
+
+    // 3 lama + 2 baru = 5 gambar tambahan, melewati batas 4.
+    $this->actingAs($this->admin)
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid(['gambar' => null, 'galeri' => $baru()]))
+        ->assertSessionHasErrors(['galeri' => 'Setiap portofolio paling banyak 5 gambar termasuk gambar utama, jadi gambar tambahan paling banyak 4.']);
+    expect($portofolio->gambarPortofolio()->count())->toBe(3);
+
+    // Membuang satu gambar lama memberi ruang untuk satu unggahan lagi: 2 lama + 2 baru = 4.
+    $this->actingAs($this->admin)
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
+            'gambar' => null,
+            'hapus_galeri' => [$lama[0]->id_gambar_portofolio],
+            'galeri' => $baru(),
+        ]))
+        ->assertSessionHasNoErrors();
+    expect($portofolio->gambarPortofolio()->count())->toBe(4);
+});
+
+it('menolak membuang gambar tambahan milik portofolio lain', function () {
+    $portofolio = Portofolio::factory()->create();
+    $milikLain = GambarPortofolio::factory()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid([
+            'gambar' => null,
+            'hapus_galeri' => [$milikLain->id_gambar_portofolio],
+        ]))
+        ->assertSessionHasErrors('hapus_galeri.0');
+
+    expect(GambarPortofolio::find($milikLain->id_gambar_portofolio))->not->toBeNull();
+});
+
 it('memvalidasi isian portofolio', function (array $data, string $kolom) {
     $this->actingAs($this->admin)
         ->from(route('admin.portofolio.create'))
@@ -221,6 +329,8 @@ it('memvalidasi isian portofolio', function (array $data, string $kolom) {
     'gambar kosong saat tambah' => [['gambar' => null], 'gambar'],
     'gambar bukan gambar' => [['gambar' => UploadedFile::fake()->create('portofolio.pdf', 10, 'application/pdf')], 'gambar'],
     'gambar lebih dari 2 MB' => [['gambar' => UploadedFile::fake()->image('portofolio.png')->size(2049)], 'gambar'],
+    'gambar tambahan bukan gambar' => [['galeri' => [UploadedFile::fake()->create('galeri.pdf', 10, 'application/pdf')]], 'galeri.0'],
+    'gambar tambahan lebih dari 2 MB' => [['galeri' => [UploadedFile::fake()->image('galeri.png')->size(2049)]], 'galeri.0'],
 ]);
 
 it('menampilkan pesan validasi berbahasa Indonesia', function () {
@@ -250,6 +360,12 @@ it('membuat portofolio contoh dari seeder dummy tanpa duplikat saat dijalankan u
     $this->seed(PortofolioDummySeeder::class);
 
     expect(Portofolio::count())->toBe(7)
-        ->and(Portofolio::pluck('slug')->unique())->toHaveCount(7);
-    Portofolio::all()->each(fn (Portofolio $portofolio) => Storage::disk('public')->assertExists($portofolio->gambar));
+        ->and(Portofolio::pluck('slug')->unique())->toHaveCount(7)
+        ->and(GambarPortofolio::count())->toBe(7 * (StorePortofolioRequest::MAKS_GAMBAR - 1));
+    Portofolio::with('gambarPortofolio')->get()->each(function (Portofolio $portofolio) {
+        // Setiap portofolio contoh berisi gambar penuh (pilihan pemilik 2026-10-18).
+        expect($portofolio->gambarPortofolio)->toHaveCount(StorePortofolioRequest::MAKS_GAMBAR - 1);
+        Storage::disk('public')->assertExists($portofolio->gambar);
+        $portofolio->gambarPortofolio->each(fn (GambarPortofolio $gambar) => Storage::disk('public')->assertExists($gambar->gambar));
+    });
 });

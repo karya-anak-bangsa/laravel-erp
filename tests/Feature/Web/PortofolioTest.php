@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
+use App\Models\CompanyProfile\GambarPortofolio;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\Portofolio;
@@ -29,9 +30,14 @@ describe('daftar portofolio', function () {
             ->assertSee('<title>Portofolio — PT Uji Portofolio</title>', false)
             ->assertSeeInOrder(['<h1', 'Hasil karya kami', '</h1>'], false)
             ->assertSeeInOrder(['Proyek Baru', 'Proyek Lama'])
-            // Kartu sama dengan beranda; di bawah h1 halaman, judulnya menjadi h2 dan hanya judul yang bertautan.
-            ->assertSee('<article class="kartu-portofolio corak-sky">', false)
-            ->assertSee('<span class="lencana-kategori"><span class="titik" aria-hidden="true"></span>Website</span>', false)
+            // Kartu sama dengan beranda: kategori berupa pita di tepi kanan kartu; di bawah h1 halaman, judulnya menjadi h2
+            // dan hanya judul yang bertautan.
+            ->assertSeeInOrder([
+                '<article class="kartu-portofolio corak-sky">',
+                '<span class="pita-kategori">Website</span>',
+                '<div class="kartu-portofolio-gambar">',
+            ], false)
+            ->assertDontSee('lencana-kategori', false)
             ->assertSee('<h2 class="judul-portofolio"><a href="'.route('portofolio.show', 'proyek-baru').'">Proyek Baru</a></h2>', false)
             ->assertSee('<p class="deskripsi-portofolio">Website profil dengan panel admin.</p>', false)
             ->assertDontSee('Proyek Terhapus');
@@ -84,16 +90,52 @@ describe('detail portofolio', function () {
             ->assertSee('<meta name="description" content="Pasien mengambil antrean dari rumah. Notifikasi giliran">', false)
             ->assertSee('id="judul-portofolio"', false)
             ->assertSee('class="judul-seksi">Aplikasi Antrean Klinik</h1>', false)
-            // Kategori sebagai lencana di atas judul seperti di kartu, lalu gambar dan isi (pilihan pemilik 2026-10-18).
+            // Kategori sebagai pita di bingkai gambar seperti detail artikel, lalu isi (pilihan pemilik 2026-10-18). Tanpa
+            // gambar tambahan, gambar utama tampil sendiri tanpa carousel.
             ->assertSeeInOrder([
-                '<span class="lencana-kategori corak-indigo"><span class="titik" aria-hidden="true"></span>Mobile Apps</span>',
                 '<h1',
                 '<div class="bingkai-artikel">',
+                '<span class="pita-kategori">Mobile Apps</span>',
                 '<img src="'.$portofolio->gambar_url.'"',
                 '<div class="isi-artikel konten-html"><p>Pasien mengambil antrean dari rumah.</p><ul><li><p>Notifikasi giliran</p></li></ul></div>',
             ], false)
+            ->assertDontSee('lencana-kategori', false)
+            ->assertDontSee('data-carousel', false)
             ->assertSee('href="'.route('portofolio.index').'">Portofolio</a>', false)
             ->assertDontSee('class="bagikan"', false);
+    });
+
+    it('menampilkan gambar utama lalu gambar tambahan urut unggah dalam carousel', function () {
+        $portofolio = Portofolio::factory()->create(['slug' => 'proyek-galeri']);
+        $kedua = GambarPortofolio::factory()->for($portofolio)->create();
+        $ketiga = GambarPortofolio::factory()->for($portofolio)->create();
+        GambarPortofolio::factory()->create(['gambar' => 'company-profile/portofolio/milik-lain.webp']);
+
+        $respons = $this->get('/portofolio/proyek-galeri')
+            ->assertOk()
+            ->assertSee('<div class="carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="Gambar portofolio">', false)
+            // Slide pertama (gambar utama) di atas lipatan, jadi tidak lazy; slide lainnya lazy.
+            ->assertSeeInOrder([
+                '<span class="pita-kategori">',
+                'aria-label="1 dari 3"',
+                '<img src="'.$portofolio->gambar_url.'"',
+                'fetchpriority="high"',
+                'aria-label="2 dari 3"',
+                '<img src="'.$kedua->gambar_url.'"',
+                'loading="lazy"',
+                'aria-label="3 dari 3"',
+                '<img src="'.$ketiga->gambar_url.'"',
+                // Panah kiri disembunyikan di slide pertama; titik pertama aktif.
+                'aria-label="Gambar sebelumnya" hidden',
+                'aria-label="Gambar berikutnya"',
+                'aria-label="Gambar 1"',
+                'aria-current="true"',
+                'aria-label="Gambar 3"',
+            ], false)
+            ->assertDontSee('milik-lain.webp', false);
+
+        expect(substr_count($respons->getContent(), 'data-carousel-titik'))->toBe(3)
+            ->and(substr_count($respons->getContent(), 'fetchpriority="high"'))->toBe(1);
     });
 
     it('menolak portofolio terhapus dan slug yang tidak dikenal', function () {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -63,6 +64,16 @@ class Portofolio extends Model
     public function scopeTerbaru(Builder $query): void
     {
         $query->latest()->latest('id_portofolio');
+    }
+
+    /**
+     * Gambar tambahan untuk carousel detail, urut waktu unggah (tanpa kolom urutan).
+     *
+     * @return HasMany<GambarPortofolio, $this>
+     */
+    public function gambarPortofolio(): HasMany
+    {
+        return $this->hasMany(GambarPortofolio::class, 'id_portofolio', 'id_portofolio')->orderBy('id_gambar_portofolio');
     }
 
     /**

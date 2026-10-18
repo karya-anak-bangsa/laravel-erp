@@ -1,3 +1,5 @@
+@use('App\Http\Requests\Admin\CompanyProfile\StorePortofolioRequest')
+
 {{-- Dipakai create & edit; $portofolio = model baru (create) atau yang diubah (edit). --}}
 <div class="row col-8-4">
     <x-admin.card title="Konten Portofolio" subtitle="Tampil di halaman portofolio website beserta halaman detailnya.">
@@ -21,11 +23,36 @@
     <x-admin.card title="Gambar">
         @if ($portofolio->exists)
             <div class="pratinjau-gambar pratinjau-gambar-lebar">
-                <img src="{{ $portofolio->gambar_url }}" alt="Gambar portofolio saat ini">
+                <img src="{{ $portofolio->gambar_url }}" alt="Gambar utama portofolio saat ini">
             </div>
         @endif
-        <x-admin.form-file name="gambar" label="Gambar" accept=".jpg,.jpeg,.png,.webp" :required="! $portofolio->exists"
-            :hint="($portofolio->exists ? 'Kosongkan bila tidak ingin mengganti. ' : '').'JPG, PNG, atau WEBP, maks. 2 MB. Disarankan rasio 4:3, mis. 800×600 px.'" />
+        <x-admin.form-file name="gambar" label="Gambar Utama" accept=".jpg,.jpeg,.png,.webp" :required="! $portofolio->exists"
+            :hint="($portofolio->exists ? 'Kosongkan bila tidak ingin mengganti. ' : '').'Tampil di kartu portofolio dan menjadi gambar pertama carousel. JPG, PNG, atau WEBP, maks. 2 MB. Disarankan rasio 4:3, mis. 800×600 px.'" />
+
+        @if ($portofolio->gambarPortofolio->isNotEmpty())
+            <div class="form-group">
+                <div class="form-label">Gambar Tambahan Saat Ini</div>
+                <ul class="galeri-admin">
+                    @foreach ($portofolio->gambarPortofolio as $gambar)
+                        <li>
+                            <img src="{{ $gambar->gambar_url }}" alt="Gambar tambahan {{ $loop->iteration }}" loading="lazy">
+                            <label class="form-check">
+                                <input type="checkbox" name="hapus_galeri[]" value="{{ $gambar->id_gambar_portofolio }}"
+                                    aria-label="Hapus gambar tambahan {{ $loop->iteration }}"
+                                    @checked(in_array((string) $gambar->id_gambar_portofolio, (array) old('hapus_galeri', []), true))>
+                                Hapus
+                            </label>
+                        </li>
+                    @endforeach
+                </ul>
+                <div class="form-help">Gambar yang dicentang dihapus saat perubahan disimpan.</div>
+                @error('hapus_galeri.*')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
+        @endif
+        <x-admin.form-file name="galeri[]" label="Gambar Tambahan" accept=".jpg,.jpeg,.png,.webp" multiple
+            :hint="'Tampil di carousel halaman detail setelah gambar utama, berurutan sesuai waktu unggah. Setiap portofolio paling banyak '.StorePortofolioRequest::MAKS_GAMBAR.' gambar termasuk gambar utama. JPG, PNG, atau WEBP, maks. 2 MB per gambar.'" />
     </x-admin.card>
 </div>
 

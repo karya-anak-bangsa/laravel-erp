@@ -37,7 +37,8 @@ class FileUploadService
     /**
      * Menyimpan berkas unggahan pada $kolomBerkas, lalu menjalankan $simpan dengan
      * data yang kolom berkasnya sudah berisi path. Kolom tanpa berkas baru dibuang
-     * dari data sehingga path lama tetap dipakai.
+     * dari data sehingga path lama tetap dipakai. Kolom berisi daftar berkas
+     * (mis. gambar tambahan untuk baris anak) diteruskan sebagai daftar path.
      *
      * @template TModel of Model
      *
@@ -51,6 +52,7 @@ class FileUploadService
     {
         $berkasBaru = [];
         $berkasLama = [];
+        $terunggah = [];
 
         try {
             foreach ($kolomBerkas as $kolom) {
@@ -58,11 +60,23 @@ class FileUploadService
                 unset($data[$kolom]);
 
                 if ($berkas instanceof UploadedFile) {
-                    $berkasBaru[$kolom] = $this->simpan($berkas, $folder, $disk);
+                    $berkasBaru[$kolom] = $terunggah[] = $this->simpan($berkas, $folder, $disk);
                     $lama = $model?->getAttribute($kolom);
 
                     if (is_string($lama)) {
                         $berkasLama[] = $lama;
+                    }
+                } elseif (is_array($berkas)) {
+                    $daftarPath = [];
+
+                    foreach ($berkas as $satuBerkas) {
+                        if ($satuBerkas instanceof UploadedFile) {
+                            $daftarPath[] = $terunggah[] = $this->simpan($satuBerkas, $folder, $disk);
+                        }
+                    }
+
+                    if ($daftarPath !== []) {
+                        $berkasBaru[$kolom] = $daftarPath;
                     }
                 }
             }
@@ -70,7 +84,7 @@ class FileUploadService
             $hasil = $simpan([...$data, ...$berkasBaru]);
         } catch (Throwable $e) {
             // Berkas baru yang sudah terunggah tidak dirujuk data mana pun bila penyimpanan gagal.
-            foreach ($berkasBaru as $path) {
+            foreach ($terunggah as $path) {
                 $this->hapus($path, $disk);
             }
 

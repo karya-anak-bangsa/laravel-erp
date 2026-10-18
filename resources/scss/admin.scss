@@ -405,6 +405,25 @@ a.btn:hover {
     height: 180px;
 }
 
+// Gambar tambahan portofolio di form ubah: miniatur 4:3 dengan centang Hapus di bawahnya.
+.galeri-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 12px;
+    margin: 0 0 4px;
+    padding: 0;
+    list-style: none;
+
+    img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+    }
+}
+
 // Gambar mini di tabel daftar, rasio 3:2 seperti gambar hero.
 .gambar-mini {
     display: block;

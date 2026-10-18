@@ -4,6 +4,8 @@
 @php
     $kunci = rtrim(str_replace(['[', ']'], ['.', ''], $name), '.');
     $id = $attributes->get('id', str_replace('.', '-', $kunci));
+    // Unggahan banyak berkas (name="galeri[]" multiple): galat tiap berkas tersimpan di galeri.0, galeri.1, dst.
+    $galat = $errors->first($kunci) ?: $errors->first($kunci.'.*');
 @endphp
 
 <div class="form-group">
@@ -14,7 +16,7 @@
     <input type="file" id="{{ $id }}" name="{{ $name }}"
         @if ($accept) accept="{{ $accept }}" @endif
         @required($required)
-        {{ $attributes->except('id')->class(['form-control', 'is-invalid' => $errors->has($kunci)]) }}>
+        {{ $attributes->except('id')->class(['form-control', 'is-invalid' => $galat !== '']) }}>
 
     @if ($berkasSaatIni)
         <div class="form-help">
@@ -26,7 +28,7 @@
         <div class="form-help">{{ $hint }}</div>
     @endif
 
-    @error($kunci)
-        <div class="form-error">{{ $message }}</div>
-    @enderror
+    @if ($galat !== '')
+        <div class="form-error">{{ $galat }}</div>
+    @endif
 </div>

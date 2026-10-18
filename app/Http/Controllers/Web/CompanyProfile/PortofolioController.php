@@ -30,6 +30,9 @@ class PortofolioController extends Controller
 
     public function show(Portofolio $portofolio): View
     {
+        // Gambar tambahan untuk carousel detail.
+        $portofolio->load('gambarPortofolio');
+
         // Tanpa kolom deskripsi: kolom samping hanya menampilkan gambar, judul, dan kategori.
         $portofolioLainnya = Portofolio::query()->terbaru()->whereKeyNot($portofolio->getKey())
             ->limit(self::JUMLAH_LAINNYA)

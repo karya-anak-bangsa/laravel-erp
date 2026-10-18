@@ -203,7 +203,7 @@
 /* ---------- Portofolio ---------- */
 /* Bingkai kartu seperti kartu layanan: gambar berjarak dari tepi; ukuran teks kartu sama di layanan, portofolio, dan
    artikel serta di kedua tema (pilihan pemilik 2026-10-11). */
-.kartu-portofolio { @apply flex h-full flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
+.kartu-portofolio { @apply relative flex h-full flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
 [data-tema=monochrome] .kartu-portofolio { border-color: var(--garis-kartu); }
 .kartu-portofolio-gambar { @apply overflow-hidden rounded-dalam border; }
 /* 16:10 di kedua tema, sama dengan kartu layanan biasa (pilihan pemilik 2026-10-11; Full Color sebelumnya 4:3). */
@@ -211,12 +211,8 @@
 [data-tema=full_color] .kartu-portofolio-gambar { @apply bg-(--corak-lembut); border-color: transparent; background-clip: padding-box; }
 [data-tema=monochrome] .kartu-portofolio-gambar { @apply bg-muted; }
 .kartu-portofolio-isi { @apply flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
-.lencana-kategori { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px]; }
-[data-tema=full_color] .lencana-kategori { @apply gap-x-1.5 bg-(--corak-lembut) text-(--corak-teks); border-color: transparent; }
-[data-tema=full_color] .lencana-kategori .titik { @apply size-1.5 rounded-full bg-(--corak); }
-[data-tema=monochrome] .lencana-kategori { @apply text-foreground; }
-[data-tema=monochrome] .lencana-kategori .titik { @apply hidden; }
-.judul-portofolio { @apply mt-3 text-lg font-semibold tracking-tight text-balance text-foreground; }
+/* Kategori berupa pita (.pita-kategori, bagian Artikel), jadi judul menjadi baris pertama isi kartu. */
+.judul-portofolio { @apply text-lg font-semibold tracking-tight text-balance text-foreground; }
 /* Ringkasan 150 karakter dari view (pilihan pemilik 2026-10-18), jadi tanpa line-clamp. */
 .deskripsi-portofolio { @apply mt-2 text-[15px]/[1.65] text-pretty text-teks; }
 .petunjuk-geser { @apply mt-2 flex items-center gap-2 font-mono text-xs text-muted-foreground md:hidden; }
@@ -258,7 +254,7 @@
    menjadi anak kolom isi (Full Color) atau sel grid kartu (Monochrome, struktur.css); markup tetap satu untuk kedua tema.
    Lencana & tanggal Geist Mono 13px di kedua tema. */
 .kartu-artikel-meta { @apply text-sm; display: contents; }
-.lencana-artikel { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
+:is(.lencana-artikel, .pita-kategori) { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
 .tanggal-artikel { @apply font-mono text-[13px] text-muted-foreground; }
 [data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3; }
 .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground; }
@@ -283,9 +279,10 @@
    utuh. Dipakai di semua kartu artikel (beranda, daftar & kategori artikel) dan bingkai gambar detail artikel; keluar dari
    alur kartu sehingga judul menjadi baris pertama isi. Ukuran sama di setiap pemakaian dan di kedua tema; warnanya dari
    token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu Monochrome baru berpita mulai 640px: di bawahnya
-   thumbnail hanya 6rem, kategori tetap lencana di atas judul. */
-:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+   thumbnail hanya 6rem, kategori tetap lencana di atas judul. Kartu & bingkai detail portofolio memakai .pita-kategori:
+   selalu pita, di kedua tema dan semua lebar (pilihan pemilik 2026-10-18). */
+:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel, .pita-kategori { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel::after, .pita-kategori::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 @media (min-width: 640px) {
   /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu Monochrome (py-8). */
   [data-tema=monochrome] .kartu-artikel .lencana-artikel { @apply absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
@@ -451,12 +448,33 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 /* Full Color rata kiri hanya di detail artikel & portofolio; kepala halaman lain tetap rata tengah. */
 [data-tema=full_color] .kepala-halaman-artikel .kepala-halaman-isi { @apply mx-0 text-left; }
 [data-tema=full_color] .kepala-halaman-artikel .remah-roti ol { @apply justify-start; }
-/* Lencana kategori detail portofolio (slot meta) di antara remah roti dan judul, berjarak sama dengan jarak judul. */
-.kepala-halaman .lencana-kategori { @apply mt-4 flex; }
 
 /* Badan detail artikel: gambar & isi selebar kolom utama; kategori sebagai pita di bingkai gambar. Isi WYSIWYG dengan
-   sub-judul H2/H3; ukuran sama di kedua tema. Detail portofolio memakai bingkai & isi yang sama, tanpa pita. */
+   sub-judul H2/H3; ukuran sama di kedua tema. Detail portofolio memakai bingkai, pita, & isi yang sama, ditambah carousel
+   bila gambarnya lebih dari satu. */
 .bingkai-artikel { @apply relative; }
+/* Carousel gambar detail portofolio (resources/js/web/carousel.js; varian V1 pilihan pemilik 2026-10-18): jalur
+   scroll-snap di dalam bingkai sehingga bisa digeser langsung di layar sentuh; slide 4:3 dengan gambar utuh tanpa dipotong
+   di atas latar abu muda. Panah & titik di atas gambar baru tampil setelah carousel.js terpasang. Ukuran sama di kedua
+   tema. Lebar jalur dibulatkan ke piksel utuh: posisi gulir selalu bulat, jadi slide selebar pecahan piksel menyisakan
+   garis slide sebelahnya. */
+.carousel { @apply relative; }
+.carousel-jalur { @apply flex overflow-x-auto rounded-kartu border bg-muted; width: round(down, 100%, 1px); scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.carousel-jalur::-webkit-scrollbar { display: none; }
+.carousel-slide { @apply shrink-0 basis-full; scroll-snap-align: start; }
+.bingkai-artikel .carousel-slide img { @apply aspect-4/3 rounded-none border-0 object-contain; }
+.carousel:not([data-siap]) :is(.carousel-panah, .carousel-titik) { display: none; }
+/* Panah 44px di ponsel seperti sasaran sentuh lain; putih hampir pekat dengan bayangan melayang agar tetap terbaca di atas
+   gambar apa pun dan di setiap pilihan bayangan template. */
+.carousel-panah { @apply absolute top-1/2 z-1 size-11 -translate-y-1/2 sm:size-10; }
+.carousel-panah svg { @apply size-[18px]; }
+.carousel-sebelumnya { @apply left-3 sm:left-4; }
+.carousel-berikutnya { @apply right-3 sm:right-4; }
+.carousel .btn.carousel-panah { background-color: rgb(255 255 255 / .92); --tw-shadow: var(--bayangan-melayang); }
+@media (hover: hover) { .carousel .btn.carousel-panah:hover { background-color: #fff; } }
+.carousel-titik { @apply absolute bottom-3 left-1/2 z-1 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5; }
+.carousel-titik button { @apply size-2 rounded-full bg-white/55 motion-safe:transition-[width]; }
+.carousel-titik [aria-current] { @apply w-5 bg-white; }
 .isi-artikel { @apply mt-10 text-[17px]/[1.75] text-teks sm:mt-12 sm:text-lg/8; }
 /* Tanggal terbit di akhir isi (pilihan pemilik 2026-10-15), bergaya tanggal kartu artikel; berjarak seperti antarparagraf
    agar terbaca sebagai baris terakhir artikel, bukan bagian tombol bagikan. */

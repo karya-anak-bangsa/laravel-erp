@@ -6,7 +6,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 
 - Tabel domain: `tb_<entitas>` (tunggal). PK: `id_<entitas>` BIGINT UNSIGNED AUTO_INCREMENT (`$table->id('id_<entitas>')`).
 - FK bernama sama dengan PK rujukan. Bila ada dua FK ke tabel yang sama, beri akhiran: `id_pengguna_pengirim`, `id_pengguna_penerima`.
-- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete).
+- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete), kecuali tabel gambar anak yang barisnya bagian dari induknya (`tb_gambar_portofolio`).
 - Boolean berawalan `status_` (mis. `status_baca`, `status_aktif`).
 - Nilai pilihan tetap: `VARCHAR(20)` + PHP backed enum (bukan tipe ENUM MySQL, agar mudah ditambah).
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
@@ -87,11 +87,25 @@ Validasi: `keyword` array max 10, `keyword.*` string max 50; `cta` array max 3, 
 | judul | VARCHAR(200) | tidak wajib unik |
 | slug | VARCHAR(220) UNIQUE | URL detail di frontend, dibuat otomatis dari judul oleh `PortofolioService` |
 | deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG |
-| gambar | VARCHAR(255) | |
+| gambar | VARCHAR(255) | gambar utama: kartu, kolom samping, gambar saat dibagikan, dan slide pertama carousel detail |
 | kategori | VARCHAR(50) | INDEX. Teks bebas (mis. Website, Mobile Apps); form memberi saran kategori yang sudah ada (`<datalist>`) agar penulisannya seragam. Dinormalisasi ke tabel sendiri bila dibutuhkan |
 | created_at, updated_at, deleted_at | | |
 
 Slug dibuat sekali saat portofolio disimpan dan tidak ikut berubah saat judul diubah: portofolio tidak punya draf, jadi langsung tayang di `/portofolio/{slug}` dan tautannya bisa langsung tersebar.
+
+### tb_gambar_portofolio
+Gambar tambahan portofolio, tampil di carousel halaman detail setelah gambar utama (`tb_portofolio.gambar`).
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_gambar_portofolio | BIGINT UNSIGNED PK | |
+| id_portofolio | BIGINT UNSIGNED FK → tb_portofolio | `cascadeOnDelete` (hanya berlaku bila portofolio dihapus permanen) |
+| gambar | VARCHAR(255) | |
+| created_at, updated_at | | |
+
+Catatan implementasi:
+- Setiap portofolio paling banyak 5 gambar termasuk gambar utama, jadi paling banyak 4 baris di sini (pilihan pemilik 2026-10-18). Urutan tampil = urutan unggah (`id_gambar_portofolio`), tanpa kolom urutan.
+- Tanpa `deleted_at`: barisnya bagian dari portofolio seperti kolom `gambar`, jadi gambar yang dibuang lewat form dihapus permanen beserta berkasnya, sama seperti saat gambar utama diganti. Soft delete portofolio tidak menyentuh gambarnya.
 
 ### tb_kategori_artikel
 | Kolom | Tipe | Keterangan |

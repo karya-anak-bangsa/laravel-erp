@@ -11,6 +11,9 @@ class StorePortofolioRequest extends FormRequest
 {
     use MembersihkanHtml;
 
+    // Gambar per portofolio termasuk gambar utama (pilihan pemilik 2026-10-18), jadi gambar tambahan paling banyak 4.
+    public const MAKS_GAMBAR = 5;
+
     public function authorize(): bool
     {
         return true;
@@ -31,6 +34,18 @@ class StorePortofolioRequest extends FormRequest
             'kategori' => ['required', 'string', 'max:50'],
             'deskripsi' => ['required', 'string', new PanjangTeksHtml(5000)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'galeri' => ['nullable', 'array', 'max:'.(self::MAKS_GAMBAR - 1)],
+            'galeri.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'galeri.max' => self::pesanBatasGambar(),
         ];
     }
 
@@ -43,7 +58,17 @@ class StorePortofolioRequest extends FormRequest
             'judul' => 'judul',
             'kategori' => 'kategori',
             'deskripsi' => 'deskripsi',
-            'gambar' => 'gambar',
+            'gambar' => 'gambar utama',
+            'galeri' => 'gambar tambahan',
+            'galeri.*' => 'gambar tambahan',
         ];
+    }
+
+    /**
+     * Pesan bila gambar tambahan melewati batas, juga saat mengubah (gambar lama ikut dihitung).
+     */
+    protected static function pesanBatasGambar(): string
+    {
+        return 'Setiap portofolio paling banyak '.self::MAKS_GAMBAR.' gambar termasuk gambar utama, jadi gambar tambahan paling banyak '.(self::MAKS_GAMBAR - 1).'.';
     }
 }

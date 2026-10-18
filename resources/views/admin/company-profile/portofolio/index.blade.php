@@ -79,6 +79,10 @@
                                                                 <td class="konten-html">{!! $item->deskripsi !!}</td>
                                                             </tr>
                                                             <tr>
+                                                                <th scope="row">Gambar tambahan</th>
+                                                                <td>{{ $item->gambar_portofolio_count > 0 ? $item->gambar_portofolio_count.' gambar' : '—' }}</td>
+                                                            </tr>
+                                                            <tr>
                                                                 <th scope="row">Dibuat</th>
                                                                 <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
                                                             </tr>

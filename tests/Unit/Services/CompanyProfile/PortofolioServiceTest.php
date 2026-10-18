@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CompanyProfile\GambarPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use App\Services\CompanyProfile\PortofolioService;
 use Illuminate\Database\QueryException;
@@ -80,10 +81,65 @@ it('mengganti gambar dan menghapus gambar lama', function () {
     Storage::disk('public')->assertMissing('company-profile/portofolio/lama.webp');
 });
 
+it('menyimpan gambar tambahan urut unggah bersama portofolio baru', function () {
+    $portofolio = $this->portofolio->simpan(dataPortofolioUji([
+        'galeri' => [UploadedFile::fake()->image('kedua.png'), UploadedFile::fake()->image('ketiga.jpg')],
+    ]));
+
+    $gambar = $portofolio->gambarPortofolio()->get();
+    expect($gambar)->toHaveCount(2)
+        ->and($gambar[0]->gambar)->toStartWith(Portofolio::FOLDER.'/')->toEndWith('.png')
+        ->and($gambar[1]->gambar)->toEndWith('.jpg');
+    $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
+});
+
+it('membuang gambar tambahan terpilih beserta berkasnya dan menambah gambar baru', function () {
+    $portofolio = Portofolio::factory()->create();
+    Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
+    Storage::disk('public')->put('company-profile/portofolio/tetap.webp', 'isi');
+    $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+    GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/tetap.webp']);
+
+    $this->portofolio->perbarui($portofolio, dataPortofolioUji([
+        'gambar' => null,
+        'hapus_galeri' => [$dibuang->id_gambar_portofolio],
+        'galeri' => [UploadedFile::fake()->image('baru.webp')],
+    ]));
+
+    expect($portofolio->gambarPortofolio()->pluck('gambar')->all())
+        ->toHaveCount(2)
+        ->sequence(
+            fn ($gambar) => $gambar->toBe('company-profile/portofolio/tetap.webp'),
+            fn ($gambar) => $gambar->toEndWith('.webp')->not->toBe('company-profile/portofolio/buang.webp'),
+        );
+    Storage::disk('public')->assertMissing('company-profile/portofolio/buang.webp');
+    Storage::disk('public')->assertExists('company-profile/portofolio/tetap.webp');
+});
+
 it('membersihkan gambar baru bila penyimpanan gagal', function () {
     // Kategori melebihi VARCHAR(50) sehingga INSERT gagal di MySQL.
-    expect(fn () => $this->portofolio->simpan(dataPortofolioUji(['kategori' => str_repeat('a', 100)])))
-        ->toThrow(QueryException::class);
+    expect(fn () => $this->portofolio->simpan(dataPortofolioUji([
+        'kategori' => str_repeat('a', 100),
+        'galeri' => [UploadedFile::fake()->image('kedua.png')],
+    ])))->toThrow(QueryException::class);
 
-    expect(Storage::disk('public')->allFiles(Portofolio::FOLDER))->toBe([]);
+    expect(Storage::disk('public')->allFiles(Portofolio::FOLDER))->toBe([])
+        ->and(GambarPortofolio::count())->toBe(0);
+});
+
+it('mempertahankan gambar tambahan yang akan dibuang bila penyimpanan perubahan gagal', function () {
+    $portofolio = Portofolio::factory()->create();
+    Storage::disk('public')->put('company-profile/portofolio/buang.webp', 'isi');
+    $dibuang = GambarPortofolio::factory()->for($portofolio)->create(['gambar' => 'company-profile/portofolio/buang.webp']);
+
+    expect(fn () => $this->portofolio->perbarui($portofolio, dataPortofolioUji([
+        'kategori' => str_repeat('a', 100),
+        'gambar' => null,
+        'hapus_galeri' => [$dibuang->id_gambar_portofolio],
+        'galeri' => [UploadedFile::fake()->image('baru.png')],
+    ])))->toThrow(QueryException::class);
+
+    // Transaksi dibatalkan: baris & berkas lama tetap, unggahan baru dibersihkan.
+    expect($portofolio->gambarPortofolio()->pluck('gambar')->all())->toBe(['company-profile/portofolio/buang.webp'])
+        ->and(Storage::disk('public')->allFiles(Portofolio::FOLDER))->toBe(['company-profile/portofolio/buang.webp']);
 });

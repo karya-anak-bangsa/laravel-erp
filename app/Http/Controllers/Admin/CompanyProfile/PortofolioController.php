@@ -24,6 +24,8 @@ class PortofolioController extends Controller
                 ->where('judul', 'like', "%{$q}%")
                 ->orWhere('deskripsi', 'like', "%{$q}%")))
             ->when($kategori !== '', fn (Builder $query) => $query->where('kategori', $kategori))
+            // Jumlah gambar tambahan untuk modal Lihat.
+            ->withCount('gambarPortofolio')
             ->latest()
             ->paginate(25)
             ->withQueryString();
@@ -52,7 +54,7 @@ class PortofolioController extends Controller
     public function edit(Portofolio $portofolio): View
     {
         return view('admin.company-profile.portofolio.edit', [
-            'portofolio' => $portofolio,
+            'portofolio' => $portofolio->load('gambarPortofolio'),
             'daftarKategori' => Portofolio::daftarKategori(),
         ]);
     }

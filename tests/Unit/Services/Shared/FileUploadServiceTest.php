@@ -57,6 +57,41 @@ it('menjalankan penyimpanan dengan path berkas baru lalu menghapus berkas lama',
     Storage::disk('local')->assertMissing('uji/dokumen/lama.pdf');
 });
 
+it('meneruskan daftar path untuk kolom berisi banyak berkas', function () {
+    $diterima = null;
+
+    $this->layanan->simpanDenganBerkas(null, [
+        'lampiran' => [
+            UploadedFile::fake()->create('satu.pdf', 10, 'application/pdf'),
+            UploadedFile::fake()->create('dua.pdf', 10, 'application/pdf'),
+        ],
+        'kosong' => [],
+    ], ['lampiran', 'kosong'], 'uji/dokumen', 'local', function (array $data) use (&$diterima) {
+        $diterima = $data;
+
+        return new class extends Model {};
+    });
+
+    // Daftar tanpa berkas dibuang seperti kolom tanpa berkas baru.
+    expect($diterima)->toHaveKey('lampiran')->not->toHaveKey('kosong')
+        ->and($diterima['lampiran'])->toHaveCount(2)
+        ->each->toMatch('#^uji/dokumen/[0-9a-f-]{36}\.pdf$#');
+    Storage::disk('local')->assertExists($diterima['lampiran']);
+});
+
+it('menghapus semua berkas dari daftar bila penyimpanan gagal', function () {
+    expect(fn () => $this->layanan->simpanDenganBerkas(null, [
+        'berkas' => UploadedFile::fake()->create('utama.pdf', 10, 'application/pdf'),
+        'lampiran' => [
+            UploadedFile::fake()->create('satu.pdf', 10, 'application/pdf'),
+            UploadedFile::fake()->create('dua.pdf', 10, 'application/pdf'),
+        ],
+    ], ['berkas', 'lampiran'], 'uji/dokumen', 'local', fn () => throw new RuntimeException('gagal')))
+        ->toThrow(RuntimeException::class, 'gagal');
+
+    expect(Storage::disk('local')->allFiles('uji/dokumen'))->toBe([]);
+});
+
 it('menghapus berkas baru dan mempertahankan berkas lama bila penyimpanan gagal', function () {
     Storage::disk('local')->put('uji/dokumen/lama.pdf', 'isi');
     $model = new class extends Model {};
