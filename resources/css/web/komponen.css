@@ -1,5 +1,5 @@
 /*
- * Gaya komponen frontend publik. Di luar @layer agar menang atas utilitas (mis. kartu artikel :first-child) dan atas
+ * Gaya komponen frontend publik. Di luar @layer agar menang atas utilitas Tailwind dan atas
  * komponen Basecoat yang ada di @layer components.
  *
  * Konvensi (pilihan pemilik 2026-10-11): ukuran — font, tinggi, padding, jarak, ukuran ikon — ditulis SEKALI di aturan
@@ -244,20 +244,14 @@
    Artikel di navbar sudah mewakilinya. Kotak Portofolio lainnya memakai gaya yang sama. */
 [data-tema=full_color] .btn:is(.tombol-semua-artikel, .tombol-semua-portofolio) { border-color: color-mix(in oklab, var(--warna-aksen) 30%, transparent); background-color: var(--aksen-lembut); color: var(--aksen-teks-lembut); box-shadow: none; }
 @media (hover: hover) { [data-tema=full_color] .btn:is(.tombol-semua-artikel, .tombol-semua-portofolio):hover { border-color: var(--warna-aksen); background-color: var(--aksen-lembut); box-shadow: var(--bayangan-tombol-garis); } }
-[data-tema=full_color] .grid-artikel .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
 .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=full_color] .kartu-artikel-gambar { border-color: transparent; background-clip: padding-box; }
-/* Kartu bergambar di atas (daftar & kategori artikel): ruang dalam sama dengan kartu portofolio. Kartu baris beranda
-   melebur kolom isi ke grid kartu (struktur.css), jadi aturan ini tidak berlaku di sana. */
-[data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
-.kartu-artikel-gambar img { @apply size-full object-cover; }
+.kartu-artikel-gambar img { @apply block aspect-4/3 size-full object-cover; }
 /* Tanggal di bawah ringkasan di kedua tema (pilihan pemilik 2026-10-11 & 2026-10-15): meta dilebur agar lencana & tanggal
-   menjadi anak kolom isi (Full Color) atau sel grid kartu (Monochrome, struktur.css); markup tetap satu untuk kedua tema.
-   Lencana & tanggal Geist Mono 13px di kedua tema. */
+   menjadi sel grid kartu (struktur.css); markup tetap satu untuk kedua tema. Lencana & tanggal Geist Mono 13px. */
 .kartu-artikel-meta { @apply text-sm; display: contents; }
 :is(.lencana-artikel, .pita-kategori) { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
 .tanggal-artikel { @apply font-mono text-[13px] text-muted-foreground; }
-[data-tema=full_color] .tanggal-artikel { @apply order-1 mt-3; }
 .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground; }
 /* Hanya judul yang bertautan ke detail dan bereaksi saat disorot (pilihan pemilik 2026-10-17; sebelumnya tautan
    merentang ke seluruh kartu dan terlalu mudah terklik): Full Color merah aksen, Monochrome bergaris bawah. Berlaku juga
@@ -266,30 +260,26 @@
 @media (hover: hover) { [data-tema=full_color] :is(.kartu-artikel-judul, .judul-portofolio) a:hover { color: var(--aksen-teks); } }
 /* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh; tidak menyisakan satu
    kata di baris terakhir. */
-.kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-pretty text-teks; }
-[data-tema=full_color] .grid-artikel .kartu-artikel-ringkasan { @apply mt-2; }
-/* Kartu baris (beranda kedua tema, daftar & kategori Monochrome; susunannya di struktur.css): baris bergaris pemisah tanpa
-   bingkai kartu, ukuran sama di kedua tema (pilihan pemilik 2026-10-19). */
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) { @apply border-y; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-gambar img { @apply block aspect-4/3; }
+.kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-pretty text-teks sm:max-w-2xl; }
+/* Baris bergaris pemisah tanpa bingkai kartu (susunannya di struktur.css), sama di kedua tema (pilihan pemilik 2026-10-19). */
+:is(.daftar-artikel, .grid-artikel) { @apply border-y; }
+.kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
 [data-tema=monochrome] :is(.kartu-artikel-judul, .judul-portofolio) { @apply underline-offset-4; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
 @media (hover: hover) {
   [data-tema=monochrome] :is(.kartu-artikel-judul, .judul-portofolio) a:hover { @apply underline; }
 }
 /* Pita kategori (varian B1 pilihan pemilik 2026-10-15): bendera yang melipat di tepi kanan, sehingga nama panjang tetap
    utuh. Dipakai di semua kartu artikel (beranda, daftar & kategori artikel) dan bingkai gambar detail artikel; keluar dari
    alur kartu sehingga judul menjadi baris pertama isi. Ukuran sama di setiap pemakaian dan di kedua tema; warnanya dari
-   token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu baris baru berpita mulai 640px: di bawahnya
+   token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu artikel baru berpita mulai 640px: di bawahnya
    thumbnail hanya 6rem, kategori tetap lencana di atas judul. Kartu & bingkai detail portofolio memakai .pita-kategori:
    selalu pita, di kedua tema dan semua lebar (pilihan pemilik 2026-10-18). */
-:is([data-tema=full_color] .grid-artikel .kartu-artikel, .bingkai-artikel) .lencana-artikel, .pita-kategori { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-:is([data-tema=full_color] .grid-artikel .kartu-artikel, .bingkai-artikel) .lencana-artikel::after, .pita-kategori::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+.bingkai-artikel .lencana-artikel, .pita-kategori { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+.bingkai-artikel .lencana-artikel::after, .pita-kategori::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 @media (min-width: 640px) {
-  /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu baris (py-8). */
-  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel { @apply absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+  /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu artikel (py-8). */
+  .kartu-artikel .lencana-artikel { @apply absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+  .kartu-artikel .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 }
 
 /* ---------- FAQ ---------- */
@@ -561,7 +551,7 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
   :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
   .tanya-faq { column-gap: .5rem; }
   .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
-  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
+  .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
   [data-tema=full_color] .kotak-ajakan { padding-inline: 1rem; }
   [data-tema=full_color] :is(.tanya-faq, .jawab-faq) { padding-inline: 1rem; }
   /* Tanda +/− tetap tampak 16px dari tepi (glyph 16px di kotak 24px berjarak dalam 4px); pertanyaan sebaris sama dengan 390px. */

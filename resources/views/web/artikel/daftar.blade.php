@@ -1,6 +1,6 @@
 {{--
-    Kartu artikel + paginasi di kolom utama halaman daftar & kategori artikel. Full Color: dua kartu per baris mulai 768px;
-    Monochrome: daftar editorial. Kategori tampil sebagai pita.
+    Kartu artikel + paginasi di kolom utama halaman daftar & kategori artikel: daftar editorial bergaris pemisah,
+    sama di kedua tema. Kategori tampil sebagai pita.
     Pakai: @include('web.artikel.daftar') — $artikel hasil ->paginate().
 --}}
 @if ($artikel->isEmpty())

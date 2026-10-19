@@ -113,38 +113,29 @@ body { background: var(--background); color: var(--teks); }
 }
 @media (min-width: 1024px) { .daftar-portofolio > * { width: calc((100% - 3rem) / 3); } }
 /* Daftar portofolio (/portofolio): kartu beranda di kolom utama, bersusun di ponsel dan dua per baris mulai 768px di
-   kedua tema (pilihan pemilik 2026-10-18), seperti daftar artikel Full Color; 10 per halaman sehingga tanpa kartu yatim. */
+   kedua tema (pilihan pemilik 2026-10-18); 10 per halaman sehingga tanpa kartu yatim. */
 .grid-portofolio { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 768px) { .grid-portofolio { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; } }
 
 /* ---------- Artikel ----------
-   Baris editorial bergaris pemisah (judul · ringkasan · tanggal di kiri, thumbnail di kanan): beranda di kedua tema
-   (Full Color sejak pilihan pemilik 2026-10-19) serta daftar & kategori artikel Monochrome. .kartu-artikel-isi
-   memakai display: contents agar anak-anaknya menjadi sel grid kartu. Tanggal di bawah ringkasan (pilihan pemilik
-   2026-10-15); meta dilebur (komponen.css) agar lencana & tanggal menjadi sel grid; di ponsel lencana di atas judul.
-   Mulai 640px kategori menjadi pita dan thumbnail 14rem agar pita terpanjang muat. */
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan" "tanggal tanggal"; align-items: start; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-isi { display: contents; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-judul { grid-area: judul; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-ringkasan { grid-area: ringkasan; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-gambar { grid-area: gambar; }
-:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
+   Semua kartu artikel (beranda, daftar & kategori) berupa baris editorial bergaris pemisah (judul · ringkasan · tanggal
+   di kiri, thumbnail di kanan), susunannya sama di kedua tema (Full Color sejak pilihan pemilik 2026-10-19).
+   .kartu-artikel-isi memakai display: contents agar anak-anaknya menjadi sel grid kartu. Tanggal di bawah ringkasan
+   (pilihan pemilik 2026-10-15); meta dilebur (komponen.css) agar lencana & tanggal menjadi sel grid; di ponsel lencana
+   di atas judul. Mulai 640px kategori menjadi pita dan thumbnail 14rem agar pita terpanjang muat. */
+.kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan" "tanggal tanggal"; align-items: start; }
+.kartu-artikel-isi { display: contents; }
+.kartu-artikel-judul { grid-area: judul; }
+.kartu-artikel-ringkasan { grid-area: ringkasan; }
+.kartu-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
+.kartu-artikel-gambar { grid-area: gambar; }
+.kartu-artikel + .kartu-artikel { border-top-width: 1px; }
 @media (max-width: 639.98px) {
   /* Hanya di ponsel: mulai 640px lencana menjadi pita yang diposisikan terhadap kartu, bukan sel grid. */
-  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel { grid-area: meta; }
+  .kartu-artikel .lencana-artikel { grid-area: meta; }
 }
 @media (min-width: 640px) {
-  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { grid-template-columns: minmax(0, 1fr) 14rem; grid-template-rows: auto auto 1fr; grid-template-areas: "judul gambar" "ringkasan gambar" "tanggal gambar"; }
-}
-/* Daftar artikel (/artikel), Full Color: ponsel kartu bersusun, mulai 768px dua kartu per baris dengan gambar di atas
-   (pilihan pemilik 2026-10-15; 10 per halaman sehingga halaman penuh tanpa kartu yatim); tanggal rata bawah agar sejajar
-   antarkartu sebaris. */
-[data-tema=full_color] .grid-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
-[data-tema=full_color] .grid-artikel .kartu-artikel-gambar { aspect-ratio: 16 / 10; }
-[data-tema=full_color] .grid-artikel .tanggal-artikel { margin-top: auto; padding-top: .75rem; }
-@media (min-width: 768px) {
-  [data-tema=full_color] .grid-artikel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .kartu-artikel { grid-template-columns: minmax(0, 1fr) 14rem; grid-template-rows: auto auto 1fr; grid-template-areas: "judul gambar" "ringkasan gambar" "tanggal gambar"; }
 }
 /* ---------- Halaman artikel: kolom utama + kolom samping (pilihan pemilik 2026-10-15) ----------
    Mulai 1024px kolom utama 8/12 dan kolom samping 4/12; di bawahnya kolom samping turun ke bawah isi, kotaknya dua
