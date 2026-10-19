@@ -6,7 +6,7 @@
  * menang: leaflet.css → token → struktur → komponen.
  */
 @import "tailwindcss" source(none);
-@import "basecoat-css";
+@import "./web/basecoat.css";
 @import "leaflet/dist/leaflet.css";
 @import "./web/token.css";
 @import "./web/struktur.css";
