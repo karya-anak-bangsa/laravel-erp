@@ -10,6 +10,14 @@ import { pasangTandaiBaca } from './admin/kontak-kami.js';
 import { pasangRepeater } from './admin/repeater.js';
 import { pasangFormTemplate } from './admin/template.js';
 
+// Grup submenu yang terbuka selalu mengikuti halaman aktif (dirender Blade). Gentelella mengingat grup terakhir
+// yang diklik di sessionStorage lalu membukanya di semua halaman, bahkan setelah logout dan login di tab yang sama.
+try {
+    sessionStorage.removeItem('gentelella:nav-open');
+} catch {
+    // sessionStorage diblokir browser: perilaku bawaan Gentelella tetap berjalan.
+}
+
 mountShell();
 pasangRepeater();
 pasangTandaiBaca();

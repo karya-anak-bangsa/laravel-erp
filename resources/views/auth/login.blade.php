@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="auth-title">Masuk ke Panel Admin</div>
+    <div class="auth-subtitle">Masuk dengan akun administrator Anda.</div>
 
     <form method="POST" action="{{ route('login.store') }}">
         @csrf
@@ -36,7 +37,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;height:38px">
+        <button type="submit" class="btn btn-primary auth-submit">
             Masuk
         </button>
     </form>

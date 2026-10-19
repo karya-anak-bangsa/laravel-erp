@@ -2,7 +2,7 @@
 
 <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-brand">
-        <div class="brand-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></div>
+        <img class="brand-logo" src="{{ asset('img/logo-tkab.webp') }}" alt="PT. Teknologi Karya Anak Bangsa" width="59" height="22">
         <div class="brand-name">ERP System</div>
     </div>
 
@@ -60,7 +60,6 @@
             <span class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($pengguna->nama, 0, 1)) }}</span>
             <span class="sidebar-user-info">
                 <span class="name">{{ $pengguna->nama }}</span>
-                <span class="role">Administrator</span>
             </span>
             <x-admin.icon name="chevron-up" class="sidebar-user-caret" />
         </button>

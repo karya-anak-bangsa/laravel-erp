@@ -6,13 +6,16 @@
 </head>
 <body>
     <div class="auth-page">
-        <div class="auth-card">
-            <div class="auth-brand">
-                <div class="brand-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></div>
-                <div class="brand-name">PT. Teknologi Karya Anak Bangsa</div>
+        <div class="auth-wrap">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <img src="{{ asset('img/logo-tkab.webp') }}" alt="PT. Teknologi Karya Anak Bangsa" width="128" height="48">
+                </div>
+
+                @yield('content')
             </div>
 
-            @yield('content')
+            <div class="auth-footer">&copy; {{ now()->year }} PT. Teknologi Karya Anak Bangsa</div>
         </div>
     </div>
 </body>
