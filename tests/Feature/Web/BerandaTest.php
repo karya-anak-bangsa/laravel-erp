@@ -130,7 +130,7 @@ describe('isi', function () {
         $this->get('/')
             ->assertSeeInOrder(['Artikel Empat', 'Artikel Tiga', 'Artikel Dua'])
             ->assertSee('Kategori Uji')
-            ->assertSee('<span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
+            ->assertSee('Diterbitkan <span class="whitespace-nowrap">4 Oktober 2026</span>', false)
             ->assertDontSee('04 Oktober 2026')
             ->assertDontSee('Artikel Satu')
             ->assertDontSee('Artikel Draf');
@@ -198,9 +198,7 @@ describe('isi', function () {
             ->assertDontSee('id="portofolio"', false)
             ->assertDontSee('id="artikel"', false)
             ->assertDontSee('id="faq"', false)
-            ->assertSee('id="kontak"', false)
-            // Nomor label seksi mengikuti seksi yang tampil.
-            ->assertSee('<span class="label-nomor">01</span>Kontak', false);
+            ->assertSee('id="kontak"', false);
     });
 
     it('menyembunyikan semua tautan WhatsApp bila identitas tidak punya link WhatsApp', function () {

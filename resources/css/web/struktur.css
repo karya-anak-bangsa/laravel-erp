@@ -52,43 +52,32 @@ body { background: var(--background); color: var(--teks); }
   .grid-layanan:has(> :last-child:nth-child(3n+2)) > :nth-child(-n+2),
   .grid-layanan:has(> :last-child:nth-child(3n+1)) > :nth-child(-n+4) { grid-column: span 3; }
 }
-/* Isi kartu layanan, susunan sama di kedua tema: gambar → judul → deskripsi → baris bawah. Baris bawah berisi keterangan
-   (Monochrome) atau tombol Selengkapnya (Full Color); hanya satu yang tampil per tema. Ponsel: gambar jadi thumbnail di
-   kanan judul; kartu lebar (container ≥ 36rem): judul & deskripsi di kiri, gambar 4:3 di kanan. */
+/* Isi kartu layanan: gambar → judul → deskripsi → tombol Selengkapnya. Isi mengisi tinggi kartu dan Selengkapnya rata
+   bawah agar sejajar antarkartu sebaris. Ponsel: gambar jadi thumbnail di kanan judul; kartu lebar (container ≥ 36rem):
+   judul, deskripsi & Selengkapnya di kiri, gambar 4:3 di kanan. */
 .kartu-layanan { container-type: inline-size; }
-.isi-layanan { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-areas: "gambar" "kepala" "deskripsi" "bawah"; }
+.isi-layanan { display: grid; flex: 1; align-content: start; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; grid-template-areas: "gambar" "kepala" "deskripsi" "bawah"; }
 .isi-layanan-gambar { grid-area: gambar; }
 .isi-layanan-kepala { grid-area: kepala; }
 .isi-layanan-deskripsi { grid-area: deskripsi; }
-.isi-layanan-rinci, .isi-layanan-aksi { grid-area: bawah; }
+.isi-layanan-aksi { grid-area: bawah; align-self: end; }
 .isi-layanan-gambar img { aspect-ratio: 16 / 10; }
-/* Full Color: isi mengisi tinggi kartu dan tombol Selengkapnya rata bawah agar sejajar antarkartu sebaris. */
-[data-tema=full_color] .isi-layanan { flex: 1; grid-template-rows: auto auto auto 1fr; }
-[data-tema=full_color] .isi-layanan-aksi { align-self: end; }
 @media (max-width: 639.98px) {
-  .isi-layanan { grid-template-columns: minmax(0, 1fr) 5.75rem; grid-template-areas: "kepala gambar" "deskripsi deskripsi" "bawah bawah"; }
-  [data-tema=full_color] .isi-layanan { grid-template-rows: auto auto 1fr; }
+  .isi-layanan { grid-template-columns: minmax(0, 1fr) 5.75rem; grid-template-rows: auto auto 1fr; grid-template-areas: "kepala gambar" "deskripsi deskripsi" "bawah bawah"; }
   .isi-layanan-gambar { margin: .625rem .625rem 0 0; align-self: start; }
   .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
 }
 @container (min-width: 36rem) {
   .isi-layanan {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    grid-template-rows: 1fr auto auto 1fr auto;
-    grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" ". gambar" "bawah bawah";
-  }
-  /* Full Color: Selengkapnya tetap di kolom teks, di bawah deskripsi. */
-  [data-tema=full_color] .isi-layanan {
     grid-template-rows: 1fr auto auto auto 1fr;
     grid-template-areas: ". gambar" "kepala gambar" "deskripsi gambar" "bawah gambar" ". gambar";
   }
-  [data-tema=full_color] .isi-layanan-aksi { align-self: start; }
-  /* Kolom teks Full Color (dengan Selengkapnya) bisa lebih tinggi dari gambar 4:3: gambar direntangkan agar tetap rapat 7px
-     ke tepi kartu seperti Monochrome (object-cover memotong sedikit sisi kiri-kanan ilustrasi). */
-  [data-tema=full_color] .isi-layanan-gambar { align-self: stretch; }
-  [data-tema=full_color] .isi-layanan-gambar img { height: 100%; }
-  .isi-layanan-gambar { align-self: center; margin: 0; }
-  .isi-layanan-gambar img { aspect-ratio: 4 / 3; }
+  .isi-layanan-aksi { align-self: start; }
+  /* Kolom teks (dengan Selengkapnya) bisa lebih tinggi dari gambar 4:3: gambar direntangkan agar tetap rapat 7px ke tepi
+     kartu (object-cover memotong sedikit sisi kiri-kanan ilustrasi). */
+  .isi-layanan-gambar { align-self: stretch; margin: 0; }
+  .isi-layanan-gambar img { aspect-ratio: 4 / 3; height: 100%; }
 }
 
 /* ---------- Portofolio: ponsel = baris geser (scroll-snap), md+ = 2/3 kolom ---------- */
@@ -107,9 +96,9 @@ body { background: var(--background); color: var(--teks); }
   .daftar-portofolio > * { flex-basis: 62%; }
 }
 @media (min-width: 768px) {
-  .daftar-portofolio { flex-wrap: wrap; gap: 1.5rem; }
+  /* Baris terakhir yang belum penuh rata tengah. */
+  .daftar-portofolio { flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
   .daftar-portofolio > * { width: calc(50% - .75rem); }
-  [data-tema=full_color] .daftar-portofolio { justify-content: center; }
 }
 @media (min-width: 1024px) { .daftar-portofolio > * { width: calc((100% - 3rem) / 3); } }
 /* Daftar portofolio (/portofolio): kartu beranda di kolom utama, bersusun di ponsel dan dua per baris mulai 768px di
@@ -167,6 +156,7 @@ body { background: var(--background); color: var(--teks); }
 html:has(.dialog-layanan[open]) { overflow: hidden; }
 .dialog-layanan { margin: auto; padding: 0; border: 0; background: transparent; width: calc(100% - 1.5rem); max-width: 42rem; max-height: calc(100dvh - 1.5rem); overflow: visible; }
 .dialog-layanan::backdrop { background: rgb(11 21 38 / .6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+[data-tema=monochrome] .dialog-layanan::backdrop { background: rgb(0 0 0 / .6); }
 @media (prefers-reduced-motion: no-preference) {
   .dialog-layanan[open] .dialog-layanan-isi { animation: naik-masuk .3s ease-out both; }
 }

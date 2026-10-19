@@ -44,10 +44,22 @@ it('mempertahankan tampilan yang disetujui pada pilihan halus', function () {
             '--bayangan-isian' => '0 1px 2px 0 #0000000d',
             '--bayangan-lencana' => '0 1px 2px 0 #0000000d',
             '--bayangan-kartu' => '0 1px 2px 0 #0000000d',
+            '--bayangan-kartu-sorot' => '0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a',
             '--bayangan-formulir' => '0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a',
             '--bayangan-gambar' => '0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a',
+            '--bayangan-navbar' => '0 1px 2px 0 #0000000d',
             '--garis-kartu' => 'color-mix(in oklab, var(--nada-200), var(--nada-300))',
         ]);
+});
+
+// Aturan bersama (navbar, sorot kartu layanan) memakai token yang sama di kedua tema; token yang tidak ada di salah satu
+// tema membuat bayangannya lenyap diam-diam. Hanya kotak ajakan yang khusus Full Color.
+it('menyediakan token bayangan yang sama di kedua tema kecuali kotak ajakan', function () {
+    $warna = array_keys(BayanganTemplate::Halus->token(JenisTemplate::FullColor));
+    $mono = array_keys(BayanganTemplate::Halus->token(JenisTemplate::Monochrome));
+
+    expect(array_values(array_diff($warna, $mono)))->toBe(['--bayangan-ajakan'])
+        ->and(array_values(array_diff($mono, $warna)))->toBe(['--garis-kartu']);
 });
 
 it('mempertegas bayangan tombol, kartu, dan gambar hero pada pilihan tegas', function (JenisTemplate $jenis) {

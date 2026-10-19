@@ -2,7 +2,7 @@
      Tanpa tombol "Lihat semua portofolio" (pilihan pemilik 2026-10-18): menu Portofolio di navbar sudah mewakilinya. --}}
 <section id="portofolio" class="seksi seksi-redup" aria-labelledby="judul-portofolio">
     <div class="wadah">
-        <x-web.kepala-seksi id="judul-portofolio" :nomor="$nomorSeksi('portofolio')" label="Portofolio" judul="Hasil karya kami" rata="tengah">
+        <x-web.kepala-seksi id="judul-portofolio" label="Portofolio" judul="Hasil karya kami" rata="tengah">
             Beberapa proyek dan program yang telah kami kerjakan bersama klien dan mitra.
         </x-web.kepala-seksi>
 

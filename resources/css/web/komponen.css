@@ -2,11 +2,11 @@
  * Gaya komponen frontend publik. Di luar @layer agar menang atas utilitas Tailwind dan atas
  * komponen Basecoat yang ada di @layer components.
  *
- * Konvensi (pilihan pemilik 2026-10-11): ukuran — font, tinggi, padding, jarak, ukuran ikon — ditulis SEKALI di aturan
- * bersama tanpa [data-tema], bernilai Monochrome sebagai acuan, sehingga kedua tema identik. Aturan [data-tema=full_color]
- * dan [data-tema=monochrome] hanya berisi warna, bayangan khusus satu tema, dekorasi, dan susunan yang memang beda
- * antartema. Bayangan permukaan yang ada di kedua tema ditulis di aturan bersama lewat token --bayangan-* (nilainya per
- * tema dan per pilihan bayangan template, dari TemaService).
+ * Konvensi (pilihan pemilik 2026-10-19): Monochrome sama dengan Full Color kecuali warna. Susunan, ukuran, komponen, dan
+ * efek ditulis SEKALI di aturan bersama tanpa [data-tema]. Aturan [data-tema=full_color] dan [data-tema=monochrome] hanya
+ * berisi warna — termasuk dekorasi berwarna khusus Full Color dan garis bawah sebagai penanda sorot/aktif Monochrome
+ * pengganti warna aksen — ditambah band ajakan & kartu Konsultasi yang memang beda antartema. Bayangan ditulis di aturan
+ * bersama lewat token --bayangan-* (nilainya per tema dan per pilihan bayangan template, dari TemaService).
  */
 
 /* ---------- Tombol (Basecoat .btn) ---------- */
@@ -29,10 +29,9 @@
 .btn-sedang { @apply h-11 px-4 sm:h-9; }
 
 /* ---------- Navbar ---------- */
-.kepala-situs { @apply sticky top-0 z-50 border-b bg-background; }
-[data-tema=full_color] .kepala-situs { @apply bg-background/95 backdrop-blur-lg; box-shadow: var(--bayangan-navbar); }
+.kepala-situs { @apply sticky top-0 z-50 border-b bg-background/95 backdrop-blur-lg; box-shadow: var(--bayangan-navbar); }
 /* Latar padat saat menu ponsel terbuka: latar redup di belakang tembus 5% sehingga navbar tampak abu di atas panel putih. */
-[data-tema=full_color] .kepala-situs:has(#tombol-menu[aria-expanded=true]) { background-color: var(--background); }
+.kepala-situs:has(#tombol-menu[aria-expanded=true]) { background-color: var(--background); }
 /* Tinggi navbar, logo, dan teks menu desktop dari skala template (--tinggi-navbar, --tinggi-logo, --teks-menu). */
 .bilah-navigasi { @apply mx-auto flex h-16 max-w-(--lebar-konten) items-center gap-4 px-4 sm:px-6 lg:h-(--tinggi-navbar) lg:px-8; }
 .logo-situs { @apply flex min-h-11 shrink-0 items-center gap-3 rounded-tombol; }
@@ -63,8 +62,7 @@
 .contoh-warna-penuh { background: conic-gradient(from 200deg, #e11d48, #f59e0b, #10b981, #0284c7, #7c3aed, #e11d48); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
 .contoh-warna-mono { background: linear-gradient(135deg, #0a0a0a 50%, #fff 50%); box-shadow: inset 0 0 0 1.5px #0a0a0a; }
 
-.menu-ponsel { @apply absolute inset-x-0 top-full border-b bg-background shadow-xl shadow-slate-900/10 lg:hidden; }
-[data-tema=full_color] .menu-ponsel { --tw-shadow: var(--bayangan-melayang); }
+.menu-ponsel { @apply absolute inset-x-0 top-full border-b bg-background lg:hidden; box-shadow: var(--bayangan-melayang); }
 .menu-ponsel nav { @apply mx-auto max-w-(--lebar-konten) px-4 pt-2 pb-5 sm:px-6; }
 .menu-ponsel ul { @apply grid; }
 .menu-ponsel li a { @apply flex min-h-12 items-center border-b text-[15px] font-medium text-foreground; }
@@ -84,7 +82,6 @@
 
 /* ---------- Hero ---------- */
 [data-tema=full_color] :is(.hero, .halaman-galat, .kepala-halaman) { background-image: linear-gradient(to bottom, var(--utama-50), #fff 72%); }
-[data-tema=monochrome] .hero { @apply border-b; }
 [data-tema=full_color] .hero-blob { @apply absolute rounded-full blur-3xl; }
 /* Dua kolom mulai md di kedua tema (pilihan pemilik 2026-10-11; Full Color sebelumnya mulai lg). */
 .hero-tata { @apply mx-auto grid max-w-(--lebar-konten) items-center gap-12 px-4 pt-14 pb-16 sm:px-6 sm:pt-20 sm:pb-20 md:grid-cols-12 md:gap-8 lg:gap-10 lg:px-8 lg:pt-24 lg:pb-28; }
@@ -128,43 +125,39 @@
 /* Lebar isi dari template (--lebar-konten: 80rem, melebar di ≥1920px sesuai pilihan template). */
 .wadah { @apply mx-auto max-w-(--lebar-konten) px-4 sm:px-6 lg:px-8; }
 .seksi { @apply py-20 sm:py-24 lg:py-28; }
-[data-tema=monochrome] .seksi { @apply border-b; }
 .seksi-redup { background-color: var(--latar-redup); }
 .kepala-seksi { @apply max-w-2xl; }
-[data-tema=full_color] .kepala-seksi[data-rata=tengah] { @apply mx-auto text-center; }
-.label-seksi { @apply inline-flex items-center font-mono text-xs tracking-[0.18em] uppercase; }
-/* items-baseline: garis hiasan (pseudo-elemen tanpa teks) tidak boleh menjadi garis dasar label, agar tinggi kepala seksi
-   sama persis dengan Monochrome; garisnya tetap di tengah lewat self-center. */
-[data-tema=full_color] .label-seksi { @apply items-baseline gap-x-2 text-aksen; }
-[data-tema=full_color] .label-seksi::before,
-[data-tema=full_color] .kepala-seksi[data-rata=tengah] .label-seksi::after { content: ""; @apply h-px w-6 self-center bg-current; }
-[data-tema=full_color] .label-nomor { @apply hidden; }
+.kepala-seksi[data-rata=tengah] { @apply mx-auto text-center; }
+/* Label bergaris hiasan di kiri, juga di kanan bila rata tengah. items-baseline: garis (pseudo-elemen tanpa teks) tidak
+   boleh menjadi garis dasar label agar tinggi kepala seksi tetap; garisnya di tengah lewat self-center. */
+.label-seksi { @apply inline-flex items-baseline gap-x-2 font-mono text-xs tracking-[0.18em] uppercase; }
+.label-seksi::before,
+.kepala-seksi[data-rata=tengah] .label-seksi::after { content: ""; @apply h-px w-6 self-center bg-current; }
+[data-tema=full_color] .label-seksi { @apply text-aksen; }
 [data-tema=monochrome] .label-seksi { @apply text-muted-foreground; }
-[data-tema=monochrome] .label-nomor { @apply text-foreground; }
-[data-tema=monochrome] .label-nomor::after { content: "\00a0/\00a0"; color: var(--muted-foreground); }
 /* Ukuran desktop dari skala template (--teks-judul-seksi); tinggi baris ikut rasio text-4xl. */
 .judul-seksi { @apply mt-4 text-3xl tracking-tight text-balance text-foreground sm:text-4xl lg:text-(length:--teks-judul-seksi); font-weight: var(--ketebalan-judul); }
 .deskripsi-seksi { @apply mt-4 text-lg leading-8 text-pretty; }
 [data-tema=full_color] .deskripsi-seksi { @apply text-teks; }
 [data-tema=monochrome] .deskripsi-seksi { @apply text-muted-foreground; }
-.tautan-teks { @apply font-medium underline underline-offset-4; }
-[data-tema=full_color] .tautan-teks { @apply text-aksen decoration-2 transition; text-decoration-color: color-mix(in oklab, var(--aksen-teks) 30%, transparent); }
-[data-tema=full_color] .tautan-teks:hover { text-decoration-color: var(--aksen-teks); }
+/* Garis bawah 2px sewarna teks 30%, pekat saat disorot. */
+.tautan-teks { @apply font-medium underline decoration-2 underline-offset-4 transition; text-decoration-color: color-mix(in oklab, currentColor 30%, transparent); }
+.tautan-teks:hover { text-decoration-color: currentColor; }
+[data-tema=full_color] .tautan-teks { @apply text-aksen; }
 [data-tema=monochrome] .tautan-teks { @apply text-foreground; }
 
 /* ---------- Layanan ---------- */
-/* Kartu & bingkai bergaris border 1px di kedua tema (Full Color sebelumnya ring-1) agar geometrinya identik; bayangannya
-   ditulis langsung lewat token. Full Color Halus: lembut menyebar seperti navbar (pilihan pemilik 2026-10-11). */
-.kartu-layanan { @apply relative rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .kartu-layanan { @apply flex flex-col transition duration-300 hover:-translate-y-1 hover:border-(--corak-cincin); }
-@media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover { box-shadow: var(--bayangan-kartu-sorot); } }
-/* Garis tepi lebih tegas dari --border agar kartu tidak tampak pudar (makin tegas saat template tanpa bayangan). */
+/* Kartu bergaris border 1px dengan bayangan lewat token; Full Color Halus lembut menyebar seperti navbar (pilihan pemilik
+   2026-10-11). Saat disorot kartu terangkat, garis tepinya sewarna cincin corak, bayangan dan gambarnya membesar. */
+.kartu-layanan { @apply relative flex flex-col rounded-kartu border bg-card p-1.5 transition duration-300 hover:-translate-y-1; box-shadow: var(--bayangan-kartu); }
+/* Garis tepi Monochrome lebih tegas dari --border agar kartu tidak tampak pudar (makin tegas saat template tanpa bayangan). */
 [data-tema=monochrome] .kartu-layanan { border-color: var(--garis-kartu); }
+@media (hover: hover) { .kartu-layanan:hover { border-color: var(--corak-cincin); box-shadow: var(--bayangan-kartu-sorot); } }
 .isi-layanan-gambar { @apply overflow-hidden rounded-dalam border; }
 .isi-layanan-gambar img { @apply block w-full object-cover; }
+@media (hover: hover) { .kartu-layanan:hover .isi-layanan-gambar img { transform: scale(1.03); } }
 /* Garis bingkai gambar Full Color transparan (hanya menjaga geometri), latar tidak merembes ke garis. */
 [data-tema=full_color] .isi-layanan-gambar { @apply bg-(--corak-lembut); border-color: transparent; background-clip: padding-box; }
-@media (hover: hover) { [data-tema=full_color] .kartu-layanan:hover .isi-layanan-gambar img { transform: scale(1.03); } }
 [data-tema=monochrome] .isi-layanan-gambar { @apply bg-muted; }
 .isi-layanan-kepala { @apply px-4 pt-4 sm:px-5 sm:pt-5; }
 /* Nomor polos Geist Mono di kedua tema (pilihan pemilik 2026-10-11; Full Color sebelumnya pil berwarna). */
@@ -174,11 +167,9 @@
 .judul-layanan { @apply mt-2 text-lg font-semibold tracking-tight text-balance text-foreground sm:mt-3; }
 /* text-pretty: cegah satu kata tertinggal sendirian di baris terakhir (CLAUDE.md §9). */
 .isi-layanan-deskripsi { @apply px-4 pt-2 text-[15px]/[1.65] text-pretty text-teks sm:px-5; }
-/* Full Color: keterangan di modal (tombol Selengkapnya); Monochrome: keterangan langsung di kartu. */
-[data-tema=full_color] .isi-layanan-rinci { @apply hidden; }
-[data-tema=monochrome] .isi-layanan-rinci { @apply mx-4 mt-4 mb-4 border-t pt-4 text-sm/6 text-pretty text-muted-foreground sm:mx-5 sm:mb-5; }
-[data-tema=full_color] .isi-layanan-aksi { @apply px-4 py-4 sm:px-5 sm:pb-5; }
-[data-tema=monochrome] .isi-layanan-aksi { @apply hidden; }
+/* Keterangan tidak tampil di kartu: tombol Selengkapnya menyalinnya ke modal (dialog-layanan.js). */
+.isi-layanan-rinci { @apply hidden; }
+.isi-layanan-aksi { @apply px-4 py-4 sm:px-5 sm:pb-5; }
 /* Selengkapnya berbentuk tombol tanpa ikon (pilihan pemilik 2026-10-11) setinggi .btn-sedang; ::after merentang agar
    seluruh kartu tetap bisa diklik. */
 .tombol-selengkapnya { @apply inline-flex min-h-11 items-center justify-center border border-(--corak-cincin) bg-(--corak-lembut) px-4 text-sm font-medium text-(--corak-teks) transition sm:min-h-9; border-radius: var(--sudut-tombol); }
@@ -186,8 +177,8 @@
 .tombol-selengkapnya:focus-visible { outline: 2px solid var(--corak); outline-offset: 2px; }
 @media (hover: hover) { .kartu-layanan:hover .tombol-selengkapnya { @apply border-(--corak); box-shadow: var(--bayangan-tombol-garis); } }
 
-/* Modal layanan (Full Color): deskripsi & keterangan seukuran kartu layanan; judul modal tetap 20/24px (pilihan pemilik 2026-10-11). */
-.dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card; box-shadow: var(--bayangan-melayang, 0 24px 48px -16px rgb(0 0 0 / .2)); border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
+/* Modal layanan: deskripsi & keterangan seukuran kartu layanan; judul modal tetap 20/24px (pilihan pemilik 2026-10-11). */
+.dialog-layanan-isi { @apply relative w-full overflow-hidden bg-card; box-shadow: var(--bayangan-melayang); border-radius: var(--sudut-kartu); max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
 .dialog-layanan-kepala { @apply flex items-center gap-4 bg-(--corak-lembut) p-4 pe-16 sm:gap-6 sm:p-6 sm:pe-20; }
 .dialog-layanan-gambar { @apply aspect-4/3 w-28 shrink-0 overflow-hidden rounded-dalam ring-1 ring-black/5 sm:w-40; --tw-shadow: var(--bayangan-kartu); }
 .dialog-layanan-gambar img { @apply size-full object-cover; }
@@ -197,8 +188,9 @@
 .dialog-layanan-deskripsi { @apply text-[15px]/[1.65] text-foreground; }
 .dialog-layanan-rinci { @apply mt-4 text-sm/6 text-teks; }
 .dialog-layanan-aksi { @apply mt-7 flex flex-col gap-3 sm:flex-row; }
-.dialog-layanan-tutup { @apply absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-xs ring-1 ring-slate-200 backdrop-blur transition hover:bg-white; }
-[data-tema=full_color] .dialog-layanan-tutup { border-radius: var(--sudut-tombol); }
+.dialog-layanan-tutup { @apply absolute top-3 right-3 inline-flex size-11 items-center justify-center bg-white/90 shadow-xs ring-1 backdrop-blur transition hover:bg-white; border-radius: var(--sudut-tombol); }
+[data-tema=full_color] .dialog-layanan-tutup { @apply text-slate-700 ring-slate-200; }
+[data-tema=monochrome] .dialog-layanan-tutup { @apply text-(--nada-700) ring-(--nada-200); }
 
 /* ---------- Portofolio ---------- */
 /* Bingkai kartu seperti kartu layanan: gambar berjarak dari tepi; ukuran teks kartu sama di layanan, portofolio, dan
@@ -286,28 +278,26 @@
 .tata-faq { @apply grid gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-16; }
 .faq-kepala { @apply lg:col-span-4; }
 .faq-kepala > div { @apply lg:sticky lg:top-28; }
-.daftar-faq { @apply lg:col-span-8; }
-[data-tema=full_color] .daftar-faq { @apply space-y-3; }
-[data-tema=monochrome] .daftar-faq { @apply border-t; }
-[data-tema=full_color] .item-faq { @apply rounded-dalam bg-card ring-1 ring-border transition; }
-[data-tema=full_color] .item-faq[open] { @apply ring-(--warna-aksen)/25; --tw-shadow: var(--bayangan-kartu); }
-[data-tema=monochrome] .item-faq { @apply border-b; }
-.tanya-faq { @apply flex w-full justify-between gap-x-4 py-5 text-start text-[15px] font-medium text-foreground sm:text-base; }
-[data-tema=full_color] .tanya-faq { @apply items-center rounded-dalam px-5 transition hover:text-aksen sm:px-6; }
-[data-tema=monochrome] .tanya-faq { @apply items-start underline-offset-4 hover:underline; }
+.daftar-faq { @apply space-y-3 lg:col-span-8; }
+/* Kartu per pertanyaan; yang terbuka bercincin warna aksen (Monochrome: nada gelap) dan berbayangan kartu. Cincin kartu
+   Monochrome setegas garis kartu layanan. */
+.item-faq { @apply rounded-dalam bg-card ring-1 transition; }
+.item-faq[open] { --tw-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .item-faq { @apply ring-border; }
+[data-tema=full_color] .item-faq[open] { @apply ring-(--warna-aksen)/25; }
+[data-tema=monochrome] .item-faq { --tw-ring-color: var(--garis-kartu); }
+[data-tema=monochrome] .item-faq[open] { @apply ring-foreground/25; }
+.tanya-faq { @apply flex w-full items-center justify-between gap-x-4 rounded-dalam px-5 py-5 text-start text-[15px] font-medium text-foreground transition sm:px-6 sm:text-base; }
+[data-tema=full_color] .tanya-faq { @apply hover:text-aksen; }
+[data-tema=monochrome] .tanya-faq { @apply underline-offset-4 hover:underline; }
 /* Cegah satu kata tertinggal sendirian di baris terakhir pertanyaan. */
 .tanya-faq > :first-child { @apply text-pretty; }
-.ikon-faq { @apply shrink-0; }
-/* Kotak ikon 24px: tinggi baris pertanyaan sama dengan Monochrome (pilihan pemilik 2026-10-11; sebelumnya 36px). */
-[data-tema=full_color] .ikon-faq { @apply flex size-6 items-center justify-center bg-muted text-teks transition; border-radius: var(--sudut-dalam); }
-[data-tema=full_color] .item-faq[open] .ikon-faq { @apply bg-primary text-primary-foreground; }
-[data-tema=full_color] .ikon-chevron { @apply hidden; }
-[data-tema=monochrome] .ikon-faq { @apply mt-1 text-muted-foreground transition-transform; }
-[data-tema=monochrome] .item-faq[open] .ikon-faq { @apply rotate-180; }
-[data-tema=monochrome] .ikon-faq :is(.ikon-plus, .ikon-minus) { display: none; }
-.jawab-faq { @apply pb-5 text-[15px]/7; }
-[data-tema=full_color] .jawab-faq { @apply px-5 text-teks sm:px-6; }
-[data-tema=monochrome] .jawab-faq { @apply pr-8 text-muted-foreground; }
+/* Kotak ikon +/− 24px (pilihan pemilik 2026-10-11; sebelumnya 36px). */
+.ikon-faq { @apply flex size-6 shrink-0 items-center justify-center bg-muted text-teks transition; border-radius: var(--sudut-dalam); }
+.item-faq[open] .ikon-faq { @apply bg-primary text-primary-foreground; }
+.jawab-faq { @apply px-5 pb-5 text-[15px]/7 sm:px-6; }
+[data-tema=full_color] .jawab-faq { @apply text-teks; }
+[data-tema=monochrome] .jawab-faq { @apply text-muted-foreground; }
 
 /* ---------- Kontak ---------- */
 /* Formulir selebar konten tanpa daftar kontak & peta: alamat, email, dan WhatsApp sudah ada di footer (pilihan pemilik
@@ -361,27 +351,27 @@
 
 /* ---------- Tombol WhatsApp melayang ---------- */
 /* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel di kedua tema (pilihan pemilik 2026-10-11).
-   Full Color tetap hijau WhatsApp (kontras teks putih ≥4,5:1) dengan bayangan lewat token. */
-.tombol-wa { @apply fixed right-4 bottom-4 z-40 inline-flex h-12 items-center justify-center gap-2 bg-foreground px-4 text-sm font-medium text-background ring-1 ring-white/30 transition-colors hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); }
-[data-tema=full_color] .tombol-wa { @apply bg-[#15803D] text-white hover:bg-[#166534]; --tw-shadow: var(--bayangan-melayang); }
-[data-tema=monochrome] .tombol-wa { @apply shadow-lg; }
+   Full Color tetap hijau WhatsApp (kontras teks putih ≥4,5:1). */
+.tombol-wa { @apply fixed right-4 bottom-4 z-40 inline-flex h-12 items-center justify-center gap-2 bg-foreground px-4 text-sm font-medium text-background ring-1 ring-white/30 transition-colors hover:bg-foreground/90 sm:right-6 sm:bottom-6; border-radius: var(--sudut-tombol); --tw-shadow: var(--bayangan-melayang); }
+[data-tema=full_color] .tombol-wa { @apply bg-[#15803D] text-white hover:bg-[#166534]; }
 .tombol-wa .ikon-wa { @apply size-5; }
 /* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
 body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 
 /* ---------- Halaman publik selain beranda (artikel & portofolio) ---------- */
-/* Kepala halaman: latar meniru hero (gradasi Full Color di aturan hero, kisi di kedua tema); isi rata tengah di Full
-   Color dan rata kiri di Monochrome, sama dengan kepala seksi. */
+/* Kepala halaman: latar meniru hero (gradasi Full Color di aturan hero, kisi di kedua tema); isi rata tengah seperti
+   kepala seksi beranda. */
 .kepala-halaman { @apply relative isolate overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-14 lg:pt-24 lg:pb-16; }
-.kepala-halaman-isi { @apply max-w-2xl; }
-[data-tema=full_color] .kepala-halaman-isi { @apply mx-auto text-center; }
-/* Detail artikel & portofolio: kepala rata kiri di kedua tema dan selebar kolom utama (pilihan pemilik 2026-10-15),
-   sejajar dengan gambar & isi; rumus lebarnya sama dengan kolom utama .tata-samping (struktur.css). */
-.kepala-halaman-artikel .kepala-halaman-isi { @apply max-w-none; }
+.kepala-halaman-isi { @apply mx-auto max-w-2xl text-center; }
+/* Detail artikel & portofolio: kepala rata kiri dan selebar kolom utama (pilihan pemilik 2026-10-15), sejajar dengan
+   gambar & isi; rumus lebarnya sama dengan kolom utama .tata-samping (struktur.css). */
+.kepala-halaman-artikel .kepala-halaman-isi { @apply mx-0 max-w-none text-left; }
 @media (min-width: 1024px) { .kepala-halaman-artikel .kepala-halaman-isi { max-width: calc((100% - var(--celah-samping)) * 2 / 3); } }
-/* Remah roti bergaya label seksi (Geist Mono kapital); tinggi tautan 24px agar mudah disentuh. */
+/* Remah roti bergaya label seksi (Geist Mono kapital); tinggi tautan 24px agar mudah disentuh. Rata mengikuti isi kepala
+   halaman. */
 .remah-roti ol { @apply flex flex-wrap items-center gap-x-2 font-mono text-xs tracking-[0.18em] uppercase; }
-[data-tema=full_color] .kepala-halaman .remah-roti ol { @apply justify-center; }
+.kepala-halaman .remah-roti ol { @apply justify-center; }
+.kepala-halaman-artikel .remah-roti ol { @apply justify-start; }
 .remah-roti li { @apply inline-flex items-center gap-x-2; }
 .remah-roti li + li::before { content: "/"; color: var(--muted-foreground); }
 .remah-roti :is(a, [aria-current]) { @apply inline-flex min-h-6 items-center; }
@@ -390,9 +380,6 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 [data-tema=monochrome] .remah-roti a { @apply hover:text-foreground; }
 [data-tema=full_color] .remah-roti [aria-current] { @apply text-aksen; }
 [data-tema=monochrome] .remah-roti [aria-current] { @apply text-foreground; }
-/* Full Color rata kiri hanya di detail artikel & portofolio; kepala halaman lain tetap rata tengah. */
-[data-tema=full_color] .kepala-halaman-artikel .kepala-halaman-isi { @apply mx-0 text-left; }
-[data-tema=full_color] .kepala-halaman-artikel .remah-roti ol { @apply justify-start; }
 
 /* Badan detail artikel: gambar & isi selebar kolom utama; kategori sebagai pita di bingkai gambar. Isi WYSIWYG dengan
    sub-judul H2/H3; ukuran sama di kedua tema. Detail portofolio memakai bingkai, pita, & isi yang sama, ditambah carousel
@@ -549,11 +536,10 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 @media (max-width: 389.98px) {
   .judul-seksi, .judul-ajakan, .judul-galat { font-size: 1.6875rem; }
   :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
-  .tanya-faq { column-gap: .5rem; }
   .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
   .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
   [data-tema=full_color] .kotak-ajakan { padding-inline: 1rem; }
-  [data-tema=full_color] :is(.tanya-faq, .jawab-faq) { padding-inline: 1rem; }
+  :is(.tanya-faq, .jawab-faq) { padding-inline: 1rem; }
   /* Tanda +/− tetap tampak 16px dari tepi (glyph 16px di kotak 24px berjarak dalam 4px); pertanyaan sebaris sama dengan 390px. */
-  [data-tema=full_color] .tanya-faq { padding-right: .75rem; column-gap: .25rem; }
+  .tanya-faq { padding-right: .75rem; column-gap: .25rem; }
 }

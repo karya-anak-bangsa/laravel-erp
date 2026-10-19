@@ -1,6 +1,7 @@
 {{--
     Kepala halaman publik selain beranda: remah roti, slot meta (opsional, mis. kategori & tanggal artikel), judul h1,
-    dan deskripsi (slot). Latar meniru hero; Full Color rata tengah, Monochrome rata kiri, sama dengan kepala seksi.
+    dan deskripsi (slot). Latar meniru hero; isi rata tengah seperti kepala seksi beranda, rata kiri di detail
+    (class="kepala-halaman-artikel").
     Pakai: <x-web.kepala-halaman judul="…" :jejak="['Beranda' => route('beranda'), 'Artikel' => null]">Deskripsi</x-web.kepala-halaman>
 --}}
 @props(['judul', 'jejak', 'idJudul' => null, 'meta' => null])

@@ -15,9 +15,9 @@
             @if ($artikel->kategoriArtikel)
                 <span class="lencana-artikel">{{ $artikel->kategoriArtikel->nama_kategori }}</span>
             @endif
-            {{-- Tanggal di bawah ringkasan di kedua tema; Full Color berawalan "Diterbitkan". Tanggal tidak dipatah.
-                 Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
-            <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}"><span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
+            {{-- Tanggal di bawah ringkasan, berawalan "Diterbitkan". Tanggal tidak dipatah. Halaman publik tanpa nol di depan
+                 tanggal ("9 Oktober"). --}}
+            <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}">Diterbitkan <span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
         </div>
         {{-- Hanya judul yang bertautan ke detail (pilihan pemilik 2026-10-17): kartu yang bisa diklik di mana saja terlalu
              mudah terklik. --}}

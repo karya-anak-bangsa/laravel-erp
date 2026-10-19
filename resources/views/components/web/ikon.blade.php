@@ -14,7 +14,6 @@
         'tutup' => '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
         'tambah' => '<path d="M5 12h14"/><path d="M12 5v14"/>',
         'kurang' => '<path d="M5 12h14"/>',
-        'chevron-bawah' => '<path d="m6 9 6 6 6-6"/>',
         'chevron-kiri' => '<path d="m15 18-6-6 6-6"/>',
         'chevron-kanan' => '<path d="m9 18 6-6-6-6"/>',
         'kalender' => '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',

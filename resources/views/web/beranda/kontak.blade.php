@@ -1,6 +1,6 @@
 <section id="kontak" class="seksi" aria-labelledby="judul-kontak">
     <div class="wadah">
-        <x-web.kepala-seksi id="judul-kontak" :nomor="$nomorSeksi('kontak')" label="Kontak" judul="Mari diskusikan kebutuhan Anda" rata="tengah">
+        <x-web.kepala-seksi id="judul-kontak" label="Kontak" judul="Mari diskusikan kebutuhan Anda" rata="tengah">
             Kirim pesan melalui formulir di bawah ini, atau hubungi kami langsung lewat WhatsApp dan email.
         </x-web.kepala-seksi>
 

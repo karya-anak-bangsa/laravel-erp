@@ -2,11 +2,11 @@
 
 <section id="layanan" class="seksi" aria-labelledby="judul-layanan">
     <div class="wadah">
-        <x-web.kepala-seksi id="judul-layanan" :nomor="$nomorSeksi('layanan')" label="Layanan" judul="Solusi lengkap untuk kebutuhan digital Anda" rata="tengah">
+        <x-web.kepala-seksi id="judul-layanan" label="Layanan" judul="Solusi lengkap untuk kebutuhan digital Anda" rata="tengah">
             Kami mendampingi pengembangan produk digital bisnis Anda sekaligus penyiapan talenta IT, dalam satu tempat.
         </x-web.kepala-seksi>
 
-        {{-- Full Color: keterangan tampil di modal (tombol Selengkapnya); Monochrome: keterangan langsung di kartu. --}}
+        {{-- Keterangan tidak tampil di kartu; tombol Selengkapnya menampilkannya di modal. --}}
         <div class="grid-layanan aksen-berputar mt-10 sm:mt-14">
             @foreach ($layanan as $item)
                 <article id="layanan-{{ $item->id_layanan }}" class="kartu-layanan">

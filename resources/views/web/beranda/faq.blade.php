@@ -1,7 +1,7 @@
 <section id="faq" class="seksi seksi-redup" aria-labelledby="judul-faq">
     <div class="wadah tata-faq">
         <div class="faq-kepala">
-            <x-web.kepala-seksi id="judul-faq" :nomor="$nomorSeksi('faq')" label="FAQ" judul="Pertanyaan yang sering diajukan">
+            <x-web.kepala-seksi id="judul-faq" label="FAQ" judul="Pertanyaan yang sering diajukan">
                 Belum menemukan jawaban? <a href="#kontak" class="tautan-teks">Hubungi kami</a> dan tim kami akan membantu.
             </x-web.kepala-seksi>
         </div>
@@ -15,7 +15,6 @@
                         <span class="ikon-faq" aria-hidden="true">
                             <x-web.ikon nama="tambah" :tebal="2.25" class="ikon-plus size-4" />
                             <x-web.ikon nama="kurang" :tebal="2.25" class="ikon-minus size-4" />
-                            <x-web.ikon nama="chevron-bawah" class="ikon-chevron size-4" />
                         </span>
                     </summary>
                     <div class="jawab-faq konten-html">{!! $item->jawaban !!}</div>

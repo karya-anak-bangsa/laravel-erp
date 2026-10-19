@@ -5,7 +5,7 @@ namespace App\Enums\CompanyProfile;
 use App\Enums\Concerns\MenyediakanOpsi;
 
 /**
- * Kekuatan bayangan permukaan frontend: tombol, isian, kartu, dan bingkai gambar hero (Full Color juga navbar dan kotak
+ * Kekuatan bayangan permukaan frontend: tombol, isian, kartu, navbar, dan bingkai gambar hero (Full Color juga kotak
  * ajakan). Elemen melayang — menu ponsel, modal layanan, tombol WhatsApp, panah carousel — dan penanda
  * tema terpilih tidak ikut, karena bayangannya memisahkan lapisan atau menandai pilihan (pilihan pemilik 2026-10-14).
  */
@@ -119,8 +119,11 @@ enum BayanganTemplate: string
             'isian' => self::TW_XS,
             'lencana' => self::TW_XS,
             'kartu' => $tegas ? self::TW_SM : self::TW_XS,
+            // Sorot kartu layanan satu tingkat di atas kartu (susunan sama dengan Full Color sejak 2026-10-19).
+            'kartu-sorot' => $tegas ? self::TW_MD : self::TW_SM,
             'formulir' => $tegas ? self::TW_MD : self::TW_SM,
             'gambar' => $tegas ? self::TW_MD : self::TW_SM,
+            'navbar' => $tegas ? self::TW_SM : self::TW_XS,
         ];
     }
 

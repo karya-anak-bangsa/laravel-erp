@@ -42,8 +42,11 @@ html[data-tema=monochrome] {
   --teks: color-mix(in oklab, var(--nada-950) 80%, #fff);
   --latar-redup: color-mix(in oklab, var(--nada-100) 40%, #fff);
   --aksen-teks: var(--nada-950); --kisi: var(--nada-200);
-  --corak: var(--nada-900); --corak-lembut: var(--nada-100); --corak-teks: var(--nada-900); --corak-cincin: var(--nada-200);
+  /* Cincin (garis tombol Selengkapnya & kartu layanan yang disorot) satu tingkat lebih gelap dari garis kartu. */
+  --corak: var(--nada-900); --corak-lembut: var(--nada-100); --corak-teks: var(--nada-900); --corak-cincin: color-mix(in oklab, var(--nada-300), var(--nada-400));
   --latar-pita: var(--foreground); --teks-pita: var(--background);
+  /* Sama dengan Full Color, berwarna netral. */
+  --bayangan-melayang: 0 1px 2px rgb(0 0 0 / .03), 0 16px 32px -18px rgb(0 0 0 / .15);
 }
 /* Seksi gelap (band ajakan, footer). Token --color-* Basecoat dihitung di :root, jadi dipetakan ulang di sini.
    Semua token ditulis ulang karena aturan .dark bawaan Basecoat ikut menimpa nilai yang diwarisi (mis. --primary). */

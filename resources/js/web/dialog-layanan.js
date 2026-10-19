@@ -1,4 +1,4 @@
-// Modal detail layanan (Full Color): satu <dialog> bawaan browser yang diisi dari kartu yang diklik.
+// Modal detail layanan: satu <dialog> bawaan browser yang diisi dari kartu yang diklik.
 // Kunci fokus, Esc, latar inert, dan pengembalian fokus ke pemicu sudah ditangani browser.
 const salinIsi = (sumber, tujuan) => {
     tujuan.replaceChildren(...(sumber ? [...sumber.childNodes].map((n) => n.cloneNode(true)) : []));
