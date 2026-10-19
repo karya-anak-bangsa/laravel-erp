@@ -20,7 +20,7 @@ Kerjakan berurutan. Centang `[x]` setiap item yang memenuhi Definition of Done (
 ### 1a. Login & dashboard terlindungi (lalu deploy pertama)
 - [x] Instal Gentelella v4 via npm (ganti Tailwind bawaan); `resources/scss/admin.scss` + `resources/js/admin.js` di Vite
 - [x] Migration `tb_pengguna` (sesuaikan migration bawaan), model `Pengguna`, `PenggunaSeeder` dari env
-- [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`; polesan 2026-10-19: logo TKAB full color di tengah atas kartu, subjudul, hak cipta di bawah kartu (logo statis `public/img/logo-tkab.webp`)
+- [x] `layouts/auth.blade.php` + halaman login; login (rate limit, tanpa "ingat saya"), logout, redirect tamu ke login, `/` dialihkan ke `/admin`; polesan 2026-10-19: kartu login terbelah — panel identitas gelap di kiri (disembunyikan di layar ≤768px), form berlogo TKAB full color + subjudul di kanan (logo statis `public/img/logo-tkab.webp`)
 - [x] `layouts/admin.blade.php`: sidebar dari `config/menu.php` (menu aktif otomatis), topbar (nama pengguna, logout), breadcrumb, footer (toggle dark mode dihapus 2026-10-08 atas keputusan pemilik); polesan 2026-10-19: logo TKAB putih di sidebar (mengecil di mode rail), topbar solid tanpa blur, tombol pengguna hanya menampilkan nama, grup submenu yang terbuka selalu mengikuti halaman aktif (ingatan `sessionStorage` Gentelella dibuang)
 - [x] Dashboard placeholder (kartu ringkasan kosong, diisi seiring modul ditambahkan)
 - [x] Feature test autentikasi & akses dashboard
