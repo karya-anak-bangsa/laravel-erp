@@ -247,7 +247,8 @@
 [data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
 .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=full_color] .kartu-artikel-gambar { border-color: transparent; background-clip: padding-box; }
-/* Ruang dalam kartu utama sama dengan kartu portofolio; kartu samping diatur di struktur.css. */
+/* Kartu bergambar di atas (daftar & kategori artikel): ruang dalam sama dengan kartu portofolio. Kartu baris beranda
+   melebur kolom isi ke grid kartu (struktur.css), jadi aturan ini tidak berlaku di sana. */
 [data-tema=full_color] .kartu-artikel-isi { @apply flex min-w-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5; }
 .kartu-artikel-gambar img { @apply size-full object-cover; }
 /* Tanggal di bawah ringkasan di kedua tema (pilihan pemilik 2026-10-11 & 2026-10-15): meta dilebur agar lencana & tanggal
@@ -266,27 +267,30 @@
 /* Tanpa line-clamp: panjang ringkasan sudah dibatasi 150 karakter di view dan harus tampil utuh; tidak menyisakan satu
    kata di baris terakhir. */
 .kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-pretty text-teks; }
-[data-tema=full_color] .kartu-artikel-ringkasan { @apply mt-2; }
+[data-tema=full_color] .grid-artikel .kartu-artikel-ringkasan { @apply mt-2; }
+/* Kartu baris (beranda kedua tema, daftar & kategori Monochrome; susunannya di struktur.css): ukuran sama di kedua tema.
+   Monochrome dipisah garis, Full Color beranda tiap baris sebuah kartu sehingga butuh ruang dalam samping. */
 [data-tema=monochrome] :is(.daftar-artikel, .grid-artikel) { @apply border-y; }
-[data-tema=monochrome] .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
-[data-tema=monochrome] .kartu-artikel-gambar img { @apply block aspect-4/3; }
+:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
+[data-tema=full_color] .daftar-artikel .kartu-artikel { @apply px-5 sm:px-8; }
+:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-gambar img { @apply block aspect-4/3; }
 [data-tema=monochrome] :is(.kartu-artikel-judul, .judul-portofolio) { @apply underline-offset-4; }
-[data-tema=monochrome] .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
+:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
 @media (hover: hover) {
   [data-tema=monochrome] :is(.kartu-artikel-judul, .judul-portofolio) a:hover { @apply underline; }
 }
 /* Pita kategori (varian B1 pilihan pemilik 2026-10-15): bendera yang melipat di tepi kanan, sehingga nama panjang tetap
    utuh. Dipakai di semua kartu artikel (beranda, daftar & kategori artikel) dan bingkai gambar detail artikel; keluar dari
    alur kartu sehingga judul menjadi baris pertama isi. Ukuran sama di setiap pemakaian dan di kedua tema; warnanya dari
-   token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu Monochrome baru berpita mulai 640px: di bawahnya
+   token --latar-pita (Full Color warna utama, Monochrome hitam). Kartu baris baru berpita mulai 640px: di bawahnya
    thumbnail hanya 6rem, kategori tetap lencana di atas judul. Kartu & bingkai detail portofolio memakai .pita-kategori:
    selalu pita, di kedua tema dan semua lebar (pilihan pemilik 2026-10-18). */
-:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel, .pita-kategori { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-:is([data-tema=full_color] .kartu-artikel, .bingkai-artikel) .lencana-artikel::after, .pita-kategori::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+:is([data-tema=full_color] .grid-artikel .kartu-artikel, .bingkai-artikel) .lencana-artikel, .pita-kategori { @apply absolute top-5 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+:is([data-tema=full_color] .grid-artikel .kartu-artikel, .bingkai-artikel) .lencana-artikel::after, .pita-kategori::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 @media (min-width: 640px) {
-  /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu Monochrome (py-8). */
-  [data-tema=monochrome] .kartu-artikel .lencana-artikel { @apply absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
-  [data-tema=monochrome] .kartu-artikel .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
+  /* Sama dengan aturan di atas; jarak atas mengikuti ruang dalam kartu baris (py-8). */
+  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel { @apply absolute top-11 -right-1.5 z-1 m-0 border-0 px-3 py-[5px]; border-radius: var(--sudut-lencana) 0 0 var(--sudut-lencana); background-color: var(--latar-pita); color: var(--teks-pita); box-shadow: var(--bayangan-lencana); }
+  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel::after { content: ""; @apply absolute top-full right-0; border-top: .375rem solid color-mix(in oklab, var(--latar-pita) 45%, #000); border-right: .375rem solid transparent; }
 }
 
 /* ---------- FAQ ---------- */
@@ -317,54 +321,19 @@
 [data-tema=monochrome] .jawab-faq { @apply pr-8 text-muted-foreground; }
 
 /* ---------- Kontak ---------- */
-.tata-kontak { @apply mt-12; }
-/* Daftar kontak satu kartu bergaris pemisah (list-group; pilihan pemilik 2026-10-11). */
-.info-kontak { @apply overflow-hidden rounded-kartu border bg-card; box-shadow: var(--bayangan-kartu); }
-.tautan-kontak { @apply flex h-full items-center gap-4 p-5; }
-a.tautan-kontak { @apply transition-colors; }
-a.tautan-kontak:focus-visible { outline-offset: -3px; }
-[data-tema=full_color] a.tautan-kontak:hover { background-color: var(--latar-redup); }
-[data-tema=monochrome] a.tautan-kontak { @apply hover:bg-muted/60; }
-.ikon-kontak { @apply flex size-10 shrink-0 items-center justify-center rounded-dalam; }
-.ikon-kontak svg { @apply size-[18px]; }
-/* Ikon berwarna padat + ikon putih (pilihan pemilik 2026-10-11: lebih berwarna); kontras putih ≥3:1 untuk ikon. */
-[data-tema=full_color] .ikon-kontak { @apply text-white; box-shadow: var(--bayangan-ikon); }
-[data-tema=full_color] .ikon-kontak[data-jenis=alamat] { background-color: var(--warna-aksen); }
-[data-tema=full_color] .ikon-kontak[data-jenis=email] { @apply bg-sky-600; }
-[data-tema=full_color] .ikon-kontak[data-jenis=telepon] { @apply bg-violet-600; }
-[data-tema=full_color] .ikon-kontak[data-jenis=whatsapp] { @apply bg-emerald-600; }
-[data-tema=monochrome] .ikon-kontak { @apply border bg-muted text-foreground; }
-.label-kontak { @apply block font-mono text-[11px] tracking-[0.14em] uppercase; }
-[data-tema=full_color] .label-kontak { @apply text-foreground; }
-[data-tema=monochrome] .label-kontak { @apply text-muted-foreground; }
-.nilai-kontak { @apply mt-1 block text-sm/6 text-pretty; }
-a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
-[data-tema=full_color] .nilai-kontak { @apply text-teks; }
-[data-tema=full_color] a.tautan-kontak .nilai-kontak { @apply text-slate-700 underline decoration-slate-300; }
-[data-tema=full_color] a.tautan-kontak:hover .nilai-kontak { @apply text-aksen; text-decoration-color: var(--aksen-teks); }
-[data-tema=monochrome] .nilai-kontak { @apply text-foreground; }
-[data-tema=monochrome] a.tautan-kontak:hover .nilai-kontak { @apply underline; }
-.panah-kontak { @apply size-4 shrink-0; }
-[data-tema=full_color] .panah-kontak { @apply text-slate-400; }
-[data-tema=monochrome] .panah-kontak { @apply text-muted-foreground; }
-.isi-kontak { @apply min-w-0 flex-1; }
-/* Koreksi optik: garis bawah permanen nilai Full Color (underline-offset-4) menambah tinta di bawah teks sehingga blok
-   teks tampak lebih rendah dari kotak ikon; digeser tanpa mengubah tinggi baris. */
-[data-tema=full_color] .isi-kontak { @apply -translate-y-px; }
-
-/* Formulir mengisi tinggi kolom kanan (daftar kontak + peta di kiri); kotak pesan yang memanjang. */
-.kartu-formulir { @apply flex flex-col rounded-kartu border bg-card p-6; box-shadow: var(--bayangan-formulir); }
+/* Formulir selebar konten tanpa daftar kontak & peta: alamat, email, dan WhatsApp sudah ada di footer (pilihan pemilik
+   2026-10-19). */
+.kartu-formulir { @apply mt-12 rounded-kartu border bg-card p-6; box-shadow: var(--bayangan-formulir); }
 .judul-formulir { @apply text-lg font-semibold tracking-tight text-foreground; }
 .catatan-formulir { @apply mt-1.5 text-sm text-muted-foreground; }
 .tanda-wajib { @apply text-aksen; }
 [data-tema=monochrome] .tanda-wajib { @apply text-muted-foreground; }
-.form-kontak { @apply mt-6 flex flex-1 flex-col; }
-.form-kontak .isian-pesan { @apply flex flex-1 flex-col; }
+.form-kontak { @apply mt-6; }
 [data-tema=full_color] .field > label { @apply text-foreground; }
 /* Bayangan isian lewat --tw-shadow agar cincin fokus & galat Basecoat (ring-3) tetap tersusun di box-shadow yang sama. */
 .field > :is(input, textarea) { border-radius: var(--sudut-isian); --tw-shadow: var(--bayangan-isian); }
 .field > input { @apply h-11 sm:h-10; }
-.field > textarea { @apply min-h-36 flex-1; }
+.field > textarea { @apply min-h-36; }
 /* Hanya isian valid: garis merah aria-invalid bawaan Basecoat tetap berlaku seperti di Monochrome. */
 [data-tema=full_color] .field > :is(input, textarea):not([aria-invalid=true]) { border-color: var(--input); }
 [data-tema=full_color] .field > :is(input, textarea)::placeholder { color: #64748b; }
@@ -378,20 +347,6 @@ a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
 .kotak-sukses:focus, .kotak-galat:focus { outline: none; }
 /* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
 .kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
-
-.wadah-peta { @apply relative isolate z-0 min-h-64 overflow-hidden rounded-kartu border lg:min-h-72; box-shadow: var(--bayangan-kartu); }
-[data-tema=full_color] .wadah-peta { @apply bg-muted; }
-[data-tema=monochrome] .wadah-peta { @apply bg-muted/50; }
-.peta-cadangan { @apply absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center; }
-.pin-peta { @apply flex size-12 items-center justify-center; }
-[data-tema=full_color] .pin-peta { @apply -rotate-45 rounded-full rounded-bl-none border-[3px] border-white bg-primary text-primary-foreground shadow-md; }
-[data-tema=full_color] .pin-peta svg { @apply rotate-45; }
-[data-tema=monochrome] .pin-peta { @apply rounded-full bg-foreground text-background shadow-md ring-8 ring-foreground/10; }
-.kartu-pin { @apply flex flex-col items-center gap-4; }
-[data-tema=full_color] .kartu-pin { @apply rounded-dalam bg-white/95 px-5 py-4 ring-1 ring-border backdrop-blur; --tw-shadow: var(--bayangan-melayang); }
-.nama-pin { @apply font-mono text-[11px] tracking-[0.14em] uppercase; }
-[data-tema=full_color] .nama-pin { @apply text-foreground; }
-[data-tema=monochrome] .nama-pin { @apply text-muted-foreground; }
 
 /* ---------- Footer ---------- */
 .kaki-situs { @apply relative bg-background text-muted-foreground; }
@@ -412,7 +367,8 @@ a.tautan-kontak .nilai-kontak { @apply font-medium underline-offset-4; }
 /* Logo WhatsApp padat memenuhi kotak 24 unit, ikon garis lain hanya ±20 unit: diperkecil agar tampak sama besar;
    margin menjaga teks tetap sejajar dengan baris lain. */
 .kontak-kaki .logo-wa { width: 14px; height: 14px; margin-inline: 1px; }
-.kaki-bawah { @apply mt-12 flex flex-col-reverse gap-3 border-t pt-6 text-xs sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:pt-8; }
+/* Teks footer 14px semua, kecuali judul kolom 11px (pilihan pemilik 2026-10-19), termasuk baris hak cipta. */
+.kaki-bawah { @apply mt-12 flex flex-col-reverse gap-3 border-t pt-6 text-sm sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:pt-8; }
 
 /* ---------- Tombol WhatsApp melayang ---------- */
 /* Tombol WhatsApp melayang, selalu tampil; bentuk pil berlabel di kedua tema (pilihan pemilik 2026-10-11).
@@ -595,7 +551,7 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 [data-tema=monochrome] .pesan-galat { @apply text-muted-foreground; }
 .aksi-galat { @apply mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center; }
 .merek-ringkas { @apply text-sm font-semibold tracking-tight text-foreground; }
-.kaki-ringkas { @apply py-6 text-xs; }
+.kaki-ringkas { @apply py-6 text-sm; }
 
 /* ---------- Ponsel sempit (360–389px) ----------
    Ruang dalam kartu dirapatkan dan judul sedikit diperkecil agar jumlah baris judul & label sama dengan di 390px
@@ -605,14 +561,10 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
   .judul-seksi, .judul-ajakan, .judul-galat { font-size: 1.6875rem; }
   :is(.judul-layanan, .judul-portofolio, .kartu-artikel-judul) { font-size: 1.0625rem; }
   .tanya-faq { column-gap: .5rem; }
-  .peta-cadangan { padding: 1rem; }
   .isi-layanan { grid-template-columns: minmax(0, 1fr) 5rem; }
+  :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
   [data-tema=full_color] .kotak-ajakan { padding-inline: 1rem; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-gambar { width: 5rem; }
-  [data-tema=full_color] .daftar-artikel > :not(:first-child) .kartu-artikel-isi { padding-left: .75rem; }
   [data-tema=full_color] :is(.tanya-faq, .jawab-faq) { padding-inline: 1rem; }
   /* Tanda +/− tetap tampak 16px dari tepi (glyph 16px di kotak 24px berjarak dalam 4px); pertanyaan sebaris sama dengan 390px. */
   [data-tema=full_color] .tanya-faq { padding-right: .75rem; column-gap: .25rem; }
-  [data-tema=full_color] .kartu-pin { padding-inline: 1rem; }
-  [data-tema=monochrome] .kartu-artikel { grid-template-columns: minmax(0, 1fr) 5rem; }
 }

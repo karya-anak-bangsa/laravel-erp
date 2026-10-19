@@ -25,7 +25,7 @@ html[data-tema=full_color] {
   --corak: #0284c7; --corak-lembut: #e0f2fe; --corak-teks: #0369a1; --corak-cincin: rgb(2 132 199 / .3);
   /* Pita kategori artikel: warna utama (--utama-teks dijamin kontras ≥4,5:1 dengan putih). */
   --latar-pita: var(--utama-teks); --teks-pita: #ffffff;
-  /* Elemen melayang (menu ponsel, modal, tombol WhatsApp, popup peta, tautan lompat konten) tetap berbayangan di setiap
+  /* Elemen melayang (menu ponsel, modal, tombol WhatsApp, panah carousel, tautan lompat konten) tetap berbayangan di setiap
      pilihan bayangan template, karena bayangannya memisahkan lapisan; bayangan permukaan lain dari TemaService. */
   --bayangan-melayang: 0 1px 2px rgb(15 23 42 / .03), 0 16px 32px -18px rgb(15 23 42 / .15);
 }

@@ -55,7 +55,7 @@ Panduan utama untuk Claude Code di repositori ini. Baca seluruhnya di awal sesi;
 | Panel admin | **Gentelella v4** (npm `gentelella`) — vanilla JS + SCSS + Vite, grafik ECharts. **Tanpa Bootstrap, tanpa jQuery.** |
 | Toast & konfirmasi | Simple Notify (toast) dan SweetAlert2 (dialog konfirmasi), npm |
 | Editor WYSIWYG | TipTap 3 (`@tiptap/core`, `@tiptap/starter-kit`); sanitasi HTML di server dengan `symfony/html-sanitizer` ^7.4 (versi 8 butuh PHP 8.4) |
-| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`) dengan entri Vite terpisah dari admin; peta Leaflet + OpenStreetMap; ikon Lucide. Satu markup, dua tema (§9 › Frontend Publik) |
+| Frontend publik | **Tailwind CSS v4 + Basecoat UI** (`basecoat-css`) dengan entri Vite terpisah dari admin; ikon Lucide. Satu markup, dua tema (§9 › Frontend Publik) |
 | Build aset | Vite (laravel-vite-plugin) |
 | Testing & kualitas | Pest (di atas PHPUnit), Laravel Pint (preset `laravel`), Larastan |
 

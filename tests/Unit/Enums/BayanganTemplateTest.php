@@ -37,7 +37,6 @@ it('mempertahankan tampilan yang disetujui pada pilihan halus', function () {
         '--bayangan-gambar' => '0 1px 2px #0f172a08, 0 10px 28px -16px #0f172a24',
         '--bayangan-navbar' => '0 1px 0 #0f172a08, 0 6px 18px -12px #0f172a14',
         '--bayangan-ajakan' => '0 1px 2px #0f172a0a, 0 18px 36px -24px color-mix(in oklab, var(--utama-teks) 16%, transparent)',
-        '--bayangan-ikon' => '0 1px 2px #0f172a1f',
     ])
         ->and(BayanganTemplate::Halus->token(JenisTemplate::Monochrome))->toBe([
             '--bayangan-tombol' => '0 0 #0000',

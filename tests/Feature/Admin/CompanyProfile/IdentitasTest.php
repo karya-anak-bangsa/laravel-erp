@@ -101,7 +101,7 @@ it('mengganti logo dan favicon lalu menghapus berkas lama', function () {
     Storage::disk('public')->assertMissing(['company-profile/identitas/logo-lama.png', 'company-profile/identitas/favicon-lama.png']);
 });
 
-it('tidak lagi menyediakan link Google Maps karena peta frontend memakai Leaflet', function () {
+it('tidak menyediakan link Google Maps karena frontend tidak memuat peta', function () {
     $identitas = Identitas::factory()->create();
 
     $this->actingAs($this->admin)

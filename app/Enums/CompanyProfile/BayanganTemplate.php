@@ -5,8 +5,8 @@ namespace App\Enums\CompanyProfile;
 use App\Enums\Concerns\MenyediakanOpsi;
 
 /**
- * Kekuatan bayangan permukaan frontend: tombol, isian, kartu, dan bingkai gambar hero (Full Color juga navbar, kotak
- * ajakan, dan ikon kontak). Elemen melayang — menu ponsel, modal layanan, tombol WhatsApp, popup peta — dan penanda
+ * Kekuatan bayangan permukaan frontend: tombol, isian, kartu, dan bingkai gambar hero (Full Color juga navbar dan kotak
+ * ajakan). Elemen melayang — menu ponsel, modal layanan, tombol WhatsApp, panah carousel — dan penanda
  * tema terpilih tidak ikut, karena bayangannya memisahkan lapisan atau menandai pilihan (pilihan pemilik 2026-10-14).
  */
 enum BayanganTemplate: string
@@ -101,9 +101,6 @@ enum BayanganTemplate: string
             'ajakan' => $tegas
                 ? '0 1px 2px '.self::slate(.06).', 0 28px 56px -28px color-mix(in oklab, var(--utama-teks) 34%, transparent)'
                 : '0 1px 2px '.self::slate(.04).', 0 18px 36px -24px color-mix(in oklab, var(--utama-teks) 16%, transparent)',
-            'ikon' => $tegas
-                ? '0 1px 2px '.self::slate(.14).', 0 3px 8px -3px '.self::slate(.22)
-                : '0 1px 2px '.self::slate(.12),
         ];
     }
 

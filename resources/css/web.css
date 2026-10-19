@@ -3,11 +3,10 @@
  * Satu markup, dua tema: <html data-tema="full_color|monochrome">. Acuan tampilan: CLAUDE.md §9 › Acuan tampilan.
  *
  * Semua @import di atas (wajib menurut spesifikasi CSS). Urutan berkas tak berlapis menentukan siapa yang
- * menang: leaflet.css → token → struktur → komponen.
+ * menang: token → struktur → komponen.
  */
 @import "tailwindcss" source(none);
 @import "./web/basecoat.css";
-@import "leaflet/dist/leaflet.css";
 @import "./web/token.css";
 @import "./web/struktur.css";
 @import "./web/komponen.css";

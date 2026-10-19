@@ -130,7 +130,7 @@ describe('isi', function () {
         $this->get('/')
             ->assertSeeInOrder(['Artikel Empat', 'Artikel Tiga', 'Artikel Dua'])
             ->assertSee('Kategori Uji')
-            ->assertSee('<span class="awalan-tanggal mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
+            ->assertSee('<span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">4 Oktober 2026</span>', false)
             ->assertDontSee('04 Oktober 2026')
             ->assertDontSee('Artikel Satu')
             ->assertDontSee('Artikel Draf');
@@ -213,8 +213,7 @@ describe('isi', function () {
             ->assertSee('data-wa=""', false)
             // Ajakan tetap punya tombol: cadangan ke formulir kontak (lewat alamat beranda karena band ini juga tampil di halaman artikel).
             ->assertSee('<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
-            // Kartu telepon jadi cadangan kontak WhatsApp di seksi kontak dan footer.
-            ->assertSee('<span class="label-kontak">Telepon</span>', false)
+            // Telepon jadi cadangan kontak WhatsApp di footer.
             ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon).'</a>', false);
     });
 
@@ -227,18 +226,14 @@ describe('isi', function () {
             ->not->toMatch('#class="tautan-kaki">WhatsApp<#');
     });
 
-    it('menampilkan kontak WhatsApp tanpa kartu telepon dan menautkan peta ke Google Maps', function () {
-        config(['perusahaan.peta.lat' => -6.5, 'perusahaan.peta.lng' => 106.75]);
-
+    it('menampilkan seksi kontak berisi formulir saja tanpa daftar kontak dan peta', function () {
+        // Alamat, email, dan WhatsApp cukup di footer (pilihan pemilik 2026-10-19).
         $this->get('/')
-            ->assertSee('<span class="label-kontak">WhatsApp</span>', false)
-            ->assertDontSee('<span class="label-kontak">Telepon</span>', false)
-            // Popup Leaflet, tombol peta cadangan, dan baris alamat memakai tautan yang sama.
-            ->assertSee('data-tautan="https://www.google.com/maps/search/?api=1&amp;query=-6.5%2C106.75"', false)
-            ->assertSee('<a href="https://www.google.com/maps/search/?api=1&amp;query=-6.5%2C106.75" target="_blank" rel="noopener" class="tautan-kontak">', false)
-            ->assertSee('Buka di Google Maps')
-            ->assertDontSee('openstreetmap.org/?mlat', false)
-            ->assertSee('<button type="submit" class="btn btn-besar">Kirim Pesan</button>', false);
+            ->assertSee('<div id="kirim-pesan" class="kartu-formulir">', false)
+            ->assertSee('<button type="submit" class="btn btn-besar">Kirim Pesan</button>', false)
+            ->assertDontSee('tautan-kontak', false)
+            ->assertDontSee('id="wadah-peta"', false)
+            ->assertDontSee('Buka di Google Maps');
     });
 
     it('hanya menampilkan tombol WhatsApp di band ajakan bila link WhatsApp tersedia', function () {

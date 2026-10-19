@@ -152,7 +152,6 @@ Referensi bila server dibangun ulang.
    ADMIN_PASSWORD='...'
    SESSION_SECURE_COOKIE=true
    SEO_INDEKS=false         # selama tahap uji; true setelah data real masuk (lihat Akhir Tahap Uji)
-   # Opsional: titik peta kantor (PETA_LAT, PETA_LNG, PETA_ZOOM); tanpa itu dipakai config/perusahaan.php
    ```
 5. Database, akun admin, berkas unggahan, dan data awal:
    ```bash

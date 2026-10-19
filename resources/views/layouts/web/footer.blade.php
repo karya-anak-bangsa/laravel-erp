@@ -39,10 +39,12 @@
 
             <div class="col-span-2 md:col-span-1 lg:col-span-3">
                 <h2 class="judul-kaki">Kontak</h2>
-                <ul class="kontak-kaki mt-4 grid gap-y-2 text-[15px]">
-                    <li class="flex gap-x-3 pb-1">
-                        <x-web.ikon nama="lokasi" :tebal="1.75" class="mt-0.5" />
-                        <address class="leading-relaxed text-pretty not-italic">{{ $identitas->alamat }}</address>
+                <ul class="kontak-kaki mt-3 grid gap-y-2 text-sm">
+                    {{-- Alamat 14px seperti teks footer lain. Jarak atas meniru tautan kolom lain (setinggi min-h-11/min-h-9,
+                         teks di tengah) agar baris pertama ketiga kolom sejajar; ikon di tengah baris pertama. --}}
+                    <li class="flex gap-x-3 pt-2.5 pb-1 sm:pt-1.5">
+                        <x-web.ikon nama="lokasi" :tebal="1.75" class="mt-1" />
+                        <address class="leading-6 text-pretty not-italic">{{ $identitas->alamat }}</address>
                     </li>
                     <li class="flex items-center gap-x-3">
                         <x-web.ikon nama="email" :tebal="1.75" />

@@ -1,9 +1,9 @@
 {{--
     Kartu artikel (beranda, daftar & kategori artikel). Markup identik di kedua tema; susunannya diatur CSS menurut
-    wadahnya: .daftar-artikel (beranda: Full Color kartu utama + kartu samping) atau .grid-artikel (daftar artikel).
-    Monochrome menyusunnya sebagai baris editorial. Judul h3 di bawah kepala seksi; h2 di halaman daftar (di bawah h1).
-    Kategori tampil sebagai pita di tepi kanan kartu: Full Color di semua lebar, Monochrome mulai 640px (di bawahnya
-    lencana di atas judul).
+    wadahnya: .daftar-artikel (beranda: baris teks kiri + gambar kanan di kedua tema, Full Color tiap baris sebuah kartu)
+    atau .grid-artikel (daftar artikel: Full Color kartu bergambar di atas, Monochrome baris seperti beranda). Judul h3
+    di bawah kepala seksi; h2 di halaman daftar (di bawah h1). Kategori tampil sebagai pita di tepi kanan kartu: kartu
+    bergambar di atas di semua lebar, kartu baris mulai 640px (di bawahnya lencana di atas judul).
     Pakai: <x-web.kartu-artikel :artikel="$item" tag-judul="h2" />
 --}}
 @props(['artikel', 'tagJudul' => 'h3'])
@@ -17,9 +17,9 @@
             @if ($artikel->kategoriArtikel)
                 <span class="lencana-artikel">{{ $artikel->kategoriArtikel->nama_kategori }}</span>
             @endif
-            {{-- Tanggal di bawah ringkasan di kedua tema; Full Color berawalan "Diterbitkan" (kartu samping beranda di bawah
-                 1024px hanya tanggal). Tanggal tidak dipatah. Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
-            <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}"><span class="awalan-tanggal mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
+            {{-- Tanggal di bawah ringkasan di kedua tema; Full Color berawalan "Diterbitkan". Tanggal tidak dipatah.
+                 Halaman publik tanpa nol di depan tanggal ("9 Oktober"). --}}
+            <time class="tanggal-artikel" datetime="{{ $artikel->tanggal->toDateString() }}"><span class="mono:hidden">Diterbitkan </span><span class="whitespace-nowrap">{{ $artikel->tanggal->translatedFormat('j F Y') }}</span></time>
         </div>
         {{-- Hanya judul yang bertautan ke detail (pilihan pemilik 2026-10-17): kartu yang bisa diklik di mana saja terlalu
              mudah terklik. --}}

@@ -1,5 +1,5 @@
 {{--
-    Tautan ke situs lain (WhatsApp, peta): tab baru + rel noopener, dan keterangan untuk pembaca layar.
+    Tautan ke situs lain (WhatsApp, media sosial): tab baru + rel noopener, dan keterangan untuk pembaca layar.
     Pakai: <x-web.tautan-luar :href="$url" class="btn">Teks</x-web.tautan-luar>
 --}}
 @props(['href'])
