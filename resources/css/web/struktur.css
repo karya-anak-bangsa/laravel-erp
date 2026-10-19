@@ -118,20 +118,18 @@ body { background: var(--background); color: var(--teks); }
 @media (min-width: 768px) { .grid-portofolio { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; } }
 
 /* ---------- Artikel ----------
-   Baris editorial (judul · ringkasan · tanggal di kiri, thumbnail di kanan): beranda di kedua tema (Full Color sejak
-   pilihan pemilik 2026-10-19, tiap baris sebuah kartu) serta daftar & kategori artikel Monochrome. .kartu-artikel-isi
+   Baris editorial bergaris pemisah (judul · ringkasan · tanggal di kiri, thumbnail di kanan): beranda di kedua tema
+   (Full Color sejak pilihan pemilik 2026-10-19) serta daftar & kategori artikel Monochrome. .kartu-artikel-isi
    memakai display: contents agar anak-anaknya menjadi sel grid kartu. Tanggal di bawah ringkasan (pilihan pemilik
    2026-10-15); meta dilebur (komponen.css) agar lencana & tanggal menjadi sel grid; di ponsel lencana di atas judul.
    Mulai 640px kategori menjadi pita dan thumbnail 14rem agar pita terpanjang muat. */
-[data-tema=full_color] .daftar-artikel { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 768px) { [data-tema=full_color] .daftar-artikel { gap: 1.5rem; } }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; grid-template-areas: "meta gambar" "judul gambar" "ringkasan ringkasan" "tanggal tanggal"; align-items: start; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-isi { display: contents; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-judul { grid-area: judul; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-ringkasan { grid-area: ringkasan; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-gambar { grid-area: gambar; }
-[data-tema=monochrome] .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
+:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
 @media (max-width: 639.98px) {
   /* Hanya di ponsel: mulai 640px lencana menjadi pita yang diposisikan terhadap kartu, bukan sel grid. */
   :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel .lencana-artikel { grid-area: meta; }

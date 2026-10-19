@@ -244,7 +244,7 @@
    Artikel di navbar sudah mewakilinya. Kotak Portofolio lainnya memakai gaya yang sama. */
 [data-tema=full_color] .btn:is(.tombol-semua-artikel, .tombol-semua-portofolio) { border-color: color-mix(in oklab, var(--warna-aksen) 30%, transparent); background-color: var(--aksen-lembut); color: var(--aksen-teks-lembut); box-shadow: none; }
 @media (hover: hover) { [data-tema=full_color] .btn:is(.tombol-semua-artikel, .tombol-semua-portofolio):hover { border-color: var(--warna-aksen); background-color: var(--aksen-lembut); box-shadow: var(--bayangan-tombol-garis); } }
-[data-tema=full_color] .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
+[data-tema=full_color] .grid-artikel .kartu-artikel { @apply relative flex flex-col rounded-kartu border bg-card p-1.5; box-shadow: var(--bayangan-kartu); }
 .kartu-artikel-gambar { @apply overflow-hidden rounded-dalam border bg-muted; }
 [data-tema=full_color] .kartu-artikel-gambar { border-color: transparent; background-clip: padding-box; }
 /* Kartu bergambar di atas (daftar & kategori artikel): ruang dalam sama dengan kartu portofolio. Kartu baris beranda
@@ -268,11 +268,10 @@
    kata di baris terakhir. */
 .kartu-artikel-ringkasan { @apply text-[15px]/[1.65] text-pretty text-teks; }
 [data-tema=full_color] .grid-artikel .kartu-artikel-ringkasan { @apply mt-2; }
-/* Kartu baris (beranda kedua tema, daftar & kategori Monochrome; susunannya di struktur.css): ukuran sama di kedua tema.
-   Monochrome dipisah garis, Full Color beranda tiap baris sebuah kartu sehingga butuh ruang dalam samping. */
-[data-tema=monochrome] :is(.daftar-artikel, .grid-artikel) { @apply border-y; }
+/* Kartu baris (beranda kedua tema, daftar & kategori Monochrome; susunannya di struktur.css): baris bergaris pemisah tanpa
+   bingkai kartu, ukuran sama di kedua tema (pilihan pemilik 2026-10-19). */
+:is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) { @apply border-y; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel { @apply relative gap-x-5 gap-y-2 py-6 sm:gap-x-8 sm:py-8; }
-[data-tema=full_color] .daftar-artikel .kartu-artikel { @apply px-5 sm:px-8; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-gambar img { @apply block aspect-4/3; }
 [data-tema=monochrome] :is(.kartu-artikel-judul, .judul-portofolio) { @apply underline-offset-4; }
 :is(.daftar-artikel, [data-tema=monochrome] .grid-artikel) .kartu-artikel-ringkasan { @apply sm:max-w-2xl; }
