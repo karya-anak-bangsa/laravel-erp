@@ -32,6 +32,7 @@ class PortofolioService
 
                 return $portofolio;
             }),
+            optimalkanGambar: true,
         );
     }
 
@@ -56,6 +57,7 @@ class PortofolioService
 
                 return $portofolio;
             }),
+            optimalkanGambar: true,
         );
 
         foreach ($dibuang as $gambar) {

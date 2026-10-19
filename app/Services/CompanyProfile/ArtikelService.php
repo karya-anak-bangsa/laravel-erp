@@ -24,6 +24,7 @@ class ArtikelService
                 ...$data,
                 'slug' => $this->buatSlug($data['judul']),
             ]),
+            optimalkanGambar: true,
         );
     }
 
@@ -44,6 +45,7 @@ class ArtikelService
 
                 return $artikel;
             },
+            optimalkanGambar: true,
         );
     }
 

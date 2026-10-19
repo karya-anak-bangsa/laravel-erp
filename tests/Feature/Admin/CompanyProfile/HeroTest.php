@@ -225,7 +225,7 @@ it('mengganti gambar hero dan menghapus gambar lama', function () {
         ->assertSessionHasNoErrors();
 
     $hero->refresh();
-    expect($hero->gambar)->toMatch('#^company-profile/hero/[0-9a-f-]{36}\.png$#');
+    expect($hero->gambar)->toMatch('#^company-profile/hero/[0-9a-f-]{36}\.webp$#');
     Storage::disk('public')->assertExists($hero->gambar);
     Storage::disk('public')->assertMissing('company-profile/hero/lama.webp');
 });

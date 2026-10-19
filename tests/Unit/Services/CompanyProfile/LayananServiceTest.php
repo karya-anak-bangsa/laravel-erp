@@ -46,7 +46,7 @@ it('mengganti gambar dan menghapus gambar lama', function () {
 
     $this->layanan->perbarui($layanan, dataLayananLayanan(['gambar' => UploadedFile::fake()->image('baru.jpg')]));
 
-    expect($layanan->refresh()->gambar)->toEndWith('.jpg');
+    expect($layanan->refresh()->gambar)->toEndWith('.webp');
     Storage::disk('public')->assertMissing('company-profile/layanan/lama.webp');
 });
 

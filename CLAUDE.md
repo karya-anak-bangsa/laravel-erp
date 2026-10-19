@@ -214,7 +214,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Tombol: Tambah & Simpan `btn-success`, Lihat `btn-info` (ikon `eye`), Ubah `btn-warning`, Hapus `<x-admin.delete-button>`, Batal `btn-secondary` berikon `rotate-left` (termasuk Batal di SweetAlert2). Aksi utama di kiri, Batal di kanan, di form maupun dialog (tanpa `reverseButtons`). Kartu filter: Terapkan `btn-secondary` (ikon `filter`) dan Reset `btn-danger` (ikon `clock-rotate-left`), sama tinggi & lebar dalam `.aksi-filter`. Tombol tambah selalu `<x-admin.tombol-tambah>`.
 
 ### Upload File
-- Gambar publik: disk `public`, folder `company-profile/<entitas>/`, nama file UUID, validasi `image|mimes:jpg,jpeg,png,webp|max:2048`.
+- Gambar publik: disk `public`, folder `company-profile/<entitas>/`, nama file UUID, validasi `image|mimes:jpg,jpeg,png,webp|max:2048`. Gambar konten (hero, layanan, portofolio, artikel) disimpan dengan `optimalkanGambar: true`: diperkecil sampai sisi terpanjang 1600 px dan dikodekan WebP; logo & favicon identitas tidak.
 - Berkas privat (bila kelak dibutuhkan): disk `local`, folder `<modul>/<entitas>/`, nama file UUID, diakses hanya lewat rute ber-`auth` yang men-stream file.
 - Logika upload di `App\Services\Shared\FileUploadService`. Simpan/ubah data berberkas memakai `simpanDenganBerkas()`: simpan berkas baru → simpan data → hapus berkas lama; berkas baru dibersihkan bila gagal. File tetap disimpan saat soft delete. Berkas bawaan seeder disalin lewat trait `Database\Seeders\Concerns\MenyalinBerkasAwal`.
 

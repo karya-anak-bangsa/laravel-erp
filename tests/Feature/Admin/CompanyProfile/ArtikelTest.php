@@ -139,6 +139,7 @@ it('menambah artikel beserta slug, gambar, dan sub-judul isinya', function () {
     $this->actingAs($this->admin)
         ->post(route('admin.artikel.store'), dataArtikelValid([
             'deskripsi' => '<h1>Judul besar</h1><h2 style="text-align: center">Bagian</h2><h3>Sub</h3><h4>Kecil</h4><p>Isi<script>alert(1)</script></p>',
+            'gambar' => UploadedFile::fake()->image('artikel.png', 2400, 1260),
         ]))
         ->assertRedirect(route('admin.artikel.index'))
         ->assertSessionHas('success');
@@ -151,8 +152,9 @@ it('menambah artikel beserta slug, gambar, dan sub-judul isinya', function () {
         ->and($artikel->status_publikasi)->toBe(StatusPublikasi::Terbit)
         // h2/h3 (beserta perataannya) dipertahankan; h1/h4 dilepas tagnya; skrip dibuang.
         ->and($artikel->deskripsi)->toBe('Judul besar<h2 style="text-align: center">Bagian</h2><h3>Sub</h3>Kecil<p>Isi</p>')
-        ->and($artikel->gambar)->toMatch('#^company-profile/artikel/[0-9a-f-]{36}\.webp$#');
-    Storage::disk('public')->assertExists($artikel->gambar);
+        // Gambar konten diperkecil menjadi WebP bersisi terpanjang 1600 px.
+        ->and($artikel->gambar)->toMatch('#^company-profile/artikel/[0-9a-f-]{36}\.webp$#')
+        ->and(array_slice(getimagesizefromstring((string) Storage::disk('public')->get($artikel->gambar)), 0, 2))->toBe([1600, 840]);
 });
 
 it('menghitung batas isi artikel dari teks terlihat hingga 30.000 karakter', function () {

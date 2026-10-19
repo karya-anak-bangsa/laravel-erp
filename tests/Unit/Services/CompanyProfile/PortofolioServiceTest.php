@@ -81,20 +81,21 @@ it('mengganti gambar dan menghapus gambar lama', function () {
 
     $this->portofolio->perbarui($portofolio, dataPortofolioUji(['gambar' => UploadedFile::fake()->image('baru.jpg')]));
 
-    expect($portofolio->refresh()->gambar)->toEndWith('.jpg');
+    expect($portofolio->refresh()->gambar)->toEndWith('.webp');
     Storage::disk('public')->assertMissing('company-profile/portofolio/lama.webp');
 });
 
 it('menyimpan gambar tambahan urut unggah bersama portofolio baru', function () {
     $portofolio = $this->portofolio->simpan(dataPortofolioUji([
-        'galeri' => [UploadedFile::fake()->image('kedua.png'), UploadedFile::fake()->image('ketiga.jpg')],
+        'galeri' => [UploadedFile::fake()->image('kedua.png', 300, 200), UploadedFile::fake()->image('ketiga.jpg', 200, 300)],
     ]));
 
+    // Urutan dikenali dari ukurannya karena format berkas bisa berubah menjadi WebP saat dioptimalkan.
+    $ukuran = fn (GambarPortofolio $item) => array_slice(getimagesizefromstring((string) Storage::disk('public')->get($item->gambar)), 0, 2);
     $gambar = $portofolio->gambarPortofolio()->get();
     expect($gambar)->toHaveCount(2)
-        ->and($gambar[0]->gambar)->toStartWith(Portofolio::FOLDER.'/')->toEndWith('.png')
-        ->and($gambar[1]->gambar)->toEndWith('.jpg');
-    $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
+        ->and($gambar[0]->gambar)->toStartWith(Portofolio::FOLDER.'/')
+        ->and($gambar->map($ukuran)->all())->toBe([[300, 200], [200, 300]]);
 });
 
 it('membuang gambar tambahan yang tidak dipertahankan beserta berkasnya dan menambah gambar baru', function () {

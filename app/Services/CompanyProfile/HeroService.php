@@ -22,6 +22,7 @@ class HeroService
 
                 return $hero;
             }),
+            optimalkanGambar: true,
         );
     }
 
@@ -37,6 +38,7 @@ class HeroService
 
                 return $hero;
             }),
+            optimalkanGambar: true,
         );
     }
 

@@ -58,7 +58,7 @@ it('mengganti gambar saat memperbarui dan menghapus gambar lama', function () {
 
     $this->layanan->perbarui($hero, dataHeroLayanan(['gambar' => UploadedFile::fake()->image('baru.jpg')]));
 
-    expect($hero->refresh()->gambar)->toEndWith('.jpg');
+    expect($hero->refresh()->gambar)->toEndWith('.webp');
     Storage::disk('public')->assertMissing('company-profile/hero/lama.webp');
 });
 

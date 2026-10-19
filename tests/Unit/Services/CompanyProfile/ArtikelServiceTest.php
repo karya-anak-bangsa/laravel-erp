@@ -85,7 +85,7 @@ it('mengganti gambar dan menghapus gambar lama', function () {
 
     $this->artikel->perbarui($artikel, dataArtikelUji(['gambar' => UploadedFile::fake()->image('baru.jpg')]));
 
-    expect($artikel->refresh()->gambar)->toEndWith('.jpg');
+    expect($artikel->refresh()->gambar)->toEndWith('.webp');
     Storage::disk('public')->assertMissing('company-profile/artikel/lama.webp');
 });
 

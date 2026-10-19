@@ -224,23 +224,23 @@ it('mengganti gambar portofolio dan menghapus gambar lama', function () {
         ->put(route('admin.portofolio.update', $portofolio), dataPortofolioValid(['gambar' => UploadedFile::fake()->image('baru.png')]))
         ->assertSessionHasNoErrors();
 
-    expect($portofolio->refresh()->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.png$#');
+    expect($portofolio->refresh()->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.webp$#');
     Storage::disk('public')->assertMissing('company-profile/portofolio/lama.webp');
 });
 
 it('menambah portofolio beserta gambar tambahannya urut unggah', function () {
     $this->actingAs($this->admin)
         ->post(route('admin.portofolio.store'), dataPortofolioValid([
-            'galeri' => [UploadedFile::fake()->image('kedua.png'), UploadedFile::fake()->image('ketiga.jpg')],
+            'galeri' => [UploadedFile::fake()->image('kedua.png', 300, 200), UploadedFile::fake()->image('ketiga.jpg', 200, 300)],
         ]))
         ->assertRedirect(route('admin.portofolio.index'))
         ->assertSessionHasNoErrors();
 
+    // Urutan dikenali dari ukurannya karena format berkas bisa berubah menjadi WebP saat dioptimalkan.
+    $ukuran = fn (GambarPortofolio $item) => array_slice(getimagesizefromstring((string) Storage::disk('public')->get($item->gambar)), 0, 2);
     $gambar = Portofolio::sole()->gambarPortofolio;
     expect($gambar)->toHaveCount(2)
-        ->and($gambar[0]->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.png$#')
-        ->and($gambar[1]->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.jpg$#');
-    $gambar->each(fn (GambarPortofolio $item) => Storage::disk('public')->assertExists($item->gambar));
+        ->and($gambar->map($ukuran)->all())->toBe([[300, 200], [200, 300]]);
 });
 
 it('mengabaikan baris gambar tambahan yang belum diberi berkas', function () {
@@ -317,7 +317,7 @@ it('membuang gambar tambahan yang barisnya dibuang beserta berkasnya dan menamba
     $gambar = $portofolio->refresh()->gambarPortofolio;
     expect($gambar)->toHaveCount(2)
         ->and($gambar[0]->is($tetap))->toBeTrue()
-        ->and($gambar[1]->gambar)->toEndWith('.png')
+        ->and($gambar[1]->gambar)->toMatch('#^company-profile/portofolio/[0-9a-f-]{36}\.#')
         ->and(GambarPortofolio::find($dibuang->id_gambar_portofolio))->toBeNull();
     Storage::disk('public')->assertMissing('company-profile/portofolio/buang.webp');
     Storage::disk('public')->assertExists('company-profile/portofolio/tetap.webp');

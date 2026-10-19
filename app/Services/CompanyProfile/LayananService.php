@@ -16,6 +16,7 @@ class LayananService
     {
         return $this->fileUpload->simpanDenganBerkas(null, $data, ['gambar'], Layanan::FOLDER, Layanan::DISK,
             fn (array $data): Layanan => Layanan::create($data),
+            optimalkanGambar: true,
         );
     }
 
@@ -30,6 +31,7 @@ class LayananService
 
                 return $layanan;
             },
+            optimalkanGambar: true,
         );
     }
 }

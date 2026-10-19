@@ -180,7 +180,7 @@ it('mengganti gambar layanan dan menghapus gambar lama', function () {
         ->put(route('admin.layanan.update', $layanan), dataLayananValid(['gambar' => UploadedFile::fake()->image('baru.png')]))
         ->assertSessionHasNoErrors();
 
-    expect($layanan->refresh()->gambar)->toMatch('#^company-profile/layanan/[0-9a-f-]{36}\.png$#');
+    expect($layanan->refresh()->gambar)->toMatch('#^company-profile/layanan/[0-9a-f-]{36}\.webp$#');
     Storage::disk('public')->assertMissing('company-profile/layanan/lama.webp');
 });
 
