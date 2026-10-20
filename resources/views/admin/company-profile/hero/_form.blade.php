@@ -2,11 +2,12 @@
 
 {{-- Dipakai create & edit; $hero = model baru (create) atau yang diubah (edit). --}}
 @php
-    // Setelah validasi gagal, baris repeater dibangun ulang dari isian sebelumnya.
-    $daftarKeyword = old('keyword', $hero->keyword ?? []);
-    $daftarKeyword = is_array($daftarKeyword) && $daftarKeyword !== [] ? array_values($daftarKeyword) : [''];
-    $daftarCta = old('cta', $hero->cta ?? []);
-    $daftarCta = is_array($daftarCta) ? array_values($daftarCta) : [];
+    // Setelah validasi gagal, baris repeater dibangun ulang dari isian sebelumnya. old() berisi kiriman mentah, jadi baris
+    // kosong dibuang seperti di StoreHeroRequest agar indeks baris sama dengan indeks pesan galat (keyword.1, cta.0.url).
+    $daftarKeyword = array_values(array_filter((array) old('keyword', $hero->keyword ?? []), fn ($kata) => filled($kata)));
+    $daftarKeyword = $daftarKeyword !== [] ? $daftarKeyword : [''];
+    $daftarCta = array_values(array_filter((array) old('cta', $hero->cta ?? []),
+        fn ($tombol) => is_array($tombol) && (filled($tombol['label'] ?? null) || filled($tombol['url'] ?? null))));
 @endphp
 
 <div class="row col-8-4">

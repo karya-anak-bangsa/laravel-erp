@@ -54,35 +54,34 @@
             </x-admin.card>
 
             <x-admin.card title="Kontak" subtitle="Tampil di footer website.">
-                <div class="form-row">
-                    @foreach (['email' => 'Email', 'telepon' => 'Telepon'] as $nama => $label)
-                        <div class="form-group" data-repeater data-repeater-maks="{{ UpdateIdentitasRequest::MAKS_KONTAK }}">
-                            <div class="form-label"><span class="required">*</span>{{ $label }}</div>
-                            <div class="repeater-daftar" data-repeater-daftar>
-                                @foreach ($daftarKontak($nama) as $i => $nilai)
-                                    @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => $i, 'nilai' => $nilai])
-                                @endforeach
-                            </div>
-                            <template data-repeater-templat>
-                                @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => '__i__', 'nilai' => null])
-                            </template>
-                            <button type="button" class="btn btn-outline btn-sm repeater-tambah" data-repeater-tambah>
-                                <x-admin.icon name="plus" />
-                                Tambah {{ $label }}
-                            </button>
-                            <div class="form-help">
-                                @if ($nama === 'email')
-                                    Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; email pertama menjadi email utama.
-                                @else
-                                    Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; tampil di footer hanya bila link WhatsApp kosong.
-                                @endif
-                            </div>
-                            @error($nama)
-                                <div class="form-error">{{ $message }}</div>
-                            @enderror
+                {{-- Bertumpuk, bukan berdampingan, agar alamat email panjang tidak terpotong (pilihan pemilik). --}}
+                @foreach (['email' => 'Email', 'telepon' => 'Telepon'] as $nama => $label)
+                    <div class="form-group" data-repeater data-repeater-maks="{{ UpdateIdentitasRequest::MAKS_KONTAK }}">
+                        <div class="form-label"><span class="required">*</span>{{ $label }}</div>
+                        <div class="repeater-daftar" data-repeater-daftar>
+                            @foreach ($daftarKontak($nama) as $i => $nilai)
+                                @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => $i, 'nilai' => $nilai])
+                            @endforeach
                         </div>
-                    @endforeach
-                </div>
+                        <template data-repeater-templat>
+                            @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => '__i__', 'nilai' => null])
+                        </template>
+                        <button type="button" class="btn btn-outline btn-sm repeater-tambah" data-repeater-tambah>
+                            <x-admin.icon name="plus" />
+                            Tambah {{ $label }}
+                        </button>
+                        <div class="form-help">
+                            @if ($nama === 'email')
+                                Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; email pertama menjadi email utama.
+                            @else
+                                Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; tampil di footer hanya bila link WhatsApp kosong.
+                            @endif
+                        </div>
+                        @error($nama)
+                            <div class="form-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+                @endforeach
                 <x-admin.form-textarea name="alamat" label="Alamat" :value="$identitas->alamat" :required="true"
                     rows="3" maxlength="1000" />
             </x-admin.card>

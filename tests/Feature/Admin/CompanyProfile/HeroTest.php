@@ -270,6 +270,27 @@ it('memvalidasi isian hero', function (array $data, string $kolom) {
     'gaya cta tidak dikenal' => [['cta' => [['label' => 'Tombol', 'url' => '#layanan', 'gaya' => 'danger']]], 'cta.0.gaya'],
 ]);
 
+it('membangun ulang baris keyword dan CTA tanpa baris kosong sehingga pesan galat di baris yang salah', function () {
+    $html = $this->actingAs($this->admin)
+        ->from(route('admin.hero.create'))
+        ->followingRedirects()
+        ->post(route('admin.hero.store'), dataHeroValid([
+            'keyword' => ['Website', '', str_repeat('a', 51)],
+            'cta' => [
+                ['label' => '', 'url' => '', 'gaya' => 'primary'],
+                ['label' => 'Tombol', 'url' => 'javascript:alert(1)', 'gaya' => 'primary'],
+            ],
+        ]))
+        ->getContent();
+
+    // old() berisi kiriman mentah; baris kosong dibuang seperti di StoreHeroRequest (keyword.1, cta.0.url).
+    expect($html)
+        ->toMatch('#name="keyword\[1\]" value="'.str_repeat('a', 51).'"[^>]*class="form-control is-invalid">#')
+        ->not->toContain('name="keyword[2]"')
+        ->toMatch('#name="cta\[0\]\[url\]" value="javascript:alert\(1\)"[^>]*class="form-control is-invalid">#')
+        ->not->toContain('name="cta[1][label]"');
+});
+
 it('menerima berbagai bentuk URL tombol CTA', function (string $url) {
     $this->actingAs($this->admin)
         ->post(route('admin.hero.store'), dataHeroValid(['cta' => [['label' => 'Tombol', 'url' => $url, 'gaya' => 'primary']]]))
