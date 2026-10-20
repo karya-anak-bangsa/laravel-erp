@@ -16,8 +16,8 @@ beforeEach(function () {
     Storage::fake('public');
     Identitas::factory()->create(['link_whatsapp' => 'https://wa.me/6281200000000']);
 
-    // Semua modul berdata agar setiap menu, seksi, dan halaman benar-benar bisa tampil.
-    Layanan::factory()->create(['judul' => 'Layanan Uji']);
+    // Semua modul berdata agar setiap menu dan seksi benar-benar bisa tampil.
+    $this->layanan = Layanan::factory()->create(['judul' => 'Layanan Uji']);
     $this->portofolio = Portofolio::factory()->create();
     $this->artikel = Artikel::factory()->terbit()->create();
     Faq::factory()->create();
@@ -35,105 +35,112 @@ function nonaktifkanModul(JenisModul ...$daftarJenis): void
 function alamatMenuModul(JenisModul $jenis): string
 {
     return match ($jenis) {
-        JenisModul::Layanan => route('beranda').'#layanan',
         JenisModul::Portofolio => route('portofolio.index'),
         JenisModul::Tutorial => route('tutorial.index'),
         JenisModul::Artikel => route('artikel.index'),
-        JenisModul::Faq => route('beranda').'#faq',
-        JenisModul::Ajakan => throw new LogicException('Ajakan tidak punya menu.'),
+        default => route('beranda').'#'.$jenis->value,
     };
 }
 
-it('menampilkan semua modul bila Manajemen Modul belum berisi data', function () {
-    $html = $this->get('/')->assertOk()->getContent();
+/**
+ * @return array{menu: list<string>, kaki: list<string>, seksi: list<string>}
+ */
+function susunanBeranda(string $html): array
+{
+    preg_match_all('#class="tautan-menu"[^>]*>([^<]+)</a>#', $html, $menu);
+    preg_match('#id="judul-kaki-tautan".*?</ul>#s', $html, $tautanCepat);
+    preg_match_all('#class="tautan-kaki">([^<]+)</a>#', $tautanCepat[0] ?? '', $kaki);
+    preg_match_all('#<section id="([a-z]+)" class="([^"]+)"#', $html, $seksi, PREG_SET_ORDER);
 
-    expect(substr_count($html, 'class="tautan-menu"'))->toBe(6)
-        ->and($html)->toContain('<a href="'.route('beranda').'#beranda" class="tautan-kaki">Beranda</a>')
-        ->and($html)->toContain('<a href="'.route('beranda').'#faq" class="tautan-kaki">FAQ</a>');
+    return [
+        'menu' => $menu[1],
+        'kaki' => $kaki[1],
+        'seksi' => array_map(fn (array $s): string => $s[1].(str_contains($s[2], 'seksi-redup') ? ' (redup)' : ''), $seksi),
+    ];
+}
 
-    foreach (['layanan', 'portofolio', 'ajakan', 'artikel', 'faq'] as $seksi) {
-        expect($html)->toContain('<section id="'.$seksi.'"');
+it('menampilkan semua modul seurut bawaan bila Manajemen Modul belum berisi data', function () {
+    expect(susunanBeranda($this->get('/')->assertOk()->getContent()))->toBe([
+        'menu' => ['Beranda', 'Layanan', 'Portofolio', 'Tutorial', 'Artikel', 'FAQ'],
+        'kaki' => ['Beranda', 'Layanan', 'Portofolio', 'Tutorial', 'Artikel', 'FAQ'],
+        'seksi' => ['beranda', 'layanan', 'portofolio (redup)', 'ajakan', 'artikel', 'faq (redup)'],
+    ]);
+});
+
+it('menyusun menu dan seksi beranda menurut urutan Manajemen Modul', function () {
+    foreach ([JenisModul::Faq, JenisModul::Artikel, JenisModul::Ajakan, JenisModul::Layanan, JenisModul::Portofolio, JenisModul::Tutorial] as $nomor => $jenis) {
+        ModulWebsite::factory()->create(['jenis' => $jenis, 'urutan_ke' => $nomor + 1]);
     }
+
+    // Hero tetap pertama; latar selang-seling mengikuti urutan baru, band ajakan tidak dihitung.
+    expect(susunanBeranda($this->get('/')->getContent()))->toBe([
+        'menu' => ['Beranda', 'FAQ', 'Artikel', 'Layanan', 'Portofolio', 'Tutorial'],
+        'kaki' => ['Beranda', 'FAQ', 'Artikel', 'Layanan', 'Portofolio', 'Tutorial'],
+        'seksi' => ['beranda', 'faq', 'artikel (redup)', 'ajakan', 'layanan', 'portofolio (redup)'],
+    ]);
+
+    // Menu yang sama di halaman lain.
+    expect(susunanBeranda($this->get(route('artikel.index'))->getContent())['menu'])
+        ->toBe(['Beranda', 'FAQ', 'Artikel', 'Layanan', 'Portofolio', 'Tutorial']);
 });
 
 it('menyembunyikan menu navbar, Tautan Cepat, dan seksi beranda modul yang nonaktif', function (JenisModul $jenis) {
     nonaktifkanModul($jenis);
 
     $html = $this->get('/')->assertOk()->getContent();
+    $susunan = susunanBeranda($html);
 
     expect($html)->not->toContain('href="'.alamatMenuModul($jenis).'"')
-        ->and($html)->not->toContain('<section id="'.$jenis->value.'"')
-        // Modul lain tetap tampil.
-        ->and(substr_count($html, 'class="tautan-menu"'))->toBe(5)
-        ->and(substr_count($html, 'class="tautan-kaki">'.$jenis->label().'</a>'))->toBe(0);
+        ->and($susunan['menu'])->not->toContain($jenis->label())->toHaveCount(5)
+        ->and($susunan['kaki'])->not->toContain($jenis->label())->toHaveCount(5)
+        ->and($html)->not->toContain('<section id="'.$jenis->value.'"');
 })->with([JenisModul::Layanan, JenisModul::Portofolio, JenisModul::Tutorial, JenisModul::Artikel, JenisModul::Faq]);
 
 it('menghitung ulang latar seksi beranda dari seksi yang tampil', function () {
-    expect($this->get('/')->getContent())
-        ->toContain('<section id="layanan" class="seksi"')
-        ->toContain('<section id="portofolio" class="seksi seksi-redup"')
-        ->toContain('<section id="artikel" class="seksi"')
-        ->toContain('<section id="faq" class="seksi seksi-redup"');
-
     nonaktifkanModul(JenisModul::Portofolio);
 
     // Tanpa Portofolio, Artikel menjadi seksi kedua sehingga redup, dan FAQ tidak lagi bersebelahan dengan seksi redup.
-    expect($this->get('/')->getContent())
-        ->toContain('<section id="layanan" class="seksi"')
-        ->toContain('<section id="artikel" class="seksi seksi-redup"')
-        ->toContain('<section id="faq" class="seksi"');
+    expect(susunanBeranda($this->get('/')->getContent())['seksi'])
+        ->toBe(['beranda', 'layanan', 'ajakan', 'artikel (redup)', 'faq']);
 });
 
-it('menjadikan halaman modul yang nonaktif 404', function (JenisModul $jenis, Closure $alamat) {
-    $alamatHalaman = $alamat->call($this);
-    $this->get($alamatHalaman)->assertOk();
-
-    nonaktifkanModul($jenis);
-
-    $this->get($alamatHalaman)->assertNotFound();
-})->with([
-    'daftar portofolio' => [JenisModul::Portofolio, fn () => route('portofolio.index')],
-    'detail portofolio' => [JenisModul::Portofolio, fn () => route('portofolio.show', $this->portofolio)],
-    'daftar artikel' => [JenisModul::Artikel, fn () => route('artikel.index')],
-    'detail artikel' => [JenisModul::Artikel, fn () => route('artikel.show', $this->artikel)],
-    'kategori artikel' => [JenisModul::Artikel, fn () => route('kategori-artikel.show', $this->artikel->kategoriArtikel)],
-    'daftar tutorial' => [JenisModul::Tutorial, fn () => route('tutorial.index')],
-    'halaman tutorial' => [JenisModul::Tutorial, fn () => route('tutorial.show', $this->tutorial)],
-    'kategori tutorial' => [JenisModul::Tutorial, fn () => route('kategori-tutorial.show', $this->tutorial->kategoriTutorial)],
-    'materi tutorial' => [JenisModul::Tutorial, fn () => route('materi-tutorial.show', [$this->tutorial, $this->materi])],
-]);
-
-it('tidak memasukkan halaman modul yang nonaktif ke sitemap', function () {
-    nonaktifkanModul(JenisModul::Artikel, JenisModul::Tutorial);
-
-    expect($this->get(route('sitemap'))->assertOk()->getContent())
-        ->toContain('<loc>'.route('portofolio.index').'</loc>')
-        ->toContain('<loc>'.route('portofolio.show', $this->portofolio).'</loc>')
-        ->not->toContain('/artikel')
-        ->not->toContain('/tutorial');
-});
-
-it('menyembunyikan kolom Layanan di footer dan kotak Layanan kami bila modul Layanan nonaktif', function () {
-    $this->get(route('artikel.index'))
-        ->assertSee('id="judul-kaki-layanan"', false)
-        ->assertSee('id="judul-layanan-kami"', false);
-
-    nonaktifkanModul(JenisModul::Layanan);
-
-    $this->get(route('artikel.index'))
-        ->assertOk()
-        ->assertDontSee('id="judul-kaki-layanan"', false)
-        ->assertDontSee('id="judul-layanan-kami"', false)
-        ->assertDontSee('Layanan Uji');
-});
-
-it('menyembunyikan band ajakan di beranda dan halaman lain bila modul Ajakan nonaktif', function () {
-    $this->get(route('artikel.index'))->assertSee('<section id="ajakan"', false);
-
+it('hanya menyembunyikan seksi ajakan di beranda, band di halaman lain tetap tampil', function () {
     nonaktifkanModul(JenisModul::Ajakan);
 
     $this->get('/')->assertOk()->assertDontSee('<section id="ajakan"', false);
-    $this->get(route('artikel.index'))->assertOk()->assertDontSee('<section id="ajakan"', false);
+    $this->get(route('artikel.index'))->assertOk()->assertSee('<section id="ajakan"', false);
+});
+
+it('tetap membuka halaman modul yang nonaktif dan memasukkannya ke sitemap', function () {
+    nonaktifkanModul(JenisModul::Portofolio, JenisModul::Artikel, JenisModul::Tutorial);
+
+    $this->get(route('portofolio.show', $this->portofolio))->assertOk();
+    $this->get(route('artikel.index'))->assertOk();
+    $this->get(route('kategori-artikel.show', $this->artikel->kategoriArtikel))->assertOk();
+    $this->get(route('materi-tutorial.show', [$this->tutorial, $this->materi]))->assertOk();
+
+    expect($this->get(route('sitemap'))->getContent())
+        ->toContain('<loc>'.route('portofolio.show', $this->portofolio).'</loc>')
+        ->toContain('<loc>'.route('artikel.show', $this->artikel).'</loc>')
+        ->toContain('<loc>'.route('tutorial.show', $this->tutorial).'</loc>');
+});
+
+it('menampilkan daftar layanan di footer dan kolom samping tanpa tautan selama seksi Layanan nonaktif', function () {
+    $tautan = 'href="'.route('beranda').'#layanan-'.$this->layanan->id_layanan.'"';
+
+    expect($this->get(route('artikel.index'))->getContent())
+        ->toContain('<nav aria-labelledby="judul-kaki-layanan"')
+        ->toContain('<nav class="kotak-samping" aria-labelledby="judul-layanan-kami"')
+        ->toContain($tautan);
+
+    nonaktifkanModul(JenisModul::Layanan);
+
+    expect($this->get(route('artikel.index'))->assertOk()->getContent())
+        ->toContain('<div aria-labelledby="judul-kaki-layanan"')
+        ->toContain('<span class="tautan-kaki">Layanan Uji</span>')
+        ->toContain('<div class="kotak-samping" aria-labelledby="judul-layanan-kami"')
+        ->toContain('<span class="tautan-samping"><span>Layanan Uji</span></span>')
+        ->not->toContain($tautan);
 });
 
 it('membuang tombol hero yang mengarah ke seksi beranda yang tidak dirender', function () {
@@ -156,7 +163,6 @@ it('membuang tombol hero yang mengarah ke seksi beranda yang tidak dirender', fu
 it('menampilkan navbar tanpa modul nonaktif di halaman 404', function () {
     nonaktifkanModul(JenisModul::Portofolio);
 
-    expect($this->get('/alamat-tidak-ada')->assertNotFound()->getContent())
-        ->toContain('class="tautan-menu"')
-        ->not->toContain('href="'.route('portofolio.index').'"');
+    expect(susunanBeranda($this->get('/alamat-tidak-ada')->assertNotFound()->getContent())['menu'])
+        ->toBe(['Beranda', 'Layanan', 'Tutorial', 'Artikel', 'FAQ']);
 });

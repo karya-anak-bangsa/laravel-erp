@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\CompanyProfile;
 
+use App\Models\CompanyProfile\ModulWebsite;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateModulWebsiteRequest extends FormRequest
@@ -23,6 +24,7 @@ class UpdateModulWebsiteRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'urutan_ke' => ['required', 'integer', 'min:0', 'max:'.ModulWebsite::URUTAN_MAKS],
             'status_aktif' => ['required', 'boolean'],
         ];
     }
@@ -33,6 +35,7 @@ class UpdateModulWebsiteRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'urutan_ke' => 'urutan',
             'status_aktif' => 'status',
         ];
     }

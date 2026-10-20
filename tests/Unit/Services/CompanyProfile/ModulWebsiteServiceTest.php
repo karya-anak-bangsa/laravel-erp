@@ -16,17 +16,23 @@ function layananModulBaru(): ModulWebsiteService
     return new ModulWebsiteService;
 }
 
-it('menganggap modul yang belum punya baris sebagai aktif', function () {
-    ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Tutorial]);
+it('menampilkan semua modul dengan urutan bawaan bila belum ada baris', function () {
+    expect(layananModulBaru()->urutanTampil())->toBe(JenisModul::cases());
+});
 
-    expect(layananModulBaru()->statusTampil())->toBe([
-        'layanan' => true,
-        'portofolio' => true,
-        'tutorial' => false,
-        'artikel' => true,
-        'faq' => true,
-        'ajakan' => true,
-    ]);
+it('membuang modul nonaktif dan mengurutkan menurut urutan_ke, angka sama mengikuti urutan bawaan', function () {
+    ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Tutorial]);
+    ModulWebsite::factory()->create(['jenis' => JenisModul::Faq, 'urutan_ke' => 1]);
+    ModulWebsite::factory()->create(['jenis' => JenisModul::Artikel, 'urutan_ke' => 1]);
+    // Layanan, Portofolio, dan Ajakan belum punya baris: aktif dengan urutan bawaan 1, 2, dan 4.
+
+    $modul = layananModulBaru();
+
+    expect($modul->urutanTampil())->toBe([
+        JenisModul::Layanan, JenisModul::Artikel, JenisModul::Faq, JenisModul::Portofolio, JenisModul::Ajakan,
+    ])
+        ->and($modul->tampil(JenisModul::Tutorial))->toBeFalse()
+        ->and($modul->tampil(JenisModul::Ajakan))->toBeTrue();
 });
 
 it('memakai status terbaru setelah admin mengubahnya', function () {
@@ -47,26 +53,26 @@ it('membaca database sekali per request meskipun dipanggil berkali-kali', functi
     DB::enableQueryLog();
     $modul->tampil(JenisModul::Faq);
     $modul->tampil(JenisModul::Layanan);
-    $modul->statusTampil();
+    $modul->urutanTampil();
 
     expect(DB::getQueryLog())->toHaveCount(1);
 });
 
-it('menganggap semua modul aktif bila database tidak terbaca agar halaman tetap utuh', function () {
+it('menampilkan semua modul dengan urutan bawaan bila database tidak terbaca agar halaman tetap utuh', function () {
     Log::spy();
-    ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Faq]);
+    ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Faq, 'urutan_ke' => 9]);
     Cache::forget(ModulWebsite::KUNCI_CACHE);
     config(['database.connections.rusak' => [...config('database.connections.mysql'), 'database' => 'laravel_erp_tidak_ada']]);
     $koneksiAsli = DB::getDefaultConnection();
     DB::setDefaultConnection('rusak');
 
     try {
-        $status = layananModulBaru()->statusTampil();
+        $urutan = layananModulBaru()->urutanTampil();
     } finally {
         // Rollback RefreshDatabase saat teardown memakai koneksi bawaan.
         DB::setDefaultConnection($koneksiAsli);
     }
 
-    expect($status)->each->toBeTrue();
+    expect($urutan)->toBe(JenisModul::cases());
     Log::shouldHaveReceived('warning')->withArgs(fn (string $pesan) => str_contains($pesan, 'tidak terbaca'))->once();
 });

@@ -311,7 +311,10 @@
 .judul-kaki { @apply font-mono text-[11px] tracking-[0.14em] uppercase; }
 [data-tema=full_color] .judul-kaki { @apply text-foreground; }
 [data-tema=monochrome] .judul-kaki { @apply text-muted-foreground; }
-.tautan-kaki { @apply inline-flex min-h-11 items-center text-sm transition hover:text-foreground sm:min-h-9; }
+.tautan-kaki { @apply inline-flex min-h-11 items-center text-sm transition sm:min-h-9; }
+/* Sorot hanya untuk tautan: kelas yang sama dipakai teks biasa (daftar layanan saat seksi Layanan nonaktif). :where
+   menjaga spesifisitas sama dengan .tautan-kaki:hover. */
+.tautan-kaki:where(a) { @apply hover:text-foreground; }
 [data-tema=monochrome] .tautan-kaki { @apply text-foreground/85; }
 .kontak-kaki svg { @apply size-4 shrink-0; color: color-mix(in oklab, var(--warna-aksen) 70%, #fff); }
 [data-tema=monochrome] .kontak-kaki svg { @apply text-muted-foreground; }
@@ -462,11 +465,13 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 /* Kategori yang sedang dibuka (aria-current di halaman kategori): seperti menu navbar, ukuran tetap. */
 [data-tema=full_color] .tautan-samping[aria-current] { color: var(--aksen-teks); }
 [data-tema=monochrome] .tautan-samping[aria-current] > :first-child { @apply underline underline-offset-4; }
+/* Sorot hanya untuk tautan (:where tanpa menambah spesifisitas): daftar layanan tanpa tautan saat seksi Layanan
+   nonaktif memakai kelas yang sama. */
 @media (hover: hover) {
   [data-tema=full_color] .tautan-terbaru:hover .judul-terbaru,
-  [data-tema=full_color] .tautan-samping:hover,
-  [data-tema=full_color] .tautan-samping:hover svg { color: var(--aksen-teks); }
-  [data-tema=monochrome] :is(.tautan-terbaru:hover .judul-terbaru, .tautan-samping:hover > :first-child) { @apply underline underline-offset-4; }
+  [data-tema=full_color] .tautan-samping:where(a):hover,
+  [data-tema=full_color] .tautan-samping:where(a):hover svg { color: var(--aksen-teks); }
+  [data-tema=monochrome] :is(.tautan-terbaru:hover .judul-terbaru, .tautan-samping:where(a):hover > :first-child) { @apply underline underline-offset-4; }
 }
 /* Kartu konsultasi (slot promosi sementara): gelap seperti band ajakan — Full Color kotak bergradasi berhias, Monochrome
    polos. Hanya mulai 1024px, sebagai kotak pertama kolom samping dan tidak menempel saat digulir (pilihan pemilik

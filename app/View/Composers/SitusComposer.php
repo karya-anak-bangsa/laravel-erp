@@ -37,7 +37,7 @@ class SitusComposer
             $view->with('identitas', $atribut->get(self::KUNCI));
         }
 
-        // Status Manajemen Modul untuk partial yang menampilkan modul: $modul->tampil(JenisModul::…).
+        // Manajemen Modul untuk beranda dan partial yang bergantung padanya: $modul->tampil(JenisModul::…).
         $view->with('modul', $this->modulWebsite);
 
         if (in_array($view->name(), ['layouts.web.navbar', 'layouts.web.footer'], true)) {
@@ -46,13 +46,13 @@ class SitusComposer
 
         // Daftar layanan di footer: halaman yang sudah memuat layanan (beranda) tidak perlu query ulang.
         if ($view->name() === 'layouts.web.footer' && ! $view->offsetExists('layanan')) {
-            $view->with('layanan', $this->modulWebsite->tampil(JenisModul::Layanan) ? Layanan::untukTautan() : collect());
+            $view->with('layanan', Layanan::untukTautan());
         }
     }
 
     /**
-     * Menu navbar dan Tautan Cepat footer, tanpa modul yang nonaktif. Seksi beranda lewat alamat beranda + anchor agar
-     * tetap berfungsi dari halaman publik lain; Portofolio, Tutorial, dan Artikel punya halaman sendiri.
+     * Menu navbar dan Tautan Cepat footer: modul aktif seurut Manajemen Modul. Seksi beranda lewat alamat beranda +
+     * anchor agar tetap berfungsi dari halaman publik lain; Portofolio, Tutorial, dan Artikel punya halaman sendiri.
      *
      * @return array<string, string> label => alamat
      */
@@ -61,15 +61,14 @@ class SitusComposer
         $beranda = route('beranda');
         $menu = ['Beranda' => $beranda.'#beranda'];
 
-        foreach ([
-            [JenisModul::Layanan, $beranda.'#layanan'],
-            [JenisModul::Portofolio, route('portofolio.index')],
-            [JenisModul::Tutorial, route('tutorial.index')],
-            [JenisModul::Artikel, route('artikel.index')],
-            [JenisModul::Faq, $beranda.'#faq'],
-        ] as [$jenis, $alamat]) {
-            if ($this->modulWebsite->tampil($jenis)) {
-                $menu[$jenis->label()] = $alamat;
+        foreach ($this->modulWebsite->urutanTampil() as $jenis) {
+            if ($jenis->punyaMenu()) {
+                $menu[$jenis->label()] = match ($jenis) {
+                    JenisModul::Portofolio => route('portofolio.index'),
+                    JenisModul::Tutorial => route('tutorial.index'),
+                    JenisModul::Artikel => route('artikel.index'),
+                    default => $beranda.'#'.$jenis->value,
+                };
             }
         }
 

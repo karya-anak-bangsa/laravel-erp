@@ -14,7 +14,7 @@ class ModulWebsiteFactory extends Factory
     protected $model = ModulWebsite::class;
 
     /**
-     * Bawaan: modul aktif. Jenis unik, jadi test biasanya mengisinya sendiri.
+     * Bawaan: modul aktif dengan urutan bawaan jenisnya. Jenis unik, jadi test biasanya mengisinya sendiri.
      *
      * @return array<string, mixed>
      */
@@ -22,6 +22,9 @@ class ModulWebsiteFactory extends Factory
     {
         return [
             'jenis' => fake()->unique()->randomElement(JenisModul::cases()),
+            'urutan_ke' => fn (array $atribut): int => JenisModul::from(
+                $atribut['jenis'] instanceof JenisModul ? $atribut['jenis']->value : $atribut['jenis'],
+            )->urutanBawaan(),
             'status_aktif' => true,
         ];
     }

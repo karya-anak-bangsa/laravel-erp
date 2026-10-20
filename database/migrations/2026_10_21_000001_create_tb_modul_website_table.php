@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id('id_modul_website');
             // Satu baris per modul (enum JenisModul), dibuat ModulWebsiteSeeder; admin hanya mengubah status.
             $table->string('jenis', 20)->unique();
+            // Urutan di menu navbar, Tautan Cepat footer, dan seksi beranda (Hero selalu pertama).
+            $table->unsignedSmallInteger('urutan_ke')->default(0);
             $table->boolean('status_aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();

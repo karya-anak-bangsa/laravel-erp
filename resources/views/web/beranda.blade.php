@@ -1,5 +1,6 @@
 @extends('layouts.web')
 
+@use('App\Enums\CompanyProfile\JenisModul')
 @use('App\Support\DataTerstruktur')
 @use('App\Support\TeksHtml')
 @use('Illuminate\Support\Str')
@@ -13,21 +14,23 @@
 
 @section('konten')
     @php
-        // Seksi berdata saja (koleksi modul nonaktif sudah kosong dari controller). Latar putih/redup selang-seling
-        // dihitung dari seksi yang tampil agar dua seksi berlatar sama tidak bersebelahan; band ajakan tidak dihitung.
-        $seksi = array_keys(array_filter([
-            'layanan' => $layanan->isNotEmpty(),
-            'portofolio' => $portofolio->isNotEmpty(),
-            'artikel' => $artikel->isNotEmpty(),
-            'faq' => $faq->isNotEmpty(),
-        ]));
-        $redup = fn (string $nama): bool => array_search($nama, $seksi, true) % 2 === 1;
+        // Seksi modul aktif seurut Manajemen Modul; seksi tanpa data tidak dirender (koleksi modul nonaktif sudah kosong
+        // dari controller). Nama seksi = nama partial web/beranda/* dan id anchor-nya.
+        $isiSeksi = ['layanan' => $layanan, 'portofolio' => $portofolio, 'artikel' => $artikel, 'faq' => $faq];
+        $seksi = collect($modul->urutanTampil())
+            // Ajakan tanpa data, jadi selalu dirender selama aktif.
+            ->filter(fn (JenisModul $jenis): bool => $jenis->punyaSeksi()
+                && (! isset($isiSeksi[$jenis->value]) || $isiSeksi[$jenis->value]->isNotEmpty()))
+            ->map(fn (JenisModul $jenis): string => $jenis->value)
+            ->values()
+            ->all();
+        // Latar putih/redup selang-seling dihitung dari seksi yang tampil agar dua seksi berlatar sama tidak
+        // bersebelahan; band ajakan tidak ikut dihitung.
+        $nomorLatar = 0;
     @endphp
 
     @include('web.beranda.hero')
-    @includeWhen(in_array('layanan', $seksi, true), 'web.beranda.layanan', ['redup' => $redup('layanan')])
-    @includeWhen(in_array('portofolio', $seksi, true), 'web.beranda.portofolio', ['redup' => $redup('portofolio')])
-    @include('web.beranda.ajakan')
-    @includeWhen(in_array('artikel', $seksi, true), 'web.beranda.artikel', ['redup' => $redup('artikel')])
-    @includeWhen(in_array('faq', $seksi, true), 'web.beranda.faq', ['redup' => $redup('faq')])
+    @foreach ($seksi as $nama)
+        @include('web.beranda.'.$nama, ['redup' => $nama !== 'ajakan' && $nomorLatar++ % 2 === 1])
+    @endforeach
 @endsection

@@ -27,16 +27,18 @@
                 </ul>
             </nav>
 
-            {{-- $layanan bisa berasal dari controller halaman, jadi status modul tetap diperiksa di sini. --}}
-            @if ($modul->tampil(JenisModul::Layanan) && $layanan->isNotEmpty())
-                <nav aria-labelledby="judul-kaki-layanan" class="lg:col-span-3">
+            @if ($layanan->isNotEmpty())
+                {{-- Tautan ke kartu layanan di beranda; selama seksi Layanan nonaktif (Manajemen Modul) kartunya tidak ada,
+                     jadi daftarnya tampil sebagai teks biasa. --}}
+                @php($tautanLayanan = $modul->tampil(JenisModul::Layanan))
+                <{{ $tautanLayanan ? 'nav' : 'div' }} aria-labelledby="judul-kaki-layanan" class="lg:col-span-3">
                     <h2 id="judul-kaki-layanan" class="judul-kaki">Layanan</h2>
                     <ul class="mt-3 grid">
                         @foreach ($layanan as $item)
-                            <li><a href="{{ route('beranda') }}#layanan-{{ $item->id_layanan }}" class="tautan-kaki">{{ $item->judul }}</a></li>
+                            <li>@if ($tautanLayanan)<a href="{{ route('beranda') }}#layanan-{{ $item->id_layanan }}" class="tautan-kaki">{{ $item->judul }}</a>@else<span class="tautan-kaki">{{ $item->judul }}</span>@endif</li>
                         @endforeach
                     </ul>
-                </nav>
+                </{{ $tautanLayanan ? 'nav' : 'div' }}>
             @endif
 
             <div class="col-span-2 md:col-span-1 lg:col-span-3">

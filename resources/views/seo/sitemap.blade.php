@@ -1,8 +1,6 @@
-@use('App\Enums\CompanyProfile\JenisModul')
 @use('App\Support\Seo')
 {!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
-{{-- Deklarasi XML wajib di awal dokumen: jangan menaruh apa pun di atasnya. Peta situs dari SeoController, tanpa
-     modul yang nonaktif di Manajemen Modul (koleksinya kosong, halaman daftarnya dilewati di sini); lastmod
+{{-- Deklarasi XML wajib di awal dokumen: jangan menaruh apa pun di atasnya. Peta situs dari SeoController; lastmod
      hanya untuk halaman yang tanggal perubahannya pasti, yaitu artikel, daftarnya, dan kategorinya (berubah bila nama
      kategori atau salah satu artikel terbitnya diubah), portofolio dan daftarnya, serta tutorial, daftarnya,
      kategorinya, dan materinya. --}}
@@ -10,14 +8,12 @@
     <url>
         <loc>{{ Seo::alamat() }}</loc>
     </url>
-@if ($modul->tampil(JenisModul::Artikel))
     <url>
         <loc>{{ Seo::alamat(route('artikel.index', [], false)) }}</loc>
 @if ($artikel->isNotEmpty())
         <lastmod>{{ $artikel->max('updated_at')->toAtomString() }}</lastmod>
 @endif
     </url>
-@endif
 @foreach ($kategori as $item)
     <url>
         <loc>{{ Seo::alamat(route('kategori-artikel.show', $item, false)) }}</loc>
@@ -30,14 +26,12 @@
         <lastmod>{{ $item->updated_at->toAtomString() }}</lastmod>
     </url>
 @endforeach
-@if ($modul->tampil(JenisModul::Portofolio))
     <url>
         <loc>{{ Seo::alamat(route('portofolio.index', [], false)) }}</loc>
 @if ($portofolio->isNotEmpty())
         <lastmod>{{ $portofolio->max('updated_at')->toAtomString() }}</lastmod>
 @endif
     </url>
-@endif
 @foreach ($portofolio as $item)
     <url>
         <loc>{{ Seo::alamat(route('portofolio.show', $item, false)) }}</loc>
@@ -48,14 +42,12 @@
     // Halaman tutorial memuat pengantar dan judul semua materinya, jadi ikut berubah bila salah satu materinya diubah.
     $perubahanTutorial = $tutorial->mapWithKeys(fn ($item) => [$item->id_tutorial => $item->materiTutorial->max('updated_at')->max($item->updated_at)]);
 @endphp
-@if ($modul->tampil(JenisModul::Tutorial))
     <url>
         <loc>{{ Seo::alamat(route('tutorial.index', [], false)) }}</loc>
 @if ($tutorial->isNotEmpty())
         <lastmod>{{ $perubahanTutorial->max()->toAtomString() }}</lastmod>
 @endif
     </url>
-@endif
 @foreach ($kategoriTutorial as $item)
 @php
     $idTutorial = $tutorial->where('id_kategori_tutorial', $item->id_kategori_tutorial)->pluck('id_tutorial')->all();

@@ -3,17 +3,19 @@
 namespace App\Enums\CompanyProfile;
 
 /**
- * Modul website publik yang bisa ditampilkan atau disembunyikan lewat Pengaturan Sistem › Manajemen Modul. Urutan
- * case = urutan di Manajemen Modul dan di menu navbar. Hero tidak termasuk karena memuat judul utama beranda (h1).
+ * Modul website yang diatur Pengaturan Sistem › Manajemen Modul: tampil atau tidaknya serta urutannya di menu navbar,
+ * Tautan Cepat footer, dan seksi beranda. Halaman modul (artikel, portofolio, tutorial) tidak ikut diatur. Urutan case
+ * = urutan bawaan (ModulWebsiteSeeder), yaitu susunan menu dan seksi beranda semula. Hero tidak termasuk karena selalu
+ * menjadi seksi pertama dan memuat judul utama beranda (h1).
  */
 enum JenisModul: string
 {
     case Layanan = 'layanan';
     case Portofolio = 'portofolio';
     case Tutorial = 'tutorial';
+    case Ajakan = 'ajakan';
     case Artikel = 'artikel';
     case Faq = 'faq';
-    case Ajakan = 'ajakan';
 
     public function label(): string
     {
@@ -21,37 +23,39 @@ enum JenisModul: string
             self::Layanan => 'Layanan',
             self::Portofolio => 'Portofolio',
             self::Tutorial => 'Tutorial',
+            self::Ajakan => 'Ajakan',
             self::Artikel => 'Artikel',
             self::Faq => 'FAQ',
-            self::Ajakan => 'Ajakan',
         };
     }
 
+    /** Ajakan hanya berupa seksi beranda, tanpa menu. */
+    public function punyaMenu(): bool
+    {
+        return $this !== self::Ajakan;
+    }
+
+    /** Tutorial hanya berupa menu ke halamannya, tanpa seksi beranda. */
+    public function punyaSeksi(): bool
+    {
+        return $this !== self::Tutorial;
+    }
+
     /**
-     * Bagian website yang menampilkan modul ini; semuanya disembunyikan saat modul nonaktif.
+     * Bagian website yang diatur modul ini.
      *
      * @return list<string>
      */
     public function tempatTampil(): array
     {
-        $menu = 'Menu navbar & Tautan Cepat footer';
-
-        return match ($this) {
-            self::Layanan => [$menu, 'Seksi Layanan di beranda', 'Kolom Layanan di footer', 'Kotak Layanan kami di kolom samping halaman artikel, portofolio, dan tutorial'],
-            self::Portofolio => [$menu, 'Seksi Portofolio di beranda', 'Halaman daftar & detail portofolio'],
-            self::Tutorial => [$menu, 'Halaman daftar, kategori, tutorial, & materi'],
-            self::Artikel => [$menu, 'Seksi Artikel di beranda', 'Halaman daftar, kategori, & detail artikel'],
-            self::Faq => [$menu, 'Seksi FAQ di beranda'],
-            self::Ajakan => ['Seksi “Mulai bersama kami” di beranda', 'Band yang sama di halaman artikel, portofolio, dan tutorial'],
-        };
-    }
-
-    /**
-     * Modul yang punya halaman sendiri: halamannya menjadi 404 dan keluar dari sitemap saat modul nonaktif.
-     */
-    public function punyaHalaman(): bool
-    {
-        return in_array($this, [self::Portofolio, self::Tutorial, self::Artikel], true);
+        return array_values(array_filter([
+            $this->punyaMenu() ? 'Menu navbar & Tautan Cepat footer' : null,
+            match ($this) {
+                self::Tutorial => null,
+                self::Ajakan => 'Seksi “Mulai bersama kami” di beranda',
+                default => 'Seksi '.$this->label().' di beranda',
+            },
+        ]));
     }
 
     /**
@@ -59,10 +63,18 @@ enum JenisModul: string
      */
     public function akibatNonaktif(): string
     {
-        $akibat = 'Bila nonaktif, semua bagian di atas disembunyikan dari website.'
-            .($this->punyaHalaman() ? ' Halamannya menjadi 404 dan keluar dari sitemap.' : '');
+        return 'Bila nonaktif, bagian di atas disembunyikan dari website.'.match ($this) {
+            self::Layanan => ' Kolom Layanan di footer dan kotak Layanan kami tetap tampil tanpa tautan. Isinya tetap bisa dikelola di menu Layanan.',
+            self::Portofolio, self::Tutorial, self::Artikel => ' Halaman '.strtolower($this->label()).' tetap bisa dibuka lewat alamatnya. Isinya tetap bisa dikelola di menu '.$this->label().'.',
+            self::Faq => ' Isinya tetap bisa dikelola di menu FAQ.',
+            // Teks ajakan tertulis di kode, bukan isian admin.
+            self::Ajakan => ' Band yang sama di halaman artikel, portofolio, dan tutorial tetap tampil.',
+        };
+    }
 
-        // Teks ajakan tertulis di kode, bukan isian admin.
-        return $this === self::Ajakan ? $akibat : $akibat.' Isinya tetap bisa dikelola di menu '.$this->label().'.';
+    /** Urutan bawaan: posisi case, mulai 1. */
+    public function urutanBawaan(): int
+    {
+        return (int) array_search($this, self::cases(), true) + 1;
     }
 }

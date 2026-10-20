@@ -12,6 +12,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th class="kolom-pas">Urutan</th>
                             <th class="kolom-lebar">Modul</th>
                             <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
@@ -20,6 +21,7 @@
                     <tbody>
                         @foreach ($modulWebsite as $item)
                             <tr>
+                                <td class="kolom-pas cell-strong">{{ $item->urutan_ke }}</td>
                                 <td>
                                     <div class="cell-strong">{{ $item->jenis->label() }}</div>
                                     <div class="card-subtitle ringkasan-tabel">{{ implode(' · ', $item->jenis->tempatTampil()) }}</div>
@@ -55,6 +57,10 @@
                                                         <tr>
                                                             <th scope="row">Keterangan</th>
                                                             <td>{{ $item->jenis->akibatNonaktif() }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Urutan</th>
+                                                            <td>{{ $item->urutan_ke }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Status</th>

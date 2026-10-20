@@ -232,19 +232,20 @@ Catatan implementasi:
 - Data awal (`TemplateSeeder`, nilainya = `config/tema.php`): "TKAB Full Color" (#15253F, #CB1839, Geist, sudut sedang, skala standar, konten standar, judul semibold, bayangan halus) dan "TKAB Monochrome" (cokelat, Geist, sudut sedang, skala standar, konten standar, judul semibold, bayangan tanpa).
 
 ### tb_modul_website
-Tampil atau tidaknya modul di website publik, dikelola lewat Pengaturan Sistem › Manajemen Modul. Satu baris per modul; admin hanya mengubah status (tanpa tambah/hapus).
+Tampil atau tidaknya serta urutan modul di menu navbar, Tautan Cepat footer, dan seksi beranda, dikelola lewat Pengaturan Sistem › Manajemen Modul. Halaman modul (artikel, portofolio, tutorial), sitemap, kolom samping, dan band ajakan di halaman lain tidak ikut diatur. Satu baris per modul; admin hanya mengubah status dan urutan (tanpa tambah/hapus).
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_modul_website | BIGINT UNSIGNED PK | |
-| jenis | VARCHAR(20) UNIQUE | enum `JenisModul`: layanan, portofolio, tutorial, artikel, faq, ajakan. Nama dan tempat tampil setiap modul ada di enum |
-| status_aktif | BOOLEAN DEFAULT true | Nonaktif = disembunyikan dari menu navbar, Tautan Cepat footer, seksi beranda, kolom samping, dan band ajakan; halaman modulnya 404 dan keluar dari sitemap |
+| jenis | VARCHAR(20) UNIQUE | enum `JenisModul`: layanan, portofolio, tutorial, ajakan, artikel, faq. Nama dan tempat tampil setiap modul ada di enum; Tutorial hanya punya menu, Ajakan hanya punya seksi |
+| urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | Urutan menu dan seksi beranda (Hero selalu pertama); angka sama mengikuti urutan bawaan (urutan case enum) |
+| status_aktif | BOOLEAN DEFAULT true | Nonaktif = menu dan seksi berandanya disembunyikan |
 | created_at, updated_at, deleted_at | | |
 
 Catatan implementasi:
-- Hero tidak termasuk karena memuat judul utama beranda (h1); hero yang tampil diatur lewat `tb_hero.status_aktif`.
-- Modul yang belum punya baris, atau status yang tidak terbaca karena database gagal, dianggap aktif (`ModulWebsiteService`).
-- Data awal (`ModulWebsiteSeeder`): enam modul, semuanya aktif; dijalankan ulang hanya menambah modul yang belum punya baris.
+- Hero tidak termasuk karena selalu menjadi seksi pertama dan memuat judul utama beranda (h1); hero yang tampil diatur lewat `tb_hero.status_aktif`.
+- Modul yang belum punya baris dianggap aktif dengan urutan bawaan; bila database gagal, semua modul tampil dengan urutan bawaan (`ModulWebsiteService`).
+- Data awal (`ModulWebsiteSeeder`): enam modul aktif dengan urutan 1–6 (Layanan, Portofolio, Tutorial, Ajakan, Artikel, FAQ) = susunan menu dan seksi beranda semula; dijalankan ulang hanya menambah modul yang belum punya baris.
 
 ---
 
