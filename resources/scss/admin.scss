@@ -414,6 +414,11 @@ a.btn:hover {
     margin-left: auto;
 }
 
+// Bilah penanda modul di atas toolbar, hanya di mode Layar penuh.
+.editor-kepala {
+    display: none;
+}
+
 // Layar penuh: editor menutup seluruh area tampil, di atas topbar & sidebar (z-index 90–110) tetapi di bawah dialog
 // SweetAlert (1060) agar dialog tautan tetap tampil. Isi ditulis di atas kertas selebar halaman dokumen (816px) di
 // ruang kerja abu muda (pilihan pemilik); tombol toolbar sejajar dengan tepi kertas.
@@ -426,6 +431,31 @@ a.btn:hover {
     border: 0;
     border-radius: 0;
     box-shadow: none;
+
+    // Setinggi topbar dan memakai gaya breadcrumb-nya agar terasa sama dengan penanda halaman biasa; jejak sejajar
+    // dengan tepi kertas, penghitung karakter di kanan.
+    .editor-kepala {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 56px;
+        padding: 8px max(8px, calc((100% - 816px) / 2));
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-surface);
+
+        .breadcrumb {
+            flex-wrap: wrap;
+            row-gap: 2px;
+        }
+    }
+
+    .editor-kepala-hitung {
+        flex-shrink: 0;
+        font-size: 12px;
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+    }
 
     .editor-toolbar {
         border-radius: 0;
@@ -457,7 +487,8 @@ a.btn:hover {
         padding: 64px 72px;
         border: 1px solid var(--border-color);
         background: var(--bg-surface);
-        box-shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 4px 16px rgb(16 24 40 / 0.06);
+        // Bayangan sehalus kartu panel admin (pilihan pemilik).
+        box-shadow: var(--shadow);
         font-size: 15px;
         line-height: 24px;
 

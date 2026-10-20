@@ -129,12 +129,34 @@ const perintah = {
     redo: (editor) => editor.chain().focus().redo().run(),
 };
 
+// Jejak halaman topbar disalin ke depan nama isian di bilah layar penuh sebagai teks biasa: tautan di sini bisa
+// meninggalkan halaman tanpa sengaja saat isi belum disimpan.
+const salinJejak = (jejak) => {
+    const topbar = document.querySelector('.topbar .breadcrumb');
+    if (!jejak || !topbar) {
+        return;
+    }
+
+    const buatPemisah = () => Object.assign(document.createElement('span'), { className: 'sep', textContent: '›' });
+    const isian = jejak.firstElementChild;
+    [...topbar.children].forEach((el) => {
+        const salinan = el.classList.contains('sep') ? buatPemisah() : document.createElement('span');
+        salinan.textContent = el.textContent;
+        jejak.insertBefore(salinan, isian);
+    });
+    if (isian) {
+        jejak.insertBefore(buatPemisah(), isian);
+    }
+    jejak.querySelectorAll('.sep').forEach((el) => el.setAttribute('aria-hidden', 'true'));
+};
+
 const pasangSatu = (wadah) => {
     const sumber = wadah.querySelector('[data-editor-sumber]');
     const isi = wadah.querySelector('[data-editor-isi]');
     const toolbar = wadah.querySelector('.editor-toolbar');
     const tombol = [...toolbar.querySelectorAll('[data-perintah]')];
-    const hitung = wadah.closest('.form-group')?.querySelector('[data-editor-hitung]');
+    // Penghitung di bawah editor dan (bila ada) di bilah layar penuh.
+    const hitung = [...(wadah.closest('.form-group')?.querySelectorAll('[data-editor-hitung]') ?? [])];
 
     const segarkan = (editor) => {
         tombol.forEach((el) => {
@@ -148,9 +170,10 @@ const pasangSatu = (wadah) => {
             el.setAttribute('aria-pressed', String(aktif));
         });
 
-        if (hitung) {
-            hitung.textContent = panjangTeks(editor).toLocaleString('id-ID');
-        }
+        const panjang = panjangTeks(editor).toLocaleString('id-ID');
+        hitung.forEach((el) => {
+            el.textContent = panjang;
+        });
     };
 
     const editor = new Editor({
@@ -183,6 +206,8 @@ const pasangSatu = (wadah) => {
     // tidak sampai ke sini karena dialognya di luar wadah editor.
     const tombolPenuh = toolbar.querySelector('[data-layar-penuh]');
     if (tombolPenuh) {
+        salinJejak(wadah.querySelector('[data-editor-kepala] .breadcrumb'));
+
         const ikon = tombolPenuh.querySelector('.icon');
         const aturPenuh = (penuh) => {
             const label = penuh ? 'Keluar dari layar penuh' : 'Layar penuh';
@@ -212,7 +237,7 @@ const pasangSatu = (wadah) => {
 
     sumber.hidden = true;
     toolbar.hidden = false;
-    hitung?.parentElement.removeAttribute('hidden');
+    hitung.forEach((el) => el.parentElement.removeAttribute('hidden'));
     wadah.classList.add('editor-siap');
 };
 

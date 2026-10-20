@@ -96,6 +96,7 @@ it('menampilkan editor isi materi dengan sub-judul, kode, pas layar, dan tombol 
         ->assertOk()
         ->assertSee('class="editor editor-pas-layar" data-editor data-judul-bagian data-kode>', false)
         ->assertSee('data-layar-penuh', false)
+        ->assertSee('<span class="current">Isi Materi</span>', false)
         ->assertSeeInOrder(['data-perintah="judul2"', 'data-perintah="orderedList"', 'data-perintah="kode"', 'data-perintah="blokKode"', 'data-perintah="rataKiri"'], false)
         ->assertSee('/30.000 karakter', false)
         ->assertSee('<option value="'.$this->tutorial->id_tutorial.'" >Tutorial Laravel 13</option>', false);

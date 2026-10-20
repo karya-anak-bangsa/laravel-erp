@@ -130,6 +130,7 @@ it('mengisi form tambah dengan tanggal hari ini, status draf, dan editor isi art
         // Isi artikel: sub-judul H2/H3, pas layar, dan tombol Layar penuh (pilihan pemilik).
         ->assertSee('class="editor editor-pas-layar" data-editor data-judul-bagian>', false)
         ->assertSee('data-layar-penuh', false)
+        ->assertSee('<span class="current">Isi Artikel</span>', false)
         ->assertSee('rows="8" data-editor-sumber', false)
         ->assertSeeInOrder(['data-perintah="judul2"', 'H2', 'data-perintah="judul3"', 'H3', 'data-perintah="bold"'], false)
         ->assertSee('/30.000 karakter', false);

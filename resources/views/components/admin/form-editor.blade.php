@@ -44,6 +44,20 @@
     {{-- Tinggi bawaan 8 baris; deskripsi portofolio 15 baris; isi artikel & isi materi tutorial pas layar dengan
          tombol Layar penuh (pilihan pemilik). --}}
     <div @class(['editor', 'editor-pas-layar' => $layarPenuh, 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}{{ $kode ? ' data-kode' : '' }}@if ((int) $baris !== 8) style="--editor-baris: {{ (int) $baris }}"@endif>
+        @if ($layarPenuh)
+            {{-- Bilah penanda modul, hanya tampil di mode Layar penuh. Jejak halaman di depan nama isian disalin
+                 editor.js dari breadcrumb topbar; penghitung diulang di sini karena penghitung di bawah editor tertutup. --}}
+            <div class="editor-kepala" data-editor-kepala>
+                <nav class="breadcrumb" aria-label="Lokasi isian">
+                    @if ($label)
+                        <span class="current">{{ $label }}</span>
+                    @endif
+                </nav>
+                @if ($maks)
+                    <span class="editor-kepala-hitung"><span data-editor-hitung>0</span>/{{ number_format($maks, 0, ',', '.') }} karakter</span>
+                @endif
+            </div>
+        @endif
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)
                 @if ($item === null)
