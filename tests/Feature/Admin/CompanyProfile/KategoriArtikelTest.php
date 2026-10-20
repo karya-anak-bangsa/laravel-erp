@@ -208,7 +208,7 @@ it('menampilkan jumlah artikel per kategori tanpa menghitung artikel terhapus', 
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-artikel.index'))
-        ->assertSeeInOrder(['Teknologi', '<td>2</td>', 'Jumlah Artikel</th>', '<td>2</td>'], false)
+        ->assertSeeInOrder(['Teknologi', '<td class="kolom-jumlah">2</td>', 'Jumlah Artikel</th>', '<td>2</td>'], false)
         ->assertSee('masih dipakai 2 artikel sehingga tidak bisa dihapus.', false);
 });
 

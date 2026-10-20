@@ -22,7 +22,8 @@
                     <thead>
                         <tr>
                             <th class="kolom-pas">Nama Kategori</th>
-                            <th>Jumlah Artikel</th>
+                            <th class="kolom-jumlah">Jumlah Artikel</th>
+                            <th class="kolom-sisa" aria-hidden="true"></th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
@@ -30,7 +31,8 @@
                         @foreach ($kategoriArtikel as $item)
                             <tr>
                                 <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
-                                <td>{{ $item->artikel_count }}</td>
+                                <td class="kolom-jumlah">{{ $item->artikel_count }}</td>
+                                <td class="kolom-sisa" aria-hidden="true"></td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Kategori Artikel" :ikon-saja="true">

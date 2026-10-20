@@ -851,13 +851,22 @@ table.table .kolom-sedang {
 // judul (mis. kategori). Kolom data jadi rapat di kiri dengan jarak seragam (padding sel 16 + 16 px), tidak terpisah
 // ruang kosong yang dibagi rata oleh browser.
 table.table .kolom-pas,
-table.table .kolom-status {
+table.table .kolom-status,
+table.table .kolom-jumlah {
     width: 1%;
     white-space: nowrap;
 }
 
-table.table .kolom-status {
+table.table .kolom-status,
+table.table .kolom-jumlah {
     text-align: center;
+}
+
+// Kolom pengisi kosong sebelum Aksi pada tabel yang semua kolom datanya pendek (kategori): menampung sisa lebar
+// agar kolom data tetap rapat di kiri, sedangkan kolom jumlah tetap selebar judulnya dengan angka di tengah.
+table.table .kolom-sisa {
+    width: 100%;
+    padding: 0;
 }
 
 // Ringkasan di bawah judul tabel daftar: maksimal dua baris yang memenuhi lebar kolom. Baris pertama selalu penuh,

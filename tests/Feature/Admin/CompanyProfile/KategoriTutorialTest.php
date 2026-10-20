@@ -214,7 +214,7 @@ it('menampilkan jumlah tutorial per kategori tanpa menghitung tutorial terhapus'
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-tutorial.index'))
-        ->assertSeeInOrder(['Pemrograman Web', '<td>2</td>', 'Jumlah Tutorial</th>', '<td>2</td>'], false)
+        ->assertSeeInOrder(['Pemrograman Web', '<td class="kolom-jumlah">2</td>', 'Jumlah Tutorial</th>', '<td>2</td>'], false)
         ->assertSee('masih dipakai 2 tutorial sehingga tidak bisa dihapus.', false);
 });
 

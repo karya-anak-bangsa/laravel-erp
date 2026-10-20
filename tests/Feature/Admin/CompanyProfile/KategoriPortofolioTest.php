@@ -164,7 +164,7 @@ it('menampilkan jumlah portofolio per kategori tanpa menghitung portofolio terha
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-portofolio.index'))
-        ->assertSeeInOrder(['Website', '<td>2</td>', 'Jumlah Portofolio</th>', '<td>2</td>'], false)
+        ->assertSeeInOrder(['Website', '<td class="kolom-jumlah">2</td>', 'Jumlah Portofolio</th>', '<td>2</td>'], false)
         ->assertSee('masih dipakai 2 portofolio sehingga tidak bisa dihapus.', false);
 });
 
