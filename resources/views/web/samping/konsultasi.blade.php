@@ -1,5 +1,5 @@
 {{--
-    Kartu Konsultasi gratis, kotak pertama kolom samping halaman artikel & portofolio. Slot promosi sementara yang hanya
+    Kartu Konsultasi gratis di kolom samping halaman artikel, portofolio, & tutorial. Slot promosi sementara yang hanya
     tampil mulai 1024px, karena di bawahnya langsung disusul band ajakan yang sama tujuannya.
     Pakai: @include('web.samping.konsultasi') di dalam <aside class="kolom-samping">.
 --}}

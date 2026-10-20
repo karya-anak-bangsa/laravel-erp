@@ -21,7 +21,8 @@ class MateriTutorialController extends Controller
         $idTutorial = $request->integer('tutorial');
 
         $materiTutorial = MateriTutorial::query()
-            ->with('tutorial:id_tutorial,judul')
+            // Slug & status untuk alamat dan tombol Buka halaman di modal detail.
+            ->with('tutorial:id_tutorial,judul,slug,status_publikasi')
             ->when($q !== '', fn (Builder $query) => $query->where(fn (Builder $query) => $query
                 ->where('judul', 'like', "%{$q}%")
                 ->orWhere('deskripsi', 'like', "%{$q}%")))

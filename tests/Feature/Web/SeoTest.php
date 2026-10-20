@@ -6,7 +6,9 @@ use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
+use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
 use App\Support\Seo;
 use Illuminate\Http\UploadedFile;
@@ -205,6 +207,25 @@ describe('pratinjau tautan', function () {
             ->assertSee('<meta property="og:image:alt" content="Toko &quot;Online&quot; &amp; Kerajinan">', false)
             ->assertDontSee('hero-lain.webp', false);
     });
+
+    it('memakai sampul tutorial di halaman tutorial dan materinya', function () {
+        Hero::factory()->aktif()->create(['gambar' => 'company-profile/hero/hero-lain.webp']);
+        $tutorial = Tutorial::factory()->terbit()->create([
+            'slug' => 'tutorial-uji',
+            'gambar' => simpanGambarUji('company-profile/tutorial/sampul-uji.webp', 800, 600),
+        ]);
+        MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-uji']);
+
+        // Dibuka dengan huruf besar: kanonis tetap dari slug tersimpan. Materi tanpa gambar memakai sampul tutorialnya.
+        foreach (['/tutorial/TUTORIAL-UJI' => '/tutorial/tutorial-uji', '/tutorial/TUTORIAL-UJI/MATERI-UJI' => '/tutorial/tutorial-uji/materi-uji'] as $alamat => $kanonis) {
+            $this->get($alamat)
+                ->assertOk()
+                ->assertSee('<link rel="canonical" href="'.$this->akar.$kanonis.'">', false)
+                ->assertSee('<meta property="og:image" content="'.$this->akar.'/storage/company-profile/tutorial/sampul-uji.webp">', false)
+                ->assertSee('<meta property="og:image:width" content="800">', false)
+                ->assertDontSee('hero-lain.webp', false);
+        }
+    });
 });
 
 describe('data terstruktur', function () {
@@ -283,6 +304,28 @@ describe('data terstruktur', function () {
             ]);
     });
 
+    it('menjelaskan remah roti halaman daftar tutorial, tutorial, dan materinya', function () {
+        $tutorial = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial & Uji', 'slug' => 'tutorial-uji']);
+        MateriTutorial::factory()->for($tutorial)->create(['judul' => 'Materi Pertama', 'slug' => 'materi-pertama']);
+
+        [$daftar] = jsonLdHalaman($this->get('/tutorial')->getContent());
+        [$halamanTutorial] = jsonLdHalaman($this->get('/tutorial/tutorial-uji')->getContent());
+        [$materi] = jsonLdHalaman($this->get('/tutorial/tutorial-uji/materi-pertama')->getContent());
+
+        $beranda = ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $this->akar];
+        $induk = ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tutorial', 'item' => $this->akar.'/tutorial'];
+
+        expect($daftar['@graph'][0]['itemListElement'])->toBe([$beranda, ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tutorial']])
+            ->and($halamanTutorial['@graph'])->toHaveCount(1)
+            ->and($halamanTutorial['@graph'][0]['itemListElement'])->toBe([$beranda, $induk, ['@type' => 'ListItem', 'position' => 3, 'name' => 'Tutorial & Uji']])
+            ->and($materi['@graph'][0]['itemListElement'])->toBe([
+                $beranda,
+                $induk,
+                ['@type' => 'ListItem', 'position' => 3, 'name' => 'Tutorial & Uji', 'item' => $this->akar.'/tutorial/tutorial-uji'],
+                ['@type' => 'ListItem', 'position' => 4, 'name' => 'Materi Pertama'],
+            ]);
+    });
+
     it('tidak bisa ditutup paksa oleh judul artikel', function () {
         Artikel::factory()->terbit()->create(['judul' => '</script><script>alert(1)</script>', 'slug' => 'judul-jahat']);
 
@@ -294,7 +337,7 @@ describe('data terstruktur', function () {
 });
 
 describe('sitemap.xml', function () {
-    it('memuat beranda, artikel terbit beserta daftar & kategorinya, serta semua portofolio', function () {
+    it('memuat beranda, artikel terbit beserta daftar & kategorinya, semua portofolio, dan tutorial yang tayang', function () {
         $kategori = KategoriArtikel::factory()->create(['nama_kategori' => 'Teknologi', 'slug' => 'teknologi', 'updated_at' => '2026-09-01 07:00:00']);
         $berita = KategoriArtikel::factory()->create(['nama_kategori' => 'Berita', 'slug' => 'berita', 'updated_at' => '2026-10-08 09:00:00']);
         $hanyaDraf = KategoriArtikel::factory()->create(['slug' => 'hanya-draf']);
@@ -306,6 +349,12 @@ describe('sitemap.xml', function () {
         Portofolio::factory()->create(['slug' => 'portofolio-lama', 'created_at' => '2026-09-10 08:00:00', 'updated_at' => '2026-09-20 08:00:00']);
         Portofolio::factory()->create(['slug' => 'portofolio-baru', 'created_at' => '2026-10-02 08:00:00', 'updated_at' => '2026-10-03 08:00:00']);
         Portofolio::factory()->create(['slug' => 'portofolio-terhapus'])->delete();
+        $tutorial = Tutorial::factory()->terbit()->create(['slug' => 'tutorial-uji', 'updated_at' => '2026-09-15 08:00:00']);
+        MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-kedua', 'urutan_ke' => 2, 'updated_at' => '2026-09-16 08:00:00']);
+        MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-pertama', 'urutan_ke' => 1, 'updated_at' => '2026-10-04 09:00:00']);
+        MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-terhapus', 'updated_at' => '2026-10-06 09:00:00'])->delete();
+        Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'tutorial-draf']);
+        Tutorial::factory()->terbit()->create(['slug' => 'tutorial-kosong']);
 
         $respons = $this->get('/sitemap.xml')
             ->assertOk()
@@ -332,17 +381,25 @@ describe('sitemap.xml', function () {
             $this->akar.'/portofolio' => '2026-10-03T08:00:00+07:00',
             $this->akar.'/portofolio/portofolio-baru' => '2026-10-03T08:00:00+07:00',
             $this->akar.'/portofolio/portofolio-lama' => '2026-09-20T08:00:00+07:00',
+            // Hanya tutorial terbit yang punya materi. Halaman tutorial dan daftarnya ikut berubah bila materinya diubah;
+            // materi urut sesuai tampilannya.
+            $this->akar.'/tutorial' => '2026-10-04T09:00:00+07:00',
+            $this->akar.'/tutorial/tutorial-uji' => '2026-10-04T09:00:00+07:00',
+            $this->akar.'/tutorial/tutorial-uji/materi-pertama' => '2026-10-04T09:00:00+07:00',
+            $this->akar.'/tutorial/tutorial-uji/materi-kedua' => '2026-09-16T08:00:00+07:00',
         ]);
     });
 
-    it('tetap sah tanpa artikel terbit dan portofolio', function () {
+    it('tetap sah tanpa artikel terbit, portofolio, dan tutorial', function () {
         $xml = simplexml_load_string($this->get('/sitemap.xml')->getContent());
 
-        expect($xml->url)->toHaveCount(3)
+        expect($xml->url)->toHaveCount(4)
             ->and((string) $xml->url[1]->loc)->toBe($this->akar.'/artikel')
             ->and(isset($xml->url[1]->lastmod))->toBeFalse()
             ->and((string) $xml->url[2]->loc)->toBe($this->akar.'/portofolio')
-            ->and(isset($xml->url[2]->lastmod))->toBeFalse();
+            ->and(isset($xml->url[2]->lastmod))->toBeFalse()
+            ->and((string) $xml->url[3]->loc)->toBe($this->akar.'/tutorial')
+            ->and(isset($xml->url[3]->lastmod))->toBeFalse();
     });
 });
 

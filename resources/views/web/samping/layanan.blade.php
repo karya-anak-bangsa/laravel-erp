@@ -1,6 +1,6 @@
 {{--
-    Kotak Layanan kami di kolom samping halaman artikel & portofolio: tautan ke kartu layanannya di beranda, sama dengan
-    kolom Layanan di footer.
+    Kotak Layanan kami di kolom samping halaman artikel, portofolio, & tutorial: tautan ke kartu layanannya di beranda,
+    sama dengan kolom Layanan di footer.
     Pakai: @include('web.samping.layanan') — $layanan dari controller (footer memakai koleksi yang sama).
 --}}
 @if ($layanan->isNotEmpty())

@@ -358,13 +358,13 @@
 /* Ruang bawah footer agar tombol tidak menutupi "Kembali ke atas" saat halaman digulir sampai habis. */
 body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 
-/* ---------- Halaman publik selain beranda (artikel & portofolio) ---------- */
+/* ---------- Halaman publik selain beranda (artikel, portofolio, & tutorial) ---------- */
 /* Kepala halaman: latar meniru hero (gradasi Full Color di aturan hero, kisi di kedua tema); isi rata tengah seperti
    kepala seksi beranda. */
 .kepala-halaman { @apply relative isolate overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-14 lg:pt-24 lg:pb-16; }
 .kepala-halaman-isi { @apply mx-auto max-w-2xl text-center; }
-/* Detail artikel & portofolio: kepala rata kiri dan selebar kolom utama (pilihan pemilik 2026-10-15), sejajar dengan
-   gambar & isi; rumus lebarnya sama dengan kolom utama .tata-samping (struktur.css). */
+/* Detail artikel, portofolio, & tutorial: kepala rata kiri dan selebar kolom utama (pilihan pemilik 2026-10-15),
+   sejajar dengan gambar & isi; rumus lebarnya sama dengan kolom utama .tata-samping (struktur.css). */
 .kepala-halaman-artikel .kepala-halaman-isi { @apply mx-0 max-w-none text-left; }
 @media (min-width: 1024px) { .kepala-halaman-artikel .kepala-halaman-isi { max-width: calc((100% - var(--celah-samping)) * 2 / 3); } }
 /* Remah roti bergaya label seksi (Geist Mono kapital); tinggi tautan 24px agar mudah disentuh. Rata mengikuti isi kepala
@@ -431,6 +431,12 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .isi-artikel h2 { @apply text-[1.375rem]/snug sm:text-2xl/snug; margin-top: 1.75em; }
 .isi-artikel h3 { @apply text-xl/snug; margin-top: 1.5em; }
 .isi-artikel li + li { margin-top: .5em; }
+/* Kode di isi materi tutorial, tanpa pewarnaan sintaks & tombol Salin (pilihan pemilik 2026-10-20): kode sebaris berlatar
+   abu; blok kode bergaris seperti isian dan digulir mendatar agar spasi & indentasinya utuh. Ukuran sama di kedua tema;
+   sudut kode sebaris dibatasi agar tidak menjadi pil di template bersudut bulat. */
+.isi-artikel code { @apply bg-muted px-1.5 py-0.5 font-mono text-[.875em] text-foreground; border-radius: min(var(--sudut-dalam), .375rem); overflow-wrap: anywhere; }
+.isi-artikel pre { @apply overflow-x-auto rounded-dalam border bg-muted/60 px-4 py-3.5 font-mono text-sm/6 text-foreground sm:px-5 sm:py-4 sm:text-[15px]/[1.65]; box-shadow: var(--bayangan-isian); }
+.isi-artikel pre code { @apply rounded-none bg-transparent p-0 text-[length:inherit]; overflow-wrap: normal; }
 /* Tombol bagikan di akhir isi (<x-web.bagikan>, pilihan pemilik 2026-10-15): label bergaya label seksi, tombol ikon-saja
    44px seperti tombol menu. Full Color: ikon berwarna merek (kontras ≥4,5:1 di latar putih); Monochrome hitam. */
 .bagikan { @apply mt-12 flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-8 sm:mt-14; }
@@ -498,6 +504,40 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .judul-ajakan-samping { @apply text-xl font-semibold tracking-tight text-balance text-foreground; }
 .deskripsi-ajakan-samping { @apply mt-2 text-[15px]/[1.65] text-pretty text-muted-foreground; }
 .ajakan-samping .btn { @apply mt-6 w-full; }
+
+/* ---------- Tutorial ----------
+   Kartu daftar memakai kartu portofolio, ditambah jumlah materi yang rata bawah agar sejajar antarkartu sebaris. Halaman
+   tutorial & materi memakai kelas detail artikel; materi tanpa gambar sehingga isinya langsung di bawah kepala halaman.
+   Daftar materi bernomor bergaris pemisah seperti tautan kolom samping, di kolom utama halaman tutorial dan di kotak
+   Daftar materi halaman materi; materi yang sedang dibuka ditandai seperti kategori aktif. Ukuran sama di kedua tema. */
+.jumlah-materi { @apply mt-auto pt-4 font-mono text-[13px] text-muted-foreground; }
+.seksi-daftar-materi { @apply mt-12 sm:mt-14; }
+.judul-daftar-materi { @apply text-[1.375rem]/snug font-semibold tracking-tight text-balance text-foreground sm:text-2xl/snug; }
+.daftar-materi { @apply mt-5 border-t; }
+.daftar-materi > li { @apply border-b; }
+/* Sejajar garis dasar: nomor tetap di baris pertama judul yang patah dua baris. Tinggi baris ≥44px dari ruang dalamnya. */
+.tautan-materi { @apply flex items-baseline gap-4 py-4 text-base/snug font-medium text-foreground transition-colors sm:text-[17px]/snug; }
+.nomor-materi { @apply shrink-0 font-mono text-[13px] text-muted-foreground; }
+.judul-materi { @apply text-pretty; }
+.daftar-materi-samping { @apply mt-2 border-t-0; }
+.daftar-materi-samping .tautan-materi { @apply gap-3 py-3 text-[15px]/snug; }
+[data-tema=full_color] .tautan-materi[aria-current] { color: var(--aksen-teks); }
+[data-tema=monochrome] .tautan-materi[aria-current] .judul-materi { @apply underline underline-offset-4; }
+.tombol-mulai { @apply mt-8 w-full sm:w-auto; }
+.urutan-materi { @apply mt-5; }
+.isi-materi { @apply mt-0; }
+/* Materi sebelumnya & berikutnya: kartu bergaris seperti kotak kolom samping, seluruh kartu satu tautan; berikutnya di
+   kolom kanan walau tanpa materi sebelumnya. */
+.navigasi-materi { @apply mt-12 grid gap-4 sm:mt-14 sm:grid-cols-2; }
+.tautan-navigasi-materi { @apply flex flex-col gap-1.5 rounded-kartu border bg-card p-4 sm:p-5; box-shadow: var(--bayangan-kartu); }
+[data-tema=monochrome] .tautan-navigasi-materi { border-color: var(--garis-kartu); }
+.tautan-materi-berikutnya { @apply sm:col-start-2 sm:items-end sm:text-right; }
+.label-navigasi-materi { @apply font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase; }
+.judul-navigasi-materi { @apply text-base/snug font-semibold tracking-tight text-pretty text-foreground transition-colors; }
+@media (hover: hover) {
+  [data-tema=full_color] :is(.tautan-materi:hover, .tautan-navigasi-materi:hover .judul-navigasi-materi) { color: var(--aksen-teks); }
+  [data-tema=monochrome] :is(.tautan-materi:hover .judul-materi, .tautan-navigasi-materi:hover .judul-navigasi-materi) { @apply underline underline-offset-4; }
+}
 
 /* Paginasi (vendor/pagination/web.blade.php), pola shadcn; tombol 44px di ponsel seperti sasaran sentuh lain. Rata kiri
    mulai 640px, sejajar tepi kiri daftar (pilihan pemilik 2026-10-17; sebelumnya rata tengah); ponsel: Sebelumnya ·

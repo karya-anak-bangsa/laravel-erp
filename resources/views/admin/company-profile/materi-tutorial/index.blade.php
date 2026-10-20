@@ -1,3 +1,4 @@
+@use('App\Enums\CompanyProfile\StatusPublikasi')
 @use('App\Support\TeksHtml')
 
 @extends('layouts.admin', ['breadcrumb' => ['Company Profile' => null, 'Materi Tutorial' => null]])
@@ -64,6 +65,25 @@
                                                         <tr>
                                                             <th scope="row">Urutan ke</th>
                                                             <td>{{ $item->urutan_ke }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Alamat detail</th>
+                                                            <td>/tutorial/{{ $item->tutorial->slug }}/{{ $item->slug }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Halaman</th>
+                                                            <td>
+                                                                {{-- Status ada di tingkat tutorial: materi tayang begitu tutorialnya terbit. --}}
+                                                                @if ($item->tutorial->status_publikasi === StatusPublikasi::Terbit)
+                                                                    <a href="{{ route('materi-tutorial.show', [$item->tutorial->slug, $item->slug]) }}" target="_blank" rel="noopener"
+                                                                        class="btn btn-info btn-sm">
+                                                                        <x-admin.icon name="eye" />
+                                                                        Buka halaman
+                                                                    </a>
+                                                                @else
+                                                                    Belum tayang (tutorial masih draf)
+                                                                @endif
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Isi</th>

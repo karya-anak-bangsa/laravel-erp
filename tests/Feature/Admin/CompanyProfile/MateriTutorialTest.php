@@ -57,6 +57,19 @@ it('menyaring materi per tutorial dan meneruskan tutorialnya ke tombol tambah', 
         ->assertSee('href="'.route('admin.materi-tutorial.create', ['tutorial' => $this->tutorial->id_tutorial]).'"', false);
 });
 
+it('menyediakan tombol Buka halaman di modal detail hanya untuk materi tutorial terbit', function () {
+    $terbit = Tutorial::factory()->terbit()->create(['slug' => 'tutorial-terbit']);
+    MateriTutorial::factory()->for($terbit)->create(['slug' => 'materi-tayang']);
+    MateriTutorial::factory()->for($this->tutorial)->create(['slug' => 'materi-draf']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.materi-tutorial.index'))
+        ->assertSee('/tutorial/tutorial-terbit/materi-tayang')
+        ->assertSee('href="'.route('materi-tutorial.show', ['tutorial-terbit', 'materi-tayang']).'" target="_blank" rel="noopener"', false)
+        ->assertDontSee('href="'.route('materi-tutorial.show', [$this->tutorial->slug, 'materi-draf']).'"', false)
+        ->assertSee('Belum tayang (tutorial masih draf)');
+});
+
 it('mencari materi berdasarkan judul atau isi', function () {
     MateriTutorial::factory()->for($this->tutorial)->create(['judul' => 'Routing', 'deskripsi' => '<p>Rute pertama.</p>']);
     MateriTutorial::factory()->for($this->tutorial)->create(['judul' => 'Migrasi', 'deskripsi' => '<p>Tabel buku.</p>']);

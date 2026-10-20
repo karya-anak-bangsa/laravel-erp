@@ -83,6 +83,27 @@
                                                                 <td>{{ $item->materi_tutorial_count }}</td>
                                                             </tr>
                                                             <tr>
+                                                                <th scope="row">Alamat detail</th>
+                                                                <td>/tutorial/{{ $item->slug }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Halaman</th>
+                                                                <td>
+                                                                    {{-- Tayang di website bila terbit dan punya minimal satu materi. --}}
+                                                                    @if ($item->status_publikasi !== StatusPublikasi::Terbit)
+                                                                        Belum tayang (draf)
+                                                                    @elseif ($item->materi_tutorial_count === 0)
+                                                                        Belum tayang (belum ada materi)
+                                                                    @else
+                                                                        <a href="{{ route('tutorial.show', $item->slug) }}" target="_blank" rel="noopener"
+                                                                            class="btn btn-info btn-sm">
+                                                                            <x-admin.icon name="eye" />
+                                                                            Buka halaman
+                                                                        </a>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <th scope="row">Materi</th>
                                                                 <td>
                                                                     <a href="{{ route('admin.materi-tutorial.index', ['tutorial' => $item->id_tutorial]) }}" class="btn btn-info btn-sm">

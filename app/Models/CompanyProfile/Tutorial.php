@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Tutorial extends Model
 {
@@ -44,6 +45,27 @@ class Tutorial extends Model
     public function scopeTerbaru(Builder $query): void
     {
         $query->latest()->latest('id_tutorial');
+    }
+
+    /**
+     * Tutorial yang tampil di frontend: terbit dan punya minimal satu materi.
+     *
+     * @param  Builder<Tutorial>  $query
+     */
+    public function scopeTayang(Builder $query): void
+    {
+        $query->where('status_publikasi', StatusPublikasi::Terbit)->has('materiTutorial');
+    }
+
+    /**
+     * Rute /tutorial/{tutorial:slug}/{materiTutorial:slug} mencari materi lewat relasi materiTutorial(); bawaan Laravel
+     * menebak bentuk jamak bahasa Inggris (materiTutorials).
+     *
+     * @param  string  $childType
+     */
+    protected function childRouteBindingRelationshipName($childType): string
+    {
+        return Str::camel($childType);
     }
 
     /**

@@ -78,6 +78,21 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
         ->assertSee('beserta 2 materinya tidak akan tampil lagi', false);
 });
 
+it('menyediakan tombol Buka halaman di modal detail hanya untuk tutorial yang tayang', function () {
+    Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'sudah-tayang']);
+    Tutorial::factory()->terbit()->create(['slug' => 'tanpa-materi']);
+    Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'masih-draf']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.tutorial.index'))
+        ->assertSee('/tutorial/sudah-tayang')
+        ->assertSee('href="'.route('tutorial.show', 'sudah-tayang').'" target="_blank" rel="noopener"', false)
+        ->assertDontSee('href="'.route('tutorial.show', 'tanpa-materi').'"', false)
+        ->assertDontSee('href="'.route('tutorial.show', 'masih-draf').'"', false)
+        ->assertSee('Belum tayang (belum ada materi)')
+        ->assertSee('Belum tayang (draf)');
+});
+
 it('mencari tutorial berdasarkan judul atau deskripsi', function () {
     Tutorial::factory()->create(['judul' => 'Tutorial Flutter', 'deskripsi' => '<p>Aplikasi daftar tugas.</p>']);
     Tutorial::factory()->create(['judul' => 'Tutorial Laravel', 'deskripsi' => '<p>Aplikasi data buku.</p>']);

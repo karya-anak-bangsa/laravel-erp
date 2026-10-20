@@ -5,14 +5,16 @@ namespace App\Support;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
+use App\Models\CompanyProfile\Tutorial;
 use Illuminate\Support\Str;
 
 /**
  * Data terstruktur schema.org (JSON-LD) untuk mesin pencari, dirender <x-web.data-terstruktur>. Organisasi & situs
  * hanya di beranda sesuai anjuran Google; halaman artikel memuat artikel dan remah rotinya, halaman daftar & kategori
- * artikel serta halaman portofolio cukup remah rotinya. FAQPage sengaja tidak dipakai: sejak Agustus 2023 Google hanya
- * menampilkan hasil kaya FAQ untuk situs pemerintah dan kesehatan.
+ * artikel serta halaman portofolio dan tutorial cukup remah rotinya. FAQPage sengaja tidak dipakai: sejak Agustus 2023
+ * Google hanya menampilkan hasil kaya FAQ untuk situs pemerintah dan kesehatan.
  */
 class DataTerstruktur
 {
@@ -117,6 +119,37 @@ class DataTerstruktur
             'Beranda' => Seo::alamat(),
             'Portofolio' => Seo::alamat(route('portofolio.index', [], false)),
         ], $portofolio->judul)]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function daftarTutorial(): array
+    {
+        return self::dokumen([self::remahRoti(['Beranda' => Seo::alamat()], 'Tutorial')]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function tutorial(Tutorial $tutorial): array
+    {
+        return self::dokumen([self::remahRoti([
+            'Beranda' => Seo::alamat(),
+            'Tutorial' => Seo::alamat(route('tutorial.index', [], false)),
+        ], $tutorial->judul)]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function materiTutorial(Tutorial $tutorial, MateriTutorial $materiTutorial): array
+    {
+        return self::dokumen([self::remahRoti([
+            'Beranda' => Seo::alamat(),
+            'Tutorial' => Seo::alamat(route('tutorial.index', [], false)),
+            $tutorial->judul => Seo::alamat(route('tutorial.show', $tutorial, false)),
+        ], $materiTutorial->judul)]);
     }
 
     /**

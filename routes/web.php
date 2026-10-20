@@ -5,7 +5,9 @@ use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
+use App\Http\Controllers\Web\CompanyProfile\MateriTutorialController;
 use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
+use App\Http\Controllers\Web\CompanyProfile\TutorialController;
 use App\Http\Controllers\Web\SeoController;
 use Illuminate\Routing\RedirectController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,13 @@ Route::get('artikel/kategori/{kategoriArtikel:slug}', [KategoriArtikelController
 
 Route::get('portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
 Route::get('portofolio/{portofolio:slug}', [PortofolioController::class, 'show'])->name('portofolio.show');
+
+Route::get('tutorial', [TutorialController::class, 'index'])->name('tutorial.index');
+Route::get('tutorial/{tutorial:slug}', [TutorialController::class, 'show'])->name('tutorial.show');
+// Slug materi unik per tutorial, jadi materi hanya dicari di antara materi tutorial di alamat itu.
+Route::get('tutorial/{tutorial:slug}/{materiTutorial:slug}', [MateriTutorialController::class, 'show'])
+    ->scopeBindings()
+    ->name('materi-tutorial.show');
 
 Route::post('kontak', [KontakKamiController::class, 'store'])
     ->middleware('throttle:kontak')
