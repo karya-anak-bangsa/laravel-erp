@@ -23,8 +23,9 @@ class SlugService
      * @param  Builder<TModel>  $query  data pembanding
      * @param  TModel|null  $kecuali  data yang sedang diubah (slug miliknya sendiri boleh dipakai ulang)
      * @param  string  $cadangan  slug bila judul tidak menghasilkan huruf/angka sama sekali
+     * @param  list<string>  $terlarang  slug yang bentrok dengan alamat lain, diperlakukan seperti sudah dipakai
      */
-    public function buat(string $judul, Builder $query, ?Model $kecuali = null, string $cadangan = 'data', string $kolom = 'slug'): string
+    public function buat(string $judul, Builder $query, ?Model $kecuali = null, string $cadangan = 'data', string $kolom = 'slug', array $terlarang = []): string
     {
         $dasar = rtrim(Str::substr(Str::slug($judul), 0, self::PANJANG_DASAR_MAKS), '-');
 
@@ -34,7 +35,7 @@ class SlugService
 
         $slug = $dasar;
 
-        for ($nomor = 2; $this->dipakai($query, $kolom, $slug, $kecuali); $nomor++) {
+        for ($nomor = 2; in_array($slug, $terlarang, true) || $this->dipakai($query, $kolom, $slug, $kecuali); $nomor++) {
             $slug = "{$dasar}-{$nomor}";
         }
 

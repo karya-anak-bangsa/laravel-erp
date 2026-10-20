@@ -45,7 +45,7 @@ class TutorialFactory extends Factory
     public function kategori(string $nama): static
     {
         return $this->state(fn (): array => [
-            'id_kategori_tutorial' => KategoriTutorial::firstOrCreate(['nama_kategori' => $nama])->id_kategori_tutorial,
+            'id_kategori_tutorial' => KategoriTutorial::firstOrCreate(['nama_kategori' => $nama], ['slug' => Str::slug($nama)])->id_kategori_tutorial,
         ]);
     }
 }

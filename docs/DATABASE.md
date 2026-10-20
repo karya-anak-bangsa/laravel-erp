@@ -149,10 +149,11 @@ Catatan implementasi: slug hanya ikut berubah saat judul diubah selama artikel m
 |---|---|---|
 | id_kategori_tutorial | BIGINT UNSIGNED PK | |
 | nama_kategori | VARCHAR(100) | topik, mis. Pemrograman Web |
+| slug | VARCHAR(220) UNIQUE | URL halaman kategori (`/tutorial/kategori/{slug}`), dibuat otomatis dari nama oleh `KategoriTutorialService` |
 | created_at, updated_at, deleted_at | | |
 
 Catatan implementasi:
-- Tanpa slug karena belum ada halaman kategori tutorial di frontend; nama tampil sebagai pita di kartu dan halaman tutorial.
+- Slug ikut berubah saat nama diubah **hanya selama kategori belum punya tutorial tayang** (terbit dan bermateri); setelah itu dikunci, sama dengan slug kategori artikel. Slug tutorial `kategori` dicadangkan `TutorialService` agar alamat materinya tidak tertutup halaman kategori.
 - Tiga kategori awal dari `KategoriTutorialSeeder`: Pemrograman Web, Pemrograman Mobile, Basis Data. Di admin diurutkan abjad seperti data master lain.
 - Kategori yang masih dipakai tutorial (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
 

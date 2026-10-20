@@ -57,6 +57,20 @@ class Tutorial extends Model
     }
 
     /**
+     * Tutorial untuk daftar frontend (daftar & kategori tutorial): yang tayang, terbaru lebih dulu, beserta nama
+     * kategori (pita) dan jumlah materinya.
+     *
+     * @param  Builder<Tutorial>  $query
+     */
+    public function scopeUntukKartu(Builder $query): void
+    {
+        $query->tayang()
+            ->with('kategoriTutorial:id_kategori_tutorial,nama_kategori')
+            ->withCount('materiTutorial')
+            ->terbaru();
+    }
+
+    /**
      * Rute /tutorial/{tutorial:slug}/{materiTutorial:slug} mencari materi lewat relasi materiTutorial(); bawaan Laravel
      * menebak bentuk jamak bahasa Inggris (materiTutorials).
      *

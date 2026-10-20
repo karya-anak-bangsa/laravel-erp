@@ -49,16 +49,20 @@ describe('daftar tutorial', function () {
         $this->get(route('tutorial.index'))
             ->assertOk()
             ->assertSee('<title>Tutorial — PT Uji Tutorial</title>', false)
+            ->assertSee('<meta name="description" content="Panduan praktis seputar pemrograman dan teknologi, disusun berurutan agar mudah diikuti dari awal.">', false)
             ->assertSeeInOrder(['<h1', 'Belajar langkah demi langkah', '</h1>'], false)
             ->assertSeeInOrder(['Tutorial Baru', 'Tutorial Lama'])
-            // Kartu portofolio dipakai bersama: pita kategori, judul h2 bertautan, ringkasan, lalu jumlah materi.
+            // Kartu artikel dipakai bersama (daftar bergaris, bukan kartu): lencana/pita kategori, jumlah materi di tempat
+            // tanggal, judul h2 bertautan, lalu ringkasan.
             ->assertSeeInOrder([
-                '<article class="kartu-portofolio corak-sky">',
-                '<span class="pita-kategori">Basis Data</span>',
-                '<h2 class="judul-portofolio"><a href="'.route('tutorial.show', 'tutorial-baru').'">Tutorial Baru</a></h2>',
-                '<p class="deskripsi-portofolio">Belajar Laravel dari awal.</p>',
-                '<p class="jumlah-materi">2 materi</p>',
+                '<div class="grid-artikel">',
+                '<article class="kartu-artikel">',
+                '<span class="lencana-artikel">Basis Data</span>',
+                '<span class="jumlah-materi">2 materi</span>',
+                '<h2 class="kartu-artikel-judul"><a href="'.route('tutorial.show', 'tutorial-baru').'">Tutorial Baru</a></h2>',
+                '<p class="kartu-artikel-ringkasan">Belajar Laravel dari awal.</p>',
             ], false)
+            ->assertDontSee('kartu-portofolio', false)
             ->assertDontSee('Tutorial Draf')
             ->assertDontSee('Tutorial Tanpa Materi')
             ->assertDontSee('Tutorial Terhapus');

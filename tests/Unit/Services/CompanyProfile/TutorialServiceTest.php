@@ -46,6 +46,15 @@ it('memberi akhiran angka bila slug sudah dipakai tutorial lain, termasuk yang t
         ->and($this->tutorial->buatSlug('???'))->toBe('tutorial');
 });
 
+it('mencadangkan slug kategori agar materinya tidak tertutup halaman kategori tutorial', function () {
+    expect($this->tutorial->buatSlug('Kategori'))->toBe('kategori-2');
+
+    Tutorial::factory()->create(['slug' => 'kategori-2']);
+
+    expect($this->tutorial->buatSlug('Kategori'))->toBe('kategori-3')
+        ->and($this->tutorial->buatSlug('Kategori Pemula'))->toBe('kategori-pemula');
+});
+
 it('memperbarui slug tutorial draf saat judul berubah, termasuk saat langsung diterbitkan', function () {
     $tutorial = Tutorial::factory()->draf()->create(['judul' => 'Judul Lama', 'slug' => 'judul-lama']);
 

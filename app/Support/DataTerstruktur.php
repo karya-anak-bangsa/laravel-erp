@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Tutorial;
@@ -127,6 +128,17 @@ class DataTerstruktur
     public static function daftarTutorial(): array
     {
         return self::dokumen([self::remahRoti(['Beranda' => Seo::alamat()], 'Tutorial')]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function kategoriTutorial(KategoriTutorial $kategoriTutorial): array
+    {
+        return self::dokumen([self::remahRoti([
+            'Beranda' => Seo::alamat(),
+            'Tutorial' => Seo::alamat(route('tutorial.index', [], false)),
+        ], $kategoriTutorial->nama_kategori)]);
     }
 
     /**

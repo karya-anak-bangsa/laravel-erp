@@ -11,12 +11,12 @@
         'Kontak' => route('beranda').'#kontak',
     ];
     // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail portofolio,
-    // halaman tutorial & materinya, detail & kategori artikel).
+    // halaman, materi & kategori tutorial, detail & kategori artikel).
     $menuAktif = fn (string $label): ?string => match (true) {
         $label === 'Portofolio' && request()->routeIs('portofolio.index') => 'page',
         $label === 'Portofolio' && request()->routeIs('portofolio.show') => 'true',
         $label === 'Tutorial' && request()->routeIs('tutorial.index') => 'page',
-        $label === 'Tutorial' && request()->routeIs('tutorial.show', 'materi-tutorial.show') => 'true',
+        $label === 'Tutorial' && request()->routeIs('tutorial.show', 'materi-tutorial.show', 'kategori-tutorial.show') => 'true',
         $label === 'Artikel' && request()->routeIs('artikel.index') => 'page',
         $label === 'Artikel' && request()->routeIs('artikel.show', 'kategori-artikel.show') => 'true',
         default => null,

@@ -243,7 +243,7 @@
    menjadi sel grid kartu (struktur.css); markup tetap satu untuk kedua tema. Lencana & tanggal Geist Mono 13px. */
 .kartu-artikel-meta { @apply text-sm; display: contents; }
 :is(.lencana-artikel, .pita-kategori) { @apply inline-flex w-fit items-center rounded-lencana border px-2 py-0.5 font-mono text-[13px] text-foreground; }
-.tanggal-artikel { @apply font-mono text-[13px] text-muted-foreground; }
+:is(.tanggal-artikel, .jumlah-materi) { @apply font-mono text-[13px] text-muted-foreground; }
 .kartu-artikel-judul { @apply text-lg font-semibold tracking-tight text-pretty text-foreground; }
 /* Hanya judul yang bertautan ke detail dan bereaksi saat disorot (pilihan pemilik 2026-10-17; sebelumnya tautan
    merentang ke seluruh kartu dan terlalu mudah terklik): Full Color merah aksen, Monochrome bergaris bawah. Berlaku juga
@@ -506,11 +506,10 @@ body:has(#tombol-wa) .kaki-isi { @apply pb-24; }
 .ajakan-samping .btn { @apply mt-6 w-full; }
 
 /* ---------- Tutorial ----------
-   Kartu daftar memakai kartu portofolio, ditambah jumlah materi yang rata bawah agar sejajar antarkartu sebaris. Halaman
-   tutorial & materi memakai kelas detail artikel; materi tanpa gambar sehingga isinya langsung di bawah kepala halaman.
+   Kartu daftar memakai kartu artikel (jumlah materi di tempat tanggal, gayanya sama). Halaman tutorial & materi
+   memakai kelas detail artikel; materi tanpa gambar sehingga isinya langsung di bawah kepala halaman.
    Daftar materi bernomor bergaris pemisah seperti tautan kolom samping, di kolom utama halaman tutorial dan di kotak
    Daftar materi halaman materi; materi yang sedang dibuka ditandai seperti kategori aktif. Ukuran sama di kedua tema. */
-.jumlah-materi { @apply mt-auto pt-4 font-mono text-[13px] text-muted-foreground; }
 .seksi-daftar-materi { @apply mt-12 sm:mt-14; }
 .judul-daftar-materi { @apply text-[1.375rem]/snug font-semibold tracking-tight text-balance text-foreground sm:text-2xl/snug; }
 .daftar-materi { @apply mt-5 border-t; }

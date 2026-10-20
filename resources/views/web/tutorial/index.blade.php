@@ -4,7 +4,7 @@
 @use('App\Support\Seo')
 
 @php
-    $deskripsiHalaman = 'Seri materi berurutan yang mencontohkan isi program pelatihan IT, sertifikasi IT, dan bootcamp kami.';
+    $deskripsiHalaman = 'Panduan praktis seputar pemrograman dan teknologi, disusun berurutan agar mudah diikuti dari awal.';
     $halamanKe = $tutorial->currentPage();
 @endphp
 
@@ -25,18 +25,7 @@
     <div class="isi-halaman">
         <div class="wadah tata-samping">
             <div>
-                @if ($tutorial->isEmpty())
-                    <p class="kosong-halaman">Belum ada tutorial. Silakan kunjungi lagi nanti.</p>
-                @else
-                    {{-- Grid daftar portofolio: dua kartu per baris mulai 768px, tanpa filter kategori. --}}
-                    <ul class="grid-portofolio">
-                        @foreach ($tutorial as $item)
-                            <li><x-web.kartu-tutorial :tutorial="$item" /></li>
-                        @endforeach
-                    </ul>
-
-                    <x-web.paginasi :paginator="$tutorial" />
-                @endif
+                @include('web.tutorial.daftar')
             </div>
 
             @include('web.tutorial.samping')

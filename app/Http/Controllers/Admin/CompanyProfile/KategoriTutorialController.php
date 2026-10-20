@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CompanyProfile\StoreKategoriTutorialRequest;
 use App\Http\Requests\Admin\CompanyProfile\UpdateKategoriTutorialRequest;
 use App\Models\CompanyProfile\KategoriTutorial;
+use App\Services\CompanyProfile\KategoriTutorialService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,7 +19,8 @@ class KategoriTutorialController extends Controller
 
         $kategoriTutorial = KategoriTutorial::query()
             ->when($q !== '', fn ($query) => $query->where('nama_kategori', 'like', "%{$q}%"))
-            ->withCount('tutorial')
+            // tutorial_tayang_count menentukan tombol Buka halaman di modal Lihat.
+            ->withCount(['tutorial', 'tutorialTayang'])
             // Data master diurutkan abjad.
             ->orderBy('nama_kategori')
             ->paginate(25)
@@ -32,9 +34,9 @@ class KategoriTutorialController extends Controller
         return view('admin.company-profile.kategori-tutorial.create', ['kategoriTutorial' => new KategoriTutorial]);
     }
 
-    public function store(StoreKategoriTutorialRequest $request): RedirectResponse
+    public function store(StoreKategoriTutorialRequest $request, KategoriTutorialService $kategoriTutorialService): RedirectResponse
     {
-        KategoriTutorial::create($request->validated());
+        $kategoriTutorialService->simpan($request->validated());
 
         return redirect()->route('admin.kategori-tutorial.index')->with('success', 'Kategori tutorial berhasil ditambahkan.');
     }
@@ -44,9 +46,9 @@ class KategoriTutorialController extends Controller
         return view('admin.company-profile.kategori-tutorial.edit', compact('kategoriTutorial'));
     }
 
-    public function update(UpdateKategoriTutorialRequest $request, KategoriTutorial $kategoriTutorial): RedirectResponse
+    public function update(UpdateKategoriTutorialRequest $request, KategoriTutorial $kategoriTutorial, KategoriTutorialService $kategoriTutorialService): RedirectResponse
     {
-        $kategoriTutorial->update($request->validated());
+        $kategoriTutorialService->perbarui($kategoriTutorial, $request->validated());
 
         return redirect()->route('admin.kategori-tutorial.index')->with('success', 'Kategori tutorial berhasil diperbarui.');
     }

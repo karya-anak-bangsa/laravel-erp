@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CompanyProfile\KategoriTutorial;
+use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
 use Database\Seeders\KategoriTutorialSeeder;
@@ -78,18 +79,64 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
         ->assertSee('Kategori tutorial tidak ditemukan');
 });
 
-it('menambah kategori tutorial', function () {
+it('menambah kategori tutorial beserta slug halaman kategorinya', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-tutorial.create'))
         ->assertOk()
-        ->assertSee('name="nama_kategori"', false);
+        ->assertSee('name="nama_kategori"', false)
+        ->assertSee('Alamat halaman kategori (slug) dibuat otomatis dari nama dan tidak berubah lagi setelah kategori dipakai tutorial yang tayang.');
 
     $this->actingAs($this->admin)
-        ->post(route('admin.kategori-tutorial.store'), ['nama_kategori' => 'Desain UI'])
+        ->post(route('admin.kategori-tutorial.store'), ['nama_kategori' => 'Desain UI & UX'])
         ->assertRedirect(route('admin.kategori-tutorial.index'))
         ->assertSessionHas('success');
 
-    expect(KategoriTutorial::sole()->nama_kategori)->toBe('Desain UI');
+    expect(KategoriTutorial::sole())
+        ->nama_kategori->toBe('Desain UI & UX')
+        ->slug->toBe('desain-ui-ux');
+});
+
+it('mengubah slug mengikuti nama hanya selama kategori belum punya tutorial tayang', function () {
+    $kategori = KategoriTutorial::factory()->create(['nama_kategori' => 'Web', 'slug' => 'web']);
+    Tutorial::factory()->draf()->for($kategori)->has(MateriTutorial::factory(), 'materiTutorial')->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-tutorial.edit', $kategori))
+        ->assertSee('Alamat halaman kategori: /tutorial/kategori/web — ikut berubah bila nama diubah selama belum ada tutorial tayang di kategori ini.');
+    $this->actingAs($this->admin)
+        ->put(route('admin.kategori-tutorial.update', $kategori), ['nama_kategori' => 'Pemrograman Web'])
+        ->assertSessionHasNoErrors();
+
+    expect($kategori->refresh()->slug)->toBe('pemrograman-web');
+
+    // Halaman kategori sudah tayang: slug dikunci agar tautannya tidak rusak.
+    Tutorial::factory()->terbit()->for($kategori)->has(MateriTutorial::factory(), 'materiTutorial')->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-tutorial.edit', $kategori))
+        ->assertSee('Alamat halaman kategori: /tutorial/kategori/pemrograman-web — tetap meskipun nama diubah, agar tautan yang sudah tersebar tidak rusak.');
+    $this->actingAs($this->admin)
+        ->put(route('admin.kategori-tutorial.update', $kategori), ['nama_kategori' => 'Pemrograman Web Modern'])
+        ->assertSessionHasNoErrors();
+
+    expect($kategori->refresh())
+        ->nama_kategori->toBe('Pemrograman Web Modern')
+        ->slug->toBe('pemrograman-web');
+});
+
+it('menampilkan alamat halaman kategori di modal detail', function () {
+    $tayang = KategoriTutorial::factory()->create(['nama_kategori' => 'Kategori Tayang', 'slug' => 'kategori-tayang']);
+    Tutorial::factory()->terbit()->for($tayang)->has(MateriTutorial::factory(), 'materiTutorial')->create();
+    // Tutorial terbit tanpa materi belum tayang.
+    $belumTayang = KategoriTutorial::factory()->create(['nama_kategori' => 'Kategori Belum', 'slug' => 'kategori-belum']);
+    Tutorial::factory()->terbit()->for($belumTayang)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.kategori-tutorial.index'))
+        ->assertSeeInOrder([
+            'Kategori Belum', '<td>/tutorial/kategori/kategori-belum</td>', 'Belum tayang (belum ada tutorial tayang)',
+            'Kategori Tayang', '<td>/tutorial/kategori/kategori-tayang</td>', 'href="'.route('kategori-tutorial.show', 'kategori-tayang').'"',
+        ], false);
 });
 
 it('memperbarui kategori tutorial dengan nama sendiri maupun nama baru', function () {
@@ -121,14 +168,16 @@ it('menolak nama yang sudah dipakai kategori lain saat mengubah', function () {
         ->assertSessionHasErrors(['nama_kategori' => 'Nama kategori sudah dipakai kategori lain.']);
 });
 
-it('boleh memakai ulang nama kategori yang sudah dihapus', function () {
+it('boleh memakai ulang nama kategori yang sudah dihapus dengan slug baru', function () {
     KategoriTutorial::factory()->create(['nama_kategori' => 'Basis Data'])->delete();
 
     $this->actingAs($this->admin)
         ->post(route('admin.kategori-tutorial.store'), ['nama_kategori' => 'Basis Data'])
         ->assertSessionHasNoErrors();
 
-    expect(KategoriTutorial::sole()->nama_kategori)->toBe('Basis Data');
+    expect(KategoriTutorial::sole())
+        ->nama_kategori->toBe('Basis Data')
+        ->slug->toBe('basis-data-2');
 });
 
 it('memvalidasi nama kategori', function (mixed $nama, string $pesan) {
@@ -192,11 +241,11 @@ it('boleh menghapus kategori yang tutorialnya sudah dihapus semua', function () 
     $this->assertSoftDeleted($kategori);
 });
 
-it('membuat tiga kategori awal dari seeder tanpa menimpa isian admin', function () {
+it('membuat tiga kategori awal beserta slug dari seeder tanpa menimpa isian admin', function () {
     $this->seed(KategoriTutorialSeeder::class);
 
-    expect(KategoriTutorial::orderBy('id_kategori_tutorial')->pluck('nama_kategori')->all())
-        ->toBe(['Pemrograman Web', 'Pemrograman Mobile', 'Basis Data']);
+    expect(KategoriTutorial::orderBy('id_kategori_tutorial')->pluck('slug', 'nama_kategori')->all())
+        ->toBe(['Pemrograman Web' => 'pemrograman-web', 'Pemrograman Mobile' => 'pemrograman-mobile', 'Basis Data' => 'basis-data']);
 
     KategoriTutorial::query()->where('nama_kategori', 'Basis Data')->update(['nama_kategori' => 'Basis Data Relasional']);
 

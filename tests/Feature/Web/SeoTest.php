@@ -6,6 +6,7 @@ use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Tutorial;
@@ -308,7 +309,10 @@ describe('data terstruktur', function () {
         $tutorial = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial & Uji', 'slug' => 'tutorial-uji']);
         MateriTutorial::factory()->for($tutorial)->create(['judul' => 'Materi Pertama', 'slug' => 'materi-pertama']);
 
+        $tutorial->kategoriTutorial->update(['nama_kategori' => 'Web & API', 'slug' => 'web-api']);
+
         [$daftar] = jsonLdHalaman($this->get('/tutorial')->getContent());
+        [$kategori] = jsonLdHalaman($this->get('/tutorial/kategori/web-api')->getContent());
         [$halamanTutorial] = jsonLdHalaman($this->get('/tutorial/tutorial-uji')->getContent());
         [$materi] = jsonLdHalaman($this->get('/tutorial/tutorial-uji/materi-pertama')->getContent());
 
@@ -316,6 +320,7 @@ describe('data terstruktur', function () {
         $induk = ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tutorial', 'item' => $this->akar.'/tutorial'];
 
         expect($daftar['@graph'][0]['itemListElement'])->toBe([$beranda, ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tutorial']])
+            ->and($kategori['@graph'][0]['itemListElement'])->toBe([$beranda, $induk, ['@type' => 'ListItem', 'position' => 3, 'name' => 'Web & API']])
             ->and($halamanTutorial['@graph'])->toHaveCount(1)
             ->and($halamanTutorial['@graph'][0]['itemListElement'])->toBe([$beranda, $induk, ['@type' => 'ListItem', 'position' => 3, 'name' => 'Tutorial & Uji']])
             ->and($materi['@graph'][0]['itemListElement'])->toBe([
@@ -349,10 +354,14 @@ describe('sitemap.xml', function () {
         Portofolio::factory()->create(['slug' => 'portofolio-lama', 'created_at' => '2026-09-10 08:00:00', 'updated_at' => '2026-09-20 08:00:00']);
         Portofolio::factory()->create(['slug' => 'portofolio-baru', 'created_at' => '2026-10-02 08:00:00', 'updated_at' => '2026-10-03 08:00:00']);
         Portofolio::factory()->create(['slug' => 'portofolio-terhapus'])->delete();
-        $tutorial = Tutorial::factory()->terbit()->create(['slug' => 'tutorial-uji', 'updated_at' => '2026-09-15 08:00:00']);
+        $web = KategoriTutorial::factory()->create(['nama_kategori' => 'Pemrograman Web', 'slug' => 'pemrograman-web', 'updated_at' => '2026-09-01 07:00:00']);
+        $basisData = KategoriTutorial::factory()->create(['nama_kategori' => 'Basis Data', 'slug' => 'basis-data', 'updated_at' => '2026-10-07 07:00:00']);
+        $tutorial = Tutorial::factory()->terbit()->for($web)->create(['slug' => 'tutorial-uji', 'created_at' => '2026-09-14 08:00:00', 'updated_at' => '2026-09-15 08:00:00']);
         MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-kedua', 'urutan_ke' => 2, 'updated_at' => '2026-09-16 08:00:00']);
         MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-pertama', 'urutan_ke' => 1, 'updated_at' => '2026-10-04 09:00:00']);
         MateriTutorial::factory()->for($tutorial)->create(['slug' => 'materi-terhapus', 'updated_at' => '2026-10-06 09:00:00'])->delete();
+        $tutorialData = Tutorial::factory()->terbit()->for($basisData)->create(['slug' => 'tutorial-data', 'created_at' => '2026-09-01 08:00:00', 'updated_at' => '2026-09-02 08:00:00']);
+        MateriTutorial::factory()->for($tutorialData)->create(['slug' => 'materi-data', 'updated_at' => '2026-09-03 08:00:00']);
         Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'tutorial-draf']);
         Tutorial::factory()->terbit()->create(['slug' => 'tutorial-kosong']);
 
@@ -384,9 +393,15 @@ describe('sitemap.xml', function () {
             // Hanya tutorial terbit yang punya materi. Halaman tutorial dan daftarnya ikut berubah bila materinya diubah;
             // materi urut sesuai tampilannya.
             $this->akar.'/tutorial' => '2026-10-04T09:00:00+07:00',
+            // Kategori urut abjad, hanya yang punya tutorial tayang; lastmod = perubahan terakhir kategorinya (nama) atau
+            // tutorialnya, termasuk materinya.
+            $this->akar.'/tutorial/kategori/basis-data' => '2026-10-07T07:00:00+07:00',
+            $this->akar.'/tutorial/kategori/pemrograman-web' => '2026-10-04T09:00:00+07:00',
             $this->akar.'/tutorial/tutorial-uji' => '2026-10-04T09:00:00+07:00',
             $this->akar.'/tutorial/tutorial-uji/materi-pertama' => '2026-10-04T09:00:00+07:00',
             $this->akar.'/tutorial/tutorial-uji/materi-kedua' => '2026-09-16T08:00:00+07:00',
+            $this->akar.'/tutorial/tutorial-data' => '2026-09-03T08:00:00+07:00',
+            $this->akar.'/tutorial/tutorial-data/materi-data' => '2026-09-03T08:00:00+07:00',
         ]);
     });
 

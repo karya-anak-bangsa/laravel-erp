@@ -116,7 +116,7 @@ body { background: var(--background); color: var(--teks); }
 .kartu-artikel-isi { display: contents; }
 .kartu-artikel-judul { grid-area: judul; }
 .kartu-artikel-ringkasan { grid-area: ringkasan; }
-.kartu-artikel .tanggal-artikel { grid-area: tanggal; margin-top: .25rem; }
+.kartu-artikel :is(.tanggal-artikel, .jumlah-materi) { grid-area: tanggal; margin-top: .25rem; }
 .kartu-artikel-gambar { grid-area: gambar; }
 .kartu-artikel + .kartu-artikel { border-top-width: 1px; }
 @media (max-width: 639.98px) {

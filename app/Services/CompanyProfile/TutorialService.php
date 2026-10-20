@@ -65,10 +65,11 @@ class TutorialService
 
     /**
      * Slug dari judul, diberi akhiran angka bila sudah dipakai tutorial lain —
-     * termasuk yang terhapus, agar tidak bentrok saat kelak dipulihkan.
+     * termasuk yang terhapus, agar tidak bentrok saat kelak dipulihkan. Slug "kategori" dicadangkan: alamat materi
+     * /tutorial/kategori/{materi} akan tertutup halaman kategori /tutorial/kategori/{slug}.
      */
     public function buatSlug(string $judul, ?Tutorial $kecuali = null): string
     {
-        return $this->slug->buat($judul, Tutorial::withTrashed(), $kecuali, 'tutorial');
+        return $this->slug->buat($judul, Tutorial::withTrashed(), $kecuali, 'tutorial', terlarang: ['kategori']);
     }
 }

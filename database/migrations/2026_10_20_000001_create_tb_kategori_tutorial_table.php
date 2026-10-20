@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('tb_kategori_tutorial', function (Blueprint $table) {
             $table->id('id_kategori_tutorial');
             $table->string('nama_kategori', 100);
+            // Dibuat sistem, jadi UNIQUE di database termasuk baris terhapus (sama seperti slug kategori artikel).
+            $table->string('slug', 220)->unique();
             $table->timestamps();
             $table->softDeletes();
         });

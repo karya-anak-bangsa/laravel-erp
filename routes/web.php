@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KategoriArtikelController;
+use App\Http\Controllers\Web\CompanyProfile\KategoriTutorialController;
 use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Web\CompanyProfile\MateriTutorialController;
 use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
@@ -23,6 +24,8 @@ Route::get('portofolio', [PortofolioController::class, 'index'])->name('portofol
 Route::get('portofolio/{portofolio:slug}', [PortofolioController::class, 'show'])->name('portofolio.show');
 
 Route::get('tutorial', [TutorialController::class, 'index'])->name('tutorial.index');
+// Sebelum rute materi yang sama-sama dua segmen; slug tutorial "kategori" dicadangkan TutorialService.
+Route::get('tutorial/kategori/{kategoriTutorial:slug}', [KategoriTutorialController::class, 'show'])->name('kategori-tutorial.show');
 Route::get('tutorial/{tutorial:slug}', [TutorialController::class, 'show'])->name('tutorial.show');
 // Slug materi unik per tutorial, jadi materi hanya dicari di antara materi tutorial di alamat itu.
 Route::get('tutorial/{tutorial:slug}/{materiTutorial:slug}', [MateriTutorialController::class, 'show'])
