@@ -415,8 +415,8 @@ a.btn:hover {
 }
 
 // Layar penuh: editor menutup seluruh area tampil, di atas topbar & sidebar (z-index 90–110) tetapi di bawah dialog
-// SweetAlert (1060) agar dialog tautan tetap tampil. Kolom teks 800px di tengah agar baris nyaman dibaca; tombol
-// toolbar berjarak 8px dari tepi teks seperti di mode biasa.
+// SweetAlert (1060) agar dialog tautan tetap tampil. Isi ditulis di atas kertas selebar halaman dokumen (816px) di
+// ruang kerja abu muda (pilihan pemilik); tombol toolbar sejajar dengan tepi kertas.
 .editor.editor-siap.editor-penuh {
     position: fixed;
     inset: 0;
@@ -432,20 +432,61 @@ a.btn:hover {
         padding-inline: max(8px, calc((100% - 816px) / 2));
     }
 
+    // Ruang kerja yang bergulir; kertas memanjang mengikuti isi dan minimal setinggi ruang kerja.
     .editor-wadah {
         flex: 1;
         min-height: 0;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
+        padding: 24px 16px;
+        background: var(--body-bg);
     }
 
-    // !important mengalahkan tinggi hasil tarik (style inline) dan tinggi pas layar.
+    // Teks 15px agar nyaman dibaca seperti dokumen. !important mengalahkan tinggi hasil tarik (style inline) dan
+    // tinggi pas layar.
     .editor-konten {
-        flex: 1;
+        flex: 1 0 auto;
+        align-self: center;
+        width: 100%;
+        max-width: 816px;
         height: auto !important;
         min-height: 0 !important;
+        overflow: visible;
         resize: none;
-        padding: 24px max(12px, calc((100% - 800px) / 2));
+        padding: 64px 72px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        box-shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 4px 16px rgb(16 24 40 / 0.06);
+        font-size: 15px;
+        line-height: 24px;
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+
+        // Perbandingan kode : teks sama dengan mode biasa (12 : 13px, jarak baris blok kode 18 : 20px).
+        code {
+            font-size: 14px;
+        }
+
+        pre {
+            line-height: 22px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .editor-wadah {
+            padding: 12px 8px;
+        }
+
+        .editor-konten {
+            padding: 24px 16px;
+        }
     }
 }
 
