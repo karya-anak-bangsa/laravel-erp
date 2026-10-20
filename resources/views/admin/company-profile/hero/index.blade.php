@@ -50,7 +50,7 @@
                                     @if ($item->status_aktif)
                                         <span class="chip chip-green">Aktif</span>
                                     @else
-                                        <span class="chip">Nonaktif</span>
+                                        <span class="chip chip-red">Nonaktif</span>
                                     @endif
                                 </td>
                                 <td class="kolom-aksi">
@@ -88,7 +88,7 @@
                                                                     @if ($item->status_aktif)
                                                                         <span class="chip chip-green">Aktif</span>
                                                                     @else
-                                                                        <span class="chip">Nonaktif</span>
+                                                                        <span class="chip chip-red">Nonaktif</span>
                                                                     @endif
                                                                 </td>
                                                             </tr>
