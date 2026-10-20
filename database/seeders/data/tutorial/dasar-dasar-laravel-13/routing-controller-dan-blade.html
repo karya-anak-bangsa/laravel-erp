@@ -66,6 +66,7 @@ Route::get('/buku', [BukuController::class, 'index'])-&gt;name('buku.index');</c
     &lt;/ul&gt;
 @endsection</code></pre>
 <p><code>@extends</code> memakai tata letak tadi, sedangkan <code>@section</code> mengisi bagian yang ditandai <code>@yield</code>. Direktif <code>@foreach</code> mengulang isi di dalamnya untuk setiap judul. Buka <code>http://perpustakaan.test/buku</code> dan ketiga judul buku akan tampil sebagai daftar.</p>
+<p>Di balik layar, Blade mengubah setiap templat menjadi kode PHP biasa dan menyimpan hasilnya di folder <code>storage/framework/views</code>. Laravel baru mengulang proses itu bila berkas templat berubah, jadi direktif seperti <code>@foreach</code> tidak memperlambat halaman.</p>
 <h2>Kegunaan Kurung Kurawal Ganda</h2>
 <p>Tanda <code>{{ }}</code> menampilkan isi variabel sekaligus mengubah karakter khusus HTML, seperti <code>&lt;</code> dan <code>&gt;</code>, menjadi entitas. Dengan begitu, teks berbahaya dari pengguna tampil sebagai teks biasa dan tidak dijalankan sebagai skrip. Perlindungan ini mencegah serangan <em>Cross-Site Scripting</em> (XSS).</p>
 <p>Blade juga mengenal <code>{!! !!}</code> yang menampilkan HTML apa adanya. Pakai bentuk ini hanya untuk konten yang sudah pasti aman, misalnya HTML yang sudah disaring di server.</p>

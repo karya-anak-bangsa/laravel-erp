@@ -40,7 +40,7 @@
                             <th class="kolom-pas">Gambar</th>
                             <th class="kolom-lebar">Judul</th>
                             <th class="kolom-pas">Kategori</th>
-                            <th class="kolom-pas">Jumlah Materi</th>
+                            <th class="kolom-jumlah">Jumlah Materi</th>
                             <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
@@ -54,7 +54,7 @@
                                     <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::polos($item->deskripsi), 400) }}</div>
                                 </td>
                                 <td class="kolom-pas">{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
-                                <td class="kolom-pas">{{ $item->materi_tutorial_count }}</td>
+                                <td class="kolom-jumlah">{{ $item->materi_tutorial_count }}</td>
                                 <td class="kolom-status">
                                     <span class="chip {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
                                 </td>
