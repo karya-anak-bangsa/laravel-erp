@@ -179,6 +179,31 @@ const pasangSatu = (wadah) => {
         el.addEventListener('click', () => perintah[el.dataset.perintah]?.(editor));
     });
 
+    // Layar penuh (isi artikel & materi): keluar lewat tombol yang sama atau Esc. Esc di dialog tautan
+    // tidak sampai ke sini karena dialognya di luar wadah editor.
+    const tombolPenuh = toolbar.querySelector('[data-layar-penuh]');
+    if (tombolPenuh) {
+        const ikon = tombolPenuh.querySelector('.icon');
+        const aturPenuh = (penuh) => {
+            const label = penuh ? 'Keluar dari layar penuh' : 'Layar penuh';
+            wadah.classList.toggle('editor-penuh', penuh);
+            tombolPenuh.classList.toggle('aktif', penuh);
+            tombolPenuh.title = label;
+            tombolPenuh.setAttribute('aria-label', label);
+            ikon.classList.toggle('fa-expand', !penuh);
+            ikon.classList.toggle('fa-compress', penuh);
+            editor.commands.focus();
+        };
+
+        tombolPenuh.addEventListener('mousedown', (event) => event.preventDefault());
+        tombolPenuh.addEventListener('click', () => aturPenuh(!wadah.classList.contains('editor-penuh')));
+        wadah.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && wadah.classList.contains('editor-penuh')) {
+                aturPenuh(false);
+            }
+        });
+    }
+
     // Label form memfokuskan editor, bukan textarea yang disembunyikan.
     document.querySelector(`label[for="${sumber.id}"]`)?.addEventListener('click', (event) => {
         event.preventDefault();

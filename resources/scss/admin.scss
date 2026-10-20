@@ -402,12 +402,55 @@ a.btn:hover {
     overflow-wrap: anywhere;
 }
 
-// Isi artikel & materi (prop setinggiLayar): saat halaman digulir sampai toolbar tepat di bawah topbar, editor
-// beserta baris petunjuknya memenuhi layar (150px = topbar 56px, jarak atas-bawah, toolbar, dan petunjuk).
-// Minimal 15 baris (316px) agar tetap lega di layar pendek.
-.editor-layar .editor-konten {
-    height: max(316px, calc(100dvh - 150px));
-    min-height: max(316px, calc(100dvh - 150px));
+// Isi artikel & materi (prop layarPenuh): editor mengisi sisa layar agar form beserta tombol Simpan muat tanpa
+// gulir (520px = bagian form artikel/materi di atas & di bawah editor), minimal 15 baris (316px). Ruang tulis
+// yang lebih besar lewat tombol Layar penuh (pilihan pemilik).
+.editor-pas-layar .editor-konten {
+    height: max(316px, calc(100dvh - 520px));
+    min-height: max(316px, calc(100dvh - 520px));
+}
+
+.editor-tombol-penuh {
+    margin-left: auto;
+}
+
+// Layar penuh: editor menutup seluruh area tampil, di atas topbar & sidebar (z-index 90–110) tetapi di bawah dialog
+// SweetAlert (1060) agar dialog tautan tetap tampil. Kolom teks 800px di tengah agar baris nyaman dibaca; tombol
+// toolbar berjarak 8px dari tepi teks seperti di mode biasa.
+.editor.editor-siap.editor-penuh {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    .editor-toolbar {
+        border-radius: 0;
+        padding-inline: max(8px, calc((100% - 816px) / 2));
+    }
+
+    .editor-wadah {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    // !important mengalahkan tinggi hasil tarik (style inline) dan tinggi pas layar.
+    .editor-konten {
+        flex: 1;
+        height: auto !important;
+        min-height: 0 !important;
+        resize: none;
+        padding: 24px max(12px, calc((100% - 800px) / 2));
+    }
+}
+
+html:has(.editor-penuh) {
+    overflow: hidden;
 }
 
 // Editor yang menjadi isian terakhir kartu memanjang mengisi sisa tinggi kartu, agar sejajar dengan kartu di
