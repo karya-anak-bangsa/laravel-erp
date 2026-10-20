@@ -163,7 +163,7 @@ Referensi bila server dibangun ulang.
    ln -s ../storage/app/public public/storage            # pengganti storage:link
    php artisan db:seed --class=CompanyProfileSeeder --force
    ```
-   `CompanyProfileSeeder` wajib (tanpa itu menu Identitas menampilkan 404) dan aman dijalankan ulang: tabel yang sudah berisi dilewati, isian admin tidak ditimpa. Jangan memakai `php artisan db:seed` tanpa `--class`, karena `PenggunaSeeder` di dalamnya gagal setelah `ADMIN_PASSWORD` dikosongkan.
+   `CompanyProfileSeeder` wajib (tanpa itu menu Identitas Website menampilkan 404) dan aman dijalankan ulang: tabel yang sudah berisi dilewati, isian admin tidak ditimpa. Jangan memakai `php artisan db:seed` tanpa `--class`, karena `PenggunaSeeder` di dalamnya gagal setelah `ADMIN_PASSWORD` dikosongkan.
 6. Unggah `public/build` (langkah 3 Deploy Rutin), lalu `php artisan optimize`.
 7. Cek dari laptop: `curl -I https://www.karyaanakbangsa.co.id` harus `301` ke alamat tanpa www, dan https://karyaanakbangsa.co.id/robots.txt harus berisi `Disallow: /admin`. Bila robots.txt masih versi lama, kosongkan cache CDN lewat hPanel (pengaturan CDN situs).
 
