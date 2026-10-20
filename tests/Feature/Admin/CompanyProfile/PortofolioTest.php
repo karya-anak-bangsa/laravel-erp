@@ -60,7 +60,7 @@ it('menyusun halaman daftar sesuai standar admin', function () {
         ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
         ->assertSeeInOrder([
             'class="card kartu-filter"',
-            '<div class="card-title">Portofolio</div>',
+            '<div class="card-title">Daftar Portofolio</div>',
             'href="'.route('admin.portofolio.create').'"',
             '<table class="table">',
         ], false);

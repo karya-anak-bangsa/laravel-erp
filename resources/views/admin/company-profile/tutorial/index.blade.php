@@ -1,4 +1,3 @@
-@use('App\Enums\CompanyProfile\JenisProgram')
 @use('App\Enums\CompanyProfile\StatusPublikasi')
 @use('App\Support\TeksHtml')
 
@@ -8,10 +7,10 @@
     <x-admin.page-header title="Company Profile" />
 
     <x-admin.filter-bar :action="route('admin.tutorial.index')">
-        <select name="jenis" class="form-control kolom-filter" aria-label="Filter jenis program">
-            <option value="">Semua jenis program</option>
-            @foreach (JenisProgram::opsi() as $nilai => $label)
-                <option value="{{ $nilai }}" @selected(request('jenis') === $nilai)>{{ $label }}</option>
+        <select name="kategori" class="form-control kolom-filter" aria-label="Filter kategori tutorial">
+            <option value="">Semua kategori</option>
+            @foreach ($opsiKategori as $id => $nama)
+                <option value="{{ $id }}" @selected(request('kategori') === (string) $id)>{{ $nama }}</option>
             @endforeach
         </select>
         <select name="status" class="form-control kolom-filter" aria-label="Filter status tutorial">
@@ -22,13 +21,13 @@
         </select>
     </x-admin.filter-bar>
 
-    <x-admin.card title="Tutorial" :flush="true">
+    <x-admin.card title="Daftar Tutorial" :flush="true">
         <x-slot:aksi>
             <x-admin.tombol-tambah :href="route('admin.tutorial.create')" />
         </x-slot>
 
         @if ($tutorial->isEmpty())
-            @if (request()->anyFilled(['q', 'jenis', 'status']))
+            @if (request()->anyFilled(['q', 'kategori', 'status']))
                 <x-admin.empty-state title="Tutorial tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
                 <x-admin.empty-state title="Belum ada tutorial" description="Tutorial berisi materi berurutan, mis. Tutorial Laravel 13 dengan 8 materi." />
@@ -40,7 +39,7 @@
                         <tr>
                             <th>Gambar</th>
                             <th class="kolom-lebar">Judul</th>
-                            <th>Jenis Program</th>
+                            <th>Kategori</th>
                             <th style="text-align:center">Jumlah Materi</th>
                             <th style="text-align:center">Status</th>
                             <th class="kolom-aksi">Aksi</th>
@@ -54,7 +53,7 @@
                                     <div class="cell-strong">{{ $item->judul }}</div>
                                     <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
                                 </td>
-                                <td style="white-space:nowrap">{{ $item->jenis_program->label() }}</td>
+                                <td style="white-space:nowrap">{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
                                 <td style="text-align:center">{{ $item->materi_tutorial_count }}</td>
                                 <td style="text-align:center">
                                     <span class="status {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
@@ -71,8 +70,8 @@
                                                                 <td class="cell-strong">{{ $item->judul }}</td>
                                                             </tr>
                                                             <tr>
-                                                                <th scope="row">Jenis program</th>
-                                                                <td>{{ $item->jenis_program->label() }}</td>
+                                                                <th scope="row">Kategori</th>
+                                                                <td>{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Status</th>

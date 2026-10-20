@@ -24,6 +24,7 @@ class CompanyProfileSeeder extends Seeder
             FaqSeeder::class,
             KategoriArtikelSeeder::class,
             ArtikelDummySeeder::class,
+            KategoriTutorialSeeder::class,
             TutorialDummySeeder::class,
             TemplateSeeder::class,
         ]);

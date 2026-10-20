@@ -1,4 +1,3 @@
-@use('App\Enums\CompanyProfile\JenisProgram')
 @use('App\Enums\CompanyProfile\StatusPublikasi')
 @use('App\Http\Requests\Admin\CompanyProfile\StoreTutorialRequest')
 
@@ -26,9 +25,9 @@
         <x-admin.form-file name="gambar" label="Gambar Sampul" accept=".jpg,.jpeg,.png,.webp" :required="! $tutorial->exists"
             :hint="($tutorial->exists ? 'Kosongkan bila tidak ingin mengganti. ' : '').'JPG, PNG, atau WEBP, maks. 2 MB. Disarankan rasio ±2:1, mis. 1200×630 px (ukuran pratinjau media sosial). Dipakai juga semua materinya.'" />
 
-        <x-admin.form-select name="jenis_program" label="Jenis Program" :options="JenisProgram::opsi()"
-            :value="$tutorial->jenis_program" :required="true"
-            hint="Program perusahaan yang dicontohkan tutorial ini." />
+        <x-admin.form-select name="id_kategori_tutorial" label="Kategori" :options="$opsiKategori"
+            :value="$tutorial->id_kategori_tutorial" :required="true"
+            :hint="$opsiKategori === [] ? 'Belum ada kategori. Tambahkan lebih dulu lewat menu Kategori Tutorial.' : null" />
 
         <x-admin.form-select name="status_publikasi" label="Status" :options="StatusPublikasi::opsi()"
             :value="$tutorial->status_publikasi" :required="true" :placeholder="false"

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin\CompanyProfile;
 
-use App\Enums\CompanyProfile\JenisProgram;
 use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Http\Requests\Concerns\MembersihkanHtml;
 use App\Rules\PanjangTeksHtml;
@@ -10,6 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\Exists;
 
 class StoreTutorialRequest extends FormRequest
 {
@@ -29,12 +29,12 @@ class StoreTutorialRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, ValidationRule|Enum|string>>
+     * @return array<string, array<int, ValidationRule|Enum|Exists|string>>
      */
     public function rules(): array
     {
         return [
-            'jenis_program' => ['required', Rule::enum(JenisProgram::class)],
+            'id_kategori_tutorial' => ['required', 'integer', Rule::exists('tb_kategori_tutorial', 'id_kategori_tutorial')->withoutTrashed()],
             'judul' => ['required', 'string', 'max:200'],
             'deskripsi' => ['required', 'string', new PanjangTeksHtml(self::PANJANG_DESKRIPSI_MAKS)],
             'gambar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -48,7 +48,7 @@ class StoreTutorialRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'jenis_program' => 'jenis program',
+            'id_kategori_tutorial' => 'kategori',
             'judul' => 'judul',
             'deskripsi' => 'deskripsi',
             'gambar' => 'gambar sampul',

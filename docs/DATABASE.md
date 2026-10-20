@@ -144,13 +144,25 @@ Slug ikut berubah saat nama diubah **hanya selama kategori belum punya artikel t
 
 Catatan implementasi: slug hanya ikut berubah saat judul diubah selama artikel masih **draf**; artikel yang sudah terbit slugnya dikunci (juga bila dikembalikan ke draf pada perubahan yang sama) agar tautan yang sudah dibagikan tidak rusak. Hanya artikel `terbit` yang tampil di frontend. Kategori yang masih dipakai artikel (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
 
+### tb_kategori_tutorial
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_kategori_tutorial | BIGINT UNSIGNED PK | |
+| nama_kategori | VARCHAR(100) | topik, mis. Pemrograman Web |
+| created_at, updated_at, deleted_at | | |
+
+Catatan implementasi:
+- Tanpa slug karena belum ada halaman kategori tutorial di frontend; nama tampil sebagai pita di kartu dan halaman tutorial.
+- Tiga kategori awal dari `KategoriTutorialSeeder`: Pemrograman Web, Pemrograman Mobile, Basis Data. Di admin diurutkan abjad seperti data master lain.
+- Kategori yang masih dipakai tutorial (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
+
 ### tb_tutorial
-Seri materi berurutan, mis. "Tutorial Laravel 13": contoh sederhana materi pelatihan IT, sertifikasi IT, dan bootcamp di website. Bukan modul Pelatihan/Sertifikasi/Bootcamp (bagian C), yang kelak berdiri sendiri tanpa mengubah tabel ini.
+Seri materi berurutan, mis. "Tutorial Laravel 13": materi sederhana untuk promosi (pemasaran) di website. Berbeda dari materi Pelatihan IT, Sertifikasi IT, dan Bootcamp yang lebih kompleks dan mengikuti standar SKKNI; modul-modul itu (bagian C) kelak berdiri sendiri tanpa mengubah tabel ini.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_tutorial | BIGINT UNSIGNED PK | |
-| jenis_program | VARCHAR(20) | enum `JenisProgram`: pelatihan_it, sertifikasi_it, bootcamp |
+| id_kategori_tutorial | BIGINT UNSIGNED FK → tb_kategori_tutorial | `restrictOnDelete` |
 | judul | VARCHAR(200) | |
 | slug | VARCHAR(220) UNIQUE | URL halaman tutorial, dibuat otomatis dari judul oleh `TutorialService` |
 | deskripsi | TEXT | pengantar seri (yang dipelajari, prasyarat), HTML tersanitasi dari editor WYSIWYG |

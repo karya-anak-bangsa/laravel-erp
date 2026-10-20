@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::create('tb_tutorial', function (Blueprint $table) {
             $table->id('id_tutorial');
-            $table->string('jenis_program', 20);
+            $table->foreignId('id_kategori_tutorial')
+                ->constrained('tb_kategori_tutorial', 'id_kategori_tutorial')
+                ->restrictOnDelete();
             $table->string('judul', 200);
             // Dibuat sistem, jadi UNIQUE di database termasuk baris terhapus (sama seperti slug artikel).
             $table->string('slug', 220)->unique();

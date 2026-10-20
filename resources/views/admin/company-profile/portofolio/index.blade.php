@@ -14,7 +14,7 @@
         </select>
     </x-admin.filter-bar>
 
-    <x-admin.card title="Portofolio" :flush="true">
+    <x-admin.card title="Daftar Portofolio" :flush="true">
         <x-slot:aksi>
             <x-admin.tombol-tambah :href="route('admin.portofolio.create')" />
         </x-slot>

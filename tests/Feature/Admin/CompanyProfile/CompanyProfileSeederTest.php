@@ -6,6 +6,7 @@ use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\KategoriPortofolio;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
@@ -34,6 +35,7 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
         ->and(Faq::count())->toBe(5)
         ->and(KategoriArtikel::count())->toBe(10)
         ->and(Artikel::count())->toBe(32)
+        ->and(KategoriTutorial::count())->toBe(3)
         ->and(Tutorial::count())->toBe(1)
         ->and(MateriTutorial::count())->toBe(8)
         ->and(KontakKami::count())->toBe(0)

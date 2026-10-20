@@ -2,13 +2,13 @@
 
 namespace App\Models\CompanyProfile;
 
-use App\Enums\CompanyProfile\JenisProgram;
 use App\Enums\CompanyProfile\StatusPublikasi;
 use Database\Factories\CompanyProfile\TutorialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
@@ -27,12 +27,11 @@ class Tutorial extends Model
 
     protected $primaryKey = 'id_tutorial';
 
-    protected $fillable = ['jenis_program', 'judul', 'slug', 'deskripsi', 'gambar', 'status_publikasi'];
+    protected $fillable = ['id_kategori_tutorial', 'judul', 'slug', 'deskripsi', 'gambar', 'status_publikasi'];
 
     protected function casts(): array
     {
         return [
-            'jenis_program' => JenisProgram::class,
             'status_publikasi' => StatusPublikasi::class,
         ];
     }
@@ -66,6 +65,14 @@ class Tutorial extends Model
     protected function childRouteBindingRelationshipName($childType): string
     {
         return Str::camel($childType);
+    }
+
+    /**
+     * @return BelongsTo<KategoriTutorial, $this>
+     */
+    public function kategoriTutorial(): BelongsTo
+    {
+        return $this->belongsTo(KategoriTutorial::class, 'id_kategori_tutorial', 'id_kategori_tutorial');
     }
 
     /**

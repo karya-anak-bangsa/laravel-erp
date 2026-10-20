@@ -15,7 +15,13 @@ class TutorialController extends Controller
 
     public function index(): View
     {
-        $tutorial = Tutorial::query()->tayang()->withCount('materiTutorial')->terbaru()->paginate(self::PER_HALAMAN);
+        $tutorial = Tutorial::query()
+            ->tayang()
+            // Nama kategori untuk pita kartu.
+            ->with('kategoriTutorial:id_kategori_tutorial,nama_kategori')
+            ->withCount('materiTutorial')
+            ->terbaru()
+            ->paginate(self::PER_HALAMAN);
 
         // Nomor halaman di luar jangkauan (mis. ?page=99) bukan halaman kosong yang sah.
         abort_if($tutorial->isEmpty() && $tutorial->currentPage() > 1, 404);
@@ -36,6 +42,7 @@ class TutorialController extends Controller
         // Tutorial tanpa materi belum tayang, sama seperti draf.
         abort_if($daftarMateri->isEmpty(), 404);
 
+        $tutorial->load('kategoriTutorial');
         $layanan = Layanan::untukTautan();
 
         return view('web.tutorial.show', compact('tutorial', 'daftarMateri', 'layanan'));

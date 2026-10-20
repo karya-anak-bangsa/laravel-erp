@@ -21,7 +21,7 @@
         </select>
     </x-admin.filter-bar>
 
-    <x-admin.card title="Artikel" :flush="true">
+    <x-admin.card title="Daftar Artikel" :flush="true">
         <x-slot:aksi>
             <x-admin.tombol-tambah :href="route('admin.artikel.create')" />
         </x-slot>

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\CompanyProfile\JenisProgram;
 use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Tutorial;
 use App\Services\CompanyProfile\MateriTutorialService;
@@ -27,14 +27,17 @@ class TutorialDummySeeder extends Seeder
      */
     public function run(TutorialService $tutorialService, MateriTutorialService $materiTutorialService, HtmlSanitizerService $sanitizer): void
     {
-        foreach ($this->daftarTutorial() as [$jenis, $judul, $berkasSampul, $deskripsi, $daftarMateri]) {
+        // Kategori dicocokkan lewat nama dari KategoriTutorialSeeder, yang wajib dijalankan lebih dulu.
+        $idKategori = KategoriTutorial::query()->pluck('id_kategori_tutorial', 'nama_kategori');
+
+        foreach ($this->daftarTutorial() as [$kategori, $judul, $berkasSampul, $deskripsi, $daftarMateri]) {
             // Berdasarkan judul agar aman dijalankan ulang dan tidak menyalin gambar dua kali.
             if (Tutorial::withTrashed()->where('judul', $judul)->exists()) {
                 continue;
             }
 
             $tutorial = Tutorial::create([
-                'jenis_program' => $jenis,
+                'id_kategori_tutorial' => $idKategori[$kategori],
                 'judul' => $judul,
                 'slug' => $tutorialService->buatSlug($judul),
                 'deskripsi' => TeksHtml::dariTeksPolos($deskripsi),
@@ -77,14 +80,14 @@ class TutorialDummySeeder extends Seeder
     }
 
     /**
-     * @return list<array{JenisProgram, string, string, string, list<string>}> [jenis program, judul, berkas sampul,
-     *                                                                         deskripsi teks polos, judul materi urut]
+     * @return list<array{string, string, string, string, list<string>}> [kategori, judul, berkas sampul, deskripsi teks polos,
+     *                                                                   judul materi urut]
      */
     private function daftarTutorial(): array
     {
         return [
             [
-                JenisProgram::PelatihanIt,
+                'Pemrograman Web',
                 'Tutorial Laravel 13',
                 'artikel/laravel',
                 "Seri delapan materi ini mengajak Anda membangun aplikasi data buku sederhana dengan Laravel 13, mulai dari mengenal fitur barunya dan memasang proyek hingga menampilkan, menambah, mengubah, dan menghapus data di basis data MySQL.\n\n"

@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\CompanyProfile\JenisProgram;
 use App\Http\Controllers\Web\CompanyProfile\TutorialController;
 use App\Models\CompanyProfile\Identitas;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Tutorial;
@@ -37,7 +37,7 @@ describe('daftar tutorial', function () {
         $baru = tutorialTayang([
             'judul' => 'Tutorial Baru',
             'slug' => 'tutorial-baru',
-            'jenis_program' => JenisProgram::Bootcamp,
+            'id_kategori_tutorial' => KategoriTutorial::factory()->state(['nama_kategori' => 'Basis Data']),
             'deskripsi' => '<p>Belajar <strong>Laravel</strong> dari awal.</p>',
         ], ['Materi A', 'Materi B', 'Materi C']);
         // Materi terhapus tidak ikut dihitung.
@@ -51,10 +51,10 @@ describe('daftar tutorial', function () {
             ->assertSee('<title>Tutorial — PT Uji Tutorial</title>', false)
             ->assertSeeInOrder(['<h1', 'Belajar langkah demi langkah', '</h1>'], false)
             ->assertSeeInOrder(['Tutorial Baru', 'Tutorial Lama'])
-            // Kartu portofolio dipakai bersama: pita jenis program, judul h2 bertautan, ringkasan, lalu jumlah materi.
+            // Kartu portofolio dipakai bersama: pita kategori, judul h2 bertautan, ringkasan, lalu jumlah materi.
             ->assertSeeInOrder([
-                '<article class="kartu-portofolio corak-rose">',
-                '<span class="pita-kategori">Bootcamp</span>',
+                '<article class="kartu-portofolio corak-sky">',
+                '<span class="pita-kategori">Basis Data</span>',
                 '<h2 class="judul-portofolio"><a href="'.route('tutorial.show', 'tutorial-baru').'">Tutorial Baru</a></h2>',
                 '<p class="deskripsi-portofolio">Belajar Laravel dari awal.</p>',
                 '<p class="jumlah-materi">2 materi</p>',
@@ -96,10 +96,9 @@ describe('daftar tutorial', function () {
 
 describe('halaman tutorial', function () {
     it('menampilkan sampul, pengantar, materi bernomor sesuai urutan, dan tombol ke materi pertama', function () {
-        $tutorial = Tutorial::factory()->terbit()->create([
+        $tutorial = Tutorial::factory()->terbit()->kategori('Pemrograman Web')->create([
             'judul' => 'Tutorial Laravel Uji',
             'slug' => 'tutorial-laravel-uji',
-            'jenis_program' => JenisProgram::PelatihanIt,
             'deskripsi' => '<p>Seri uji untuk pemula.</p>',
         ]);
         // Urutan tampil: urutan_ke, lalu urutan dibuat untuk angka yang sama; nomornya dari posisi, bukan urutan_ke.
@@ -117,7 +116,7 @@ describe('halaman tutorial', function () {
                 '<nav class="remah-roti"', 'href="'.route('tutorial.index').'">Tutorial</a>', '</nav>',
                 'class="judul-seksi">Tutorial Laravel Uji</h1>',
                 '<div class="bingkai-artikel">',
-                '<span class="pita-kategori">Pelatihan IT</span>',
+                '<span class="pita-kategori">Pemrograman Web</span>',
                 '<img src="'.$tutorial->gambar_url.'"',
                 '<div class="isi-artikel konten-html"><p>Seri uji untuk pemula.</p></div>',
                 '<h2 id="judul-daftar-materi" class="judul-daftar-materi">Daftar materi</h2>',

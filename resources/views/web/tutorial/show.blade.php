@@ -15,8 +15,8 @@
 @endpush
 
 @section('konten')
-    {{-- Susunan sama dengan detail portofolio (kelas detail artikel dipakai bersama): sampul berbingkai dengan pita jenis
-         program, pengantar, lalu daftar materi dan tombol ke materi pertama. --}}
+    {{-- Susunan sama dengan detail portofolio (kelas detail artikel dipakai bersama): sampul berbingkai dengan pita
+         kategori, pengantar, lalu daftar materi dan tombol ke materi pertama. --}}
     <article aria-labelledby="judul-tutorial">
         <x-web.kepala-halaman class="kepala-halaman-artikel" id-judul="judul-tutorial" :judul="$tutorial->judul"
             :jejak="['Beranda' => route('beranda'), 'Tutorial' => route('tutorial.index')]" />
@@ -26,7 +26,7 @@
                 <div>
                     {{-- Di atas lipatan, jadi tidak lazy. --}}
                     <div class="bingkai-artikel">
-                        <span class="pita-kategori">{{ $tutorial->jenis_program->label() }}</span>
+                        <span class="pita-kategori">{{ $tutorial->kategoriTutorial->nama_kategori }}</span>
                         <img src="{{ $tutorial->gambar_url }}" width="800" height="600" fetchpriority="high" decoding="async" alt="{{ $tutorial->judul }}">
                     </div>
                     <div class="isi-artikel konten-html">{!! $tutorial->deskripsi !!}</div>

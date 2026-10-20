@@ -2,6 +2,7 @@
 
 use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Models\CompanyProfile\Artikel;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Tutorial;
 use App\Services\CompanyProfile\TutorialService;
@@ -16,7 +17,7 @@ beforeEach(function () {
 function dataTutorialUji(array $timpa = []): array
 {
     return [
-        'jenis_program' => 'bootcamp',
+        'id_kategori_tutorial' => KategoriTutorial::factory()->create()->id_kategori_tutorial,
         'judul' => 'Tutorial Uji',
         'deskripsi' => '<p>Pengantar.</p>',
         'gambar' => UploadedFile::fake()->image('sampul.webp'),

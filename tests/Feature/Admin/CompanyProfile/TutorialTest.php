@@ -1,12 +1,13 @@
 <?php
 
-use App\Enums\CompanyProfile\JenisProgram;
 use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\CompanyProfile\KategoriTutorial;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
 use App\Services\Shared\HtmlSanitizerService;
 use App\Support\TeksHtml;
+use Database\Seeders\KategoriTutorialSeeder;
 use Database\Seeders\TutorialDummySeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -14,12 +15,13 @@ use Illuminate\Support\Facades\Storage;
 beforeEach(function () {
     Storage::fake('public');
     $this->admin = Pengguna::factory()->create();
+    $this->kategori = KategoriTutorial::factory()->create(['nama_kategori' => 'Pemrograman Web']);
 });
 
 function dataTutorialValid(array $timpa = []): array
 {
     return [
-        'jenis_program' => 'pelatihan_it',
+        'id_kategori_tutorial' => KategoriTutorial::query()->value('id_kategori_tutorial'),
         'judul' => 'Tutorial Laravel 13',
         'deskripsi' => '<p>Membangun aplikasi data buku.</p>',
         'gambar' => UploadedFile::fake()->image('sampul.webp', 1200, 630),
@@ -39,17 +41,17 @@ it('mengarahkan tamu ke halaman login', function () {
     $this->delete(route('admin.tutorial.destroy', $tutorial))->assertRedirect(route('login'));
 });
 
-it('menampilkan tutorial terbaru lebih dulu beserta jenis program, jumlah materi, dan status', function () {
-    $lama = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial lama', 'jenis_program' => JenisProgram::Bootcamp]);
+it('menampilkan tutorial terbaru lebih dulu beserta kategori, jumlah materi, dan status', function () {
+    $lama = Tutorial::factory()->terbit()->kategori('Basis Data')->create(['judul' => 'Tutorial lama']);
     MateriTutorial::factory()->count(3)->for($lama)->create();
-    Tutorial::factory()->draf()->create(['judul' => 'Tutorial terbaru', 'jenis_program' => JenisProgram::SertifikasiIt]);
+    Tutorial::factory()->draf()->kategori('Pemrograman Mobile')->create(['judul' => 'Tutorial terbaru']);
 
     $this->actingAs($this->admin)
         ->get(route('admin.tutorial.index'))
         ->assertOk()
         ->assertSeeInOrder([
-            'Tutorial terbaru', 'Sertifikasi IT', '<td style="text-align:center">0</td>', 'status-yellow">Draf',
-            'Tutorial lama', 'Bootcamp', '<td style="text-align:center">3</td>', 'status-green">Terbit',
+            'Tutorial terbaru', 'Pemrograman Mobile', '<td style="text-align:center">0</td>', 'status-yellow">Draf',
+            'Tutorial lama', 'Basis Data', '<td style="text-align:center">3</td>', 'status-green">Terbit',
         ], false)
         ->assertSee('class="nav-sublink active" href="'.route('admin.tutorial.index').'"', false)
         ->assertSee('class="nav-tree open has-active"', false);
@@ -65,7 +67,7 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
         ->assertSee('<div class="card-subtitle">Pengantar seri</div>', false)
         ->assertSeeInOrder([
             'class="card kartu-filter"',
-            '<div class="card-title">Tutorial</div>',
+            '<div class="card-title">Daftar Tutorial</div>',
             'href="'.route('admin.tutorial.create').'"',
             'data-detail-title="Detail Tutorial"',
             'href="'.route('admin.materi-tutorial.index', ['tutorial' => $tutorial->id_tutorial]).'"',
@@ -103,17 +105,19 @@ it('mencari tutorial berdasarkan judul atau deskripsi', function () {
         ->assertDontSee('Tutorial Flutter');
 });
 
-it('menyaring tutorial berdasarkan jenis program dan status', function () {
-    Tutorial::factory()->terbit()->create(['judul' => 'Pelatihan terbit', 'jenis_program' => JenisProgram::PelatihanIt]);
-    Tutorial::factory()->draf()->create(['judul' => 'Pelatihan draf', 'jenis_program' => JenisProgram::PelatihanIt]);
-    Tutorial::factory()->terbit()->create(['judul' => 'Bootcamp terbit', 'jenis_program' => JenisProgram::Bootcamp]);
+it('menyaring tutorial berdasarkan kategori dan status, dengan pilihan kategori urut abjad', function () {
+    $basisData = KategoriTutorial::factory()->create(['nama_kategori' => 'Basis Data']);
+    Tutorial::factory()->terbit()->for($basisData)->create(['judul' => 'MySQL terbit']);
+    Tutorial::factory()->draf()->for($basisData)->create(['judul' => 'MySQL draf']);
+    Tutorial::factory()->terbit()->for($this->kategori)->create(['judul' => 'Laravel terbit']);
 
     $this->actingAs($this->admin)
-        ->get(route('admin.tutorial.index', ['jenis' => 'pelatihan_it', 'status' => 'terbit']))
-        ->assertSee('Pelatihan terbit')
-        ->assertDontSee('Pelatihan draf')
-        ->assertDontSee('Bootcamp terbit')
-        ->assertSee('<option value="pelatihan_it" selected>Pelatihan IT</option>', false);
+        ->get(route('admin.tutorial.index', ['kategori' => $basisData->id_kategori_tutorial, 'status' => 'terbit']))
+        ->assertSee('MySQL terbit')
+        ->assertDontSee('MySQL draf')
+        ->assertDontSee('Laravel terbit')
+        ->assertSee('<option value="'.$basisData->id_kategori_tutorial.'" selected>Basis Data</option>', false)
+        ->assertSeeInOrder(['Semua kategori', 'Basis Data', 'Pemrograman Web']);
 });
 
 it('membedakan empty state data kosong dan hasil pencarian kosong', function () {
@@ -129,16 +133,31 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
         ->assertSee('Tutorial tidak ditemukan');
 });
 
-it('mengisi form tambah dengan status draf dan editor deskripsi', function () {
+it('mengisi form tambah dengan status draf, pilihan kategori urut abjad, dan editor deskripsi', function () {
+    $basisData = KategoriTutorial::factory()->create(['nama_kategori' => 'Basis Data']);
+
     $this->actingAs($this->admin)
         ->get(route('admin.tutorial.create'))
         ->assertOk()
         ->assertSee('<option value="draf" selected>Draf</option>', false)
-        ->assertSeeInOrder(['Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'])
+        ->assertSee('<select id="id_kategori_tutorial" name="id_kategori_tutorial"', false)
+        ->assertSeeInOrder([
+            '<option value="'.$basisData->id_kategori_tutorial.'" >Basis Data</option>',
+            '<option value="'.$this->kategori->id_kategori_tutorial.'" >Pemrograman Web</option>',
+        ], false)
+        ->assertDontSee('Belum ada kategori.')
         ->assertSee('rows="5" data-editor-sumber', false)
         ->assertDontSee('data-judul-bagian', false)
         ->assertSee('/2.000 karakter', false)
         ->assertSee('dibuat otomatis dari judul dan tidak berubah lagi setelah tutorial terbit.');
+});
+
+it('mengarahkan ke menu Kategori Tutorial bila belum ada kategori', function () {
+    $this->kategori->forceDelete();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.tutorial.create'))
+        ->assertSee('Belum ada kategori. Tambahkan lebih dulu lewat menu Kategori Tutorial.');
 });
 
 it('menambah tutorial beserta slug dan sampulnya', function () {
@@ -153,7 +172,7 @@ it('menambah tutorial beserta slug dan sampulnya', function () {
     $tutorial = Tutorial::sole();
     expect($tutorial->judul)->toBe('Tutorial Laravel 13')
         ->and($tutorial->slug)->toBe('tutorial-laravel-13')
-        ->and($tutorial->jenis_program)->toBe(JenisProgram::PelatihanIt)
+        ->and($tutorial->id_kategori_tutorial)->toBe($this->kategori->id_kategori_tutorial)
         ->and($tutorial->status_publikasi)->toBe(StatusPublikasi::Draf)
         // Deskripsi tanpa sub-judul: h2 dilepas tagnya, skrip dibuang.
         ->and($tutorial->deskripsi)->toBe('<p>Isi</p>Sub')
@@ -162,14 +181,14 @@ it('menambah tutorial beserta slug dan sampulnya', function () {
 });
 
 it('menampilkan form ubah berisi data tersimpan dan kebijakan slugnya', function () {
-    $terbit = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial Terbit', 'jenis_program' => JenisProgram::Bootcamp]);
+    $terbit = Tutorial::factory()->terbit()->kategori('Basis Data')->create(['judul' => 'Tutorial Terbit']);
     $draf = Tutorial::factory()->draf()->create();
 
     $this->actingAs($this->admin)
         ->get(route('admin.tutorial.edit', $terbit))
         ->assertOk()
         ->assertSee('value="Tutorial Terbit"', false)
-        ->assertSee('<option value="bootcamp" selected>Bootcamp</option>', false)
+        ->assertSee('<option value="'.$terbit->id_kategori_tutorial.'" selected>Basis Data</option>', false)
         ->assertSee('<option value="terbit" selected>Terbit</option>', false)
         ->assertSee(Storage::disk('public')->url($terbit->gambar))
         ->assertSee('Alamat halaman tetap meskipun judul diubah');
@@ -180,46 +199,48 @@ it('menampilkan form ubah berisi data tersimpan dan kebijakan slugnya', function
 });
 
 it('memperbarui tutorial tanpa mengganti sampul', function () {
-    $tutorial = Tutorial::factory()->draf()->create();
+    $tutorial = Tutorial::factory()->draf()->for($this->kategori)->create();
     $gambarLama = $tutorial->gambar;
+    $basisData = KategoriTutorial::factory()->create(['nama_kategori' => 'Basis Data']);
 
     $this->actingAs($this->admin)
         ->put(route('admin.tutorial.update', $tutorial), dataTutorialValid([
-            'jenis_program' => 'sertifikasi_it', 'gambar' => null, 'status_publikasi' => 'terbit',
+            'id_kategori_tutorial' => $basisData->id_kategori_tutorial, 'gambar' => null, 'status_publikasi' => 'terbit',
         ]))
         ->assertRedirect(route('admin.tutorial.index'))
         ->assertSessionHasNoErrors();
 
-    expect($tutorial->refresh()->jenis_program)->toBe(JenisProgram::SertifikasiIt)
+    expect($tutorial->refresh()->id_kategori_tutorial)->toBe($basisData->id_kategori_tutorial)
         ->and($tutorial->status_publikasi)->toBe(StatusPublikasi::Terbit)
         ->and($tutorial->gambar)->toBe($gambarLama);
 });
 
-it('memvalidasi isian tutorial', function (array $data, string $kolom) {
+it('memvalidasi isian tutorial', function (Closure $data, string $kolom) {
     $this->actingAs($this->admin)
         ->from(route('admin.tutorial.create'))
-        ->post(route('admin.tutorial.store'), dataTutorialValid($data))
+        ->post(route('admin.tutorial.store'), dataTutorialValid($data()))
         ->assertRedirect(route('admin.tutorial.create'))
         ->assertSessionHasErrors($kolom);
 
     expect(Tutorial::count())->toBe(0);
 })->with([
-    'jenis program kosong' => [['jenis_program' => ''], 'jenis_program'],
-    'jenis program tidak dikenal' => [['jenis_program' => 'kursus'], 'jenis_program'],
-    'judul kosong' => [['judul' => ''], 'judul'],
-    'judul terlalu panjang' => [['judul' => str_repeat('a', 201)], 'judul'],
-    'deskripsi kosong' => [['deskripsi' => '<p></p>'], 'deskripsi'],
-    'deskripsi lebih dari 2.000 karakter terlihat' => [['deskripsi' => '<p>'.str_repeat('a', 2001).'</p>'], 'deskripsi'],
-    'sampul kosong saat tambah' => [['gambar' => null], 'gambar'],
-    'sampul bukan gambar' => [['gambar' => UploadedFile::fake()->create('sampul.pdf', 10, 'application/pdf')], 'gambar'],
-    'status tidak dikenal' => [['status_publikasi' => 'arsip'], 'status_publikasi'],
+    'kategori kosong' => [fn () => ['id_kategori_tutorial' => ''], 'id_kategori_tutorial'],
+    'kategori tidak ada' => [fn () => ['id_kategori_tutorial' => 999999], 'id_kategori_tutorial'],
+    'kategori sudah dihapus' => [fn () => ['id_kategori_tutorial' => tap(KategoriTutorial::factory()->create())->delete()->id_kategori_tutorial], 'id_kategori_tutorial'],
+    'judul kosong' => [fn () => ['judul' => ''], 'judul'],
+    'judul terlalu panjang' => [fn () => ['judul' => str_repeat('a', 201)], 'judul'],
+    'deskripsi kosong' => [fn () => ['deskripsi' => '<p></p>'], 'deskripsi'],
+    'deskripsi lebih dari 2.000 karakter terlihat' => [fn () => ['deskripsi' => '<p>'.str_repeat('a', 2001).'</p>'], 'deskripsi'],
+    'sampul kosong saat tambah' => [fn () => ['gambar' => null], 'gambar'],
+    'sampul bukan gambar' => [fn () => ['gambar' => UploadedFile::fake()->create('sampul.pdf', 10, 'application/pdf')], 'gambar'],
+    'status tidak dikenal' => [fn () => ['status_publikasi' => 'arsip'], 'status_publikasi'],
 ]);
 
 it('menampilkan pesan validasi berbahasa Indonesia', function () {
     $this->actingAs($this->admin)
-        ->post(route('admin.tutorial.store'), dataTutorialValid(['jenis_program' => '', 'gambar' => null]))
+        ->post(route('admin.tutorial.store'), dataTutorialValid(['id_kategori_tutorial' => '', 'gambar' => null]))
         ->assertSessionHasErrors([
-            'jenis_program' => 'Kolom jenis program wajib diisi.',
+            'id_kategori_tutorial' => 'Kolom kategori wajib diisi.',
             'gambar' => 'Kolom gambar sampul wajib diisi.',
         ]);
 });
@@ -242,11 +263,14 @@ it('menghapus tutorial beserta materinya secara soft delete tanpa menyentuh tuto
 });
 
 it('membuat tutorial contoh dari seeder dummy tanpa menggandakan saat dijalankan ulang', function () {
-    $this->seed(TutorialDummySeeder::class);
-    $this->seed(TutorialDummySeeder::class);
+    $this->kategori->forceDelete();
+    $this->seed([KategoriTutorialSeeder::class, TutorialDummySeeder::class]);
+    $this->seed([KategoriTutorialSeeder::class, TutorialDummySeeder::class]);
 
     $tutorial = Tutorial::sole();
-    expect($tutorial->judul)->toBe('Tutorial Laravel 13')
+    expect(KategoriTutorial::query()->pluck('nama_kategori')->all())->toBe(KategoriTutorialSeeder::NAMA)
+        ->and($tutorial->judul)->toBe('Tutorial Laravel 13')
+        ->and($tutorial->kategoriTutorial->nama_kategori)->toBe('Pemrograman Web')
         ->and($tutorial->status_publikasi)->toBe(StatusPublikasi::Terbit)
         ->and($tutorial->materiTutorial->pluck('urutan_ke')->all())->toBe(range(1, 8))
         ->and($tutorial->materiTutorial->first()->judul)->toBe('Fitur-Fitur Baru di Laravel 13')

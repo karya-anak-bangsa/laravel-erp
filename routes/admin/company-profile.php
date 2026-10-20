@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CompanyProfile\HeroController;
 use App\Http\Controllers\Admin\CompanyProfile\IdentitasController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriPortofolioController;
+use App\Http\Controllers\Admin\CompanyProfile\KategoriTutorialController;
 use App\Http\Controllers\Admin\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
 use App\Http\Controllers\Admin\CompanyProfile\MateriTutorialController;
@@ -34,6 +35,8 @@ Route::resource('kategori-portofolio', KategoriPortofolioController::class)->exc
 Route::resource('tutorial', TutorialController::class)->except('show');
 
 Route::resource('materi-tutorial', MateriTutorialController::class)->except('show');
+
+Route::resource('kategori-tutorial', KategoriTutorialController::class)->except('show');
 
 Route::resource('artikel', ArtikelController::class)->except('show');
 

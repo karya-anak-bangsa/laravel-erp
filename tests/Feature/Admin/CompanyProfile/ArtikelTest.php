@@ -68,7 +68,7 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
         ->assertSee('<div class="card-subtitle">Bagian satu Isi tebal</div>', false)
         ->assertSeeInOrder([
             'class="card kartu-filter"',
-            '<div class="card-title">Artikel</div>',
+            '<div class="card-title">Daftar Artikel</div>',
             'href="'.route('admin.artikel.create').'"',
             'data-detail-title="Detail Artikel"',
             '/artikel/tips-website',

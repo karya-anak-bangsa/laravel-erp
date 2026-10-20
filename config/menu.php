@@ -76,6 +76,11 @@ return [
                         'rute' => 'admin.materi-tutorial.index',
                         'aktif' => 'admin.materi-tutorial.*',
                     ],
+                    [
+                        'label' => 'Kategori Tutorial',
+                        'rute' => 'admin.kategori-tutorial.index',
+                        'aktif' => 'admin.kategori-tutorial.*',
+                    ],
                 ],
             ],
             [

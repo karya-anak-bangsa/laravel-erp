@@ -28,7 +28,7 @@
                 @if ($tutorial->isEmpty())
                     <p class="kosong-halaman">Belum ada tutorial. Silakan kunjungi lagi nanti.</p>
                 @else
-                    {{-- Grid daftar portofolio: dua kartu per baris mulai 768px, tanpa filter jenis program. --}}
+                    {{-- Grid daftar portofolio: dua kartu per baris mulai 768px, tanpa filter kategori. --}}
                     <ul class="grid-portofolio">
                         @foreach ($tutorial as $item)
                             <li><x-web.kartu-tutorial :tutorial="$item" /></li>
