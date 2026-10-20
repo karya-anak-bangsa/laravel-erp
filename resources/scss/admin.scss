@@ -1044,7 +1044,7 @@ table.table td.kolom-aksi {
     }
 }
 
-// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella. Kartu terakhir (Belum tayang)
+// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella. Kartu terakhir (Belum tampil)
 // memanjang mengisi sisa tinggi agar dasar kedua kolom sejajar.
 .tumpukan-kartu {
     display: flex;
@@ -1056,7 +1056,7 @@ table.table td.kolom-aksi {
     }
 }
 
-// Daftar ringkas dashboard (Terakhir diperbarui, Belum tayang): baris bergaris pemisah berisi judul dan
+// Daftar ringkas dashboard (Terakhir diperbarui, Belum tampil): baris bergaris pemisah berisi judul dan
 // keterangan, label status di kanan. Jarak tepinya sama dengan kepala kartu (16px).
 .daftar-ringkas {
     margin: 0;
