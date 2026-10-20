@@ -257,7 +257,8 @@ Schema::create('tb_artikel', function (Blueprint $table) {
   - Logika, test, atau docs saja → tanpa potret.
   - Isi/data seeder saja (teks, gambar) → tanpa banding karena bedanya pasti hanya di isi itu; potret ulang halaman yang memuat data itu, lalu lihat satu atau dua potretnya (1536 & 390). Identitas dan layanan tampil di navbar/footer sehingga cakupannya semua halaman publik.
   - Tampilan satu modul → modul itu di semua lebar, ditambah beranda bila modulnya punya seksi di sana.
-  - Seluruh situs hanya bila yang berubah bagian bersama: layout, komponen Blade bersama, `token.css`/`komponen.css`/`admin.scss`, `TemaService`, atau paket npm.
+  - Isi bagian bersama yang tampil sama di setiap halaman (menu sidebar, navbar, footer) → banding cukup di halaman yang isinya ikut berubah, atau satu halaman perwakilan, pada lebar tempat bagian itu terlihat; halaman yang tidak memuatnya (login, error) dilewati. Acuan halaman lain yang memuatnya diperbarui sekaligus dengan `--perbarui` tanpa banding, di latar belakang.
+  - Seluruh situs hanya bila yang berubah memengaruhi susunan atau gaya banyak halaman: kerangka layout, komponen Blade bersama, `token.css`/`komponen.css`/`admin.scss`, `TemaService`, atau paket npm.
 - Acuan selalu mengikuti tampilan terbaru: setelah banding bersih, jalankan `node alat/potret-acuan.mjs --perbarui` dengan saringan yang sama (sekaligus mengosongkan `banding/`). Halaman atau modul baru ditambahkan dulu ke `daftar-acuan.json`.
 
 ### Jangan Diusulkan Ulang
