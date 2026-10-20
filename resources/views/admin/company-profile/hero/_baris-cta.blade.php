@@ -13,7 +13,7 @@
         </div>
         <div>
             <input type="text" name="cta[{{ $i }}][url]" value="{{ $tombol['url'] ?? '' }}" maxlength="255"
-                aria-label="URL tombol" placeholder="URL, mis. #kontak atau /portofolio"
+                aria-label="URL tombol" placeholder="URL, mis. #layanan atau /portofolio"
                 @class(['form-control', 'is-invalid' => $errors->has("cta.$i.url")])>
             @error("cta.$i.url")
                 <div class="form-error">{{ $message }}</div>

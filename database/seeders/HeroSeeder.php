@@ -28,7 +28,7 @@ class HeroSeeder extends Seeder
             'gambar' => $this->salinBerkasAwal(public_path('img/hero.webp'), Hero::FOLDER, Hero::DISK),
             'keyword' => ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'],
             'cta' => [
-                ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => GayaCta::Primary->value],
+                ['label' => 'Hubungi Kami', 'url' => 'https://wa.me/6281234567890', 'gaya' => GayaCta::Primary->value],
                 // Anchor ke seksi beranda: halaman portofolio tersendiri belum ada.
                 ['label' => 'Lihat Portofolio', 'url' => '#portofolio', 'gaya' => GayaCta::Secondary->value],
             ],

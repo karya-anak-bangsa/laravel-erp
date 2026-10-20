@@ -2,7 +2,10 @@
     <div class="wadah tata-faq">
         <div class="faq-kepala">
             <x-web.kepala-seksi id="judul-faq" label="FAQ" judul="Pertanyaan yang sering diajukan">
-                Belum menemukan jawaban? <a href="#kontak" class="tautan-teks">Hubungi kami</a> dan tim kami akan membantu.
+                {{-- Tautan dan frasa penutup tidak dipatah agar tautan tidak terbelah dan "tim kami" tetap sebaris. --}}
+                @if (filled($identitas->link_whatsapp))
+                    Belum menemukan jawaban? <x-web.tautan-luar :href="$identitas->link_whatsapp" class="tautan-teks whitespace-nowrap">Hubungi kami melalui WhatsApp</x-web.tautan-luar> <span class="whitespace-nowrap">dan tim kami akan membantu.</span>
+                @endif
             </x-web.kepala-seksi>
         </div>
 

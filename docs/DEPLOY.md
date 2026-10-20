@@ -80,11 +80,11 @@ Lalu buka https://karyaanakbangsa.co.id di jendela Incognito dan cek fitur yang 
 
 ## Reset Data Produksi (boleh diulang selama tahap uji)
 
-Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (CLAUDE.md §2.4). Reset juga **wajib** bila migration yang sudah jalan di produksi diedit atau disusun ulang, karena `php artisan migrate` biasa tidak menjalankan ulang migration yang sudah tercatat. Setelah pemilik menyatakan produksi memakai data real, reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
+Selama produksi masih **tahap uji** dan isinya **data dummy**, database produksi boleh dibuat ulang dari seeder kapan saja agar identik dengan lokal (CLAUDE.md §2.4). Reset juga **wajib** bila migration yang sudah jalan di produksi diedit, disusun ulang, atau dihapus, karena `php artisan migrate` biasa tidak menjalankan ulang migration yang sudah tercatat dan tidak membuang tabel yang migration-nya dihapus. Setelah pemilik menyatakan produksi memakai data real, reset tidak boleh lagi: perubahan skema lewat migration baru, perubahan data lewat admin.
 
 Syarat: seeder menghasilkan data yang sama dengan lokal. Reset hanya mengisi ulang dari seeder, jadi perubahan lewat admin lokal yang belum dipindahkan ke seeder tidak ikut ke produksi.
 
-Akibatnya: semua tabel dikosongkan (termasuk pesan Kontak Kami, akun admin, dan sesi login), lalu diisi ulang. Tanpa cadangan karena datanya belum bernilai.
+Akibatnya: semua tabel dikosongkan (termasuk akun admin dan sesi login), lalu diisi ulang. Tanpa cadangan karena datanya belum bernilai.
 
 Langkah lengkap, sekaligus dengan deploy kode:
 

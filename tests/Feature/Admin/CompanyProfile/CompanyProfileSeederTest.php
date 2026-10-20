@@ -7,7 +7,6 @@ use App\Models\CompanyProfile\Identitas;
 use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\KategoriTutorial;
-use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
@@ -38,7 +37,6 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
         ->and(KategoriTutorial::count())->toBe(3)
         ->and(Tutorial::count())->toBe(1)
         ->and(MateriTutorial::count())->toBe(8)
-        ->and(KontakKami::count())->toBe(0)
         ->and(Template::aktif()->pluck('nama')->all())->toBe(['TKAB Full Color', 'TKAB Monochrome']);
 });
 
@@ -52,14 +50,19 @@ it('membuat template aktif yang tampilannya sama dengan cadangan config', functi
         ->and(Template::where('nama', 'TKAB Full Color')->sole()->warna_aksen)->toBe('#cb1839');
 });
 
-it('tidak memberi CTA hero tautan ke halaman publik yang belum ada', function () {
+it('tidak memberi CTA hero tautan mati: hanya anchor seksi beranda yang ada atau situs lain', function () {
     $this->seed(CompanyProfileSeeder::class);
 
-    // Path internal (mis. /kontak) bisa menghasilkan 404; yang boleh hanya anchor beranda (#…) atau situs lain.
+    // Path internal (mis. /layanan) bisa menghasilkan 404, dan anchor seksi yang sudah dihapus (mis. #kontak) tidak
+    // menuju ke mana pun.
     $url = Hero::all()->flatMap(fn (Hero $hero) => array_column($hero->cta, 'url'));
+    $beranda = $this->get(route('beranda'))->assertOk()->getContent();
 
     expect($url)->not->toBeEmpty()
         ->each(fn ($item) => $item->toMatch('#^(\#[a-z-]+|https://)#'));
+
+    $url->filter(fn (string $item) => str_starts_with($item, '#'))
+        ->each(fn (string $anchor) => expect($beranda)->toContain('id="'.substr($anchor, 1).'"'));
 });
 
 it('memakai logo lebar berlatar transparan untuk identitas awal', function () {

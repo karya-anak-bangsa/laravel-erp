@@ -3,13 +3,13 @@
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
-use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
+use Illuminate\Support\Str;
 
 it('mengarahkan tamu ke halaman login', function () {
     $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
@@ -80,10 +80,12 @@ it('menyusun menu sidebar: artikel sebagai submenu dan identitas di pengaturan s
             '<span class="nav-text">Artikel</span>',
             'class="nav-sublink" href="'.route('admin.artikel.index').'" >Daftar Artikel</a>',
             'class="nav-sublink" href="'.route('admin.kategori-artikel.index').'" >Kategori Artikel</a>',
-            'FAQ', 'Kontak Kami',
+            'FAQ',
             'Pengaturan Sistem</div>',
             'href="'.route('admin.identitas.edit').'"',
-        ], false);
+        ], false)
+        // Modul Kontak Kami dihapus 2026-10-20: kontak lewat WhatsApp.
+        ->assertDontSee('Kontak Kami');
 });
 
 it('menandai menu aktif memakai pola rute pada kunci aktif', function () {
@@ -112,8 +114,9 @@ describe('ringkasan dashboard', function () {
         Tutorial::factory()->draf()->create();
         Layanan::factory()->count(3)->create();
         Faq::factory()->count(4)->create();
-        KontakKami::factory()->belumDibaca()->create();
-        KontakKami::factory()->dibaca()->count(2)->create();
+        Hero::factory()->aktif()->create();
+        Hero::factory()->count(2)->create();
+        Hero::factory()->create()->delete();
 
         // Kategori ikut dibuat factory artikel & portofolio: 4 kategori artikel (termasuk milik artikel terhapus), 1 portofolio.
         $this->actingAs($this->admin)
@@ -124,7 +127,7 @@ describe('ringkasan dashboard', function () {
                 'href="'.route('admin.tutorial.index').'"', 'Tutorial tayang', '<span class="stat-value">1</span>', '2 materi · 1 belum tayang',
                 'href="'.route('admin.layanan.index').'"', 'Layanan', '<span class="stat-value">3</span>',
                 'href="'.route('admin.faq.index').'"', 'FAQ', '<span class="stat-value">4</span>',
-                'href="'.route('admin.kontak-kami.index').'"', 'Pesan belum dibaca', '<span class="stat-value">1</span>', '3 pesan masuk',
+                'href="'.route('admin.hero.index').'"', 'Hero', '<span class="stat-value">3</span>', '1 aktif di beranda',
             ], false);
     });
 
@@ -156,22 +159,27 @@ describe('ringkasan dashboard', function () {
             ->assertDontSee('Layanan Urut 09');
     });
 
-    it('menampilkan lima pesan masuk terbaru dengan penanda belum dibaca', function () {
-        KontakKami::factory()->dibaca()->create(['subjek' => 'Pesan lama', 'tanggal' => '2026-10-01 09:00:00']);
-        foreach (range(1, 5) as $nomor) {
-            KontakKami::factory()->dibaca()->create(['subjek' => "Pesan {$nomor}", 'tanggal' => "2026-10-1{$nomor} 09:00:00"]);
-        }
-        KontakKami::factory()->belumDibaca()->create(['nama' => 'Budi', 'subjek' => 'Pesan terbaru', 'tanggal' => '2026-10-20 08:30:00']);
+    it('menampilkan konten belum tayang: artikel draf serta tutorial draf atau tanpa materi, bertautan ke halaman Ubah', function () {
+        $artikel = Artikel::factory()->draf()->create(['judul' => 'Artikel draf', 'updated_at' => '2026-10-20 09:00:00']);
+        $tutorialDraf = Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-19 09:00:00']);
+        $tutorialKosong = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial kosong', 'updated_at' => '2026-10-18 09:00:00']);
+        Artikel::factory()->terbit()->create(['judul' => 'Artikel sudah terbit']);
+        Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['judul' => 'Tutorial lengkap']);
 
-        $this->actingAs($this->admin)
+        $isi = $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertSeeInOrder([
-                '<div class="card-title">Pesan masuk terbaru</div>', 'href="'.route('admin.kontak-kami.index').'"',
-                '<div class="judul-ringkas">Pesan terbaru</div>', 'Budi · 20 Oktober 2026, 08:30', 'status-green" data-status-baca>Belum dibaca',
-                '<div class="judul-ringkas">Pesan 5</div>', 'Dibaca',
+                '<div class="card-title">Belum tayang</div>',
+                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'status-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'status-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas">Tutorial kosong</a>', 'status-yellow">Belum ada materi',
             ], false)
-            ->assertDontSee('Pesan 1</div>', false)
-            ->assertDontSee('Pesan lama');
+            ->getContent();
+
+        // Konten yang sudah tayang boleh muncul di Terakhir diperbarui, tetapi tidak di kartu Belum tayang.
+        expect(Str::after($isi, '<div class="card-title">Belum tayang</div>'))
+            ->not->toContain('Artikel sudah terbit')
+            ->not->toContain('Tutorial lengkap');
     });
 
     it('menampilkan status website: hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
@@ -201,12 +209,12 @@ describe('ringkasan dashboard', function () {
         $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('status-green">Diindeks', false);
     });
 
-    it('menampilkan keadaan kosong bila belum ada konten, pesan, hero aktif, dan template aktif', function () {
+    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tayang', function () {
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertOk()
             ->assertSee('Belum ada konten')
-            ->assertSee('Belum ada pesan')
-            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false);
+            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false)
+            ->assertSee('Semua konten sudah tayang');
     });
 });

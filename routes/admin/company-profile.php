@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\CompanyProfile\IdentitasController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriPortofolioController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriTutorialController;
-use App\Http\Controllers\Admin\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
 use App\Http\Controllers\Admin\CompanyProfile\MateriTutorialController;
 use App\Http\Controllers\Admin\CompanyProfile\PortofolioController;
@@ -43,11 +42,6 @@ Route::resource('artikel', ArtikelController::class)->except('show');
 Route::resource('kategori-artikel', KategoriArtikelController::class)->except('show');
 
 Route::resource('faq', FaqController::class)->except('show');
-
-// Pesan masuk dari form kontak publik: admin hanya membaca, menandai, dan menghapus.
-Route::resource('kontak-kami', KontakKamiController::class)->only(['index', 'destroy']);
-Route::patch('kontak-kami/{kontak_kami}/status-baca', [KontakKamiController::class, 'statusBaca'])
-    ->name('kontak-kami.status-baca');
 
 // Template tampilan frontend (Pengaturan Sistem › Manajemen Template). Pratinjau = beranda dengan nilai isian
 // form, dibuka di tab baru tanpa menyimpan apa pun.

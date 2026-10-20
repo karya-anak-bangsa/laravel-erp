@@ -63,7 +63,7 @@ Catatan implementasi:
 | deskripsi | TEXT | HTML tersanitasi dari editor WYSIWYG |
 | gambar | VARCHAR(255) | |
 | keyword | JSON | array string, mis. `["Website","Mobile Apps","Pelatihan IT","Sertifikasi IT","Bootcamp"]`; cast `array` |
-| cta | JSON | array objek, mis. `[{"label":"Hubungi Kami","url":"#kontak","gaya":"primary"},{"label":"Lihat Portofolio","url":"#portofolio","gaya":"secondary"}]`; cast `array`. URL berupa anchor seksi beranda (`#…`) atau situs lain; jangan path halaman publik yang belum ada |
+| cta | JSON | array objek, mis. `[{"label":"Hubungi Kami","url":"https://wa.me/6281234567890","gaya":"primary"},{"label":"Lihat Portofolio","url":"#portofolio","gaya":"secondary"}]`; cast `array`. URL berupa anchor seksi beranda (`#…`) atau situs lain; jangan path halaman publik yang belum ada |
 | status_aktif | BOOLEAN DEFAULT true | INDEX. Menentukan hero yang tampil di frontend. Boleh banyak hero, tetapi **hanya satu yang aktif** — dijaga `HeroService` (mengaktifkan satu hero menonaktifkan yang lain) |
 | created_at, updated_at, deleted_at | | |
 
@@ -200,20 +200,6 @@ Catatan implementasi:
 | jawaban | TEXT | HTML tersanitasi dari editor WYSIWYG |
 | urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | INDEX |
 | created_at, updated_at, deleted_at | | |
-
-### tb_kontak_kami
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_kontak_kami | BIGINT UNSIGNED PK | |
-| nama | VARCHAR(100) | |
-| email | VARCHAR(150) | |
-| subjek | VARCHAR(200) | |
-| pesan | TEXT | |
-| tanggal | DATETIME | |
-| status_baca | BOOLEAN DEFAULT false | INDEX |
-| created_at, updated_at, deleted_at | | |
-
-Data masuk dari formulir kontak publik. Admin hanya: daftar (filter sudah/belum dibaca), lihat (otomatis tandai dibaca), tandai belum dibaca, hapus.
 
 ### tb_template
 Template tampilan frontend publik, dikelola lewat Pengaturan Sistem › Manajemen Template. Boleh banyak template, tetapi **hanya satu yang aktif per jenis** (satu Full Color, satu Monochrome), dijaga `TemplateService` dengan pola yang sama seperti Hero.

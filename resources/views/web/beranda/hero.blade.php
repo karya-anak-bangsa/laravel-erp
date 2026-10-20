@@ -1,6 +1,8 @@
 @php
-    // Tanpa hero aktif halaman tetap utuh: judul website + ajakan ke formulir kontak.
-    $ctaHero = $hero?->cta ?: [['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary']];
+    // Tanpa hero aktif halaman tetap utuh: judul website + ajakan WhatsApp (bila link WhatsApp di Identitas terisi).
+    $ctaHero = $hero?->cta ?: (filled($identitas->link_whatsapp)
+        ? [['label' => 'Hubungi Kami', 'url' => $identitas->link_whatsapp, 'gaya' => 'primary']]
+        : []);
 @endphp
 
 <section id="beranda" class="hero relative isolate overflow-hidden" aria-labelledby="judul-hero">
@@ -21,17 +23,19 @@
                 <div class="hero-deskripsi konten-html muncul tunda-2">{!! $hero->deskripsi !!}</div>
             @endif
 
-            <div class="hero-aksi muncul tunda-3">
-                @foreach ($ctaHero as $cta)
-                    @php($luar = str_starts_with($cta['url'], 'http://') || str_starts_with($cta['url'], 'https://'))
-                    <a href="{{ $cta['url'] }}" @if ($luar) target="_blank" rel="noopener" @endif class="btn btn-besar" @if ($cta['gaya'] !== 'primary') data-variant="outline" @endif>
-                        {{ $cta['label'] }}
-                        @if ($luar)
-                            <span class="sr-only">(membuka tab baru)</span>
-                        @endif
-                    </a>
-                @endforeach
-            </div>
+            @if ($ctaHero)
+                <div class="hero-aksi muncul tunda-3">
+                    @foreach ($ctaHero as $cta)
+                        @php($luar = str_starts_with($cta['url'], 'http://') || str_starts_with($cta['url'], 'https://'))
+                        <a href="{{ $cta['url'] }}" @if ($luar) target="_blank" rel="noopener" @endif class="btn btn-besar" @if ($cta['gaya'] !== 'primary') data-variant="outline" @endif>
+                            {{ $cta['label'] }}
+                            @if ($luar)
+                                <span class="sr-only">(membuka tab baru)</span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            @endif
 
             @if (filled($hero?->keyword))
                 {{-- Warna lencana berputar otomatis (.aksen-berputar) di Full Color. --}}

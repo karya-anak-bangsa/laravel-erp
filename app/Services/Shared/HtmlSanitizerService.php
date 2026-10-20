@@ -89,7 +89,7 @@ class HtmlSanitizerService
             ->allowElement('li')
             ->allowElement('a', ['href'])
             ->allowLinkSchemes(['http', 'https', 'mailto'])
-            // Tautan internal website (mis. /portofolio, #kontak) tetap boleh.
+            // Tautan internal website (mis. /portofolio, #layanan) tetap boleh.
             ->allowRelativeLinks()
             // Input lebih panjang dipotong sanitizer; hasilnya tetap ditolak PanjangTeksHtml.
             ->withMaxInputLength($panjangHtmlMaks * 4);

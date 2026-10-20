@@ -20,7 +20,7 @@ function dataHeroValid(array $timpa = []): array
         'gambar' => UploadedFile::fake()->image('hero.webp', 1536, 1024),
         'keyword' => ['Website', 'Mobile Apps'],
         'cta' => [
-            ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary'],
+            ['label' => 'Hubungi Kami', 'url' => '#layanan', 'gaya' => 'primary'],
             ['label' => 'Lihat Portofolio', 'url' => '/portofolio', 'gaya' => 'secondary'],
         ],
         'status_aktif' => '1',
@@ -80,7 +80,7 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
         'judul' => 'Solusi Digital',
         'deskripsi' => 'Website dan aplikasi.',
         'keyword' => ['Laravel', 'Flutter'],
-        'cta' => [['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary']],
+        'cta' => [['label' => 'Hubungi Kami', 'url' => '#layanan', 'gaya' => 'primary']],
         'created_at' => '2026-10-09 08:30:00',
     ]);
 
@@ -92,7 +92,7 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
             '<template id="detail-',
             'Website dan aplikasi.',
             'Laravel, Flutter',
-            'Hubungi Kami → #kontak (Utama)',
+            'Hubungi Kami → #layanan (Utama)',
             '<span class="status status-green">Aktif</span>',
             '09 Oktober 2026, 08:30',
             Storage::disk('public')->url($hero->gambar),
@@ -153,7 +153,7 @@ it('menambah hero beserta gambar, keyword, dan CTA', function () {
             // Baris repeater yang dibiarkan kosong tidak ikut disimpan.
             'keyword' => ['Website', '', 'Mobile Apps', null],
             'cta' => [
-                ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary'],
+                ['label' => 'Hubungi Kami', 'url' => '#layanan', 'gaya' => 'primary'],
                 ['label' => '', 'url' => '', 'gaya' => 'secondary'],
             ],
         ]))
@@ -164,7 +164,7 @@ it('menambah hero beserta gambar, keyword, dan CTA', function () {
     expect($hero->judul)->toBe('Solusi Digital untuk Bisnis Anda')
         ->and($hero->keyword)->toBe(['Website', 'Mobile Apps'])
         // MySQL mengurutkan ulang kunci objek JSON, jadi dibandingkan isinya saja.
-        ->and($hero->cta)->toEqual([['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => 'primary']])
+        ->and($hero->cta)->toEqual([['label' => 'Hubungi Kami', 'url' => '#layanan', 'gaya' => 'primary']])
         ->and($hero->status_aktif)->toBeTrue()
         ->and($hero->gambar)->toMatch('#^company-profile/hero/[0-9a-f-]{36}\.webp$#');
     Storage::disk('public')->assertExists($hero->gambar);
@@ -261,19 +261,19 @@ it('memvalidasi isian hero', function (array $data, string $kolom) {
     'keyword terlalu panjang' => [['keyword' => [str_repeat('a', 51)]], 'keyword.0'],
     'keyword berulang' => [['keyword' => ['Website', 'website']], 'keyword.1'],
     'cta lebih dari 3' => [['cta' => array_fill(0, 4, ['label' => 'Tombol', 'url' => '#a', 'gaya' => 'primary'])], 'cta'],
-    'label cta kosong' => [['cta' => [['label' => '', 'url' => '#kontak', 'gaya' => 'primary']]], 'cta.0.label'],
+    'label cta kosong' => [['cta' => [['label' => '', 'url' => '#layanan', 'gaya' => 'primary']]], 'cta.0.label'],
     'url cta kosong' => [['cta' => [['label' => 'Tombol', 'url' => '', 'gaya' => 'primary']]], 'cta.0.url'],
     'url cta javascript' => [['cta' => [['label' => 'Tombol', 'url' => 'javascript:alert(1)', 'gaya' => 'primary']]], 'cta.0.url'],
     'url cta protocol-relative' => [['cta' => [['label' => 'Tombol', 'url' => '//contoh.com', 'gaya' => 'primary']]], 'cta.0.url'],
     'url cta berspasi' => [['cta' => [['label' => 'Tombol', 'url' => '/halaman saya', 'gaya' => 'primary']]], 'cta.0.url'],
-    'gaya cta tidak dikenal' => [['cta' => [['label' => 'Tombol', 'url' => '#kontak', 'gaya' => 'danger']]], 'cta.0.gaya'],
+    'gaya cta tidak dikenal' => [['cta' => [['label' => 'Tombol', 'url' => '#layanan', 'gaya' => 'danger']]], 'cta.0.gaya'],
 ]);
 
 it('menerima berbagai bentuk URL tombol CTA', function (string $url) {
     $this->actingAs($this->admin)
         ->post(route('admin.hero.store'), dataHeroValid(['cta' => [['label' => 'Tombol', 'url' => $url, 'gaya' => 'primary']]]))
         ->assertSessionHasNoErrors();
-})->with(['#kontak', '/portofolio', 'https://wa.me/6281234567890', 'mailto:info@karyaanakbangsa.co.id', 'tel:+6281234567890']);
+})->with(['#layanan', '/portofolio', 'https://wa.me/6281234567890', 'mailto:info@karyaanakbangsa.co.id', 'tel:+6281234567890']);
 
 it('menampilkan pesan validasi berbahasa Indonesia', function () {
     $this->actingAs($this->admin)

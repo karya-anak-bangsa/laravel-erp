@@ -79,14 +79,16 @@ describe('isi', function () {
             ->assertDontSee('Hero Terhapus');
     });
 
-    it('tetap tampil tanpa hero aktif dengan judul website dan ajakan ke formulir kontak', function () {
+    it('tetap tampil tanpa hero aktif dengan judul website dan ajakan WhatsApp', function () {
         Hero::factory()->create(['judul' => 'Hero Nonaktif']);
 
-        $this->get('/')
+        $respons = $this->get('/')
             ->assertOk()
             ->assertSee('<h1 id="judul-hero" class="hero-judul muncul tunda-1">Situs Uji Beranda</h1>', false)
-            ->assertSee('href="#kontak"', false)
             ->assertDontSee('Hero Nonaktif');
+
+        expect($respons->getContent())
+            ->toMatch('#<a href="https://wa\.me/6281200000000"\s+target="_blank" rel="noopener"\s+class="btn btn-besar"\s*>\s*Hubungi Kami#');
     });
 
     it('membuka CTA hero ke situs lain di tab baru', function () {
@@ -198,19 +200,22 @@ describe('isi', function () {
             ->assertDontSee('id="portofolio"', false)
             ->assertDontSee('id="artikel"', false)
             ->assertDontSee('id="faq"', false)
-            ->assertSee('id="kontak"', false);
+            ->assertSee('id="ajakan"', false);
     });
 
     it('menyembunyikan semua tautan WhatsApp bila identitas tidak punya link WhatsApp', function () {
         $this->identitas->update(['link_whatsapp' => null]);
         Layanan::factory()->create(['keterangan' => '<p>Rincian</p>']);
+        Faq::factory()->create();
 
         $this->get('/')
             ->assertDontSee('id="tombol-wa"', false)
             ->assertDontSee('wa.me')
             ->assertSee('data-wa=""', false)
-            // Ajakan tetap punya tombol: cadangan ke formulir kontak (lewat alamat beranda karena band ini juga tampil di halaman artikel).
-            ->assertSee('<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', false)
+            // Tanpa formulir kontak, tombol band ajakan, CTA hero cadangan, dan ajakan FAQ tidak punya tujuan lain sehingga disembunyikan.
+            ->assertDontSee('aksi-ajakan', false)
+            ->assertDontSee('hero-aksi', false)
+            ->assertDontSee('Belum menemukan jawaban?')
             // Telepon jadi cadangan kontak WhatsApp di footer.
             ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon).'</a>', false);
     });
@@ -224,21 +229,24 @@ describe('isi', function () {
             ->not->toMatch('#class="tautan-kaki">WhatsApp<#');
     });
 
-    it('menampilkan seksi kontak berisi formulir saja tanpa daftar kontak dan peta', function () {
-        // Alamat, email, dan WhatsApp cukup di footer (pilihan pemilik 2026-10-19).
+    it('tidak memuat formulir kontak maupun menu Kontak di navbar dan footer', function () {
+        // Modul Kontak Kami dihapus 2026-10-20: kontak lewat WhatsApp; alamat & email cukup di kolom Kontak footer.
         $this->get('/')
-            ->assertSee('<div id="kirim-pesan" class="kartu-formulir">', false)
-            ->assertSee('<button type="submit" class="btn btn-besar">Kirim Pesan</button>', false)
-            ->assertDontSee('tautan-kontak', false)
-            ->assertDontSee('id="wadah-peta"', false)
-            ->assertDontSee('Buka di Google Maps');
+            ->assertDontSee('id="kontak"', false)
+            ->assertDontSee('<form', false)
+            ->assertDontSee('#kontak', false)
+            ->assertDontSee('>Kontak</a>', false)
+            ->assertSee('<h2 class="judul-kaki">Kontak</h2>', false);
     });
 
-    it('hanya menampilkan tombol WhatsApp di band ajakan bila link WhatsApp tersedia', function () {
-        // Tombol kirim formulir kontak juga berlabel "Kirim Pesan", jadi yang diperiksa tautan ajakannya.
-        $this->get('/')
-            ->assertSee('Chat via WhatsApp')
-            ->assertDontSee('<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', false);
+    it('mengajak menghubungi lewat WhatsApp di band ajakan dan seksi FAQ', function () {
+        Faq::factory()->create();
+
+        $respons = $this->get('/')
+            ->assertSeeInOrder(['<section id="ajakan"', '<a href="https://wa.me/6281200000000" target="_blank" rel="noopener" class="btn btn-besar">', 'Chat via WhatsApp'], false);
+
+        expect($respons->getContent())->toMatch('#Belum menemukan jawaban\? <a href="https://wa\.me/6281200000000" target="_blank" rel="noopener" class="tautan-teks whitespace-nowrap">'
+            .'Hubungi kami melalui WhatsApp<span class="sr-only"> \(membuka tab baru\)</span></a>\s*<span class="whitespace-nowrap">dan tim kami akan membantu\.</span>#');
     });
 
     it('merender HTML editor yang sudah disanitasi dan meng-escape teks biasa', function () {

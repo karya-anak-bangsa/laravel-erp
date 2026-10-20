@@ -8,7 +8,6 @@
         'Tutorial' => route('tutorial.index'),
         'Artikel' => route('artikel.index'),
         'FAQ' => route('beranda').'#faq',
-        'Kontak' => route('beranda').'#kontak',
     ];
     // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail portofolio,
     // halaman, materi & kategori tutorial, detail & kategori artikel).

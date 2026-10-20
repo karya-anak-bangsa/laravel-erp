@@ -35,7 +35,7 @@ class FaqSeeder extends Seeder
         return [
             [
                 'Bagaimana cara memesan pembuatan website atau mobile apps?',
-                'Hubungi kami melalui halaman kontak atau WhatsApp, lalu ceritakan kebutuhan Anda. Tim kami akan menjadwalkan diskusi, menyusun penawaran beserta lingkup pekerjaan, dan memulai pengerjaan setelah penawaran disetujui.',
+                'Hubungi kami melalui WhatsApp, lalu ceritakan kebutuhan Anda. Tim kami akan menjadwalkan diskusi, menyusun penawaran beserta lingkup pekerjaan, dan memulai pengerjaan setelah penawaran disetujui.',
             ],
             [
                 'Berapa lama proses pembuatan website?',

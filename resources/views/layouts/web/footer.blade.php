@@ -19,7 +19,7 @@
             <nav aria-labelledby="judul-kaki-tautan" class="lg:col-span-2">
                 <h2 id="judul-kaki-tautan" class="judul-kaki">Tautan Cepat</h2>
                 <ul class="mt-3 grid">
-                    @foreach (['beranda' => 'Beranda', 'layanan' => 'Layanan', 'portofolio' => 'Portofolio', 'tutorial' => 'Tutorial', 'artikel' => 'Artikel', 'faq' => 'FAQ', 'kontak' => 'Kontak'] as $anchor => $label)
+                    @foreach (['beranda' => 'Beranda', 'layanan' => 'Layanan', 'portofolio' => 'Portofolio', 'tutorial' => 'Tutorial', 'artikel' => 'Artikel', 'faq' => 'FAQ'] as $anchor => $label)
                         {{-- Sama dengan menu navbar: Portofolio, Tutorial, & Artikel ke halamannya sendiri, sisanya
                              seksi beranda. --}}
                         <li><a href="{{ in_array($anchor, ['portofolio', 'tutorial', 'artikel'], true) ? route($anchor.'.index') : route('beranda').'#'.$anchor }}" class="tautan-kaki">{{ $label }}</a></li>
@@ -52,7 +52,7 @@
                         <a href="mailto:{{ $identitas->email }}" class="tautan-kaki">{{ TautanKontak::emailBisaPatah($identitas->email) }}</a>
                     </li>
                     {{-- Nomor cukup satu: logo WhatsApp + nomor WhatsApp (pilihan pemilik 2026-10-11); telepon hanya cadangan
-                         bila link WhatsApp kosong, sama seperti seksi kontak. --}}
+                         bila link WhatsApp kosong. --}}
                     @if (filled($identitas->link_whatsapp))
                         <li class="flex items-center gap-x-3">
                             <x-web.ikon nama="whatsapp" class="logo-wa" />

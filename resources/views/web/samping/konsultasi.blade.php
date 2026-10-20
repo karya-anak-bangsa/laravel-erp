@@ -10,13 +10,11 @@
 
     <h2 class="judul-ajakan-samping">Konsultasi gratis</h2>
     <p class="deskripsi-ajakan-samping">Diskusikan kebutuhan website, aplikasi, atau pelatihan IT tim Anda bersama kami, tanpa biaya.</p>
-    {{-- Sama dengan band ajakan: WhatsApp, atau formulir di beranda bila link WhatsApp di Identitas kosong. --}}
+    {{-- Sama dengan band ajakan: tombol WhatsApp, disembunyikan bila link WhatsApp di Identitas kosong. --}}
     @if (filled($identitas->link_whatsapp))
         <x-web.tautan-luar :href="$identitas->link_whatsapp" class="btn btn-besar">
             <x-web.ikon nama="whatsapp" class="size-5" />
             Chat via WhatsApp
         </x-web.tautan-luar>
-    @else
-        <a href="{{ route('beranda') }}#kontak" class="btn btn-besar">Kirim Pesan</a>
     @endif
 </div>

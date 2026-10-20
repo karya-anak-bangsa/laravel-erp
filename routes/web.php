@@ -5,12 +5,10 @@ use App\Http\Controllers\Web\CompanyProfile\ArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\BerandaController;
 use App\Http\Controllers\Web\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Web\CompanyProfile\KategoriTutorialController;
-use App\Http\Controllers\Web\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Web\CompanyProfile\MateriTutorialController;
 use App\Http\Controllers\Web\CompanyProfile\PortofolioController;
 use App\Http\Controllers\Web\CompanyProfile\TutorialController;
 use App\Http\Controllers\Web\SeoController;
-use Illuminate\Routing\RedirectController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend publik: di luar grup guest agar admin yang sedang login tetap bisa melihat situs.
@@ -31,15 +29,6 @@ Route::get('tutorial/{tutorial:slug}', [TutorialController::class, 'show'])->nam
 Route::get('tutorial/{tutorial:slug}/{materiTutorial:slug}', [MateriTutorialController::class, 'show'])
     ->scopeBindings()
     ->name('materi-tutorial.show');
-
-Route::post('kontak', [KontakKamiController::class, 'store'])
-    ->middleware('throttle:kontak')
-    ->name('kontak-kami.store');
-// Halaman kontak tersendiri belum ada; GET (mis. muat ulang setelah kirim) diarahkan ke formulir di beranda.
-// Bukan Route::redirect(): itu mendaftarkan semua method dan akan menimpa rute POST di atas.
-Route::get('kontak', RedirectController::class)
-    ->defaults('destination', '/#kontak')
-    ->defaults('status', 302);
 
 // Untuk perayap mesin pencari, dibentuk dari APP_URL. public/robots.txt sengaja tidak ada: berkas statis
 // didahulukan server sehingga rute ini tidak akan terpakai.

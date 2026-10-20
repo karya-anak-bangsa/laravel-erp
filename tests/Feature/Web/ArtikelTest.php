@@ -179,11 +179,14 @@ describe('kolom samping', function () {
         }
     });
 
-    it('mengarahkan kartu konsultasi ke formulir beranda bila link WhatsApp kosong', function () {
+    it('menyembunyikan tombol kartu konsultasi bila link WhatsApp kosong', function () {
         Identitas::query()->sole()->update(['link_whatsapp' => null]);
 
+        // Cadangan "Kirim Pesan" ke formulir beranda ikut hilang bersama modul Kontak Kami (2026-10-20).
         $this->get(route('artikel.index'))
-            ->assertSeeInOrder(['<h2 class="judul-ajakan-samping">Konsultasi gratis</h2>', '<a href="'.route('beranda').'#kontak" class="btn btn-besar">Kirim Pesan</a>', '<section id="ajakan"'], false);
+            ->assertSee('<h2 class="judul-ajakan-samping">Konsultasi gratis</h2>', false)
+            ->assertDontSee('Chat via WhatsApp')
+            ->assertDontSee('Kirim Pesan');
     });
 });
 

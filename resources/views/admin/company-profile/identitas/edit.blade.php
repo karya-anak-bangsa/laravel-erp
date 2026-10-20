@@ -40,7 +40,7 @@
                     hint="PNG atau ICO persegi (mis. 512×512 px), maks. 512 KB; WEBP tidak ditampilkan Google." />
             </x-admin.card>
 
-            <x-admin.card title="Kontak" subtitle="Tampil di halaman kontak dan footer website.">
+            <x-admin.card title="Kontak" subtitle="Tampil di footer website.">
                 <div class="form-row">
                     <x-admin.form-input name="email" type="email" label="Email" :value="$identitas->email"
                         :required="true" maxlength="150" placeholder="mis. info@karyaanakbangsa.co.id" />

@@ -20,9 +20,8 @@
             keterangan="Tampil di beranda" :href="route('admin.layanan.index')" />
         <x-admin.statistik label="FAQ" :nilai="$statistik['faq']" ikon="circle-question" warna="yellow"
             keterangan="Tampil di beranda" :href="route('admin.faq.index')" />
-        <x-admin.statistik label="Pesan belum dibaca" :nilai="$statistik['pesan']['belumDibaca']" ikon="envelope" warna="red"
-            :keterangan="$statistik['pesan']['jumlah'].' pesan masuk'"
-            :href="route('admin.kontak-kami.index')" />
+        <x-admin.statistik label="Hero" :nilai="$statistik['hero']['jumlah']" ikon="panorama" warna="red"
+            :keterangan="$statistik['hero']['aktif'].' aktif di beranda'" :href="route('admin.hero.index')" />
     </div>
 
     <div class="row col-8-4 sejajar-col-3">
@@ -44,31 +43,6 @@
         </x-admin.card>
 
         <div class="tumpukan-kartu">
-            <x-admin.card title="Pesan masuk terbaru" :flush="true">
-                <x-slot:aksi>
-                    <a href="{{ route('admin.kontak-kami.index') }}" class="btn btn-info btn-sm">
-                        <x-admin.icon name="eye" />
-                        Lihat semua
-                    </a>
-                </x-slot>
-
-                @if ($pesanTerbaru->isEmpty())
-                    <x-admin.empty-state title="Belum ada pesan" description="Pesan dari form kontak website akan tampil di sini." />
-                @else
-                    <ul class="daftar-ringkas">
-                        @foreach ($pesanTerbaru as $item)
-                            <li>
-                                <div class="isi-ringkas">
-                                    <div class="judul-ringkas">{{ Str::limit($item->subjek, 80) }}</div>
-                                    <div class="keterangan-ringkas">{{ $item->nama }} · {{ $item->tanggal->translatedFormat('d F Y, H:i') }}</div>
-                                </div>
-                                @include('admin.company-profile.kontak-kami._status')
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </x-admin.card>
-
             <x-admin.card title="Status website" :flush="true">
                 <table class="table tabel-informasi tabel-status-situs">
                     <tbody>
@@ -102,6 +76,24 @@
                         Buka website
                     </a>
                 </x-slot>
+            </x-admin.card>
+
+            <x-admin.card title="Belum tayang" subtitle="Artikel draf dan tutorial yang belum tampil di website." :flush="true">
+                @if ($belumTayang->isEmpty())
+                    <x-admin.empty-state title="Semua konten sudah tayang" description="Artikel draf dan tutorial yang belum tayang akan tampil di sini." />
+                @else
+                    <ul class="daftar-ringkas">
+                        @foreach ($belumTayang as $item)
+                            <li>
+                                <div class="isi-ringkas">
+                                    <a href="{{ $item['url'] }}" class="judul-ringkas">{{ Str::limit($item['judul'], 100) }}</a>
+                                    <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
+                                </div>
+                                <span class="status status-yellow">{{ $item['status'] }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             </x-admin.card>
         </div>
     </div>

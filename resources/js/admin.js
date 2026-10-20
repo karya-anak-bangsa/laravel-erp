@@ -6,7 +6,6 @@ import { openPanel } from 'gentelella/v4/menus';
 // komponen Gentelella. Build ESM tanpa CSS bawaan; CSS-nya dimuat di admin.scss.
 import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
-import { pasangTandaiBaca } from './admin/kontak-kami.js';
 import { pasangRepeater } from './admin/repeater.js';
 import { pasangFormTemplate } from './admin/template.js';
 
@@ -20,7 +19,6 @@ try {
 
 mountShell();
 pasangRepeater();
-pasangTandaiBaca();
 pasangFormTemplate();
 
 // Pratinjau berkas yang baru dipilih di baris gambar tambahan portofolio (admin/company-profile/portofolio/_baris-gambar).
@@ -115,8 +113,6 @@ document.addEventListener('click', (event) => {
             popup: 'swal-detail',
             confirmButton: 'btn btn-secondary',
         },
-        // Modul bisa bereaksi saat rincian dibuka (mis. kontak-kami.js menandai pesan dibaca).
-        didOpen: (popup) => tombol.dispatchEvent(new CustomEvent('detail-dibuka', { bubbles: true, detail: { popup } })),
     });
 });
 

@@ -65,7 +65,7 @@ it('membuang skrip, style, gambar, iframe, dan atribut berbahaya', function () {
 it('hanya mengizinkan tautan http, https, mailto, dan tautan internal', function () {
     $hasil = $this->sanitizer->bersihkan(
         '<p><a href="javascript:alert(1)">a</a> <a href="https://karyaanakbangsa.co.id" target="_blank" rel="nofollow">b</a> '
-        .'<a href="mailto:info@karyaanakbangsa.co.id">c</a> <a href="/portofolio">d</a> <a href="#kontak">e</a></p>',
+        .'<a href="mailto:info@karyaanakbangsa.co.id">c</a> <a href="/portofolio">d</a> <a href="#layanan">e</a></p>',
     );
 
     expect($hasil)->not->toContain('javascript')
@@ -74,7 +74,7 @@ it('hanya mengizinkan tautan http, https, mailto, dan tautan internal', function
         // "@" di-encode &#64; (tetap dibaca browser sebagai @).
         ->toContain('<a href="mailto:info&#64;karyaanakbangsa.co.id">c</a>')
         ->toContain('<a href="/portofolio">d</a>')
-        ->toContain('<a href="#kontak">e</a>');
+        ->toContain('<a href="#layanan">e</a>');
 });
 
 it('melepas tag pembungkus hasil tempel tanpa menghilangkan teksnya', function () {

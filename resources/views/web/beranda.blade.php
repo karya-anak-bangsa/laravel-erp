@@ -18,5 +18,4 @@
     @include('web.beranda.ajakan')
     @includeWhen($artikel->isNotEmpty(), 'web.beranda.artikel')
     @includeWhen($faq->isNotEmpty(), 'web.beranda.faq')
-    @include('web.beranda.kontak')
 @endsection

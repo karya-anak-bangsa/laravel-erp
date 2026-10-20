@@ -883,14 +883,19 @@ table.table .kolom-aksi {
     }
 }
 
-// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella.
+// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella. Kartu terakhir (Belum tayang)
+// memanjang mengisi sisa tinggi agar dasar kedua kolom sejajar.
 .tumpukan-kartu {
-    display: grid;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-4);
+
+    > .card:last-child {
+        flex: 1;
+    }
 }
 
-// Daftar ringkas dashboard (Terakhir diperbarui, Pesan masuk terbaru): baris bergaris pemisah berisi judul dan
+// Daftar ringkas dashboard (Terakhir diperbarui, Belum tayang): baris bergaris pemisah berisi judul dan
 // keterangan, label status di kanan. Jarak tepinya sama dengan kepala kartu (16px).
 .daftar-ringkas {
     margin: 0;
@@ -943,37 +948,6 @@ table.table.tabel-informasi tbody tr:hover {
     background: transparent;
 }
 
-// Status netral (mis. pesan sudah dibaca); Gentelella hanya punya varian berwarna.
-.status-abu {
-    color: var(--text-muted);
-
-    &::before {
-        background: var(--text-muted);
-    }
-}
-
-// Kotak masuk Kontak Kami: seperti email, nama & subjek pesan yang belum dibaca ditebalkan.
-.tabel-kotak-masuk {
-    .teks-pesan {
-        color: var(--text-secondary);
-    }
-
-    tr.belum-dibaca .teks-pesan {
-        color: var(--text);
-        font-weight: 600;
-    }
-
-    .kolom-status,
-    .kolom-tanggal {
-        white-space: nowrap;
-    }
-}
-
-// Isi pesan dari form kontak adalah teks polos; baris barunya dipertahankan.
-.teks-pesan-lengkap {
-    white-space: pre-line;
-}
-
 // Submenu sidebar (.nav-tree): chevron Font Awesome dikecilkan setara SVG 12px bawaan
 // Gentelella, bukan ukuran ikon menu 18px.
 .nav-toggle .icon.nav-chev {
@@ -990,11 +964,6 @@ table.table.tabel-informasi tbody tr:hover {
 
 .nav-tree:not(.open) .nav-sub > .nav-sub-inner {
     padding-block: 0;
-}
-
-// Badge menu sidebar (mis. jumlah pesan belum dibaca) disembunyikan saat 0.
-.nav-link .badge[hidden] {
-    display: none;
 }
 
 // Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan

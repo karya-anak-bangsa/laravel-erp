@@ -8,7 +8,6 @@ use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\KategoriPortofolio;
-use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
@@ -16,7 +15,6 @@ use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -35,7 +33,7 @@ class RingkasanService
      *     tutorial: array{tayang: int, belumTayang: int, materi: int},
      *     layanan: int,
      *     faq: int,
-     *     pesan: array{belumDibaca: int, jumlah: int},
+     *     hero: array{jumlah: int, aktif: int},
      * }
      */
     public function statistik(): array
@@ -59,9 +57,9 @@ class RingkasanService
             ],
             'layanan' => Layanan::query()->count(),
             'faq' => Faq::query()->count(),
-            'pesan' => [
-                'belumDibaca' => KontakKami::query()->belumDibaca()->count(),
-                'jumlah' => KontakKami::query()->count(),
+            'hero' => [
+                'jumlah' => Hero::query()->count(),
+                'aktif' => Hero::query()->aktif()->count(),
             ],
         ];
     }
@@ -90,17 +88,26 @@ class RingkasanService
     }
 
     /**
-     * Pesan Kontak Kami terbaru, urutannya sama dengan kotak masuk.
+     * Konten yang belum tampil di website: artikel draf dan tutorial yang belum tayang (draf atau belum punya materi),
+     * terakhir disimpan lebih dulu.
      *
-     * @return EloquentCollection<int, KontakKami>
+     * @return Collection<int, array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
      */
-    public function pesanTerbaru(int $jumlah = 5): EloquentCollection
+    public function belumTayang(int $jumlah = 5): Collection
     {
-        return KontakKami::query()
-            ->orderByDesc('tanggal')
-            ->orderByDesc('id_kontak_kami')
-            ->limit($jumlah)
-            ->get(['id_kontak_kami', 'nama', 'subjek', 'tanggal', 'status_baca']);
+        $draf = StatusPublikasi::Draf;
+
+        return collect(array_merge(
+            $this->belumTayangDari('Artikel', Artikel::query()->where('status_publikasi', $draf), 'Draf', 'admin.artikel.edit', $jumlah),
+            $this->belumTayangDari('Tutorial', Tutorial::query()->where('status_publikasi', $draf), 'Draf', 'admin.tutorial.edit', $jumlah),
+            // Terbit tetapi belum tayang karena scope tayang juga mensyaratkan minimal satu materi.
+            $this->belumTayangDari('Tutorial', Tutorial::query()->where('status_publikasi', StatusPublikasi::Terbit)->doesntHave('materiTutorial'),
+                'Belum ada materi', 'admin.tutorial.edit', $jumlah),
+        ))
+            // Pengurutan stabil: waktu kembar tetap urut seperti di atas.
+            ->sortByDesc(fn (array $item): int => $item['diperbarui']->getTimestamp())
+            ->take($jumlah)
+            ->values();
     }
 
     /**
@@ -139,5 +146,24 @@ class RingkasanService
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * Baris terbaruDari() ditambah label status untuk kartu Belum tayang.
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
+     * @return list<array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
+     */
+    private function belumTayangDari(string $modul, Builder $query, string $status, string $rute, int $jumlah): array
+    {
+        $hasil = [];
+
+        foreach ($this->terbaruDari($modul, $query, 'judul', $rute, $jumlah) as $item) {
+            $hasil[] = [...$item, 'status' => $status];
+        }
+
+        return $hasil;
     }
 }

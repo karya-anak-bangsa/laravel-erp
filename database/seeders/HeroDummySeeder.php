@@ -45,7 +45,7 @@ class HeroDummySeeder extends Seeder
                 'keyword' => ['Laravel', 'Flutter', 'UI/UX', 'Data Analyst'],
                 'cta' => [
                     ['label' => 'Lihat Jadwal', 'url' => '#layanan', 'gaya' => GayaCta::Primary->value],
-                    ['label' => 'Konsultasi', 'url' => '#kontak', 'gaya' => GayaCta::Secondary->value],
+                    ['label' => 'Konsultasi', 'url' => 'https://wa.me/6281234567890', 'gaya' => GayaCta::Secondary->value],
                 ],
             ],
             'sertifikasi-it' => [
@@ -71,7 +71,7 @@ class HeroDummySeeder extends Seeder
                 'keyword' => ['Android', 'iOS', 'Flutter'],
                 'cta' => [
                     ['label' => 'Lihat Portofolio', 'url' => '#portofolio', 'gaya' => GayaCta::Primary->value],
-                    ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => GayaCta::Secondary->value],
+                    ['label' => 'Hubungi Kami', 'url' => 'https://wa.me/6281234567890', 'gaya' => GayaCta::Secondary->value],
                 ],
             ],
         ];

@@ -13,8 +13,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'statistik' => $ringkasan->statistik(),
             'terakhirDiperbarui' => $ringkasan->terakhirDiperbarui(),
-            'pesanTerbaru' => $ringkasan->pesanTerbaru(),
             'statusSitus' => $ringkasan->statusSitus(),
+            'belumTayang' => $ringkasan->belumTayang(),
         ]);
     }
 }

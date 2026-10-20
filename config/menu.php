@@ -13,8 +13,6 @@
 |           landmark; semua menu modul memakai book (pilihan pemilik)
 | - rute  : nama rute tujuan
 | - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
-| - badge : (opsional) kunci angka badge yang dihitung App\View\Composers\MenuComposer.
-|           Bukan closure, karena config harus bisa di-cache (php artisan optimize)
 | - sub   : (opsional) submenu .nav-sublink berisi label, rute, aktif (tanpa ikon);
 |           menu induknya hanya membuka/menutup submenu sehingga tidak punya rute
 |
@@ -104,13 +102,6 @@ return [
                 'ikon' => 'book',
                 'rute' => 'admin.faq.index',
                 'aktif' => 'admin.faq.*',
-            ],
-            [
-                'label' => 'Kontak Kami',
-                'ikon' => 'book',
-                'rute' => 'admin.kontak-kami.index',
-                'aktif' => 'admin.kontak-kami.*',
-                'badge' => 'kontak-kami-belum-dibaca',
             ],
         ],
     ],

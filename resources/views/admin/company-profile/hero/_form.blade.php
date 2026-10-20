@@ -52,7 +52,7 @@
                 Tambah Tombol
             </button>
             <div class="form-help">
-                Maksimal {{ StoreHeroRequest::MAKS_CTA }} tombol. URL boleh berupa bagian halaman (#kontak), halaman website
+                Maksimal {{ StoreHeroRequest::MAKS_CTA }} tombol. URL boleh berupa bagian halaman (#layanan), halaman website
                 (/portofolio), atau alamat lengkap (https://…). Gaya utama untuk ajakan terpenting.
             </div>
             @error('cta')

@@ -24,7 +24,7 @@ class HeroFactory extends Factory
             'gambar' => Hero::FOLDER.'/'.fake()->uuid().'.webp',
             'keyword' => fake()->words(3),
             'cta' => [
-                ['label' => 'Hubungi Kami', 'url' => '#kontak', 'gaya' => GayaCta::Primary->value],
+                ['label' => 'Lihat Layanan', 'url' => '#layanan', 'gaya' => GayaCta::Primary->value],
             ],
             'status_aktif' => false,
         ];

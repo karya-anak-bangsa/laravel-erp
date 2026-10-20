@@ -299,34 +299,6 @@
 [data-tema=full_color] .jawab-faq { @apply text-teks; }
 [data-tema=monochrome] .jawab-faq { @apply text-muted-foreground; }
 
-/* ---------- Kontak ---------- */
-/* Formulir selebar konten tanpa daftar kontak & peta: alamat, email, dan WhatsApp sudah ada di footer (pilihan pemilik
-   2026-10-19). */
-.kartu-formulir { @apply mt-12 rounded-kartu border bg-card p-6; box-shadow: var(--bayangan-formulir); }
-.judul-formulir { @apply text-lg font-semibold tracking-tight text-foreground; }
-.catatan-formulir { @apply mt-1.5 text-sm text-muted-foreground; }
-.tanda-wajib { @apply text-aksen; }
-[data-tema=monochrome] .tanda-wajib { @apply text-muted-foreground; }
-.form-kontak { @apply mt-6; }
-[data-tema=full_color] .field > label { @apply text-foreground; }
-/* Bayangan isian lewat --tw-shadow agar cincin fokus & galat Basecoat (ring-3) tetap tersusun di box-shadow yang sama. */
-.field > :is(input, textarea) { border-radius: var(--sudut-isian); --tw-shadow: var(--bayangan-isian); }
-.field > input { @apply h-11 sm:h-10; }
-.field > textarea { @apply min-h-36; }
-/* Hanya isian valid: garis merah aria-invalid bawaan Basecoat tetap berlaku seperti di Monochrome. */
-[data-tema=full_color] .field > :is(input, textarea):not([aria-invalid=true]) { border-color: var(--input); }
-[data-tema=full_color] .field > :is(input, textarea)::placeholder { color: #64748b; }
-.galat-isian { @apply mt-1.5 text-sm font-medium text-red-700; }
-.aksi-formulir { @apply mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between; }
-.aksi-formulir .btn { @apply w-full sm:order-2 sm:w-auto; }
-.kotak-sukses { @apply flex items-start gap-x-3 border p-4 text-sm font-medium sm:order-1; border-radius: var(--sudut-isian); }
-[data-tema=full_color] .kotak-sukses { @apply border-emerald-200 bg-emerald-50 text-emerald-800; }
-[data-tema=monochrome] .kotak-sukses { @apply bg-muted text-foreground; }
-/* Kotak sukses/galat difokuskan skrip hanya agar diumumkan pembaca layar; bukan elemen interaktif, jadi tanpa garis fokus. */
-.kotak-sukses:focus, .kotak-galat:focus { outline: none; }
-/* Galat tingkat formulir (batas kiriman, sesi habis): tetap merah di kedua tema, seperti galat isian. */
-.kotak-galat { @apply mb-5 flex items-start gap-x-3 bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200; border-radius: var(--sudut-isian); }
-
 /* ---------- Footer ---------- */
 .kaki-situs { @apply relative bg-background text-muted-foreground; }
 .garis-merek { @apply h-1; background-image: linear-gradient(to right, var(--warna-utama), var(--warna-aksen), var(--warna-utama)); }

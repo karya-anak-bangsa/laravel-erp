@@ -3,7 +3,6 @@
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
-use App\Models\CompanyProfile\KontakKami;
 use App\Models\CompanyProfile\MateriTutorial;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Template;
@@ -24,8 +23,9 @@ it('menghitung angka setiap modul tanpa data terhapus', function () {
     Tutorial::factory()->terbit()->has(MateriTutorial::factory()->count(3), 'materiTutorial')->create();
     Tutorial::factory()->terbit()->create();
     Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create();
-    KontakKami::factory()->belumDibaca()->count(2)->create();
-    KontakKami::factory()->dibaca()->create();
+    Hero::factory()->aktif()->create();
+    Hero::factory()->create();
+    Hero::factory()->create()->delete();
 
     expect($this->ringkasan->statistik())
         ->artikel->toMatchArray(['terbit' => 1, 'draf' => 2])
@@ -33,7 +33,7 @@ it('menghitung angka setiap modul tanpa data terhapus', function () {
         ->tutorial->toBe(['tayang' => 1, 'belumTayang' => 2, 'materi' => 4])
         ->layanan->toBe(0)
         ->faq->toBe(0)
-        ->pesan->toBe(['belumDibaca' => 2, 'jumlah' => 3]);
+        ->hero->toBe(['jumlah' => 2, 'aktif' => 1]);
 });
 
 it('mengurutkan konten terakhir diperbarui lintas modul dan membatasi jumlahnya', function () {
@@ -54,12 +54,25 @@ it('mengurutkan konten terakhir diperbarui lintas modul dan membatasi jumlahnya'
         ]);
 });
 
-it('mengambil pesan terbaru menurut tanggal masuk', function () {
-    KontakKami::factory()->create(['subjek' => 'Lama', 'tanggal' => '2026-10-01 08:00:00']);
-    KontakKami::factory()->create(['subjek' => 'Baru', 'tanggal' => '2026-10-20 08:00:00']);
-    KontakKami::factory()->create(['subjek' => 'Tengah', 'tanggal' => '2026-10-10 08:00:00']);
+it('mengambil artikel & tutorial yang belum tayang, terakhir disimpan lebih dulu, dan membatasi jumlahnya', function () {
+    Artikel::factory()->draf()->create(['judul' => 'Draf lama', 'updated_at' => '2026-10-01 08:00:00']);
+    $artikel = Artikel::factory()->draf()->create(['judul' => 'Draf baru', 'updated_at' => '2026-10-20 08:00:00']);
+    $tutorial = Tutorial::factory()->terbit()->create(['judul' => 'Tanpa materi', 'updated_at' => '2026-10-19 08:00:00']);
+    Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-10 08:00:00']);
+    // Sudah tayang atau terhapus: tidak ikut walau lebih baru.
+    Artikel::factory()->terbit()->create(['updated_at' => '2026-10-20 09:00:00']);
+    Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['updated_at' => '2026-10-20 09:00:00']);
+    Artikel::factory()->draf()->create(['updated_at' => '2026-10-20 10:00:00'])->delete();
 
-    expect($this->ringkasan->pesanTerbaru(2)->pluck('subjek')->all())->toBe(['Baru', 'Tengah']);
+    $hasil = $this->ringkasan->belumTayang(3);
+
+    expect($hasil->pluck('judul')->all())->toBe(['Draf baru', 'Tanpa materi', 'Tutorial draf'])
+        ->and($hasil->pluck('modul')->all())->toBe(['Artikel', 'Tutorial', 'Tutorial'])
+        ->and($hasil->pluck('status')->all())->toBe(['Draf', 'Belum ada materi', 'Draf'])
+        ->and($hasil->pluck('url')->take(2)->all())->toBe([
+            route('admin.artikel.edit', $artikel),
+            route('admin.tutorial.edit', $tutorial),
+        ]);
 });
 
 it('membaca hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
