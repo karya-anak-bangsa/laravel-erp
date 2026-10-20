@@ -19,13 +19,13 @@ enum StatusPublikasi: string
     }
 
     /**
-     * Kelas warna komponen .status Gentelella.
+     * Kelas warna badge .chip Gentelella.
      */
     public function kelasStatus(): string
     {
         return match ($this) {
-            self::Draf => 'status-yellow',
-            self::Terbit => 'status-green',
+            self::Draf => 'chip-yellow',
+            self::Terbit => 'chip-green',
         };
     }
 

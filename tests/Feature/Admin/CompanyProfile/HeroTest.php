@@ -46,6 +46,8 @@ it('menampilkan daftar hero dengan hero aktif di baris pertama', function () {
         ->get(route('admin.hero.index'))
         ->assertOk()
         ->assertSeeInOrder(['Hero Aktif Lama', 'Hero Nonaktif Baru'])
+        // Nonaktif keadaan normal (hanya satu hero aktif), jadi badge-nya netral, bukan merah.
+        ->assertSeeInOrder(['Hero Aktif Lama', '<span class="chip chip-green">Aktif</span>', 'Hero Nonaktif Baru', '<span class="chip">Nonaktif</span>'], false)
         ->assertSee('class="nav-link active" href="'.route('admin.hero.index').'"', false);
 });
 
@@ -93,7 +95,7 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
             'Website dan aplikasi.',
             'Laravel, Flutter',
             'Hubungi Kami → #layanan (Utama)',
-            '<span class="status status-green">Aktif</span>',
+            '<span class="chip chip-green">Aktif</span>',
             '09 Oktober 2026, 08:30',
             Storage::disk('public')->url($hero->gambar),
             '</template>',

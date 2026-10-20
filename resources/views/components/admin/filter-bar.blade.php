@@ -26,7 +26,7 @@
     {{-- Terapkan bergaya tombol Batal, Reset bergaya tombol Hapus; keduanya sama ukuran (pola paradiplomasi-v2, pilihan pemilik). --}}
     <div class="aksi-filter">
         <button type="submit" class="btn btn-secondary">
-            <x-admin.icon name="filter" />
+            <x-admin.icon name="magnifying-glass" />
             Terapkan
         </button>
 

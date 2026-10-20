@@ -123,7 +123,7 @@ it('merender filter-bar dengan kata kunci dan tombol reset saat filter aktif', f
         ->assertSeeInOrder([
             '<div class="aksi-filter">',
             '<button type="submit" class="btn btn-secondary">',
-            'fa-filter',
+            'fa-magnifying-glass',
             'Terapkan',
             '<a href="/admin/uji" class="btn btn-danger">',
             'fa-clock-rotate-left',

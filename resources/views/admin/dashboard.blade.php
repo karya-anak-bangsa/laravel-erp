@@ -61,9 +61,9 @@
                             <td>
                                 {{-- SEO_INDEKS di .env; selama tahap uji produksi tidak diindeks. --}}
                                 @if ($statusSitus['indeks'])
-                                    <span class="status status-green">Diindeks</span>
+                                    <span class="chip chip-green">Diindeks</span>
                                 @else
-                                    <span class="status status-yellow">Tidak diindeks</span>
+                                    <span class="chip chip-yellow">Tidak diindeks</span>
                                 @endif
                             </td>
                         </tr>
@@ -89,7 +89,7 @@
                                     <a href="{{ $item['url'] }}" class="judul-ringkas">{{ Str::limit($item['judul'], 100) }}</a>
                                     <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
                                 </div>
-                                <span class="status status-yellow">{{ $item['status'] }}</span>
+                                <span class="chip chip-yellow">{{ $item['status'] }}</span>
                             </li>
                         @endforeach
                     </ul>

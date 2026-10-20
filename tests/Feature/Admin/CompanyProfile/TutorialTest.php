@@ -50,8 +50,8 @@ it('menampilkan tutorial terbaru lebih dulu beserta kategori, jumlah materi, dan
         ->get(route('admin.tutorial.index'))
         ->assertOk()
         ->assertSeeInOrder([
-            'Tutorial terbaru', 'Pemrograman Mobile', '<td class="kolom-pas">0</td>', 'status-yellow">Draf',
-            'Tutorial lama', 'Basis Data', '<td class="kolom-pas">3</td>', 'status-green">Terbit',
+            'Tutorial terbaru', 'Pemrograman Mobile', '<td class="kolom-pas">0</td>', 'chip-yellow">Draf',
+            'Tutorial lama', 'Basis Data', '<td class="kolom-pas">3</td>', 'chip-green">Terbit',
         ], false)
         ->assertSee('class="nav-sublink active" href="'.route('admin.tutorial.index').'"', false)
         ->assertSee('class="nav-tree open has-active"', false);

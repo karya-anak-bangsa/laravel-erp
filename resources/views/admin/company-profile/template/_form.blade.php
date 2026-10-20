@@ -86,7 +86,7 @@
             <input type="hidden" name="status_aktif" value="1">
             <div class="form-group">
                 <div class="form-label">Status</div>
-                <span class="status status-green">Aktif</span>
+                <span class="chip chip-green">Aktif</span>
                 <div class="form-help">Template ini sedang dipakai website. Untuk menggantinya, aktifkan template {{ $template->jenis->label() }} lain.</div>
             </div>
         @else

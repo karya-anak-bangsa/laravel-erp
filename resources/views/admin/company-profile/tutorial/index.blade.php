@@ -56,7 +56,7 @@
                                 <td class="kolom-pas">{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
                                 <td class="kolom-pas">{{ $item->materi_tutorial_count }}</td>
                                 <td class="kolom-status">
-                                    <span class="status {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
+                                    <span class="chip {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
                                 </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
@@ -75,7 +75,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Status</th>
-                                                                <td><span class="status {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span></td>
+                                                                <td><span class="chip {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span></td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="row">Jumlah materi</th>

@@ -48,9 +48,9 @@
                                 <td>{{ implode(', ', $item->keyword) }}</td>
                                 <td class="kolom-status">
                                     @if ($item->status_aktif)
-                                        <span class="status status-green">Aktif</span>
+                                        <span class="chip chip-green">Aktif</span>
                                     @else
-                                        <span class="status status-red">Nonaktif</span>
+                                        <span class="chip">Nonaktif</span>
                                     @endif
                                 </td>
                                 <td class="kolom-aksi">
@@ -86,9 +86,9 @@
                                                                 <th scope="row">Status</th>
                                                                 <td>
                                                                     @if ($item->status_aktif)
-                                                                        <span class="status status-green">Aktif</span>
+                                                                        <span class="chip chip-green">Aktif</span>
                                                                     @else
-                                                                        <span class="status status-red">Nonaktif</span>
+                                                                        <span class="chip">Nonaktif</span>
                                                                     @endif
                                                                 </td>
                                                             </tr>

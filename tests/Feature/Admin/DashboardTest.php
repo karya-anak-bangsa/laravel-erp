@@ -170,9 +170,9 @@ describe('ringkasan dashboard', function () {
             ->get(route('admin.dashboard'))
             ->assertSeeInOrder([
                 '<div class="card-title">Belum tampil</div>',
-                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'status-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'status-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas">Tutorial kosong</a>', 'status-yellow">Belum ada materi',
+                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'chip-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'chip-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas">Tutorial kosong</a>', 'chip-yellow">Belum ada materi',
             ], false)
             ->getContent();
 
@@ -197,7 +197,7 @@ describe('ringkasan dashboard', function () {
                 'Hero aktif</th>', '<td>Hero Tampil</td>',
                 'Template Full Color</th>', '<td>Warna Aktif</td>',
                 'Template Monochrome</th>', '<td>Mono Aktif</td>',
-                'Mesin pencari</th>', 'status-yellow">Tidak diindeks',
+                'Mesin pencari</th>', 'chip-yellow">Tidak diindeks',
                 'href="'.route('beranda').'" target="_blank" rel="noopener"', 'Buka website',
             ], false)
             // Hero cadangan tetap boleh muncul di Terakhir diperbarui, tetapi bukan sebagai hero aktif.
@@ -206,7 +206,7 @@ describe('ringkasan dashboard', function () {
 
         config(['seo.indeks' => true]);
 
-        $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('status-green">Diindeks', false);
+        $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('chip-green">Diindeks', false);
     });
 
     it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tampil', function () {

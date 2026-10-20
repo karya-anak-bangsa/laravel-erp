@@ -49,8 +49,8 @@ it('menampilkan artikel terbaru lebih dulu beserta kategori dan status', functio
         ->get(route('admin.artikel.index'))
         ->assertOk()
         ->assertSeeInOrder([
-            'Artikel terbaru', 'Teknologi', '09 Oktober 2026', 'status-yellow">Draf',
-            'Artikel lama', 'Teknologi', '01 September 2026', 'status-green">Terbit',
+            'Artikel terbaru', 'Teknologi', '09 Oktober 2026', 'chip-yellow">Draf',
+            'Artikel lama', 'Teknologi', '01 September 2026', 'chip-green">Terbit',
         ], false)
         ->assertSee('class="nav-sublink active" href="'.route('admin.artikel.index').'"', false)
         ->assertSee('class="nav-tree open has-active"', false);

@@ -1461,6 +1461,12 @@ $lebar-konten-maks: 1600px;
 
 .footer {
     padding-inline: max(24px, calc((100% - #{$lebar-konten-maks}) / 2 + 24px));
+
+    // Di ponsel kedua teks bertumpuk (hak cipta satu baris, versi di bawahnya) alih-alih berdesakan lalu patah.
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 2px;
+    }
 }
 
 // Footer selalu di dasar layar walau konten sedikit: .main sudah min-height 100vh,
