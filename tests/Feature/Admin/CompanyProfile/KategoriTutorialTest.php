@@ -84,7 +84,7 @@ it('menambah kategori tutorial beserta slug halaman kategorinya', function () {
         ->get(route('admin.kategori-tutorial.create'))
         ->assertOk()
         ->assertSee('name="nama_kategori"', false)
-        ->assertSee('Alamat halaman kategori (slug) dibuat otomatis dari nama dan tidak berubah lagi setelah kategori dipakai tutorial yang tayang.');
+        ->assertSee('Alamat halaman kategori (slug) dibuat otomatis dari nama dan tidak berubah lagi setelah kategori dipakai tutorial yang tampil di website.');
 
     $this->actingAs($this->admin)
         ->post(route('admin.kategori-tutorial.store'), ['nama_kategori' => 'Desain UI & UX'])
@@ -102,7 +102,7 @@ it('mengubah slug mengikuti nama hanya selama kategori belum punya tutorial taya
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-tutorial.edit', $kategori))
-        ->assertSee('Alamat halaman kategori: /tutorial/kategori/web — ikut berubah bila nama diubah selama belum ada tutorial tayang di kategori ini.');
+        ->assertSee('Alamat halaman kategori: /tutorial/kategori/web — ikut berubah bila nama diubah selama belum ada tutorial yang tampil di kategori ini.');
     $this->actingAs($this->admin)
         ->put(route('admin.kategori-tutorial.update', $kategori), ['nama_kategori' => 'Pemrograman Web'])
         ->assertSessionHasNoErrors();
@@ -134,7 +134,7 @@ it('menampilkan alamat halaman kategori di modal detail', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-tutorial.index'))
         ->assertSeeInOrder([
-            'Kategori Belum', '<td>/tutorial/kategori/kategori-belum</td>', 'Belum tayang (belum ada tutorial tayang)',
+            'Kategori Belum', '<td>/tutorial/kategori/kategori-belum</td>', 'Belum tampil (belum ada tutorial yang tampil)',
             'Kategori Tayang', '<td>/tutorial/kategori/kategori-tayang</td>', 'href="'.route('kategori-tutorial.show', 'kategori-tayang').'"',
         ], false);
 });
@@ -214,7 +214,7 @@ it('menampilkan jumlah tutorial per kategori tanpa menghitung tutorial terhapus'
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-tutorial.index'))
-        ->assertSeeInOrder(['Pemrograman Web', '<td style="text-align:center">2</td>', 'Jumlah Tutorial</th>', '<td>2</td>'], false)
+        ->assertSeeInOrder(['Pemrograman Web', '<td>2</td>', 'Jumlah Tutorial</th>', '<td>2</td>'], false)
         ->assertSee('masih dipakai 2 tutorial sehingga tidak bisa dihapus.', false);
 });
 

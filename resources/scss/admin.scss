@@ -846,6 +846,30 @@ table.table .kolom-sedang {
     min-width: 160px;
 }
 
+// Kolom pendek (gambar, urutan, kategori, tanggal, jumlah, status) selebar isinya seperti kolom aksi, sehingga sisa
+// lebar tabel jatuh ke kolom tanpa kelas ini: kolom judul + ringkasan, atau kolom data terakhir bila tabel tidak punya
+// judul (mis. kategori). Kolom data jadi rapat di kiri dengan jarak seragam (padding sel 16 + 16 px), tidak terpisah
+// ruang kosong yang dibagi rata oleh browser.
+table.table .kolom-pas,
+table.table .kolom-status {
+    width: 1%;
+    white-space: nowrap;
+}
+
+table.table .kolom-status {
+    text-align: center;
+}
+
+// Ringkasan di bawah judul tabel daftar: maksimal dua baris yang memenuhi lebar kolom. Baris pertama selalu penuh,
+// jadi jarak ke kolom berikutnya tetap padding sel, bukan sisa acak dari teks yang dipotong per jumlah karakter.
+.ringkasan-tabel {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
 // Repeater (resources/js/admin/repeater.js): tiap baris = isian + tombol hapus di kanan.
 .repeater-daftar {
     display: grid;
@@ -933,6 +957,11 @@ table.table .kolom-aksi {
     width: 1%;
     white-space: nowrap;
     text-align: center;
+}
+
+// Kepala kolom Aksi di tengah, tombolnya rata kanan (segaris tepi kanan kartu).
+table.table td.kolom-aksi {
+    text-align: right;
 }
 
 .aksi-tabel {

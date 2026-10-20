@@ -30,21 +30,21 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Gambar</th>
+                            <th class="kolom-pas">Gambar</th>
                             <th class="kolom-lebar">Judul</th>
-                            <th>Kategori</th>
+                            <th class="kolom-pas">Kategori</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($portofolio as $item)
                             <tr>
-                                <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
+                                <td class="kolom-pas"><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::polos($item->deskripsi), 400) }}</div>
                                 </td>
-                                <td>{{ $item->kategoriPortofolio?->nama_kategori ?? '—' }}</td>
+                                <td class="kolom-pas">{{ $item->kategoriPortofolio?->nama_kategori ?? '—' }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Portofolio" :ikon-saja="true">

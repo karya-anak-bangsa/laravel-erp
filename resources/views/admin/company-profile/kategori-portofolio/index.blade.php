@@ -21,16 +21,16 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="kolom-lebar">Nama Kategori</th>
-                            <th style="text-align:center">Jumlah Portofolio</th>
+                            <th class="kolom-pas">Nama Kategori</th>
+                            <th>Jumlah Portofolio</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($kategoriPortofolio as $item)
                             <tr>
-                                <td class="cell-strong">{{ $item->nama_kategori }}</td>
-                                <td style="text-align:center">{{ $item->portofolio_count }}</td>
+                                <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
+                                <td>{{ $item->portofolio_count }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Kategori Portofolio" :ikon-saja="true">

@@ -19,7 +19,7 @@ it('menghitung angka setiap modul tanpa data terhapus', function () {
     Artikel::factory()->terbit()->create()->delete();
     Portofolio::factory()->count(2)->create();
     Portofolio::factory()->create()->delete();
-    // Tayang = terbit dan bermateri; terbit tanpa materi dan draf termasuk belum tayang.
+    // Dihitung dari status: tutorial terbit tanpa materi tetap terbit (belum tampil, lihat kartu Belum tampil).
     Tutorial::factory()->terbit()->has(MateriTutorial::factory()->count(3), 'materiTutorial')->create();
     Tutorial::factory()->terbit()->create();
     Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create();
@@ -30,7 +30,7 @@ it('menghitung angka setiap modul tanpa data terhapus', function () {
     expect($this->ringkasan->statistik())
         ->artikel->toMatchArray(['terbit' => 1, 'draf' => 2])
         ->portofolio->toMatchArray(['jumlah' => 2])
-        ->tutorial->toBe(['tayang' => 1, 'belumTayang' => 2, 'materi' => 4])
+        ->tutorial->toBe(['terbit' => 2, 'draf' => 1, 'materi' => 4])
         ->layanan->toBe(0)
         ->faq->toBe(0)
         ->hero->toBe(['jumlah' => 2, 'aktif' => 1]);
@@ -54,17 +54,17 @@ it('mengurutkan konten terakhir diperbarui lintas modul dan membatasi jumlahnya'
         ]);
 });
 
-it('mengambil artikel & tutorial yang belum tayang, terakhir disimpan lebih dulu, dan membatasi jumlahnya', function () {
+it('mengambil artikel & tutorial yang belum tampil, terakhir disimpan lebih dulu, dan membatasi jumlahnya', function () {
     Artikel::factory()->draf()->create(['judul' => 'Draf lama', 'updated_at' => '2026-10-01 08:00:00']);
     $artikel = Artikel::factory()->draf()->create(['judul' => 'Draf baru', 'updated_at' => '2026-10-20 08:00:00']);
     $tutorial = Tutorial::factory()->terbit()->create(['judul' => 'Tanpa materi', 'updated_at' => '2026-10-19 08:00:00']);
     Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-10 08:00:00']);
-    // Sudah tayang atau terhapus: tidak ikut walau lebih baru.
+    // Sudah tampil atau terhapus: tidak ikut walau lebih baru.
     Artikel::factory()->terbit()->create(['updated_at' => '2026-10-20 09:00:00']);
     Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['updated_at' => '2026-10-20 09:00:00']);
     Artikel::factory()->draf()->create(['updated_at' => '2026-10-20 10:00:00'])->delete();
 
-    $hasil = $this->ringkasan->belumTayang(3);
+    $hasil = $this->ringkasan->belumTampil(3);
 
     expect($hasil->pluck('judul')->all())->toBe(['Draf baru', 'Tanpa materi', 'Tutorial draf'])
         ->and($hasil->pluck('modul')->all())->toBe(['Artikel', 'Tutorial', 'Tutorial'])

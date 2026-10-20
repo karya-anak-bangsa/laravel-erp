@@ -21,16 +21,16 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="kolom-lebar">Nama Kategori</th>
-                            <th style="text-align:center">Jumlah Tutorial</th>
+                            <th class="kolom-pas">Nama Kategori</th>
+                            <th>Jumlah Tutorial</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($kategoriTutorial as $item)
                             <tr>
-                                <td class="cell-strong">{{ $item->nama_kategori }}</td>
-                                <td style="text-align:center">{{ $item->tutorial_count }}</td>
+                                <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
+                                <td>{{ $item->tutorial_count }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Kategori Tutorial" :ikon-saja="true">
@@ -52,7 +52,7 @@
                                                         <tr>
                                                             <th scope="row">Halaman</th>
                                                             <td>
-                                                                {{-- Tutorial tayang = terbit dan punya minimal satu materi. --}}
+                                                                {{-- Tutorial tampil = terbit dan punya minimal satu materi. --}}
                                                                 @if ($item->tutorial_tayang_count > 0)
                                                                     <a href="{{ route('kategori-tutorial.show', $item) }}" target="_blank" rel="noopener"
                                                                         class="btn btn-info btn-sm">
@@ -60,7 +60,7 @@
                                                                         Buka halaman
                                                                     </a>
                                                                 @else
-                                                                    Belum tayang (belum ada tutorial tayang)
+                                                                    Belum tampil (belum ada tutorial yang tampil)
                                                                 @endif
                                                             </td>
                                                         </tr>

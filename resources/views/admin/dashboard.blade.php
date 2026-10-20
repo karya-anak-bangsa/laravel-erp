@@ -13,8 +13,8 @@
         <x-admin.statistik label="Portofolio" :nilai="$statistik['portofolio']['jumlah']" ikon="briefcase" warna="blue"
             :keterangan="$statistik['portofolio']['kategori'].' kategori'"
             :href="route('admin.portofolio.index')" />
-        <x-admin.statistik label="Tutorial tayang" :nilai="$statistik['tutorial']['tayang']" ikon="graduation-cap" warna="purple"
-            :keterangan="$statistik['tutorial']['materi'].' materi · '.$statistik['tutorial']['belumTayang'].' belum tayang'"
+        <x-admin.statistik label="Tutorial terbit" :nilai="$statistik['tutorial']['terbit']" ikon="graduation-cap" warna="purple"
+            :keterangan="$statistik['tutorial']['draf'].' draf · '.$statistik['tutorial']['materi'].' materi'"
             :href="route('admin.tutorial.index')" />
         <x-admin.statistik label="Layanan" :nilai="$statistik['layanan']" ikon="handshake" warna="green"
             keterangan="Tampil di beranda" :href="route('admin.layanan.index')" />
@@ -78,12 +78,12 @@
                 </x-slot>
             </x-admin.card>
 
-            <x-admin.card title="Belum tayang" subtitle="Artikel draf dan tutorial yang belum tampil di website." :flush="true">
-                @if ($belumTayang->isEmpty())
-                    <x-admin.empty-state title="Semua konten sudah tayang" description="Artikel draf dan tutorial yang belum tayang akan tampil di sini." />
+            <x-admin.card title="Belum tampil" subtitle="Artikel draf dan tutorial yang belum tampil di website." :flush="true">
+                @if ($belumTampil->isEmpty())
+                    <x-admin.empty-state title="Semua konten sudah tampil" description="Artikel draf dan tutorial yang belum tampil di website akan muncul di sini." />
                 @else
                     <ul class="daftar-ringkas">
-                        @foreach ($belumTayang as $item)
+                        @foreach ($belumTampil as $item)
                             <li>
                                 <div class="isi-ringkas">
                                     <a href="{{ $item['url'] }}" class="judul-ringkas">{{ Str::limit($item['judul'], 100) }}</a>

@@ -65,7 +65,7 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
     $this->actingAs($this->admin)
         ->get(route('admin.artikel.index'))
         ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
-        ->assertSee('<div class="card-subtitle">Bagian satu Isi tebal</div>', false)
+        ->assertSee('<div class="card-subtitle ringkasan-tabel">Isi tebal</div>', false)
         ->assertSeeInOrder([
             'class="card kartu-filter"',
             '<div class="card-title">Daftar Artikel</div>',
@@ -205,7 +205,7 @@ it('menyediakan tombol Buka halaman di modal detail hanya untuk artikel terbit',
         ->get(route('admin.artikel.index'))
         ->assertSee('href="'.route('artikel.show', 'sudah-tayang').'" target="_blank" rel="noopener"', false)
         ->assertDontSee('href="'.route('artikel.show', 'belum-tayang').'"', false)
-        ->assertSee('Belum tayang (draf)');
+        ->assertSee('Belum tampil (draf)');
 });
 
 it('memperbarui artikel tanpa mengganti gambar', function () {

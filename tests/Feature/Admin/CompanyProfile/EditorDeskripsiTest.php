@@ -140,6 +140,6 @@ it('menampilkan ringkasan teks polos di tabel dan HTML berformat di modal detail
 
     $this->actingAs($this->admin)
         ->get(route('admin.portofolio.index'))
-        ->assertSee('<div class="card-subtitle">Proyek unggulan fitur satu</div>', false)
+        ->assertSee('<div class="card-subtitle ringkasan-tabel">Proyek unggulan fitur satu</div>', false)
         ->assertSee('<td class="konten-html"><p>Proyek <strong>unggulan</strong></p><ul><li><p>fitur satu</p></li></ul></td>', false);
 });

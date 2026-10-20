@@ -37,25 +37,25 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Gambar</th>
+                            <th class="kolom-pas">Gambar</th>
                             <th class="kolom-lebar">Judul</th>
-                            <th>Kategori</th>
-                            <th style="text-align:center">Jumlah Materi</th>
-                            <th style="text-align:center">Status</th>
+                            <th class="kolom-pas">Kategori</th>
+                            <th class="kolom-pas">Jumlah Materi</th>
+                            <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($tutorial as $item)
                             <tr>
-                                <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
+                                <td class="kolom-pas"><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::polos($item->deskripsi), 400) }}</div>
                                 </td>
-                                <td style="white-space:nowrap">{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
-                                <td style="text-align:center">{{ $item->materi_tutorial_count }}</td>
-                                <td style="text-align:center">
+                                <td class="kolom-pas">{{ $item->kategoriTutorial?->nama_kategori ?? '—' }}</td>
+                                <td class="kolom-pas">{{ $item->materi_tutorial_count }}</td>
+                                <td class="kolom-status">
                                     <span class="status {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
                                 </td>
                                 <td class="kolom-aksi">
@@ -88,11 +88,11 @@
                                                             <tr>
                                                                 <th scope="row">Halaman</th>
                                                                 <td>
-                                                                    {{-- Tayang di website bila terbit dan punya minimal satu materi. --}}
+                                                                    {{-- Tampil di website bila terbit dan punya minimal satu materi. --}}
                                                                     @if ($item->status_publikasi !== StatusPublikasi::Terbit)
-                                                                        Belum tayang (draf)
+                                                                        Belum tampil (draf)
                                                                     @elseif ($item->materi_tutorial_count === 0)
-                                                                        Belum tayang (belum ada materi)
+                                                                        Belum tampil (belum ada materi)
                                                                     @else
                                                                         <a href="{{ route('tutorial.show', $item->slug) }}" target="_blank" rel="noopener"
                                                                             class="btn btn-info btn-sm">

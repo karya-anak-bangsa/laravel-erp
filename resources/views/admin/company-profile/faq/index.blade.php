@@ -23,7 +23,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th style="text-align:center">Urutan</th>
+                            <th class="kolom-pas">Urutan</th>
                             <th class="kolom-lebar">Pertanyaan</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
@@ -31,10 +31,10 @@
                     <tbody>
                         @foreach ($faq as $item)
                             <tr>
-                                <td style="text-align:center" class="cell-strong">{{ $item->urutan_ke }}</td>
+                                <td class="kolom-pas cell-strong">{{ $item->urutan_ke }}</td>
                                 <td>
                                     <div class="cell-strong">{{ $item->pertanyaan }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->jawaban), 120) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::polos($item->jawaban), 400) }}</div>
                                 </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">

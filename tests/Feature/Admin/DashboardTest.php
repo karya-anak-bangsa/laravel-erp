@@ -124,7 +124,7 @@ describe('ringkasan dashboard', function () {
             ->assertSeeInOrder([
                 'href="'.route('admin.artikel.index').'" class="card kartu-statistik"', 'Artikel terbit', '<span class="stat-value">2</span>', '1 draf · 4 kategori',
                 'href="'.route('admin.portofolio.index').'"', 'Portofolio', '<span class="stat-value">1</span>', '1 kategori',
-                'href="'.route('admin.tutorial.index').'"', 'Tutorial tayang', '<span class="stat-value">1</span>', '2 materi · 1 belum tayang',
+                'href="'.route('admin.tutorial.index').'"', 'Tutorial terbit', '<span class="stat-value">1</span>', '1 draf · 2 materi',
                 'href="'.route('admin.layanan.index').'"', 'Layanan', '<span class="stat-value">3</span>',
                 'href="'.route('admin.faq.index').'"', 'FAQ', '<span class="stat-value">4</span>',
                 'href="'.route('admin.hero.index').'"', 'Hero', '<span class="stat-value">3</span>', '1 aktif di beranda',
@@ -159,7 +159,7 @@ describe('ringkasan dashboard', function () {
             ->assertDontSee('Layanan Urut 09');
     });
 
-    it('menampilkan konten belum tayang: artikel draf serta tutorial draf atau tanpa materi, bertautan ke halaman Ubah', function () {
+    it('menampilkan konten belum tampil: artikel draf serta tutorial draf atau tanpa materi, bertautan ke halaman Ubah', function () {
         $artikel = Artikel::factory()->draf()->create(['judul' => 'Artikel draf', 'updated_at' => '2026-10-20 09:00:00']);
         $tutorialDraf = Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-19 09:00:00']);
         $tutorialKosong = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial kosong', 'updated_at' => '2026-10-18 09:00:00']);
@@ -169,15 +169,15 @@ describe('ringkasan dashboard', function () {
         $isi = $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertSeeInOrder([
-                '<div class="card-title">Belum tayang</div>',
+                '<div class="card-title">Belum tampil</div>',
                 'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'status-yellow">Draf',
                 'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'status-yellow">Draf',
                 'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas">Tutorial kosong</a>', 'status-yellow">Belum ada materi',
             ], false)
             ->getContent();
 
-        // Konten yang sudah tayang boleh muncul di Terakhir diperbarui, tetapi tidak di kartu Belum tayang.
-        expect(Str::after($isi, '<div class="card-title">Belum tayang</div>'))
+        // Konten yang sudah tampil boleh muncul di Terakhir diperbarui, tetapi tidak di kartu Belum tampil.
+        expect(Str::after($isi, '<div class="card-title">Belum tampil</div>'))
             ->not->toContain('Artikel sudah terbit')
             ->not->toContain('Tutorial lengkap');
     });
@@ -209,12 +209,12 @@ describe('ringkasan dashboard', function () {
         $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('status-green">Diindeks', false);
     });
 
-    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tayang', function () {
+    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tampil', function () {
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertOk()
             ->assertSee('Belum ada konten')
             ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false)
-            ->assertSee('Semua konten sudah tayang');
+            ->assertSee('Semua konten sudah tampil');
     });
 });

@@ -36,25 +36,25 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Warna</th>
-                            <th class="kolom-lebar">Template</th>
-                            <th>Jenis</th>
+                            <th class="kolom-pas">Warna</th>
+                            <th class="kolom-pas">Template</th>
+                            <th class="kolom-pas">Jenis</th>
                             <th>Font</th>
-                            <th style="text-align:center">Status</th>
+                            <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($template as $item)
                             <tr>
-                                <td>@include('admin.company-profile.template._contoh-warna', ['contoh' => $item])</td>
-                                <td>
+                                <td class="kolom-pas">@include('admin.company-profile.template._contoh-warna', ['contoh' => $item])</td>
+                                <td class="kolom-pas">
                                     <div class="cell-strong">{{ $item->nama }}</div>
                                     <div class="card-subtitle">Sudut {{ Str::lower($item->sudut->label()) }} · skala {{ Str::lower($item->skala->label()) }} · judul {{ Str::lower($item->ketebalan_judul->name) }} · {{ $item->bayangan === BayanganTemplate::Tanpa ? 'tanpa bayangan' : 'bayangan '.Str::lower($item->bayangan->label()) }}</div>
                                 </td>
-                                <td>{{ $item->jenis->label() }}</td>
+                                <td class="kolom-pas">{{ $item->jenis->label() }}</td>
                                 <td>{{ $item->font->label() }}</td>
-                                <td style="text-align:center">
+                                <td class="kolom-status">
                                     @if ($item->status_aktif)
                                         <span class="status status-green">Aktif</span>
                                     @else

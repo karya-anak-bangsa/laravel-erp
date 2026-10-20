@@ -129,7 +129,7 @@ it('menampilkan alamat halaman kategori di modal detail', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-artikel.index'))
         ->assertSeeInOrder([
-            'Kategori Draf', '<td>/artikel/kategori/kategori-draf</td>', 'Belum tayang (belum ada artikel terbit)',
+            'Kategori Draf', '<td>/artikel/kategori/kategori-draf</td>', 'Belum tampil (belum ada artikel terbit)',
             'Kategori Tayang', '<td>/artikel/kategori/kategori-tayang</td>', 'href="'.route('kategori-artikel.show', 'kategori-tayang').'"',
         ], false);
 });
@@ -208,7 +208,7 @@ it('menampilkan jumlah artikel per kategori tanpa menghitung artikel terhapus', 
 
     $this->actingAs($this->admin)
         ->get(route('admin.kategori-artikel.index'))
-        ->assertSeeInOrder(['Teknologi', '<td style="text-align:center">2</td>', 'Jumlah Artikel</th>', '<td>2</td>'], false)
+        ->assertSeeInOrder(['Teknologi', '<td>2</td>', 'Jumlah Artikel</th>', '<td>2</td>'], false)
         ->assertSee('masih dipakai 2 artikel sehingga tidak bisa dihapus.', false);
 });
 

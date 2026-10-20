@@ -21,16 +21,16 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="kolom-lebar">Nama Kategori</th>
-                            <th style="text-align:center">Jumlah Artikel</th>
+                            <th class="kolom-pas">Nama Kategori</th>
+                            <th>Jumlah Artikel</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($kategoriArtikel as $item)
                             <tr>
-                                <td class="cell-strong">{{ $item->nama_kategori }}</td>
-                                <td style="text-align:center">{{ $item->artikel_count }}</td>
+                                <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
+                                <td>{{ $item->artikel_count }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Kategori Artikel" :ikon-saja="true">
@@ -59,7 +59,7 @@
                                                                         Buka halaman
                                                                     </a>
                                                                 @else
-                                                                    Belum tayang (belum ada artikel terbit)
+                                                                    Belum tampil (belum ada artikel terbit)
                                                                 @endif
                                                             </td>
                                                         </tr>

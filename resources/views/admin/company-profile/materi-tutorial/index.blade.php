@@ -32,21 +32,21 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th style="text-align:center">Urutan</th>
+                            <th class="kolom-pas">Urutan</th>
                             <th class="kolom-lebar">Judul</th>
-                            <th>Tutorial</th>
+                            <th class="kolom-pas">Tutorial</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($materiTutorial as $item)
                             <tr>
-                                <td style="text-align:center" class="cell-strong">{{ $item->urutan_ke }}</td>
+                                <td class="kolom-pas cell-strong">{{ $item->urutan_ke }}</td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 400) }}</div>
                                 </td>
-                                <td>{{ $item->tutorial->judul }}</td>
+                                <td class="kolom-pas">{{ $item->tutorial->judul }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Materi Tutorial" :ikon-saja="true">
@@ -73,7 +73,7 @@
                                                         <tr>
                                                             <th scope="row">Halaman</th>
                                                             <td>
-                                                                {{-- Status ada di tingkat tutorial: materi tayang begitu tutorialnya terbit. --}}
+                                                                {{-- Status ada di tingkat tutorial: materi tampil begitu tutorialnya terbit. --}}
                                                                 @if ($item->tutorial->status_publikasi === StatusPublikasi::Terbit)
                                                                     <a href="{{ route('materi-tutorial.show', [$item->tutorial->slug, $item->slug]) }}" target="_blank" rel="noopener"
                                                                         class="btn btn-info btn-sm">
@@ -81,7 +81,7 @@
                                                                         Buka halaman
                                                                     </a>
                                                                 @else
-                                                                    Belum tayang (tutorial masih draf)
+                                                                    Belum tampil (tutorial masih draf)
                                                                 @endif
                                                             </td>
                                                         </tr>

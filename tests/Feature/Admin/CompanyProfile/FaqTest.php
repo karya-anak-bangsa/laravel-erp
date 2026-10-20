@@ -65,7 +65,7 @@ it('menampilkan tombol ikon lihat, ubah, dan hapus beserta rincian untuk modal',
 
     $this->actingAs($this->admin)
         ->get(route('admin.faq.index'))
-        ->assertSee('<div class="card-subtitle">Bisa, tatap muka maupun daring.</div>', false)
+        ->assertSee('<div class="card-subtitle ringkasan-tabel">Bisa, tatap muka maupun daring.</div>', false)
         ->assertSeeInOrder([
             'aria-label="Lihat"',
             'data-detail-title="Detail FAQ"',

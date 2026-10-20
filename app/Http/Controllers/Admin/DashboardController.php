@@ -14,7 +14,7 @@ class DashboardController extends Controller
             'statistik' => $ringkasan->statistik(),
             'terakhirDiperbarui' => $ringkasan->terakhirDiperbarui(),
             'statusSitus' => $ringkasan->statusSitus(),
-            'belumTayang' => $ringkasan->belumTayang(),
+            'belumTampil' => $ringkasan->belumTampil(),
         ]);
     }
 }

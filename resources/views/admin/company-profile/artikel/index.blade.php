@@ -37,25 +37,25 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Gambar</th>
+                            <th class="kolom-pas">Gambar</th>
                             <th class="kolom-lebar">Judul</th>
-                            <th>Kategori</th>
-                            <th>Tanggal</th>
-                            <th style="text-align:center">Status</th>
+                            <th class="kolom-pas">Kategori</th>
+                            <th class="kolom-pas">Tanggal</th>
+                            <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($artikel as $item)
                             <tr>
-                                <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
+                                <td class="kolom-pas"><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 120) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 400) }}</div>
                                 </td>
-                                <td>{{ $item->kategoriArtikel?->nama_kategori ?? '—' }}</td>
-                                <td style="white-space:nowrap">{{ $item->tanggal->translatedFormat('d F Y') }}</td>
-                                <td style="text-align:center">
+                                <td class="kolom-pas">{{ $item->kategoriArtikel?->nama_kategori ?? '—' }}</td>
+                                <td class="kolom-pas">{{ $item->tanggal->translatedFormat('d F Y') }}</td>
+                                <td class="kolom-status">
                                     <span class="status {{ $item->status_publikasi->kelasStatus() }}">{{ $item->status_publikasi->label() }}</span>
                                 </td>
                                 <td class="kolom-aksi">
@@ -95,7 +95,7 @@
                                                                             Buka halaman
                                                                         </a>
                                                                     @else
-                                                                        Belum tayang (draf)
+                                                                        Belum tampil (draf)
                                                                     @endif
                                                                 </td>
                                                             </tr>

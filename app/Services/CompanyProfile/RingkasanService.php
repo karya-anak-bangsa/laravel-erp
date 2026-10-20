@@ -30,7 +30,7 @@ class RingkasanService
      * @return array{
      *     artikel: array{terbit: int, draf: int, kategori: int},
      *     portofolio: array{jumlah: int, kategori: int},
-     *     tutorial: array{tayang: int, belumTayang: int, materi: int},
+     *     tutorial: array{terbit: int, draf: int, materi: int},
      *     layanan: int,
      *     faq: int,
      *     hero: array{jumlah: int, aktif: int},
@@ -38,8 +38,6 @@ class RingkasanService
      */
     public function statistik(): array
     {
-        $tutorialTayang = Tutorial::query()->tayang()->count();
-
         return [
             'artikel' => [
                 'terbit' => Artikel::query()->terbit()->count(),
@@ -51,8 +49,8 @@ class RingkasanService
                 'kategori' => KategoriPortofolio::query()->count(),
             ],
             'tutorial' => [
-                'tayang' => $tutorialTayang,
-                'belumTayang' => Tutorial::query()->count() - $tutorialTayang,
+                'terbit' => Tutorial::query()->where('status_publikasi', StatusPublikasi::Terbit)->count(),
+                'draf' => Tutorial::query()->where('status_publikasi', StatusPublikasi::Draf)->count(),
                 'materi' => MateriTutorial::query()->count(),
             ],
             'layanan' => Layanan::query()->count(),
@@ -88,20 +86,20 @@ class RingkasanService
     }
 
     /**
-     * Konten yang belum tampil di website: artikel draf dan tutorial yang belum tayang (draf atau belum punya materi),
+     * Konten yang belum tampil di website: artikel draf, tutorial draf, dan tutorial terbit yang belum punya materi,
      * terakhir disimpan lebih dulu.
      *
      * @return Collection<int, array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
      */
-    public function belumTayang(int $jumlah = 5): Collection
+    public function belumTampil(int $jumlah = 5): Collection
     {
         $draf = StatusPublikasi::Draf;
 
         return collect(array_merge(
-            $this->belumTayangDari('Artikel', Artikel::query()->where('status_publikasi', $draf), 'Draf', 'admin.artikel.edit', $jumlah),
-            $this->belumTayangDari('Tutorial', Tutorial::query()->where('status_publikasi', $draf), 'Draf', 'admin.tutorial.edit', $jumlah),
-            // Terbit tetapi belum tayang karena scope tayang juga mensyaratkan minimal satu materi.
-            $this->belumTayangDari('Tutorial', Tutorial::query()->where('status_publikasi', StatusPublikasi::Terbit)->doesntHave('materiTutorial'),
+            $this->belumTampilDari('Artikel', Artikel::query()->where('status_publikasi', $draf), 'Draf', 'admin.artikel.edit', $jumlah),
+            $this->belumTampilDari('Tutorial', Tutorial::query()->where('status_publikasi', $draf), 'Draf', 'admin.tutorial.edit', $jumlah),
+            // Terbit tetapi belum tampil karena scope tayang juga mensyaratkan minimal satu materi.
+            $this->belumTampilDari('Tutorial', Tutorial::query()->where('status_publikasi', StatusPublikasi::Terbit)->doesntHave('materiTutorial'),
                 'Belum ada materi', 'admin.tutorial.edit', $jumlah),
         ))
             // Pengurutan stabil: waktu kembar tetap urut seperti di atas.
@@ -149,14 +147,14 @@ class RingkasanService
     }
 
     /**
-     * Baris terbaruDari() ditambah label status untuk kartu Belum tayang.
+     * Baris terbaruDari() ditambah label status untuk kartu Belum tampil.
      *
      * @template TModel of Model
      *
      * @param  Builder<TModel>  $query
      * @return list<array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
      */
-    private function belumTayangDari(string $modul, Builder $query, string $status, string $rute, int $jumlah): array
+    private function belumTampilDari(string $modul, Builder $query, string $status, string $rute, int $jumlah): array
     {
         $hasil = [];
 

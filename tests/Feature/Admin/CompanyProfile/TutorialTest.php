@@ -50,8 +50,8 @@ it('menampilkan tutorial terbaru lebih dulu beserta kategori, jumlah materi, dan
         ->get(route('admin.tutorial.index'))
         ->assertOk()
         ->assertSeeInOrder([
-            'Tutorial terbaru', 'Pemrograman Mobile', '<td style="text-align:center">0</td>', 'status-yellow">Draf',
-            'Tutorial lama', 'Basis Data', '<td style="text-align:center">3</td>', 'status-green">Terbit',
+            'Tutorial terbaru', 'Pemrograman Mobile', '<td class="kolom-pas">0</td>', 'status-yellow">Draf',
+            'Tutorial lama', 'Basis Data', '<td class="kolom-pas">3</td>', 'status-green">Terbit',
         ], false)
         ->assertSee('class="nav-sublink active" href="'.route('admin.tutorial.index').'"', false)
         ->assertSee('class="nav-tree open has-active"', false);
@@ -64,7 +64,7 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
     $this->actingAs($this->admin)
         ->get(route('admin.tutorial.index'))
         ->assertSee('<h1 class="page-title">Company Profile</h1>', false)
-        ->assertSee('<div class="card-subtitle">Pengantar seri</div>', false)
+        ->assertSee('<div class="card-subtitle ringkasan-tabel">Pengantar seri</div>', false)
         ->assertSeeInOrder([
             'class="card kartu-filter"',
             '<div class="card-title">Daftar Tutorial</div>',
@@ -80,7 +80,7 @@ it('menyusun halaman daftar sesuai standar admin dengan rincian untuk modal', fu
         ->assertSee('beserta 2 materinya tidak akan tampil lagi', false);
 });
 
-it('menyediakan tombol Buka halaman di modal detail hanya untuk tutorial yang tayang', function () {
+it('menyediakan tombol Buka halaman di modal detail hanya untuk tutorial yang tampil', function () {
     Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'sudah-tayang']);
     Tutorial::factory()->terbit()->create(['slug' => 'tanpa-materi']);
     Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create(['slug' => 'masih-draf']);
@@ -91,8 +91,8 @@ it('menyediakan tombol Buka halaman di modal detail hanya untuk tutorial yang ta
         ->assertSee('href="'.route('tutorial.show', 'sudah-tayang').'" target="_blank" rel="noopener"', false)
         ->assertDontSee('href="'.route('tutorial.show', 'tanpa-materi').'"', false)
         ->assertDontSee('href="'.route('tutorial.show', 'masih-draf').'"', false)
-        ->assertSee('Belum tayang (belum ada materi)')
-        ->assertSee('Belum tayang (draf)');
+        ->assertSee('Belum tampil (belum ada materi)')
+        ->assertSee('Belum tampil (draf)');
 });
 
 it('mencari tutorial berdasarkan judul atau deskripsi', function () {

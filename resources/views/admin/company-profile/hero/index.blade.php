@@ -30,23 +30,23 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Gambar</th>
+                            <th class="kolom-pas">Gambar</th>
                             <th class="kolom-lebar">Judul</th>
                             <th class="kolom-sedang">Keyword</th>
-                            <th style="text-align:center">Status</th>
+                            <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($hero as $item)
                             <tr>
-                                <td><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
+                                <td class="kolom-pas"><img src="{{ $item->gambar_url }}" alt="" class="gambar-mini" loading="lazy"></td>
                                 <td>
                                     <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle">{{ Str::limit(TeksHtml::polos($item->deskripsi), 90) }}</div>
+                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::polos($item->deskripsi), 400) }}</div>
                                 </td>
                                 <td>{{ implode(', ', $item->keyword) }}</td>
-                                <td style="text-align:center">
+                                <td class="kolom-status">
                                     @if ($item->status_aktif)
                                         <span class="status status-green">Aktif</span>
                                     @else

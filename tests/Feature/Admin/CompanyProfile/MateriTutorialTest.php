@@ -67,7 +67,7 @@ it('menyediakan tombol Buka halaman di modal detail hanya untuk materi tutorial 
         ->assertSee('/tutorial/tutorial-terbit/materi-tayang')
         ->assertSee('href="'.route('materi-tutorial.show', ['tutorial-terbit', 'materi-tayang']).'" target="_blank" rel="noopener"', false)
         ->assertDontSee('href="'.route('materi-tutorial.show', [$this->tutorial->slug, 'materi-draf']).'"', false)
-        ->assertSee('Belum tayang (tutorial masih draf)');
+        ->assertSee('Belum tampil (tutorial masih draf)');
 });
 
 it('mencari materi berdasarkan judul atau isi', function () {
