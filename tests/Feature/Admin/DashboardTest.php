@@ -1,20 +1,30 @@
 <?php
 
+use App\Models\CompanyProfile\Artikel;
+use App\Models\CompanyProfile\Faq;
+use App\Models\CompanyProfile\Hero;
+use App\Models\CompanyProfile\KontakKami;
+use App\Models\CompanyProfile\Layanan;
+use App\Models\CompanyProfile\MateriTutorial;
+use App\Models\CompanyProfile\Portofolio;
+use App\Models\CompanyProfile\Template;
+use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
 
 it('mengarahkan tamu ke halaman login', function () {
     $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
 });
 
-it('menampilkan dashboard untuk pengguna yang login', function () {
+it('menampilkan dashboard untuk pengguna yang login dengan page-header seperti modul lain', function () {
     $pengguna = Pengguna::factory()->create(['nama' => 'Aryajaya Alamsyah']);
 
     $this->actingAs($pengguna)
         ->get('/admin')
         ->assertOk()
-        ->assertSee('Dashboard')
-        ->assertSee('Selamat datang, Aryajaya Alamsyah')
-        ->assertSee('Belum ada ringkasan')
+        // Hanya judul, tanpa baris sapaan di atasnya (pilihan pemilik 2026-10-20).
+        ->assertSee('<h1 class="page-title">Dashboard</h1>', false)
+        ->assertDontSee('page-pretitle', false)
+        ->assertDontSee('Selamat datang')
         ->assertSee(route('logout'));
 });
 
@@ -86,4 +96,117 @@ it('menandai menu aktif memakai pola rute pada kunci aktif', function () {
     $this->actingAs(Pengguna::factory()->create())
         ->get(route('admin.dashboard'))
         ->assertSee('class="nav-link active" href="'.route('login').'"', false);
+});
+
+describe('ringkasan dashboard', function () {
+    beforeEach(function () {
+        $this->admin = Pengguna::factory()->create();
+    });
+
+    it('menampilkan kartu angka setiap modul beserta tautan ke daftarnya', function () {
+        Artikel::factory()->terbit()->count(2)->create();
+        Artikel::factory()->draf()->create();
+        Artikel::factory()->terbit()->create()->delete();
+        Portofolio::factory()->create();
+        Tutorial::factory()->terbit()->has(MateriTutorial::factory()->count(2), 'materiTutorial')->create();
+        Tutorial::factory()->draf()->create();
+        Layanan::factory()->count(3)->create();
+        Faq::factory()->count(4)->create();
+        KontakKami::factory()->belumDibaca()->create();
+        KontakKami::factory()->dibaca()->count(2)->create();
+
+        // Kategori ikut dibuat factory artikel & portofolio: 4 kategori artikel (termasuk milik artikel terhapus), 1 portofolio.
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSeeInOrder([
+                'href="'.route('admin.artikel.index').'" class="card kartu-statistik"', 'Artikel terbit', '<span class="stat-value">2</span>', '1 draf · 4 kategori',
+                'href="'.route('admin.portofolio.index').'"', 'Portofolio', '<span class="stat-value">1</span>', '1 kategori',
+                'href="'.route('admin.tutorial.index').'"', 'Tutorial tayang', '<span class="stat-value">1</span>', '2 materi · 1 belum tayang',
+                'href="'.route('admin.layanan.index').'"', 'Layanan', '<span class="stat-value">3</span>',
+                'href="'.route('admin.faq.index').'"', 'FAQ', '<span class="stat-value">4</span>',
+                'href="'.route('admin.kontak-kami.index').'"', 'Pesan belum dibaca', '<span class="stat-value">1</span>', '3 pesan masuk',
+            ], false);
+    });
+
+    it('menampilkan konten terakhir diperbarui lintas modul, terbaru lebih dulu, bertautan ke halaman Ubah', function () {
+        $faq = Faq::factory()->create(['pertanyaan' => 'FAQ terbaru?', 'updated_at' => '2026-10-20 10:00:00']);
+        $artikel = Artikel::factory()->create(['judul' => 'Artikel kemarin', 'updated_at' => '2026-10-19 10:00:00']);
+        $hero = Hero::factory()->create(['judul' => 'Hero lama', 'updated_at' => '2026-10-01 10:00:00']);
+        Artikel::factory()->create(['judul' => 'Artikel terhapus', 'updated_at' => '2026-10-20 11:00:00'])->delete();
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSeeInOrder([
+                '<div class="card-title">Terakhir diperbarui</div>',
+                'href="'.route('admin.faq.edit', $faq).'" class="judul-ringkas">FAQ terbaru?</a>', 'FAQ · 20 Oktober 2026, 10:00',
+                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel kemarin</a>', 'Artikel · 19 Oktober 2026, 10:00',
+                'href="'.route('admin.hero.edit', $hero).'" class="judul-ringkas">Hero lama</a>', 'Hero · 01 Oktober 2026, 10:00',
+            ], false)
+            ->assertDontSee('Artikel terhapus');
+    });
+
+    it('membatasi konten terakhir diperbarui sampai delapan', function () {
+        foreach (range(1, 9) as $nomor) {
+            Layanan::factory()->create(['judul' => sprintf('Layanan Urut %02d', $nomor), 'updated_at' => now()->subMinutes($nomor)]);
+        }
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSee('Layanan Urut 08')
+            ->assertDontSee('Layanan Urut 09');
+    });
+
+    it('menampilkan lima pesan masuk terbaru dengan penanda belum dibaca', function () {
+        KontakKami::factory()->dibaca()->create(['subjek' => 'Pesan lama', 'tanggal' => '2026-10-01 09:00:00']);
+        foreach (range(1, 5) as $nomor) {
+            KontakKami::factory()->dibaca()->create(['subjek' => "Pesan {$nomor}", 'tanggal' => "2026-10-1{$nomor} 09:00:00"]);
+        }
+        KontakKami::factory()->belumDibaca()->create(['nama' => 'Budi', 'subjek' => 'Pesan terbaru', 'tanggal' => '2026-10-20 08:30:00']);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSeeInOrder([
+                '<div class="card-title">Pesan masuk terbaru</div>', 'href="'.route('admin.kontak-kami.index').'"',
+                '<div class="judul-ringkas">Pesan terbaru</div>', 'Budi · 20 Oktober 2026, 08:30', 'status-green" data-status-baca>Belum dibaca',
+                '<div class="judul-ringkas">Pesan 5</div>', 'Dibaca',
+            ], false)
+            ->assertDontSee('Pesan 1</div>', false)
+            ->assertDontSee('Pesan lama');
+    });
+
+    it('menampilkan status website: hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
+        Hero::factory()->aktif()->create(['judul' => 'Hero Tampil']);
+        Hero::factory()->create(['judul' => 'Hero Cadangan']);
+        Template::factory()->aktif()->create(['nama' => 'Warna Aktif']);
+        Template::factory()->monochrome()->aktif()->create(['nama' => 'Mono Aktif']);
+        Template::factory()->create(['nama' => 'Warna Cadangan']);
+        config(['seo.indeks' => false]);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSeeInOrder([
+                '<div class="card-title">Status website</div>',
+                'Hero aktif</th>', '<td>Hero Tampil</td>',
+                'Template Full Color</th>', '<td>Warna Aktif</td>',
+                'Template Monochrome</th>', '<td>Mono Aktif</td>',
+                'Mesin pencari</th>', 'status-yellow">Tidak diindeks',
+                'href="'.route('beranda').'" target="_blank" rel="noopener"', 'Buka website',
+            ], false)
+            // Hero cadangan tetap boleh muncul di Terakhir diperbarui, tetapi bukan sebagai hero aktif.
+            ->assertDontSee('<td>Hero Cadangan</td>', false)
+            ->assertDontSee('Warna Cadangan');
+
+        config(['seo.indeks' => true]);
+
+        $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('status-green">Diindeks', false);
+    });
+
+    it('menampilkan keadaan kosong bila belum ada konten, pesan, hero aktif, dan template aktif', function () {
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Belum ada konten')
+            ->assertSee('Belum ada pesan')
+            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false);
+    });
 });

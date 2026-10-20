@@ -846,6 +846,84 @@ table.table .kolom-aksi {
     justify-content: center;
 }
 
+// Kartu angka dashboard (<x-admin.statistik>): seluruh kartu menuju daftar modulnya. Ikon Font Awesome menggantikan
+// SVG di kotak .stat-icon Gentelella.
+.kartu-statistik {
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 150ms;
+
+    &:hover {
+        border-color: var(--primary);
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+}
+
+.stat-icon .icon {
+    width: 18px;
+    height: 18px;
+    font-size: 16px;
+}
+
+// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella.
+.tumpukan-kartu {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+}
+
+// Daftar ringkas dashboard (Terakhir diperbarui, Pesan masuk terbaru): baris bergaris pemisah berisi judul dan
+// keterangan, label status di kanan. Jarak tepinya sama dengan kepala kartu (16px).
+.daftar-ringkas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border-color-light);
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+}
+
+.isi-ringkas {
+    flex: 1;
+    min-width: 0;
+}
+
+.judul-ringkas {
+    color: var(--text);
+    font-weight: var(--font-weight-medium);
+    overflow-wrap: anywhere;
+}
+
+a.judul-ringkas:hover {
+    color: var(--primary);
+}
+
+.keterangan-ringkas {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+// Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.
+.tabel-status-situs th {
+    width: 1%;
+    white-space: nowrap;
+}
+
 // Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat
 // disorot agar tidak terkesan bisa diklik.
 table.table.tabel-informasi tbody tr:hover {

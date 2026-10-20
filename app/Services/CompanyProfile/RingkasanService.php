@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Services\CompanyProfile;
+
+use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\CompanyProfile\Artikel;
+use App\Models\CompanyProfile\Faq;
+use App\Models\CompanyProfile\Hero;
+use App\Models\CompanyProfile\KategoriArtikel;
+use App\Models\CompanyProfile\KategoriPortofolio;
+use App\Models\CompanyProfile\KontakKami;
+use App\Models\CompanyProfile\Layanan;
+use App\Models\CompanyProfile\MateriTutorial;
+use App\Models\CompanyProfile\Portofolio;
+use App\Models\CompanyProfile\Template;
+use App\Models\CompanyProfile\Tutorial;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+
+/**
+ * Ringkasan modul Company Profile untuk dashboard admin. Hanya membaca tabel yang sudah ada (pilihan pemilik
+ * 2026-10-20: tanpa tabel riwayat); modul lain kelak menyediakan ringkasannya sendiri.
+ */
+class RingkasanService
+{
+    /**
+     * Angka per modul untuk kartu dashboard. Data terhapus (soft delete) tidak dihitung.
+     *
+     * @return array{
+     *     artikel: array{terbit: int, draf: int, kategori: int},
+     *     portofolio: array{jumlah: int, kategori: int},
+     *     tutorial: array{tayang: int, belumTayang: int, materi: int},
+     *     layanan: int,
+     *     faq: int,
+     *     pesan: array{belumDibaca: int, jumlah: int},
+     * }
+     */
+    public function statistik(): array
+    {
+        $tutorialTayang = Tutorial::query()->tayang()->count();
+
+        return [
+            'artikel' => [
+                'terbit' => Artikel::query()->terbit()->count(),
+                'draf' => Artikel::query()->where('status_publikasi', StatusPublikasi::Draf)->count(),
+                'kategori' => KategoriArtikel::query()->count(),
+            ],
+            'portofolio' => [
+                'jumlah' => Portofolio::query()->count(),
+                'kategori' => KategoriPortofolio::query()->count(),
+            ],
+            'tutorial' => [
+                'tayang' => $tutorialTayang,
+                'belumTayang' => Tutorial::query()->count() - $tutorialTayang,
+                'materi' => MateriTutorial::query()->count(),
+            ],
+            'layanan' => Layanan::query()->count(),
+            'faq' => Faq::query()->count(),
+            'pesan' => [
+                'belumDibaca' => KontakKami::query()->belumDibaca()->count(),
+                'jumlah' => KontakKami::query()->count(),
+            ],
+        ];
+    }
+
+    /**
+     * Konten yang terakhir disimpan, dari kolom updated_at. Bukan riwayat: tiap konten muncul sekali dengan waktu simpan
+     * terakhirnya, tanpa pelaku dan tanpa data yang sudah dihapus.
+     *
+     * @return Collection<int, array{modul: string, judul: string, diperbarui: CarbonInterface, url: string}>
+     */
+    public function terakhirDiperbarui(int $jumlah = 8): Collection
+    {
+        return collect(array_merge(
+            $this->terbaruDari('Artikel', Artikel::query(), 'judul', 'admin.artikel.edit', $jumlah),
+            $this->terbaruDari('Portofolio', Portofolio::query(), 'judul', 'admin.portofolio.edit', $jumlah),
+            $this->terbaruDari('Tutorial', Tutorial::query(), 'judul', 'admin.tutorial.edit', $jumlah),
+            $this->terbaruDari('Materi Tutorial', MateriTutorial::query(), 'judul', 'admin.materi-tutorial.edit', $jumlah),
+            $this->terbaruDari('Layanan', Layanan::query(), 'judul', 'admin.layanan.edit', $jumlah),
+            $this->terbaruDari('FAQ', Faq::query(), 'pertanyaan', 'admin.faq.edit', $jumlah),
+            $this->terbaruDari('Hero', Hero::query(), 'judul', 'admin.hero.edit', $jumlah),
+        ))
+            // Pengurutan stabil: waktu kembar (mis. data seeder) tetap urut modul seperti di atas.
+            ->sortByDesc(fn (array $item): int => $item['diperbarui']->getTimestamp())
+            ->take($jumlah)
+            ->values();
+    }
+
+    /**
+     * Pesan Kontak Kami terbaru, urutannya sama dengan kotak masuk.
+     *
+     * @return EloquentCollection<int, KontakKami>
+     */
+    public function pesanTerbaru(int $jumlah = 5): EloquentCollection
+    {
+        return KontakKami::query()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id_kontak_kami')
+            ->limit($jumlah)
+            ->get(['id_kontak_kami', 'nama', 'subjek', 'tanggal', 'status_baca']);
+    }
+
+    /**
+     * Yang sedang tampil di website: hero aktif, template aktif per jenis, dan izin mesin pencari (config/seo.php).
+     *
+     * @return array{hero: Hero|null, template: Collection<string, Template>, indeks: bool}
+     */
+    public function statusSitus(): array
+    {
+        return [
+            'hero' => Hero::query()->aktif()->first(['id_hero', 'judul']),
+            'template' => Template::query()->aktif()->get(['id_template', 'nama', 'jenis'])
+                ->keyBy(fn (Template $template): string => $template->jenis->value)
+                ->toBase(),
+            'indeks' => (bool) config('seo.indeks'),
+        ];
+    }
+
+    /**
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
+     * @return list<array{modul: string, judul: string, diperbarui: CarbonInterface, url: string}>
+     */
+    private function terbaruDari(string $modul, Builder $query, string $kolomJudul, string $rute, int $jumlah): array
+    {
+        $kunci = $query->getModel()->getKeyName();
+
+        return $query->latest('updated_at')->latest($kunci)->limit($jumlah)
+            ->get([$kunci, $kolomJudul, 'updated_at'])
+            ->map(fn (Model $item): array => [
+                'modul' => $modul,
+                'judul' => (string) $item->getAttribute($kolomJudul),
+                'diperbarui' => $item->getAttribute('updated_at'),
+                'url' => route($rute, $item),
+            ])
+            ->values()
+            ->all();
+    }
+}
