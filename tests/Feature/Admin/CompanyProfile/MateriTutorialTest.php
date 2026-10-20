@@ -90,12 +90,11 @@ it('membedakan empty state data kosong dan hasil pencarian kosong', function () 
         ->assertSee('Materi tutorial tidak ditemukan');
 });
 
-it('menampilkan editor isi materi dengan sub-judul, kode, dan tinggi 15 baris', function () {
+it('menampilkan editor isi materi dengan sub-judul, kode, dan setinggi layar', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.materi-tutorial.create'))
         ->assertOk()
-        ->assertSee('data-editor data-judul-bagian data-kode', false)
-        ->assertSee('rows="15" data-editor-sumber', false)
+        ->assertSee('class="editor editor-layar" data-editor data-judul-bagian data-kode>', false)
         ->assertSeeInOrder(['data-perintah="judul2"', 'data-perintah="orderedList"', 'data-perintah="kode"', 'data-perintah="blokKode"', 'data-perintah="rataKiri"'], false)
         ->assertSee('/30.000 karakter', false)
         ->assertSee('<option value="'.$this->tutorial->id_tutorial.'" >Tutorial Laravel 13</option>', false);

@@ -127,10 +127,9 @@ it('mengisi form tambah dengan tanggal hari ini, status draf, dan editor isi art
         ->assertSee('value="2026-10-09"', false)
         ->assertSee('<option value="draf" selected>Draf</option>', false)
         ->assertSee('<option value="'.$this->kategori->id_kategori_artikel.'" >Teknologi</option>', false)
-        // Isi artikel: sub-judul H2/H3 dan tinggi 15 baris (pilihan pemilik).
-        ->assertSee('data-editor data-judul-bagian', false)
-        ->assertSee('style="--editor-baris: 15"', false)
-        ->assertSee('rows="15" data-editor-sumber', false)
+        // Isi artikel: sub-judul H2/H3 dan setinggi layar (pilihan pemilik).
+        ->assertSee('class="editor editor-layar" data-editor data-judul-bagian>', false)
+        ->assertSee('rows="8" data-editor-sumber', false)
         ->assertSeeInOrder(['data-perintah="judul2"', 'H2', 'data-perintah="judul3"', 'H3', 'data-perintah="bold"'], false)
         ->assertSee('/30.000 karakter', false);
 });

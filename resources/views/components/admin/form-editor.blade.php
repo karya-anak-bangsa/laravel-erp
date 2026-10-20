@@ -1,4 +1,4 @@
-@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'judulBagian' => false, 'kode' => false, 'baris' => 5])
+@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'judulBagian' => false, 'kode' => false, 'baris' => 8, 'setinggiLayar' => false])
 
 @php
     $id = $attributes->get('id', $name);
@@ -41,9 +41,9 @@
         <label class="form-label" id="{{ $id }}-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
-    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel, isi materi tutorial, & deskripsi portofolio 15 baris
+    {{-- Tinggi bawaan 8 baris; deskripsi portofolio 15 baris; isi artikel & isi materi tutorial setinggi layar
          (pilihan pemilik). --}}
-    <div @class(['editor', 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}{{ $kode ? ' data-kode' : '' }}@if ((int) $baris !== 5) style="--editor-baris: {{ (int) $baris }}"@endif>
+    <div @class(['editor', 'editor-layar' => $setinggiLayar, 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}{{ $kode ? ' data-kode' : '' }}@if ((int) $baris !== 8) style="--editor-baris: {{ (int) $baris }}"@endif>
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)
                 @if ($item === null)

@@ -146,7 +146,7 @@ it('mengisi form tambah dengan status draf, pilihan kategori urut abjad, dan edi
             '<option value="'.$this->kategori->id_kategori_tutorial.'" >Pemrograman Web</option>',
         ], false)
         ->assertDontSee('Belum ada kategori.')
-        ->assertSee('rows="5" data-editor-sumber', false)
+        ->assertSee('rows="8" data-editor-sumber', false)
         ->assertDontSee('data-judul-bagian', false)
         ->assertSee('/2.000 karakter', false)
         ->assertSee('dibuat otomatis dari judul dan tidak berubah lagi setelah tutorial terbit.');

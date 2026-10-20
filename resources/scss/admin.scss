@@ -386,12 +386,12 @@ a.btn:hover {
     background: var(--border-color);
 }
 
-// Editor setinggi 5 baris teks (20px per baris + padding), seperti textarea rows="5"
-// (pilihan pemilik); isi artikel & deskripsi portofolio 15 baris lewat --editor-baris (prop baris). Isi lebih
+// Editor setinggi 8 baris teks (20px per baris + padding), seperti textarea rows="8"
+// (pilihan pemilik); deskripsi portofolio 15 baris lewat --editor-baris (prop baris). Isi lebih
 // panjang digulir; tinggi bisa ditarik seperti textarea.
 .editor-konten {
-    height: calc(var(--editor-baris, 5) * 20px + 16px);
-    min-height: calc(var(--editor-baris, 5) * 20px + 16px);
+    height: calc(var(--editor-baris, 8) * 20px + 16px);
+    min-height: calc(var(--editor-baris, 8) * 20px + 16px);
     overflow-y: auto;
     resize: vertical;
     padding: 8px 12px;
@@ -400,6 +400,14 @@ a.btn:hover {
     color: var(--text);
     outline: none;
     overflow-wrap: anywhere;
+}
+
+// Isi artikel & materi (prop setinggiLayar): saat halaman digulir sampai toolbar tepat di bawah topbar, editor
+// beserta baris petunjuknya memenuhi layar (150px = topbar 56px, jarak atas-bawah, toolbar, dan petunjuk).
+// Minimal 15 baris (316px) agar tetap lega di layar pendek.
+.editor-layar .editor-konten {
+    height: max(316px, calc(100dvh - 150px));
+    min-height: max(316px, calc(100dvh - 150px));
 }
 
 // Editor yang menjadi isian terakhir kartu memanjang mengisi sisa tinggi kartu, agar sejajar dengan kartu di

@@ -12,7 +12,7 @@
                 default => 'Alamat halaman detail: /artikel/'.$artikel->slug.' — ikut berubah bila judul diubah selama artikel masih draf.',
             }" />
         <x-admin.form-editor name="deskripsi" label="Isi Artikel" :value="$artikel->deskripsi" :required="true"
-            :maks="StoreArtikelRequest::PANJANG_ISI_MAKS" :judul-bagian="true" :baris="15"
+            :maks="StoreArtikelRequest::PANJANG_ISI_MAKS" :judul-bagian="true" :setinggi-layar="true"
             hint="Gunakan sub-judul (H2/H3) untuk membagi artikel menjadi beberapa bagian." />
     </x-admin.card>
 

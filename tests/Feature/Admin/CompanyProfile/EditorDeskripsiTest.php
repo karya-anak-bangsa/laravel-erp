@@ -59,9 +59,8 @@ it('menampilkan editor WYSIWYG di form tambah untuk teks yang tampil di frontend
             ], false);
     }
 
-    // Editor setinggi 5 baris, kecuali deskripsi portofolio 15 baris seperti isi artikel (pilihan pemilik); textarea
-    // cadangannya ikut.
-    $baris = $rute === 'admin.portofolio' ? 15 : 5;
+    // Editor setinggi 8 baris, kecuali deskripsi portofolio 15 baris (pilihan pemilik); textarea cadangannya ikut.
+    $baris = $rute === 'admin.portofolio' ? 15 : 8;
     expect(substr_count($respons->getContent(), 'data-editor-sumber'))->toBe(count($kolom))
         ->and(substr_count($respons->getContent(), 'rows="'.$baris.'" data-editor-sumber'))->toBe(count($kolom));
 })->with(modulEditor());

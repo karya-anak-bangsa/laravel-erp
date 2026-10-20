@@ -12,7 +12,7 @@
                 default => 'Alamat halaman ikut berubah bila judul diubah selama tutorialnya masih draf.',
             }" />
         <x-admin.form-editor name="deskripsi" label="Isi Materi" :value="$materiTutorial->deskripsi" :required="true"
-            :maks="StoreMateriTutorialRequest::PANJANG_ISI_MAKS" :judul-bagian="true" :kode="true" :baris="15"
+            :maks="StoreMateriTutorialRequest::PANJANG_ISI_MAKS" :judul-bagian="true" :kode="true" :setinggi-layar="true"
             hint="Gunakan sub-judul (H2/H3) untuk membagi materi, Kode untuk perintah atau nama berkas di dalam kalimat, dan Blok kode untuk contoh kode program." />
     </x-admin.card>
 
