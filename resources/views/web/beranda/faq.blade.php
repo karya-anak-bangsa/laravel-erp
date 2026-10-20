@@ -1,4 +1,4 @@
-<section id="faq" class="seksi seksi-redup" aria-labelledby="judul-faq">
+<section id="faq" @class(['seksi', 'seksi-redup' => $redup]) aria-labelledby="judul-faq">
     <div class="wadah tata-faq">
         <div class="faq-kepala">
             <x-web.kepala-seksi id="judul-faq" label="FAQ" judul="Pertanyaan yang sering diajukan">

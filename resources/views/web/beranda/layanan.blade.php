@@ -1,6 +1,6 @@
 @use('App\Support\TeksHtml')
 
-<section id="layanan" class="seksi" aria-labelledby="judul-layanan">
+<section id="layanan" @class(['seksi', 'seksi-redup' => $redup]) aria-labelledby="judul-layanan">
     <div class="wadah">
         <x-web.kepala-seksi id="judul-layanan" label="Layanan" judul="Solusi lengkap untuk kebutuhan digital Anda" rata="tengah">
             Kami mendampingi pengembangan produk digital bisnis Anda sekaligus penyiapan talenta IT, dalam satu tempat.

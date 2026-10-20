@@ -1,6 +1,6 @@
 {{-- Tanpa tab filter kategori (keputusan pemilik 2026-10-11): portofolio nyata masih didominasi website & mobile apps.
      Tanpa tombol "Lihat semua portofolio" (pilihan pemilik 2026-10-18): menu Portofolio di navbar sudah mewakilinya. --}}
-<section id="portofolio" class="seksi seksi-redup" aria-labelledby="judul-portofolio">
+<section id="portofolio" @class(['seksi', 'seksi-redup' => $redup]) aria-labelledby="judul-portofolio">
     <div class="wadah">
         <x-web.kepala-seksi id="judul-portofolio" label="Portofolio" judul="Hasil karya kami" rata="tengah">
             Beberapa proyek dan program yang telah kami kerjakan bersama klien dan mitra.

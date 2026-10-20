@@ -1,8 +1,16 @@
+@use('App\Enums\CompanyProfile\JenisModul')
+@use('Illuminate\Support\Str')
+
 @php
     // Tanpa hero aktif halaman tetap utuh: judul website + ajakan WhatsApp (bila link WhatsApp di Identitas terisi).
     $ctaHero = $hero?->cta ?: (filled($identitas->link_whatsapp)
         ? [['label' => 'Hubungi Kami', 'url' => $identitas->link_whatsapp, 'gaya' => 'primary']]
         : []);
+    // Tombol ke seksi beranda yang tidak dirender ($seksi dari web/beranda: modul nonaktif atau tanpa data) dibuang
+    // agar tidak menjadi tautan mati; #layanan-3 dan sejenisnya mengikuti seksi induknya.
+    $seksiAda = [...$seksi, 'beranda', ...($modul->tampil(JenisModul::Ajakan) ? ['ajakan'] : [])];
+    $ctaHero = array_values(array_filter($ctaHero, fn (array $cta): bool => ! str_starts_with($cta['url'], '#')
+        || in_array(Str::before(substr($cta['url'], 1), '-'), $seksiAda, true)));
 @endphp
 
 <section id="beranda" class="hero relative isolate overflow-hidden" aria-labelledby="judul-hero">

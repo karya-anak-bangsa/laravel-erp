@@ -115,6 +115,12 @@ return [
                 'aktif' => 'admin.identitas.*',
             ],
             [
+                'label' => 'Manajemen Modul',
+                'ikon' => 'book',
+                'rute' => 'admin.modul-website.index',
+                'aktif' => 'admin.modul-website.*',
+            ],
+            [
                 'label' => 'Manajemen Template',
                 'ikon' => 'book',
                 'rute' => 'admin.template.index',

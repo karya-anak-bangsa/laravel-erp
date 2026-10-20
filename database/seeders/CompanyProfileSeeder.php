@@ -27,6 +27,7 @@ class CompanyProfileSeeder extends Seeder
             KategoriTutorialSeeder::class,
             TutorialDummySeeder::class,
             TemplateSeeder::class,
+            ModulWebsiteSeeder::class,
         ]);
     }
 }

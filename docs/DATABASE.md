@@ -231,6 +231,21 @@ Catatan implementasi:
 - Pengaturan Default/Custom di form tidak disimpan sebagai kolom (CLAUDE.md §9 › Frontend Publik).
 - Data awal (`TemplateSeeder`, nilainya = `config/tema.php`): "TKAB Full Color" (#15253F, #CB1839, Geist, sudut sedang, skala standar, konten standar, judul semibold, bayangan halus) dan "TKAB Monochrome" (cokelat, Geist, sudut sedang, skala standar, konten standar, judul semibold, bayangan tanpa).
 
+### tb_modul_website
+Tampil atau tidaknya modul di website publik, dikelola lewat Pengaturan Sistem › Manajemen Modul. Satu baris per modul; admin hanya mengubah status (tanpa tambah/hapus).
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_modul_website | BIGINT UNSIGNED PK | |
+| jenis | VARCHAR(20) UNIQUE | enum `JenisModul`: layanan, portofolio, tutorial, artikel, faq, ajakan. Nama dan tempat tampil setiap modul ada di enum |
+| status_aktif | BOOLEAN DEFAULT true | Nonaktif = disembunyikan dari menu navbar, Tautan Cepat footer, seksi beranda, kolom samping, dan band ajakan; halaman modulnya 404 dan keluar dari sitemap |
+| created_at, updated_at, deleted_at | | |
+
+Catatan implementasi:
+- Hero tidak termasuk karena memuat judul utama beranda (h1); hero yang tampil diatur lewat `tb_hero.status_aktif`.
+- Modul yang belum punya baris, atau status yang tidak terbaca karena database gagal, dianggap aktif (`ModulWebsiteService`).
+- Data awal (`ModulWebsiteSeeder`): enam modul, semuanya aktif; dijalankan ulang hanya menambah modul yang belum punya baris.
+
 ---
 
 ## C. Modul Masa Depan (gambaran, belum dibuat)

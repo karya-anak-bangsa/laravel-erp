@@ -1,3 +1,4 @@
+@use('App\Enums\CompanyProfile\JenisModul')
 @use('App\Support\TautanKontak')
 @use('App\Support\TeksHtml')
 
@@ -19,15 +20,15 @@
             <nav aria-labelledby="judul-kaki-tautan" class="lg:col-span-2">
                 <h2 id="judul-kaki-tautan" class="judul-kaki">Tautan Cepat</h2>
                 <ul class="mt-3 grid">
-                    @foreach (['beranda' => 'Beranda', 'layanan' => 'Layanan', 'portofolio' => 'Portofolio', 'tutorial' => 'Tutorial', 'artikel' => 'Artikel', 'faq' => 'FAQ'] as $anchor => $label)
-                        {{-- Sama dengan menu navbar: Portofolio, Tutorial, & Artikel ke halamannya sendiri, sisanya
-                             seksi beranda. --}}
-                        <li><a href="{{ in_array($anchor, ['portofolio', 'tutorial', 'artikel'], true) ? route($anchor.'.index') : route('beranda').'#'.$anchor }}" class="tautan-kaki">{{ $label }}</a></li>
+                    {{-- $menuUtama dari SitusComposer, sama dengan menu navbar. --}}
+                    @foreach ($menuUtama as $label => $url)
+                        <li><a href="{{ $url }}" class="tautan-kaki">{{ $label }}</a></li>
                     @endforeach
                 </ul>
             </nav>
 
-            @if ($layanan->isNotEmpty())
+            {{-- $layanan bisa berasal dari controller halaman, jadi status modul tetap diperiksa di sini. --}}
+            @if ($modul->tampil(JenisModul::Layanan) && $layanan->isNotEmpty())
                 <nav aria-labelledby="judul-kaki-layanan" class="lg:col-span-3">
                     <h2 id="judul-kaki-layanan" class="judul-kaki">Layanan</h2>
                     <ul class="mt-3 grid">

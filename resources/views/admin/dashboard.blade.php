@@ -67,6 +67,16 @@
                                 @endif
                             </td>
                         </tr>
+                        <tr>
+                            <th scope="row">Modul website</th>
+                            <td>
+                                @if ($statusSitus['modulNonaktif'] === 0)
+                                    <span class="chip chip-green">Semua tampil</span>
+                                @else
+                                    <a href="{{ route('admin.modul-website.index') }}" class="chip chip-yellow">{{ $statusSitus['modulNonaktif'] }} nonaktif</a>
+                                @endif
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 

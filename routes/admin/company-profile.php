@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CompanyProfile\KategoriPortofolioController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriTutorialController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
 use App\Http\Controllers\Admin\CompanyProfile\MateriTutorialController;
+use App\Http\Controllers\Admin\CompanyProfile\ModulWebsiteController;
 use App\Http\Controllers\Admin\CompanyProfile\PortofolioController;
 use App\Http\Controllers\Admin\CompanyProfile\TemplateController;
 use App\Http\Controllers\Admin\CompanyProfile\TutorialController;
@@ -42,6 +43,9 @@ Route::resource('artikel', ArtikelController::class)->except('show');
 Route::resource('kategori-artikel', KategoriArtikelController::class)->except('show');
 
 Route::resource('faq', FaqController::class)->except('show');
+
+// Tampil/tidaknya modul di website (Pengaturan Sistem › Manajemen Modul): baris tetap per modul, hanya status yang diubah.
+Route::resource('modul-website', ModulWebsiteController::class)->only(['index', 'edit', 'update']);
 
 // Template tampilan frontend (Pengaturan Sistem › Manajemen Template). Pratinjau = beranda dengan nilai isian
 // form, dibuka di tab baru tanpa menyimpan apa pun.

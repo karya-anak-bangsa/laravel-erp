@@ -1,4 +1,4 @@
-<section id="artikel" class="seksi" aria-labelledby="judul-artikel">
+<section id="artikel" @class(['seksi', 'seksi-redup' => $redup]) aria-labelledby="judul-artikel">
     <div class="wadah">
         <x-web.kepala-seksi id="judul-artikel" label="Artikel" judul="Wawasan & kabar terbaru" rata="tengah">
             Tips, panduan, dan cerita seputar teknologi, pengembangan aplikasi, serta pelatihan IT.

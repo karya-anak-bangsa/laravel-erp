@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\CompanyProfile\JenisModul;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
+use App\Models\CompanyProfile\ModulWebsite;
 use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
@@ -207,6 +209,19 @@ describe('ringkasan dashboard', function () {
         config(['seo.indeks' => true]);
 
         $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('chip-green">Diindeks', false);
+    });
+
+    it('mengingatkan modul website yang nonaktif dengan tautan ke Manajemen Modul', function () {
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSeeInOrder(['Mesin pencari</th>', 'Modul website</th>', '<span class="chip chip-green">Semua tampil</span>'], false);
+
+        ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Portofolio]);
+        ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Faq]);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertSee('<a href="'.route('admin.modul-website.index').'" class="chip chip-yellow">2 nonaktif</a>', false);
     });
 
     it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tampil', function () {

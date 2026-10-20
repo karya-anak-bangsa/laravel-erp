@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\PastikanModulTampil;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
         // Cookie tema ditulis JavaScript frontend (teks polos); nilainya divalidasi JenisTemplate::dariCookie().
         $middleware->encryptCookies(except: ['tema']);
+        $middleware->alias(['modul' => PastikanModulTampil::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

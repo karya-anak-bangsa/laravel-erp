@@ -3,7 +3,7 @@
     sama dengan kolom Layanan di footer.
     Pakai: @include('web.samping.layanan') — $layanan dari controller (footer memakai koleksi yang sama).
 --}}
-@if ($layanan->isNotEmpty())
+@if ($modul->tampil(App\Enums\CompanyProfile\JenisModul::Layanan) && $layanan->isNotEmpty())
     <nav class="kotak-samping" aria-labelledby="judul-layanan-kami">
         <h2 id="judul-layanan-kami" class="judul-samping">Layanan kami</h2>
         <ul class="daftar-tautan-samping">

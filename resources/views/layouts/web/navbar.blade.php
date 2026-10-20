@@ -1,16 +1,7 @@
 @php
-    // Seksi beranda lewat alamat beranda + anchor agar tetap berfungsi dari halaman publik lain; Portofolio, Tutorial,
-    // dan Artikel punya halaman sendiri.
-    $menuUtama = [
-        'Beranda' => route('beranda').'#beranda',
-        'Layanan' => route('beranda').'#layanan',
-        'Portofolio' => route('portofolio.index'),
-        'Tutorial' => route('tutorial.index'),
-        'Artikel' => route('artikel.index'),
-        'FAQ' => route('beranda').'#faq',
-    ];
-    // Menu halaman tersendiri ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail portofolio,
-    // halaman, materi & kategori tutorial, detail & kategori artikel).
+    // $menuUtama dari SitusComposer: sama dengan Tautan Cepat footer, tanpa modul nonaktif. Menu halaman tersendiri
+    // ditandai: "page" di halaman itu sendiri, "true" di halaman turunannya (detail portofolio, halaman, materi &
+    // kategori tutorial, detail & kategori artikel).
     $menuAktif = fn (string $label): ?string => match (true) {
         $label === 'Portofolio' && request()->routeIs('portofolio.index') => 'page',
         $label === 'Portofolio' && request()->routeIs('portofolio.show') => 'true',
