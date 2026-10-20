@@ -1,11 +1,12 @@
-@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'judulBagian' => false, 'baris' => 5])
+@props(['name', 'label' => null, 'value' => null, 'required' => false, 'hint' => null, 'maks' => null, 'judulBagian' => false, 'kode' => false, 'baris' => 5])
 
 @php
     $id = $attributes->get('id', $name);
     $error = $errors->has($name);
 
     // [perintah, ikon, label, teks?]; null = pemisah grup. Perintah dijalankan resources/js/admin/editor.js.
-    // Sub-judul (H2/H3) hanya untuk isi artikel; sanitasinya bersihkanHtml(..., judulBagian: true).
+    // Sub-judul (H2/H3) hanya untuk isi artikel & materi tutorial; sanitasinya bersihkanHtml(..., judulBagian: true).
+    // Kode sebaris & blok kode hanya untuk isi materi tutorial; sanitasinya bersihkanHtml(..., kode: true).
     $tombol = [
         ...($judulBagian ? [['judul2', null, 'Sub-judul', 'H2'], ['judul3', null, 'Sub-judul kecil', 'H3'], null] : []),
         ['bold', 'bold', 'Tebal'],
@@ -15,6 +16,7 @@
         ['bulletList', 'list-ul', 'Daftar poin'],
         ['orderedList', 'list-ol', 'Daftar bernomor'],
         null,
+        ...($kode ? [['kode', 'code', 'Kode'], ['blokKode', 'file-code', 'Blok kode'], null] : []),
         ['rataKiri', 'align-left', 'Rata kiri'],
         ['rataTengah', 'align-center', 'Rata tengah'],
         ['rataKanan', 'align-right', 'Rata kanan'],
@@ -39,8 +41,9 @@
         <label class="form-label" id="{{ $id }}-label" for="{{ $id }}">@if ($required)<span class="required">*</span>@endif{{ $label }}</label>
     @endif
 
-    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel & deskripsi portofolio 15 baris (pilihan pemilik). --}}
-    <div @class(['editor', 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}@if ((int) $baris !== 5) style="--editor-baris: {{ (int) $baris }}"@endif>
+    {{-- Tinggi bawaan 5 baris untuk semua editor; isi artikel, isi materi tutorial, & deskripsi portofolio 15 baris
+         (pilihan pemilik). --}}
+    <div @class(['editor', 'is-invalid' => $error]) data-editor{{ $judulBagian ? ' data-judul-bagian' : '' }}{{ $kode ? ' data-kode' : '' }}@if ((int) $baris !== 5) style="--editor-baris: {{ (int) $baris }}"@endif>
         <div class="editor-toolbar" role="toolbar" aria-label="Format {{ Str::lower($label ?? 'teks') }}" hidden>
             @foreach ($tombol as $item)
                 @if ($item === null)

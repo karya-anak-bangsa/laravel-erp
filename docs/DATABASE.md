@@ -12,7 +12,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
 - Unique pada tabel ber-soft-delete divalidasi di Form Request dengan `->withoutTrashed()`; constraint UNIQUE di database hanya untuk kolom yang tidak boleh berulang sama sekali (mis. slug atau nomor dokumen yang dibuat sistem).
 - Relasi polimorfik (bila kelak dipakai): `nullableMorphs('<nama>')` + alias stabil lewat `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
-- Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href], serta `style="text-align: center|right|justify"` pada paragraf). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Pengecualian: isi artikel (LONGTEXT) boleh memuat sub-judul h2/h3 dan dibatasi 30.000 karakter terlihat / 100.000 karakter HTML. Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
+- Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href], serta `style="text-align: center|right|justify"` pada paragraf). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Pengecualian: isi artikel dan isi materi tutorial (LONGTEXT) boleh memuat sub-judul h2/h3 dan dibatasi 30.000 karakter terlihat / 100.000 karakter HTML; isi materi juga boleh memuat kode (`code`, `pre`). Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
 - Slug dibuat sistem lewat `SlugService`: UNIQUE di database (termasuk baris terhapus, agar tidak bentrok bila kelak dipulihkan), akhiran angka (`-2`, `-3`, …) bila sudah dipakai, dasar slug maks. 200 karakter.
 
 ---
@@ -143,6 +143,41 @@ Slug ikut berubah saat nama diubah **hanya selama kategori belum punya artikel t
 | created_at, updated_at, deleted_at | | |
 
 Catatan implementasi: slug hanya ikut berubah saat judul diubah selama artikel masih **draf**; artikel yang sudah terbit slugnya dikunci (juga bila dikembalikan ke draf pada perubahan yang sama) agar tautan yang sudah dibagikan tidak rusak. Hanya artikel `terbit` yang tampil di frontend. Kategori yang masih dipakai artikel (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
+
+### tb_tutorial
+Seri materi berurutan, mis. "Tutorial Laravel 13": contoh sederhana materi pelatihan IT, sertifikasi IT, dan bootcamp di website. Bukan modul Pelatihan/Sertifikasi/Bootcamp (bagian C), yang kelak berdiri sendiri tanpa mengubah tabel ini.
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_tutorial | BIGINT UNSIGNED PK | |
+| jenis_program | VARCHAR(20) | enum `JenisProgram`: pelatihan_it, sertifikasi_it, bootcamp |
+| judul | VARCHAR(200) | |
+| slug | VARCHAR(220) UNIQUE | URL halaman tutorial, dibuat otomatis dari judul oleh `TutorialService` |
+| deskripsi | TEXT | pengantar seri (yang dipelajari, prasyarat), HTML tersanitasi dari editor WYSIWYG |
+| gambar | VARCHAR(255) | sampul: kartu, halaman tutorial, dan gambar saat tutorial maupun materinya dibagikan |
+| status_publikasi | VARCHAR(20) DEFAULT 'draf' | enum `StatusPublikasi`: draf, terbit |
+| created_at, updated_at, deleted_at | | |
+
+Catatan implementasi:
+- Status hanya di tingkat tutorial: tutorial tampil di frontend bila `terbit` **dan** punya minimal satu materi, lalu semua materinya ikut tampil.
+- Slug mengikuti aturan slug artikel: ikut berubah saat judul diubah selama tutorial masih draf, dikunci setelah terbit.
+- Menghapus tutorial = soft delete tutorial beserta semua materinya dalam satu transaksi (`TutorialService::hapus()`).
+
+### tb_materi_tutorial
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_materi_tutorial | BIGINT UNSIGNED PK | |
+| id_tutorial | BIGINT UNSIGNED FK → tb_tutorial | `restrictOnDelete`. Tidak bisa diganti setelah materi dibuat karena alamat materi memuat slug tutorialnya |
+| judul | VARCHAR(200) | |
+| slug | VARCHAR(220) | UNIQUE `(id_tutorial, slug)`: unik per tutorial, dibuat otomatis dari judul oleh `MateriTutorialService` |
+| deskripsi | LONGTEXT | isi materi: HTML tersanitasi dengan sub-judul h2/h3 serta kode sebaris (`code`) dan blok kode (`pre`); batasnya sama dengan isi artikel |
+| urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | INDEX `(id_tutorial, urutan_ke)`. Kosong saat disimpan = setelah materi terakhir tutorialnya |
+| created_at, updated_at, deleted_at | | |
+
+Catatan implementasi:
+- Materi diurutkan `urutan_ke` lalu `id_materi_tutorial`; nomor tampil ("Materi 2 dari 8") dihitung dari posisi, jadi angka urutan boleh berselang atau kembar.
+- Tanpa gambar sendiri: halaman materi memakai sampul tutorialnya.
+- Slug ikut berubah saat judul diubah selama tutorialnya belum terbit; setelah itu dikunci.
 
 ### tb_faq
 | Kolom | Tipe | Keterangan |

@@ -469,6 +469,32 @@ a.btn:hover {
         color: var(--primary);
         text-decoration: underline;
     }
+
+    // Kode isi materi tutorial: huruf monospace berlatar abu. Baris kode yang panjang dipatah (spasi & indentasi tetap
+    // utuh), bukan digulir: di modal detail, <pre> yang tidak dipatah melebarkan sel tabel melewati layar ponsel.
+    code {
+        padding: 1px 4px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-surface-secondary);
+        font-family: var(--font-mono);
+        font-size: 12px;
+    }
+
+    pre {
+        margin: 0 0 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color-light);
+        border-radius: var(--radius-sm);
+        background: var(--bg-surface-secondary);
+        line-height: 18px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+
+        code {
+            padding: 0;
+            background: none;
+        }
+    }
 }
 
 // Pratinjau gambar tersimpan (mis. logo, favicon) di atas input file-nya. Latar

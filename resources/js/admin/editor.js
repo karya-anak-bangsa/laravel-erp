@@ -40,13 +40,15 @@ const RataTeks = Extension.create({
 
 // Hanya format yang tersedia di toolbar; sisanya dimatikan agar teks tempelan (Word, web)
 // dinormalkan ke format yang sama dengan yang diizinkan HtmlSanitizerService. Sub-judul
-// H2/H3 hanya untuk editor ber-data-judul-bagian (isi artikel); h1 & h4–h6 tempelan menjadi paragraf.
-const buatEkstensi = (judulBagian) => [
+// H2/H3 hanya untuk editor ber-data-judul-bagian (isi artikel & materi tutorial); h1 & h4–h6 tempelan menjadi
+// paragraf. Kode sebaris & blok kode hanya untuk editor ber-data-kode (isi materi tutorial).
+const buatEkstensi = (judulBagian, kode) => [
     StarterKit.configure({
         heading: judulBagian ? { levels: [2, 3] } : false,
         blockquote: false,
-        codeBlock: false,
-        code: false,
+        // Tab di dalam blok kode menjadi 4 spasi (indentasi PSR-12), bukan pindah fokus keluar editor.
+        codeBlock: kode ? { enableTabIndentation: true, tabSize: 4 } : false,
+        code: kode ? {} : false,
         horizontalRule: false,
         strike: false,
         link: {
@@ -68,6 +70,8 @@ const tombolRata = { rataKiri: null, rataTengah: 'center', rataKanan: 'right', r
 const statusAktif = {
     judul2: (editor) => editor.isActive('heading', { level: 2 }),
     judul3: (editor) => editor.isActive('heading', { level: 3 }),
+    kode: (editor) => editor.isActive('code'),
+    blokKode: (editor) => editor.isActive('codeBlock'),
     ...Object.fromEntries(Object.entries(tombolRata).map(([nama, rata]) => [
         nama, (editor) => (editor.state.selection.$from.parent.attrs.rata ?? null) === rata,
     ])),
@@ -114,6 +118,8 @@ const perintah = {
     underline: (editor) => editor.chain().focus().toggleUnderline().run(),
     bulletList: (editor) => editor.chain().focus().toggleBulletList().run(),
     orderedList: (editor) => editor.chain().focus().toggleOrderedList().run(),
+    kode: (editor) => editor.chain().focus().toggleCode().run(),
+    blokKode: (editor) => editor.chain().focus().toggleCodeBlock().run(),
     ...Object.fromEntries(Object.entries(tombolRata).map(([nama, rata]) => [
         nama, (editor) => editor.chain().focus().aturRata(rata).run(),
     ])),
@@ -149,7 +155,7 @@ const pasangSatu = (wadah) => {
 
     const editor = new Editor({
         element: isi,
-        extensions: buatEkstensi(wadah.hasAttribute('data-judul-bagian')),
+        extensions: buatEkstensi(wadah.hasAttribute('data-judul-bagian'), wadah.hasAttribute('data-kode')),
         content: sumber.value,
         editorProps: {
             attributes: {

@@ -1,0 +1,73 @@
+<p>Setiap kali peramban membuka sebuah alamat, Laravel mencari rute yang cocok, menjalankan kode penanganannya, lalu mengirim balik tampilan. Materi ini membahas ketiga bagian itu: rute, <em>controller</em>, dan templat Blade. Hasil akhirnya adalah halaman daftar buku pertama, meskipun datanya masih ditulis langsung di kode.</p>
+<h2>Rute Pertama</h2>
+<p>Buka <code>routes/web.php</code>. Di sana sudah ada rute bawaan yang menampilkan halaman sambutan:</p>
+<pre><code>Route::get('/', function () {
+    return view('welcome');
+});</code></pre>
+<p><code>Route::get()</code> menerima dua hal, yaitu alamat dan kode yang dijalankan saat alamat itu dibuka dengan permintaan GET. Tambahkan rute percobaan di bawahnya:</p>
+<pre><code>Route::get('/halo', function () {
+    return 'Halo dari Laravel 13!';
+});</code></pre>
+<p>Buka <code>http://perpustakaan.test/halo</code>. Teks tersebut langsung tampil di peramban. Fungsi tanpa nama (<em>closure</em>) seperti ini cocok untuk percobaan, tetapi kode aplikasi sebaiknya ditaruh di <em>controller</em> agar <code>routes/web.php</code> tetap ringkas.</p>
+<h2>Membuat <em>Controller</em></h2>
+<p>Buat <em>controller</em> untuk data buku lewat Artisan:</p>
+<pre><code>php artisan make:controller BukuController</code></pre>
+<p>Laravel membuat berkas <code>app/Http/Controllers/BukuController.php</code>. Ubah isinya menjadi seperti berikut agar <em>method</em> <code>index()</code> mengirim daftar judul ke tampilan:</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+class BukuController extends Controller
+{
+    public function index()
+    {
+        $daftarBuku = [
+            'Laskar Pelangi',
+            'Bumi Manusia',
+            'Ronggeng Dukuh Paruk',
+        ];
+
+        return view('buku.index', ['daftarBuku' =&gt; $daftarBuku]);
+    }
+}</code></pre>
+<p>Fungsi <code>view('buku.index', ...)</code> memuat berkas <code>resources/views/buku/index.blade.php</code>. Titik pada nama <em>view</em> menandakan folder. <em>Array</em> kedua berisi data yang bisa dipakai di tampilan.</p>
+<p>Hubungkan <em>controller</em> ini ke rute di <code>routes/web.php</code>, lalu hapus rute percobaan <code>/halo</code>:</p>
+<pre><code>use App\Http\Controllers\BukuController;
+
+Route::get('/buku', [BukuController::class, 'index'])-&gt;name('buku.index');</code></pre>
+<p><code>name('buku.index')</code> memberi nama pada rute. Di bagian kode lain, Anda cukup menulis <code>route('buku.index')</code> untuk mendapatkan alamatnya. Bila alamatnya kelak diubah, semua tautan ikut berubah tanpa perlu dicari satu per satu. Lihat semua rute yang terdaftar dengan <code>php artisan route:list</code>.</p>
+<h2>Tata Letak dengan Blade</h2>
+<p>Blade adalah mesin templat Laravel. Hampir semua halaman memakai kerangka HTML yang sama, jadi kita menulisnya sekali sebagai tata letak di <code>resources/views/layouts/app.blade.php</code>:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;@yield('judul') | Perpustakaan&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;main&gt;
+        @yield('konten')
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Direktif <code>@yield</code> menandai bagian yang isinya ditentukan setiap halaman. Sekarang buat <code>resources/views/buku/index.blade.php</code>:</p>
+<pre><code>@extends('layouts.app')
+
+@section('judul', 'Daftar Buku')
+
+@section('konten')
+    &lt;h1&gt;Daftar Buku&lt;/h1&gt;
+
+    &lt;ul&gt;
+        @foreach ($daftarBuku as $judul)
+            &lt;li&gt;{{ $judul }}&lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;
+@endsection</code></pre>
+<p><code>@extends</code> memakai tata letak tadi, sedangkan <code>@section</code> mengisi bagian yang ditandai <code>@yield</code>. Direktif <code>@foreach</code> mengulang isi di dalamnya untuk setiap judul. Buka <code>http://perpustakaan.test/buku</code> dan ketiga judul buku akan tampil sebagai daftar.</p>
+<h2>Kegunaan Kurung Kurawal Ganda</h2>
+<p>Tanda <code>{{ }}</code> menampilkan isi variabel sekaligus mengubah karakter khusus HTML, seperti <code>&lt;</code> dan <code>&gt;</code>, menjadi entitas. Dengan begitu, teks berbahaya dari pengguna tampil sebagai teks biasa dan tidak dijalankan sebagai skrip. Perlindungan ini mencegah serangan <em>Cross-Site Scripting</em> (XSS).</p>
+<p>Blade juga mengenal <code>{!! !!}</code> yang menampilkan HTML apa adanya. Pakai bentuk ini hanya untuk konten yang sudah pasti aman, misalnya HTML yang sudah disaring di server.</p>
+<h2>Langkah Berikutnya</h2>
+<p>Halaman daftar buku sudah tampil, tetapi datanya masih tertulis di <em>controller</em>. Pada materi berikutnya, kita akan membuat tabel buku di MySQL lewat migrasi dan mengaksesnya dengan model Eloquent.</p>

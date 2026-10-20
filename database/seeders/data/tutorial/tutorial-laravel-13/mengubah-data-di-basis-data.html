@@ -1,0 +1,72 @@
+<p>Data buku yang sudah tersimpan kadang perlu diperbaiki, misalnya karena nama penulisnya salah ketik. Materi ini menambahkan halaman ubah buku dan memakai ulang <code>BukuRequest</code> dari materi sebelumnya sehingga aturan validasinya tidak perlu ditulis dua kali.</p>
+<h2>Rute Ubah dan Simpan Perubahan</h2>
+<p>Tambahkan dua rute berikut di <code>routes/web.php</code>:</p>
+<pre><code>Route::get('/buku/{buku}/ubah', [BukuController::class, 'edit'])-&gt;name('buku.edit');
+Route::put('/buku/{buku}', [BukuController::class, 'update'])-&gt;name('buku.update');</code></pre>
+<p>Rute pertama menampilkan formulir berisi data lama. Rute kedua menerima perubahannya dengan permintaan PUT, metode HTTP yang lazim dipakai untuk memperbarui data. Keduanya memakai <em>route model binding</em> seperti halaman detail sehingga buku yang tidak ada otomatis menghasilkan halaman 404.</p>
+<h2>Satu Formulir untuk Tambah dan Ubah</h2>
+<p>Isian formulir ubah sama persis dengan formulir tambah. Daripada menyalinnya, pindahkan isian itu ke <em>partial</em> <code>resources/views/buku/_form.blade.php</code>:</p>
+<pre><code>&lt;p&gt;
+    &lt;label for="judul"&gt;Judul&lt;/label&gt;
+    &lt;input type="text" id="judul" name="judul" value="{{ old('judul', $buku-&gt;judul) }}"&gt;
+    @error('judul') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+&lt;/p&gt;
+&lt;p&gt;
+    &lt;label for="penulis"&gt;Penulis&lt;/label&gt;
+    &lt;input type="text" id="penulis" name="penulis" value="{{ old('penulis', $buku-&gt;penulis) }}"&gt;
+    @error('penulis') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+&lt;/p&gt;
+&lt;p&gt;
+    &lt;label for="tahun_terbit"&gt;Tahun Terbit&lt;/label&gt;
+    &lt;input type="number" id="tahun_terbit" name="tahun_terbit" value="{{ old('tahun_terbit', $buku-&gt;tahun_terbit) }}"&gt;
+    @error('tahun_terbit') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+&lt;/p&gt;
+
+&lt;button type="submit"&gt;Simpan&lt;/button&gt;</code></pre>
+<p>Argumen kedua <code>old()</code> adalah nilai cadangan. Saat formulir pertama kali dibuka, isian berisi data buku. Saat validasi gagal, isian berisi ketikan terakhir pengunjung.</p>
+<p>Formulir tambah kini cukup memanggil <em>partial</em> tersebut. Ganti isi <code>&lt;form&gt;</code> di <code>create.blade.php</code>:</p>
+<pre><code>&lt;form method="POST" action="{{ route('buku.store') }}"&gt;
+    @csrf
+    @include('buku._form')
+&lt;/form&gt;</code></pre>
+<p>Formulir tambah juga membutuhkan variabel <code>$buku</code>, jadi kirim model kosong dari <em>method</em> <code>create()</code>:</p>
+<pre><code>public function create()
+{
+    return view('buku.create', ['buku' =&gt; new Buku]);
+}</code></pre>
+<h2>Halaman Ubah</h2>
+<p>Buat <code>resources/views/buku/edit.blade.php</code>:</p>
+<pre><code>@extends('layouts.app')
+
+@section('judul', 'Ubah Buku')
+
+@section('konten')
+    &lt;h1&gt;Ubah Buku&lt;/h1&gt;
+
+    &lt;form method="POST" action="{{ route('buku.update', $buku) }}"&gt;
+        @csrf
+        @method('PUT')
+        @include('buku._form')
+    &lt;/form&gt;
+@endsection</code></pre>
+<p>Formulir HTML hanya mengenal GET dan POST. Direktif <code>@method('PUT')</code> menyisipkan isian tersembunyi <code>_method</code> sehingga Laravel memperlakukan kiriman POST ini sebagai PUT dan mencocokkannya dengan rute <code>buku.update</code>. Teknik ini disebut <em>method spoofing</em>.</p>
+<h2>Menyimpan Perubahan</h2>
+<p>Tambahkan <em>method</em> <code>edit()</code> dan <code>update()</code> di <code>BukuController</code>:</p>
+<pre><code>public function edit(Buku $buku)
+{
+    return view('buku.edit', compact('buku'));
+}
+
+public function update(BukuRequest $request, Buku $buku)
+{
+    $buku-&gt;update($request-&gt;validated());
+
+    return redirect()-&gt;route('buku.show', $buku)-&gt;with('status', 'Buku berhasil diperbarui.');
+}</code></pre>
+<p><code>update()</code> mengisi kolom yang tercantum di <code>#[Fillable]</code>, lalu menyimpannya. Eloquent hanya menulis kolom yang nilainya benar-benar berubah dan ikut memperbarui <code>updated_at</code>. Bila tidak ada yang berubah, Eloquent sama sekali tidak mengirim <em>query</em> ke basis data.</p>
+<p>Terakhir, tambahkan tautan ke halaman ubah di <code>show.blade.php</code>:</p>
+<pre><code>&lt;p&gt;&lt;a href="{{ route('buku.edit', $buku) }}"&gt;Ubah data buku&lt;/a&gt;&lt;/p&gt;</code></pre>
+<p>Buka detail salah satu buku, klik tautan itu, ubah tahun terbitnya, lalu simpan. Anda akan kembali ke halaman detail dengan pesan "Buku berhasil diperbarui." dan data yang sudah berubah.</p>
+<h2>Bila Kelak Ada Kolom Unik</h2>
+<p>Misalkan tabel buku kelak memiliki kolom <em>International Standard Book Number</em> (ISBN) yang harus unik. Aturan <code>unique</code> biasa akan menolak perubahan yang tidak mengganti ISBN karena nilai itu sudah dipakai, yaitu oleh buku itu sendiri. Kecualikan buku yang sedang diubah dengan <code>Rule::unique('buku', 'isbn')-&gt;ignore($this-&gt;route('buku'))</code>.</p>
+<p>Contoh ini sekaligus menunjukkan manfaat memisahkan validasi ke <em>Form Request</em>: aturan yang berubah cukup diperbaiki di satu tempat. Kini data buku bisa ditambah, dilihat, dan diubah. Pada materi terakhir, kita akan menghapus data dengan aman dan merapikan semua rute menjadi satu baris.</p>

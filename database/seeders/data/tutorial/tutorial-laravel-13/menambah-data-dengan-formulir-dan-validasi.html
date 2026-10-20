@@ -1,0 +1,107 @@
+<p>Sejauh ini, buku hanya bisa ditambahkan lewat Tinker. Materi ini membuat formulir tambah buku di peramban, memvalidasi isiannya dengan <em>Form Request</em>, lalu menyimpannya ke basis data.</p>
+<h2>Rute Formulir dan Penyimpanan</h2>
+<p>Menambah data membutuhkan dua rute: satu untuk menampilkan formulir dan satu untuk menerima kirimannya. Tambahkan keduanya di <code>routes/web.php</code>:</p>
+<pre><code>Route::get('/buku', [BukuController::class, 'index'])-&gt;name('buku.index');
+Route::get('/buku/tambah', [BukuController::class, 'create'])-&gt;name('buku.create');
+Route::post('/buku', [BukuController::class, 'store'])-&gt;name('buku.store');
+Route::get('/buku/{buku}', [BukuController::class, 'show'])-&gt;name('buku.show');</code></pre>
+<p>Urutannya penting. Rute <code>/buku/tambah</code> harus ditulis sebelum <code>/buku/{buku}</code>. Bila tertukar, Laravel menganggap kata tambah sebagai id buku, lalu menampilkan halaman 404 karena buku itu tidak ada.</p>
+<h2>Membuat Formulir</h2>
+<p>Tambahkan <em>method</em> <code>create()</code> di <code>BukuController</code>:</p>
+<pre><code>public function create()
+{
+    return view('buku.create');
+}</code></pre>
+<p>Buat tampilannya di <code>resources/views/buku/create.blade.php</code>:</p>
+<pre><code>@extends('layouts.app')
+
+@section('judul', 'Tambah Buku')
+
+@section('konten')
+    &lt;h1&gt;Tambah Buku&lt;/h1&gt;
+
+    &lt;form method="POST" action="{{ route('buku.store') }}"&gt;
+        @csrf
+
+        &lt;p&gt;
+            &lt;label for="judul"&gt;Judul&lt;/label&gt;
+            &lt;input type="text" id="judul" name="judul" value="{{ old('judul') }}"&gt;
+            @error('judul') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+        &lt;/p&gt;
+        &lt;p&gt;
+            &lt;label for="penulis"&gt;Penulis&lt;/label&gt;
+            &lt;input type="text" id="penulis" name="penulis" value="{{ old('penulis') }}"&gt;
+            @error('penulis') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+        &lt;/p&gt;
+        &lt;p&gt;
+            &lt;label for="tahun_terbit"&gt;Tahun Terbit&lt;/label&gt;
+            &lt;input type="number" id="tahun_terbit" name="tahun_terbit" value="{{ old('tahun_terbit') }}"&gt;
+            @error('tahun_terbit') &lt;small&gt;{{ $message }}&lt;/small&gt; @enderror
+        &lt;/p&gt;
+
+        &lt;button type="submit"&gt;Simpan&lt;/button&gt;
+    &lt;/form&gt;
+@endsection</code></pre>
+<p>Tiga hal perlu diperhatikan pada formulir ini:</p>
+<ul>
+<li><p><code>@csrf</code> menyisipkan token tersembunyi. Laravel menolak kiriman POST tanpa token yang sah dengan galat 419 sehingga situs lain tidak bisa mengirim formulir atas nama pengunjung Anda.</p></li>
+<li><p><code>old('judul')</code> mengembalikan isian sebelumnya ketika validasi gagal. Pengunjung tidak perlu mengetik ulang semua isian.</p></li>
+<li><p><code>@error</code> menampilkan pesan galat untuk satu isian lewat variabel <code>$message</code>.</p></li>
+</ul>
+<p>Tambahkan juga tautan <code>&lt;a href="{{ route('buku.create') }}"&gt;Tambah buku&lt;/a&gt;</code> di halaman daftar buku agar formulir ini mudah ditemukan.</p>
+<h2>Validasi dengan <em>Form Request</em></h2>
+<p>Data dari formulir tidak boleh langsung dipercaya. Pengunjung bisa mengosongkan judul atau mengirim tahun berupa huruf. Laravel menyediakan <em>Form Request</em>, kelas khusus yang memvalidasi permintaan sebelum <em>controller</em> berjalan. Buat kelasnya:</p>
+<pre><code>php artisan make:request BukuRequest</code></pre>
+<p>Buka <code>app/Http/Requests/BukuRequest.php</code> dan isi <em>method</em>-nya seperti berikut:</p>
+<pre><code>public function authorize(): bool
+{
+    return true;
+}
+
+public function rules(): array
+{
+    return [
+        'judul' =&gt; ['required', 'string', 'max:200'],
+        'penulis' =&gt; ['required', 'string', 'max:100'],
+        'tahun_terbit' =&gt; ['required', 'integer', 'min:1900', 'max:'.now()-&gt;year],
+    ];
+}
+
+public function attributes(): array
+{
+    return [
+        'judul' =&gt; 'judul',
+        'penulis' =&gt; 'penulis',
+        'tahun_terbit' =&gt; 'tahun terbit',
+    ];
+}
+
+public function messages(): array
+{
+    return [
+        'required' =&gt; 'Kolom :attribute wajib diisi.',
+        'max' =&gt; 'Kolom :attribute paling banyak :max karakter.',
+        'tahun_terbit.integer' =&gt; 'Tahun terbit harus berupa angka.',
+        'tahun_terbit.min' =&gt; 'Tahun terbit paling awal :min.',
+        'tahun_terbit.max' =&gt; 'Tahun terbit tidak boleh melewati :max.',
+    ];
+}</code></pre>
+<p><em>Method</em> <code>authorize()</code> buatan Artisan mengembalikan <code>false</code> sehingga semua kiriman ditolak dengan galat 403. Ubah menjadi <code>true</code> karena aplikasi ini belum memiliki fitur <em>login</em>. Kelak, <em>method</em> ini menjadi tempat memeriksa hak akses pengguna.</p>
+<p>Pesan galat bawaan Laravel berbahasa Inggris. <em>Method</em> <code>messages()</code> menggantinya dengan kalimat bahasa Indonesia, sedangkan <code>attributes()</code> menentukan nama isian yang muncul di tempat <code>:attribute</code>. Pesan khusus seperti <code>tahun_terbit.max</code> didahulukan daripada pesan umum <code>max</code>.</p>
+<h2>Menyimpan Data</h2>
+<p>Tambahkan <code>use App\Http\Requests\BukuRequest;</code> di bagian atas <code>BukuController</code>, lalu tambahkan <em>method</em> <code>store()</code>:</p>
+<pre><code>public function store(BukuRequest $request)
+{
+    Buku::create($request-&gt;validated());
+
+    return redirect()-&gt;route('buku.index')-&gt;with('status', 'Buku berhasil ditambahkan.');
+}</code></pre>
+<p>Laravel menjalankan validasi begitu melihat <code>BukuRequest</code> di parameter <em>method</em>. Bila ada isian yang salah, pengunjung dikembalikan ke formulir beserta pesan galat dan isian lamanya. Isi <code>store()</code> sama sekali tidak dijalankan. Bila semuanya benar, <code>validated()</code> hanya berisi data yang lolos validasi, lalu <code>Buku::create()</code> menyimpannya.</p>
+<p>Setelah menyimpan, aplikasi mengalihkan pengunjung ke daftar buku. Pola ini disebut <em>Post/Redirect/Get</em>. Bila pengunjung memuat ulang halaman, peramban hanya membuka ulang daftar buku dan tidak mengirim formulir dua kali.</p>
+<h2>Menampilkan Pesan Berhasil</h2>
+<p><code>with('status', ...)</code> menyimpan pesan di sesi hanya untuk permintaan berikutnya. Tampilkan pesan itu di tata letak <code>layouts/app.blade.php</code>, tepat di dalam <code>&lt;main&gt;</code>, agar berlaku untuk semua halaman:</p>
+<pre><code>@if (session('status'))
+    &lt;p role="status"&gt;{{ session('status') }}&lt;/p&gt;
+@endif</code></pre>
+<p>Coba tambahkan buku baru, misalnya Cantik Itu Luka karya Eka Kurniawan yang terbit pada 2002. Kirim juga formulir kosong untuk melihat pesan validasinya. Pembahasan <em>Form Request</em> yang lebih mendalam ada di artikel <a href="/artikel/validasi-form-dengan-form-request-agar-controller-laravel-tetap-ramping">Validasi Form dengan Form Request agar Controller Laravel Tetap Ramping</a>.</p>
+<p>Pada materi berikutnya, kita akan memakai ulang formulir dan <em>Form Request</em> yang sama untuk mengubah data buku.</p>

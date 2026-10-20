@@ -1,0 +1,50 @@
+<p>Laravel 13 dirilis pada 17 Maret 2026 dan melanjutkan jadwal rilis tahunan Laravel. Seri ini mengajak Anda mengenal versi terbaru tersebut sambil membangun aplikasi data buku sederhana, mulai dari instalasi, <em>routing</em>, dan Blade sampai menampilkan, menambah, mengubah, serta menghapus data di MySQL.</p>
+<p>Materi pertama ini belum menyentuh kode aplikasi. Kita akan melihat kebutuhan sistem, masa dukungan, dan fitur baru yang membedakan Laravel 13 dari versi sebelumnya. Dengan begitu, Anda tahu alasan memilih versi ini untuk proyek baru.</p>
+<h2>Kebutuhan Sistem dan Masa Dukungan</h2>
+<p>Laravel 13 membutuhkan minimal PHP 8.3 dan resmi mendukung PHP 8.3 hingga 8.5. Selain PHP, Anda memerlukan Composer untuk mengelola paket, serta Node.js dan npm untuk membangun aset tampilan lewat Vite. Materi berikutnya membahas cara menyiapkan semuanya.</p>
+<p>Setiap rilis utama Laravel mendapat perbaikan <em>bug</em> selama 18 bulan dan perbaikan keamanan selama 2 tahun. Laravel 13 menerima perbaikan <em>bug</em> hingga kuartal ketiga 2027 dan perbaikan keamanan hingga 17 Maret 2028. Rentang ini cukup panjang untuk proyek yang dimulai sekarang.</p>
+<p>Tim Laravel juga sengaja menekan perubahan yang merusak kompatibilitas (<em>breaking changes</em>). Sebagian besar aplikasi Laravel 12 bisa naik ke versi 13 tanpa banyak mengubah kode. Banyak fitur baru justru hadir bertahap sepanjang tahun lewat rilis minor yang tidak merusak aplikasi.</p>
+<h2>Laravel AI SDK</h2>
+<p>Fitur yang paling menonjol adalah Laravel AI SDK, <em>software development kit</em> (SDK) resmi untuk membangun fitur kecerdasan buatan. Satu API yang seragam melayani pembuatan teks, agen yang bisa memanggil fungsi aplikasi, <em>embedding</em>, audio, gambar, dan penyimpanan vektor. Anda bebas berganti penyedia model AI tanpa menulis ulang kode aplikasi.</p>
+<pre><code>use App\Ai\Agents\AsistenPenjualan;
+
+$jawaban = AsistenPenjualan::make()-&gt;prompt('Ringkas transkrip percakapan penjualan ini...');
+
+return (string) $jawaban;</code></pre>
+<p>Kelas <code>AsistenPenjualan</code> pada contoh di atas adalah agen buatan Anda sendiri. Pustaka yang sama juga bisa menghasilkan gambar lewat <code>Image::of(...)</code>, suara lewat <code>Audio::of(...)</code>, dan <em>embedding</em> langsung dari teks lewat <code>Str::of(...)-&gt;toEmbeddings()</code>.</p>
+<h2><em>JSON:API Resources</em> dan Pencarian Vektor</h2>
+<p>Laravel 13 kini membawa <em>JSON:API resources</em> bawaan. Fitur ini menghasilkan respons yang mengikuti spesifikasi JSON:API, termasuk relasi, pemilihan kolom (<em>sparse fieldsets</em>), tautan, dan <em>header</em> yang sesuai. Anda tidak perlu lagi memasang paket pihak ketiga demi API berformat standar.</p>
+<p>Laravel juga memperdalam dukungan pencarian semantik. <em>Query builder</em> kini memiliki klausa kemiripan vektor sehingga Anda bisa mencari dokumen yang maknanya mirip, bukan sekadar yang kata-katanya sama. Fitur ini memakai PostgreSQL dengan ekstensi pgvector.</p>
+<pre><code>$dokumen = DB::table('dokumen')
+    -&gt;whereVectorSimilarTo('embedding', 'Kebun teh terbaik di Jawa Barat')
+    -&gt;limit(10)
+    -&gt;get();</code></pre>
+<h2>Atribut PHP di Lebih Banyak Tempat</h2>
+<p>Atribut PHP memungkinkan pengaturan ditulis tepat di atas kelas atau <em>method</em> yang diaturnya. Laravel 13 memperluas pemakaiannya. Di <em>controller</em>, ada <code>#[Middleware]</code> untuk memasang <em>middleware</em> dan <code>#[Authorize]</code> untuk memeriksa izin. Di <em>job</em> antrean, ada <code>#[Tries]</code>, <code>#[Backoff]</code>, <code>#[Timeout]</code>, dan <code>#[FailOnTimeout]</code>.</p>
+<pre><code>use Illuminate\Routing\Attributes\Controllers\Middleware;
+
+#[Middleware('auth')]
+class LaporanController extends Controller
+{
+    #[Middleware('verified')]
+    public function unduh()
+    {
+        // ...
+    }
+}</code></pre>
+<p>Model Eloquent pun bisa diatur dengan atribut, misalnya <code>#[Table]</code> untuk nama tabel dan <code>#[Fillable]</code> untuk kolom yang boleh diisi. Cara lama lewat properti kelas tetap berlaku, jadi Anda bebas memilih. Seri ini memakai kedua atribut tersebut di materi keempat.</p>
+<h2>Perbaikan Kecil yang Terasa</h2>
+<ul>
+<li><p><strong>Rute antrean per kelas.</strong> <code>Queue::route(...)</code> menentukan koneksi dan antrean bawaan sebuah <em>job</em> di satu tempat, misalnya <code>Queue::route(KirimFaktur::class, connection: 'redis', queue: 'faktur')</code>.</p></li>
+<li><p><strong>Memperpanjang <em>cache</em>.</strong> <code>Cache::touch('kunci', 3600)</code> memperpanjang umur data <em>cache</em> tanpa harus membaca lalu menyimpannya ulang.</p></li>
+<li><p><strong>Perlindungan pemalsuan permintaan.</strong> <em>Middleware</em> pelindung <em>Cross-Site Request Forgery</em> (CSRF) kini bernama <code>PreventRequestForgery</code> dan ikut memeriksa asal permintaan (<em>origin</em>), tetapi tetap kompatibel dengan token CSRF yang sudah ada.</p></li>
+</ul>
+<h2>Yang Akan Kita Bangun</h2>
+<p>Fitur AI dan pencarian vektor memang menarik, tetapi seri ini berfokus pada dasar yang dipakai hampir semua aplikasi. Kita akan membangun aplikasi perpustakaan kecil berisi tabel buku dengan kolom judul, penulis, dan tahun terbit. Setiap materi menambah satu bagian:</p>
+<ol>
+<li><p>Materi 2 memasang Laravel 13 dan menghubungkannya ke MySQL.</p></li>
+<li><p>Materi 3 membuat rute, <em>controller</em>, dan tampilan Blade pertama.</p></li>
+<li><p>Materi 4 membuat tabel buku lewat migrasi beserta model Eloquent-nya.</p></li>
+<li><p>Materi 5 sampai 8 menampilkan, menambah, mengubah, dan menghapus data buku.</p></li>
+</ol>
+<p>Siapkan pemahaman dasar PHP dan HTML. Anda tidak perlu pernah memakai Laravel sebelumnya karena setiap langkah dijelaskan dari awal.</p>

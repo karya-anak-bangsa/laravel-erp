@@ -12,9 +12,10 @@ trait MembersihkanHtml
 {
     /**
      * @param  list<string>  $kolom
-     * @param  bool  $judulBagian  izinkan sub-judul h2/h3 (isi artikel)
+     * @param  bool  $judulBagian  izinkan sub-judul h2/h3 (isi artikel & materi tutorial)
+     * @param  bool  $kode  izinkan kode sebaris & blok kode beserta sub-judul (isi materi tutorial)
      */
-    protected function bersihkanHtml(array $kolom, bool $judulBagian = false): void
+    protected function bersihkanHtml(array $kolom, bool $judulBagian = false, bool $kode = false): void
     {
         $sanitizer = app(HtmlSanitizerService::class);
         $bersih = [];
@@ -24,7 +25,7 @@ trait MembersihkanHtml
 
             // Isi kosong menjadi null, sama seperti middleware ConvertEmptyStringsToNull.
             if (is_string($nilai)) {
-                $bersih[$nama] = $sanitizer->bersihkan($nilai, $judulBagian) ?: null;
+                $bersih[$nama] = $sanitizer->bersihkan($nilai, $judulBagian, $kode) ?: null;
             }
         }
 

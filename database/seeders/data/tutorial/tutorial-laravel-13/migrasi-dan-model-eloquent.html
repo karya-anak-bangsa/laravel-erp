@@ -1,0 +1,52 @@
+<p>Data aplikasi seharusnya tersimpan di basis data, bukan tertulis di kode. Materi ini membuat tabel buku di MySQL dengan migrasi, lalu menghubungkannya ke kode PHP lewat model Eloquent.</p>
+<h2>Apa Itu Migrasi</h2>
+<p>Migrasi adalah berkas PHP yang mencatat perubahan struktur tabel. Alih-alih membuat tabel lewat phpMyAdmin atau HeidiSQL, Anda menuliskannya di kode. Riwayat perubahannya ikut tersimpan di Git. Rekan satu tim cukup menjalankan satu perintah untuk mendapatkan struktur basis data yang sama.</p>
+<h2>Membuat Tabel Buku</h2>
+<p>Buat migrasi baru dengan Artisan:</p>
+<pre><code>php artisan make:migration create_buku_table</code></pre>
+<p>Laravel membaca nama migrasi dan menebak bahwa kita ingin membuat tabel buku. Buka berkas baru di <code>database/migrations</code>, lalu lengkapi isi <em>method</em> <code>up()</code>:</p>
+<pre><code>public function up(): void
+{
+    Schema::create('buku', function (Blueprint $table) {
+        $table-&gt;id();
+        $table-&gt;string('judul', 200);
+        $table-&gt;string('penulis', 100);
+        $table-&gt;unsignedSmallInteger('tahun_terbit');
+        $table-&gt;timestamps();
+    });
+}</code></pre>
+<p><code>id()</code> membuat kolom kunci primer yang bertambah otomatis, sedangkan <code>timestamps()</code> membuat kolom <code>created_at</code> dan <code>updated_at</code> yang diisi Laravel saat data dibuat dan diubah. Tahun terbit memakai <code>unsignedSmallInteger</code> karena nilainya selalu berupa bilangan bulat positif yang kecil.</p>
+<p><em>Method</em> <code>down()</code> berisi kebalikannya, yaitu <code>Schema::dropIfExists('buku')</code>. Laravel menjalankannya saat Anda membatalkan migrasi. Sekarang jalankan migrasinya:</p>
+<pre><code>php artisan migrate</code></pre>
+<p>Tabel buku kini ada di basis data perpustakaan. Bila ada kolom yang salah, jalankan <code>php artisan migrate:rollback</code> untuk membatalkan migrasi terakhir, perbaiki berkasnya, lalu jalankan <code>php artisan migrate</code> lagi. Setelah tabelnya berisi data sungguhan, jangan mengubah migrasi lama. Buat migrasi baru untuk setiap perubahan, seperti yang akan kita lakukan di materi terakhir.</p>
+<h2>Membuat Model Eloquent</h2>
+<p>Eloquent adalah <em>Object-Relational Mapping</em> (ORM) bawaan Laravel. Setiap tabel diwakili satu kelas model sehingga Anda bisa membaca dan menulis data tanpa menyusun SQL sendiri. Buat modelnya:</p>
+<pre><code>php artisan make:model Buku</code></pre>
+<p>Ada satu hal yang perlu diperhatikan. Laravel menebak nama tabel dari bentuk jamak bahasa Inggris nama modelnya. Akibatnya, model Buku dianggap memakai tabel <code>bukus</code>, padahal tabel kita bernama <code>buku</code>.</p>
+<p>Laravel 13 menyediakan atribut <code>#[Table]</code> untuk menyebut nama tabel secara langsung. Sekalian, tentukan kolom yang boleh diisi lewat <code>#[Fillable]</code>. Ubah isi <code>app/Models/Buku.php</code> menjadi seperti berikut:</p>
+<pre><code>&lt;?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Model;
+
+#[Table('buku')]
+#[Fillable(['judul', 'penulis', 'tahun_terbit'])]
+class Buku extends Model
+{
+}</code></pre>
+<p>Kedua atribut ini sama dengan menulis properti <code>protected $table = 'buku';</code> dan <code>protected $fillable = [...];</code> di dalam kelas, cara yang tetap berlaku di Laravel 13. Daftar kolom di <code>#[Fillable]</code> melindungi aplikasi dari pengisian massal (<em>mass assignment</em>): kolom di luar daftar, misalnya <code>id</code>, diabaikan meskipun ikut terkirim dari formulir.</p>
+<h2>Mencoba Eloquent lewat Tinker</h2>
+<p>Tinker adalah konsol interaktif untuk menjalankan kode PHP di dalam aplikasi. Buka dengan <code>php artisan tinker</code>, lalu tambahkan tiga buku:</p>
+<pre><code>App\Models\Buku::create(['judul' =&gt; 'Laskar Pelangi', 'penulis' =&gt; 'Andrea Hirata', 'tahun_terbit' =&gt; 2005]);
+App\Models\Buku::create(['judul' =&gt; 'Bumi Manusia', 'penulis' =&gt; 'Pramoedya Ananta Toer', 'tahun_terbit' =&gt; 1980]);
+App\Models\Buku::create(['judul' =&gt; 'Ronggeng Dukuh Paruk', 'penulis' =&gt; 'Ahmad Tohari', 'tahun_terbit' =&gt; 1982]);</code></pre>
+<p>Setiap <code>create()</code> menyimpan satu baris dan mengembalikan model yang baru dibuat, lengkap dengan <code>id</code> dan waktu pembuatannya. Coba juga beberapa perintah baca berikut:</p>
+<pre><code>App\Models\Buku::count();
+App\Models\Buku::find(1);
+App\Models\Buku::where('tahun_terbit', '&lt;', 2000)-&gt;pluck('judul');</code></pre>
+<p>Perintah pertama menghitung jumlah buku, perintah kedua mengambil buku ber-id 1, dan perintah ketiga mengambil judul buku yang terbit sebelum tahun 2000. Eloquent menyusun SQL-nya untuk Anda. Ketik <code>exit</code> untuk keluar dari Tinker.</p>
+<p>Bila tabel buku kelak berisi ribuan baris dan pencarian per kolom mulai terasa lambat, baca juga artikel <a href="/artikel/mengenal-indeks-di-mysql-agar-query-tidak-lambat">Mengenal Indeks di MySQL agar Query Tidak Lambat</a>.</p>
+<p>Tabel dan model sudah siap. Pada materi berikutnya, kita akan mengganti daftar judul yang ditulis langsung di <em>controller</em> dengan data asli dari tabel buku.</p>

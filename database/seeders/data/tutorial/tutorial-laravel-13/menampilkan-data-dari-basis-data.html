@@ -1,0 +1,101 @@
+<p>Tabel buku sudah berisi tiga baris dari materi sebelumnya. Kini saatnya menampilkan data itu di peramban, yaitu halaman daftar berbentuk tabel dan halaman detail untuk setiap buku. Kita juga akan menambahkan pencarian sederhana.</p>
+<h2>Mengambil Data di <em>Controller</em></h2>
+<p>Buka <code>BukuController</code> dan ganti daftar judul dengan <em>query</em> Eloquent:</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Buku;
+
+class BukuController extends Controller
+{
+    public function index()
+    {
+        $daftarBuku = Buku::orderBy('judul')-&gt;paginate(10);
+
+        return view('buku.index', compact('daftarBuku'));
+    }
+}</code></pre>
+<p><code>orderBy('judul')</code> mengurutkan buku menurut abjad, sedangkan <code>paginate(10)</code> mengambil paling banyak sepuluh buku per halaman. Tanpa paginasi, halaman akan memuat seluruh isi tabel sekaligus dan makin lambat seiring bertambahnya data. Fungsi <code>compact('daftarBuku')</code> adalah cara singkat menulis <code>['daftarBuku' =&gt; $daftarBuku]</code>.</p>
+<h2>Menampilkan Tabel di Blade</h2>
+<p>Ganti isi <code>resources/views/buku/index.blade.php</code>:</p>
+<pre><code>@extends('layouts.app')
+
+@section('judul', 'Daftar Buku')
+
+@section('konten')
+    &lt;h1&gt;Daftar Buku&lt;/h1&gt;
+
+    @if ($daftarBuku-&gt;isEmpty())
+        &lt;p&gt;Belum ada buku.&lt;/p&gt;
+    @else
+        &lt;table&gt;
+            &lt;thead&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;Judul&lt;/th&gt;
+                    &lt;th&gt;Penulis&lt;/th&gt;
+                    &lt;th&gt;Tahun Terbit&lt;/th&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+                @foreach ($daftarBuku as $buku)
+                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href="{{ route('buku.show', $buku) }}"&gt;{{ $buku-&gt;judul }}&lt;/a&gt;&lt;/td&gt;
+                        &lt;td&gt;{{ $buku-&gt;penulis }}&lt;/td&gt;
+                        &lt;td&gt;{{ $buku-&gt;tahun_terbit }}&lt;/td&gt;
+                    &lt;/tr&gt;
+                @endforeach
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+
+        {{ $daftarBuku-&gt;links('pagination::bootstrap-5') }}
+    @endif
+@endsection</code></pre>
+<p>Setiap <code>$buku</code> di dalam <code>@foreach</code> adalah objek model Buku, jadi kolomnya dibaca sebagai properti, misalnya <code>$buku-&gt;judul</code>. Pesan "Belum ada buku." tampil bila tabel masih kosong.</p>
+<p><code>links()</code> menampilkan tautan ke halaman berikutnya begitu jumlah buku melebihi sepuluh. Tampilan bawaannya memakai kelas Tailwind CSS dan ikon SVG. Tata letak kita belum memuat CSS apa pun sehingga ikon panahnya bisa tampil sangat besar. Oleh karena itu, contoh di atas memakai tampilan <code>pagination::bootstrap-5</code> yang hanya berisi daftar tautan biasa.</p>
+<h2>Halaman Detail Buku</h2>
+<p>Tautan pada judul buku mengarah ke rute <code>buku.show</code> yang belum ada. Tambahkan rutenya di <code>routes/web.php</code>:</p>
+<pre><code>Route::get('/buku', [BukuController::class, 'index'])-&gt;name('buku.index');
+Route::get('/buku/{buku}', [BukuController::class, 'show'])-&gt;name('buku.show');</code></pre>
+<p>Bagian <code>{buku}</code> adalah parameter rute. Tambahkan <em>method</em> <code>show()</code> di <code>BukuController</code>:</p>
+<pre><code>public function show(Buku $buku)
+{
+    return view('buku.show', compact('buku'));
+}</code></pre>
+<p>Perhatikan bahwa <em>method</em> ini tidak mencari bukunya sendiri. Fitur <em>route model binding</em> membaca angka di alamat, misalnya 2 pada <code>/buku/2</code>, lalu mengambil buku ber-id 2 dan memberikannya sebagai <code>$buku</code>. Syaratnya, nama parameter rute sama dengan nama variabel. Bila buku dengan id itu tidak ada, Laravel otomatis menampilkan halaman 404.</p>
+<p>Buat tampilannya di <code>resources/views/buku/show.blade.php</code>:</p>
+<pre><code>@extends('layouts.app')
+
+@section('judul', $buku-&gt;judul)
+
+@section('konten')
+    &lt;h1&gt;{{ $buku-&gt;judul }}&lt;/h1&gt;
+
+    &lt;p&gt;Penulis: {{ $buku-&gt;penulis }}&lt;/p&gt;
+    &lt;p&gt;Tahun terbit: {{ $buku-&gt;tahun_terbit }}&lt;/p&gt;
+    &lt;p&gt;Ditambahkan: {{ $buku-&gt;created_at-&gt;format('d-m-Y H:i') }}&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href="{{ route('buku.index') }}"&gt;Kembali ke daftar buku&lt;/a&gt;&lt;/p&gt;
+@endsection</code></pre>
+<p>Kolom <code>created_at</code> otomatis berupa objek tanggal Carbon sehingga bisa diformat sesuai kebutuhan.</p>
+<h2>Menambahkan Pencarian Sederhana</h2>
+<p>Daftar buku yang panjang lebih mudah dipakai bila bisa dicari. Tambahkan <code>use Illuminate\Http\Request;</code> di bagian atas <code>BukuController</code>, lalu ubah <em>method</em> <code>index()</code> agar menerima kata kunci dari alamat, misalnya <code>/buku?q=bumi</code>:</p>
+<pre><code>public function index(Request $request)
+{
+    $q = $request-&gt;string('q')-&gt;trim()-&gt;value();
+
+    $daftarBuku = Buku::query()
+        -&gt;when($q !== '', fn ($query) =&gt; $query-&gt;where('judul', 'like', "%{$q}%"))
+        -&gt;orderBy('judul')
+        -&gt;paginate(10)
+        -&gt;withQueryString();
+
+    return view('buku.index', compact('daftarBuku', 'q'));
+}</code></pre>
+<p><code>when()</code> hanya menambahkan syarat <code>where</code> bila kata kunci diisi, sedangkan <code>withQueryString()</code> membawa kata kunci itu ke tautan halaman berikutnya. Eloquent mengirim nilai <code>$q</code> ke basis data sebagai parameter terpisah sehingga pencarian ini aman dari injeksi SQL.</p>
+<p>Tambahkan formulir pencarian di atas tabel, tepat di bawah judul halaman:</p>
+<pre><code>&lt;form method="GET" action="{{ route('buku.index') }}"&gt;
+    &lt;input type="search" name="q" value="{{ $q }}" placeholder="Cari judul buku"&gt;
+    &lt;button type="submit"&gt;Cari&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<p>Coba cari kata <code>bumi</code>; hanya Bumi Manusia yang muncul di tabel. Data buku kini tampil langsung dari basis data. Pada materi berikutnya, kita akan membuat formulir untuk menambah buku baru lengkap dengan validasinya.</p>

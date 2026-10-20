@@ -17,6 +17,13 @@ it('membuang sub-judul dari ringkasan agar tidak menyambung dengan kalimat sesud
         ->and(TeksHtml::ringkasan(null))->toBe('');
 });
 
+it('menghitung teks blok kode sebagai teks terlihat tetapi membuangnya dari ringkasan', function () {
+    $html = "<p>Jalankan <code>php artisan migrate</code>.</p><pre><code>php artisan\nmigrate</code></pre><p>Selesai.</p>";
+
+    expect(TeksHtml::polos($html))->toBe('Jalankan php artisan migrate. php artisan migrate Selesai.')
+        ->and(TeksHtml::ringkasan($html))->toBe('Jalankan php artisan migrate. Selesai.');
+});
+
 it('memotong teks di akhir kata terdekat sebelum batas karakter', function (string $teks, int $maks, string $hasil) {
     expect(TeksHtml::potongDiAkhirKata($teks, $maks))->toBe($hasil);
 })->with([

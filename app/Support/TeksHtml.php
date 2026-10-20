@@ -15,8 +15,8 @@ class TeksHtml
             return '';
         }
 
-        // Akhir paragraf/butir/sub-judul & <br> diberi spasi agar kata dari blok berbeda tidak menempel.
-        $teks = strip_tags((string) preg_replace('#</(p|li|ul|ol|h2|h3)>|<br\s*/?>#i', '$0 ', $html));
+        // Akhir paragraf/butir/sub-judul/blok kode & <br> diberi spasi agar kata dari blok berbeda tidak menempel.
+        $teks = strip_tags((string) preg_replace('#</(p|li|ul|ol|h2|h3|pre)>|<br\s*/?>#i', '$0 ', $html));
 
         return trim((string) preg_replace('/\s+/u', ' ', html_entity_decode($teks, ENT_QUOTES | ENT_HTML5, 'UTF-8')));
     }
@@ -24,10 +24,11 @@ class TeksHtml
     /**
      * Teks polos untuk ringkasan kartu: sub-judul (h2/h3) dibuang agar tidak menyambung dengan
      * kalimat paragraf sesudahnya, mis. "…kendalikan. Dipercaya calon pelanggan Pelanggan cenderung…".
+     * Blok kode (isi materi tutorial) juga dibuang karena bukan kalimat.
      */
     public static function ringkasan(?string $html): string
     {
-        return self::polos(preg_replace('#<(h2|h3)\b[^>]*>.*?</\1>#is', ' ', (string) $html));
+        return self::polos(preg_replace('#<(h2|h3|pre)\b[^>]*>.*?</\1>#is', ' ', (string) $html));
     }
 
     /**

@@ -21,32 +21,43 @@ class HtmlSanitizerService
         'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption', 'dl', 'dt', 'dd', 'label',
     ];
 
-    // Sub-judul hanya tersedia di editor isi artikel (<x-admin.form-editor :judul-bagian="true">).
+    // Sub-judul hanya tersedia di editor isi artikel & materi tutorial (<x-admin.form-editor :judul-bagian="true">).
     private const JUDUL_BAGIAN = ['h2', 'h3'];
+
+    // Kode sebaris & blok kode hanya tersedia di editor isi materi tutorial (<x-admin.form-editor :kode="true">).
+    private const KODE = ['code', 'pre'];
 
     private readonly HtmlSanitizer $sanitizer;
 
     private readonly HtmlSanitizer $sanitizerJudulBagian;
 
+    private readonly HtmlSanitizer $sanitizerKode;
+
     public function __construct()
     {
-        $this->sanitizer = $this->buatSanitizer([], self::PANJANG_HTML_MAKS);
-        $this->sanitizerJudulBagian = $this->buatSanitizer(self::JUDUL_BAGIAN, self::PANJANG_HTML_ARTIKEL_MAKS);
+        $this->sanitizer = $this->buatSanitizer([], [], self::PANJANG_HTML_MAKS);
+        $this->sanitizerJudulBagian = $this->buatSanitizer(self::JUDUL_BAGIAN, [], self::PANJANG_HTML_ARTIKEL_MAKS);
+        $this->sanitizerKode = $this->buatSanitizer(self::JUDUL_BAGIAN, self::KODE, self::PANJANG_HTML_ARTIKEL_MAKS);
     }
 
     /**
      * HTML aman untuk disimpan. Isi tanpa teks terlihat (mis. editor kosong "<p></p>")
      * menjadi string kosong agar aturan required tetap bekerja.
      *
-     * @param  bool  $judulBagian  izinkan sub-judul h2/h3 (isi artikel)
+     * @param  bool  $judulBagian  izinkan sub-judul h2/h3 (isi artikel & materi tutorial)
+     * @param  bool  $kode  izinkan kode sebaris & blok kode beserta sub-judul (isi materi tutorial)
      */
-    public function bersihkan(?string $html, bool $judulBagian = false): ?string
+    public function bersihkan(?string $html, bool $judulBagian = false, bool $kode = false): ?string
     {
         if ($html === null) {
             return null;
         }
 
-        $sanitizer = $judulBagian ? $this->sanitizerJudulBagian : $this->sanitizer;
+        $sanitizer = match (true) {
+            $kode => $this->sanitizerKode,
+            $judulBagian => $this->sanitizerJudulBagian,
+            default => $this->sanitizer,
+        };
         $bersih = trim($sanitizer->sanitize($html));
 
         if (TeksHtml::polos($bersih) === '') {
@@ -59,8 +70,9 @@ class HtmlSanitizerService
 
     /**
      * @param  list<string>  $judulBagian
+     * @param  list<string>  $kode
      */
-    private function buatSanitizer(array $judulBagian, int $panjangHtmlMaks): HtmlSanitizer
+    private function buatSanitizer(array $judulBagian, array $kode, int $panjangHtmlMaks): HtmlSanitizer
     {
         // Hanya tag yang bisa dibuat toolbar editor (resources/js/admin/editor.js); sisanya
         // (skrip, style, atribut on*, gambar) dibuang sebelum disimpan dan ditampilkan apa adanya.
@@ -86,9 +98,14 @@ class HtmlSanitizerService
             $config = $config->allowElement($elemen, ['style']);
         }
 
+        // Tanpa atribut: kelas bahasa (language-*) tidak dipakai karena kode tampil tanpa pewarnaan sintaks.
+        foreach ($kode as $elemen) {
+            $config = $config->allowElement($elemen);
+        }
+
         // Elemen lain dibuang beserta isinya; pembungkus umum hasil tempel (Word, web) cukup
         // dilepas tagnya agar teksnya tidak ikut hilang.
-        foreach (array_diff(self::PEMBUNGKUS, $judulBagian) as $elemen) {
+        foreach (array_diff(self::PEMBUNGKUS, $judulBagian, $kode) as $elemen) {
             $config = $config->blockElement($elemen);
         }
 

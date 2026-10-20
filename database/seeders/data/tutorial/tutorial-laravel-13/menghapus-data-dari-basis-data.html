@@ -1,0 +1,74 @@
+<p>Materi terakhir ini melengkapi aplikasi perpustakaan dengan fitur hapus. Kita akan membuat tombol hapus yang aman, mengenal <em>soft delete</em> agar data yang terhapus masih bisa dipulihkan, lalu merapikan semua rute buku menjadi satu baris.</p>
+<h2>Mengapa Hapus Tidak Memakai Tautan Biasa</h2>
+<p>Tautan biasa mengirim permintaan GET. Mesin pencari, ekstensi peramban, dan fitur <em>prefetch</em> bebas membuka tautan GET tanpa sepengetahuan pengguna. Bila alamat seperti <code>/buku/2/hapus</code> langsung menghapus data, buku bisa hilang hanya karena sebuah perayap menelusuri halaman. Oleh karena itu, penghapusan memakai permintaan DELETE yang dikirim lewat formulir bertoken CSRF.</p>
+<h2>Rute dan Tombol Hapus</h2>
+<p>Tambahkan rute berikut di <code>routes/web.php</code>:</p>
+<pre><code>Route::delete('/buku/{buku}', [BukuController::class, 'destroy'])-&gt;name('buku.destroy');</code></pre>
+<p>Tambahkan tombol hapus di <code>show.blade.php</code>, di bawah tautan ubah:</p>
+<pre><code>&lt;form method="POST" action="{{ route('buku.destroy', $buku) }}"
+    onsubmit="return confirm('Hapus buku ini?')"&gt;
+    @csrf
+    @method('DELETE')
+    &lt;button type="submit"&gt;Hapus buku&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<p>Seperti pada formulir ubah, <code>@method('DELETE')</code> membuat Laravel memperlakukan kiriman POST ini sebagai DELETE. Fungsi <code>confirm()</code> meminta konfirmasi lebih dulu sehingga buku tidak terhapus karena salah klik.</p>
+<h2>Menghapus di <em>Controller</em></h2>
+<p>Tambahkan <em>method</em> <code>destroy()</code> di <code>BukuController</code>:</p>
+<pre><code>public function destroy(Buku $buku)
+{
+    $buku-&gt;delete();
+
+    return redirect()-&gt;route('buku.index')-&gt;with('status', 'Buku berhasil dihapus.');
+}</code></pre>
+<p>Pengunjung dialihkan ke daftar buku karena halaman detail buku yang baru dihapus sudah tidak ada. Coba hapus satu buku. Pesan berhasil akan tampil dan buku itu hilang dari daftar.</p>
+<h2>Menyimpan Data Terhapus dengan <em>Soft Delete</em></h2>
+<p><code>delete()</code> di atas menghapus baris secara permanen. Pada aplikasi sungguhan, data yang terhapus kadang perlu dikembalikan. <em>Soft delete</em> mengatasinya: Laravel hanya mengisi kolom <code>deleted_at</code> dengan waktu penghapusan sehingga baris tersebut tidak lagi muncul di <em>query</em> biasa.</p>
+<p>Tabel buku sudah berisi data, jadi tambahkan kolomnya lewat migrasi baru:</p>
+<pre><code>php artisan make:migration add_deleted_at_to_buku_table --table=buku</code></pre>
+<p>Isi kedua <em>method</em> migrasi tersebut:</p>
+<pre><code>public function up(): void
+{
+    Schema::table('buku', function (Blueprint $table) {
+        $table-&gt;softDeletes();
+    });
+}
+
+public function down(): void
+{
+    Schema::table('buku', function (Blueprint $table) {
+        $table-&gt;dropSoftDeletes();
+    });
+}</code></pre>
+<p>Jalankan <code>php artisan migrate</code>, lalu pasang <em>trait</em> <code>SoftDeletes</code> di model Buku:</p>
+<pre><code>use Illuminate\Database\Eloquent\SoftDeletes;
+
+#[Table('buku')]
+#[Fillable(['judul', 'penulis', 'tahun_terbit'])]
+class Buku extends Model
+{
+    use SoftDeletes;
+}</code></pre>
+<p>Kode <em>controller</em> tidak perlu diubah. Kini <code>$buku-&gt;delete()</code> hanya menandai baris sebagai terhapus. Daftar buku dan <em>route model binding</em> otomatis melewatkan buku tersebut sehingga alamat detailnya menghasilkan halaman 404.</p>
+<p>Data yang terhapus tetap bisa diakses bila diperlukan, misalnya lewat Tinker:</p>
+<pre><code>App\Models\Buku::onlyTrashed()-&gt;get();
+App\Models\Buku::withTrashed()-&gt;find(2)-&gt;restore();
+App\Models\Buku::withTrashed()-&gt;find(3)-&gt;forceDelete();</code></pre>
+<p><code>onlyTrashed()</code> mengambil buku yang terhapus saja, <code>restore()</code> memulihkan buku, dan <code>forceDelete()</code> menghapus buku secara permanen. <em>Soft delete</em> bukan pengganti cadangan basis data, jadi biasakan juga <a href="/artikel/backup-database-mysql-otomatis-kebiasaan-kecil-yang-menyelamatkan-data">mencadangkan basis data MySQL secara otomatis</a>.</p>
+<h2>Merapikan Rute dengan <em>Resource Controller</em></h2>
+<p>Lihat kembali <code>routes/web.php</code>. Kini ada tujuh rute buku dengan pola yang sangat umum: daftar, formulir tambah, simpan, detail, formulir ubah, simpan perubahan, dan hapus. Laravel menyebut kumpulan ini <em>resource</em> dan bisa mendaftarkan ketujuhnya dengan satu baris:</p>
+<pre><code>Route::resource('buku', BukuController::class);</code></pre>
+<p>Nama rute dan <em>method</em> yang dihasilkan sama persis dengan yang kita tulis, yaitu <code>buku.index</code>, <code>buku.create</code>, <code>buku.store</code>, <code>buku.show</code>, <code>buku.edit</code>, <code>buku.update</code>, dan <code>buku.destroy</code>. Bedanya hanya pada alamat formulir yang berbahasa Inggris, yaitu <code>/buku/create</code> dan <code>/buku/{buku}/edit</code>.</p>
+<p>Alamat berbahasa Indonesia bisa dipertahankan dengan menambahkan kode berikut di <em>method</em> <code>boot()</code> pada <code>app/Providers/AppServiceProvider.php</code>:</p>
+<pre><code>use Illuminate\Support\Facades\Route;
+
+public function boot(): void
+{
+    Route::resourceVerbs([
+        'create' =&gt; 'tambah',
+        'edit' =&gt; 'ubah',
+    ]);
+}</code></pre>
+<p>Hapus ketujuh rute lama, simpan berkasnya, lalu jalankan <code>php artisan route:list --path=buku</code>. Alamat dan nama rutenya sama dengan sebelumnya, tetapi kini cukup ditulis dalam satu baris.</p>
+<h2>Rangkuman Seri</h2>
+<p>Selamat, aplikasi perpustakaan Anda kini memiliki fitur <em>Create, Read, Update, Delete</em> (CRUD) yang lengkap. Sepanjang seri ini, Anda sudah memakai rute, <em>controller</em>, Blade, migrasi, model Eloquent, <em>Form Request</em>, dan <em>soft delete</em>, yaitu fondasi hampir semua aplikasi Laravel.</p>
+<p>Langkah berikutnya bisa berupa fitur <em>login</em> lewat <em>starter kit</em> resmi Laravel, relasi antartabel seperti buku dan kategori, atau tampilan yang lebih rapi dengan Tailwind CSS. Relasi antartabel dibahas di artikel <a href="/artikel/eloquent-relationship-di-laravel-dan-cara-menghindari-n1-query">Eloquent Relationship di Laravel dan Cara Menghindari N+1 Query</a>.</p>

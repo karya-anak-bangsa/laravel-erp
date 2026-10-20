@@ -1,0 +1,49 @@
+<p>Pada materi pertama, kita sudah mengenal fitur baru Laravel 13. Sekarang saatnya memasang Laravel di komputer dan menyiapkan proyek perpustakaan yang akan kita kembangkan sampai materi terakhir.</p>
+<p>Contoh di seri ini memakai Laragon di Windows karena PHP, MySQL, Composer, dan Node.js sudah tersedia dalam satu paket. Pengguna macOS atau Linux tetap bisa mengikuti langkahnya asalkan versi PHP dan MySQL-nya sesuai.</p>
+<h2>Memeriksa Kebutuhan</h2>
+<p>Buka terminal Laragon lewat <strong>Menu &gt; Laragon &gt; Terminal</strong>, lalu periksa versi setiap alat:</p>
+<pre><code>php -v
+composer -V
+node -v</code></pre>
+<p>PHP harus menunjukkan versi 8.3 atau lebih baru. Jika versinya lebih lama, Composer akan memasang Laravel versi sebelumnya tanpa peringatan yang jelas. Panduan mengganti versi PHP di Laragon ada di artikel <a href="/artikel/cara-install-laravel-13-di-windows-dengan-laragon">Cara Install Laravel 13 di Windows dengan Laragon</a>.</p>
+<h2>Membuat Proyek Baru</h2>
+<p>Pindah ke folder kerja Laragon, lalu buat proyek bernama perpustakaan dengan Composer:</p>
+<pre><code>cd C:\laragon\www
+composer create-project laravel/laravel perpustakaan</code></pre>
+<p>Composer mengunduh Laravel beserta semua dependensinya ke folder <code>perpustakaan</code>. Prosesnya memakan waktu beberapa menit, tergantung kecepatan internet. Setelah selesai, masuk ke folder proyek dan pastikan versinya benar:</p>
+<pre><code>cd perpustakaan
+php artisan --version</code></pre>
+<p>Hasilnya harus berawalan <code>Laravel Framework 13</code>. Klik <strong>Reload</strong> di Laragon agar aplikasi itu membuat alamat <code>http://perpustakaan.test</code> yang mengarah ke folder <code>public</code> proyek.</p>
+<h2>Mengenal Struktur Folder</h2>
+<p>Proyek Laravel berisi banyak folder, tetapi seri ini hanya memakai beberapa di antaranya:</p>
+<ul>
+<li><p><code>app/Http/Controllers</code> berisi <em>controller</em> yang menerima permintaan dari peramban.</p></li>
+<li><p><code>app/Models</code> berisi model Eloquent yang mewakili tabel basis data di kode PHP.</p></li>
+<li><p><code>database/migrations</code> berisi migrasi, yaitu riwayat perubahan struktur tabel.</p></li>
+<li><p><code>resources/views</code> berisi templat Blade untuk tampilan.</p></li>
+<li><p><code>routes/web.php</code> berisi daftar rute, yaitu alamat yang bisa dibuka beserta kode yang menanganinya.</p></li>
+</ul>
+<h2>Mengatur Berkas .env</h2>
+<p>Pengaturan yang berbeda di setiap komputer disimpan di berkas <code>.env</code>. Proyek Laravel baru memakai SQLite secara bawaan, sedangkan seri ini memakai MySQL. Buka <code>.env</code>, hapus tanda <code>#</code> di depan baris <code>DB_</code>, lalu sesuaikan isinya:</p>
+<pre><code>APP_NAME=Perpustakaan
+APP_URL=http://perpustakaan.test
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=perpustakaan
+DB_USERNAME=root
+DB_PASSWORD=</code></pre>
+<p>Akun bawaan MySQL Laragon adalah root tanpa <em>password</em>, jadi <code>DB_PASSWORD</code> dibiarkan kosong. Biarkan juga <code>APP_DEBUG=true</code> selama pengembangan agar galat tampil lengkap beserta letaknya. Di server produksi, nilai itu wajib <code>false</code> agar detail kode tidak terlihat oleh pengunjung.</p>
+<p>Berkas <code>.env</code> menyimpan kredensial, jadi jangan pernah mengunggahnya ke repositori Git. Laravel sudah mencantumkannya di <code>.gitignore</code>. Rekan satu tim cukup menyalin <code>.env.example</code> menjadi <code>.env</code>, lalu mengisi nilainya sendiri.</p>
+<h2>Menjalankan Migrasi Bawaan</h2>
+<p>Laravel membawa beberapa migrasi bawaan untuk tabel pengguna, sesi, <em>cache</em>, dan antrean. Jalankan perintah berikut:</p>
+<pre><code>php artisan migrate</code></pre>
+<p>Jika basis data perpustakaan belum ada, Laravel menawarkan untuk membuatnya. Jawab <code>yes</code> agar migrasi berlanjut. Galat <code>SQLSTATE[HY000] [1045] Access denied</code> berarti nama pengguna atau <em>password</em> di <code>.env</code> tidak cocok. Jika perubahan <code>.env</code> tidak terbaca, jalankan <code>php artisan config:clear</code>.</p>
+<h2>Membuka Aplikasi di Peramban</h2>
+<p>Pasang dependensi <em>frontend</em>, lalu bangun asetnya:</p>
+<pre><code>npm install
+npm run build</code></pre>
+<p>Buka <code>http://perpustakaan.test</code> di peramban. Halaman sambutan Laravel akan tampil. Bila tidak memakai Laragon, jalankan <code>php artisan serve</code>, lalu buka <code>http://127.0.0.1:8000</code>.</p>
+<p>Saat aktif menulis kode, biarkan <code>npm run dev</code> tetap berjalan agar perubahan CSS dan JavaScript langsung terlihat. Perintah <code>composer run dev</code> menyalakan server PHP, antrean, dan Vite sekaligus bila Anda lebih suka satu perintah saja.</p>
+<p>Proyek kini siap. Pada materi berikutnya, kita akan membuat rute, <em>controller</em>, dan halaman Blade pertama untuk daftar buku.</p>

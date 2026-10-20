@@ -44,6 +44,16 @@ it('melepas tag sub-judul di editor biasa tetapi mempertahankannya di isi artike
         ->and($this->sanitizer->bersihkan('<h1>A</h1><h4>B</h4>', judulBagian: true))->toBe('AB');
 });
 
+it('melepas tag kode di editor lain tetapi mempertahankannya di isi materi tutorial', function () {
+    $html = "<p>Jalankan <code>php artisan serve</code>.</p><pre><code class=\"language-php\">if (\$ok) {\n    return 'ya';\n}</code></pre>";
+    $hasil = "<p>Jalankan <code>php artisan serve</code>.</p><pre><code>if (\$ok) {\n    return &#039;ya&#039;;\n}</code></pre>";
+
+    // Baris baru & indentasi blok kode tetap utuh; kelas bahasa dibuang karena tanpa pewarnaan sintaks.
+    expect($this->sanitizer->bersihkan($html, judulBagian: true, kode: true))->toBe($hasil)
+        ->and($this->sanitizer->bersihkan($html, judulBagian: true))->toBe("<p>Jalankan php artisan serve.</p>if (\$ok) {\n    return &#039;ya&#039;;\n}")
+        ->and($this->sanitizer->bersihkan('<h2>Bagian</h2><pre><code>x</code></pre>', kode: true))->toBe('<h2>Bagian</h2><pre><code>x</code></pre>');
+});
+
 it('membuang skrip, style, gambar, iframe, dan atribut berbahaya', function () {
     $hasil = $this->sanitizer->bersihkan(
         '<script>alert(1)</script><style>p{}</style><p onclick="x()" style="color:red" class="a">Aman</p><img src=x onerror=alert(1)><iframe src="https://x.id"></iframe>',

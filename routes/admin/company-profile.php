@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\CompanyProfile\KategoriArtikelController;
 use App\Http\Controllers\Admin\CompanyProfile\KategoriPortofolioController;
 use App\Http\Controllers\Admin\CompanyProfile\KontakKamiController;
 use App\Http\Controllers\Admin\CompanyProfile\LayananController;
+use App\Http\Controllers\Admin\CompanyProfile\MateriTutorialController;
 use App\Http\Controllers\Admin\CompanyProfile\PortofolioController;
 use App\Http\Controllers\Admin\CompanyProfile\TemplateController;
+use App\Http\Controllers\Admin\CompanyProfile\TutorialController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +30,10 @@ Route::resource('layanan', LayananController::class)->except('show');
 Route::resource('portofolio', PortofolioController::class)->except('show');
 
 Route::resource('kategori-portofolio', KategoriPortofolioController::class)->except('show');
+
+Route::resource('tutorial', TutorialController::class)->except('show');
+
+Route::resource('materi-tutorial', MateriTutorialController::class)->except('show');
 
 Route::resource('artikel', ArtikelController::class)->except('show');
 

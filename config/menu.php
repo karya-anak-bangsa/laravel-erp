@@ -63,6 +63,22 @@ return [
                 ],
             ],
             [
+                'label' => 'Tutorial',
+                'ikon' => 'book',
+                'sub' => [
+                    [
+                        'label' => 'Daftar Tutorial',
+                        'rute' => 'admin.tutorial.index',
+                        'aktif' => 'admin.tutorial.*',
+                    ],
+                    [
+                        'label' => 'Materi Tutorial',
+                        'rute' => 'admin.materi-tutorial.index',
+                        'aktif' => 'admin.materi-tutorial.*',
+                    ],
+                ],
+            ],
+            [
                 'label' => 'Artikel',
                 'ikon' => 'book',
                 'sub' => [
