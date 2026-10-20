@@ -25,7 +25,7 @@
             :href="route('admin.kontak-kami.index')" />
     </div>
 
-    <div class="row col-8-4">
+    <div class="row col-8-4 sejajar-col-3">
         <x-admin.card title="Terakhir diperbarui" subtitle="Konten yang terakhir disimpan, terbaru lebih dulu." :flush="true">
             @if ($terakhirDiperbarui->isEmpty())
                 <x-admin.empty-state title="Belum ada konten" description="Konten yang ditambahkan atau diubah akan tampil di sini." />

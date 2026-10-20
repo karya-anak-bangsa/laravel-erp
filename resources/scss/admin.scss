@@ -870,6 +870,19 @@ table.table .kolom-aksi {
     font-size: 16px;
 }
 
+// Baris col-8-4 yang tepinya segaris dengan baris col-3 di atasnya (dashboard). 2fr 1fr Gentelella membagi lebar
+// setelah dikurangi satu gap, sedangkan col-3 setelah dua gap, sehingga tepinya bergeser sepertiga gap (±5 px).
+// Di bawah 1101 px kolomnya tetap bertumpuk seperti col-8-4.
+@media (min-width: 1101px) {
+    .col-8-4.sejajar-col-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        > :first-child {
+            grid-column: span 2;
+        }
+    }
+}
+
 // Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella.
 .tumpukan-kartu {
     display: grid;
