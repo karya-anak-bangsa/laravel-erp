@@ -217,7 +217,22 @@ describe('isi', function () {
             ->assertDontSee('hero-aksi', false)
             ->assertDontSee('Belum menemukan jawaban?')
             // Telepon jadi cadangan kontak WhatsApp di footer.
-            ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon).'</a>', false);
+            ->assertSee('class="tautan-kaki">'.e($this->identitas->telepon[0]).'</a>', false);
+    });
+
+    it('menampilkan semua email di footer, sedangkan semua telepon hanya cadangan bila link WhatsApp kosong', function () {
+        $this->identitas->update(['email' => ['info@tkab.id', 'cs@tkab.id'], 'telepon' => ['0812-1111-2222', '021 555 0000']]);
+
+        expect($this->get('/')->getContent())
+            ->toContain('<a href="mailto:info@tkab.id" class="tautan-kaki">info@<wbr>tkab.id</a>')
+            ->toContain('<a href="mailto:cs@tkab.id" class="tautan-kaki">cs@<wbr>tkab.id</a>')
+            ->not->toContain('class="tautan-kaki">0812-1111-2222</a>');
+
+        $this->identitas->update(['link_whatsapp' => null]);
+
+        expect($this->get('/')->getContent())
+            ->toContain('<a href="tel:+6281211112222" class="tautan-kaki">0812-1111-2222</a>')
+            ->toContain('<a href="tel:+62215550000" class="tautan-kaki">021 555 0000</a>');
     });
 
     it('menampilkan nomor WhatsApp berlogo di footer tanpa baris telepon dan tulisan WhatsApp terpisah', function () {
@@ -225,7 +240,7 @@ describe('isi', function () {
 
         expect($html)
             ->toContain('<span class="sr-only">WhatsApp </span>0812-0000-0000')
-            ->not->toContain('class="tautan-kaki">'.e($this->identitas->telepon).'</a>')
+            ->not->toContain('class="tautan-kaki">'.e($this->identitas->telepon[0]).'</a>')
             ->not->toMatch('#class="tautan-kaki">WhatsApp<#');
     });
 
@@ -321,7 +336,7 @@ describe('cache identitas', function () {
         Cache::forgetDriver('array');
 
         $this->get('/')->assertOk();
-        $this->get('/')->assertOk()->assertSee('PT Uji Beranda')->assertSee($this->identitas->email);
+        $this->get('/')->assertOk()->assertSee('PT Uji Beranda')->assertSee('mailto:'.$this->identitas->email[0]);
     });
 
     it('menampilkan 404 ringkas tanpa menyimpan kegagalan ke cache bila identitas belum ada', function () {

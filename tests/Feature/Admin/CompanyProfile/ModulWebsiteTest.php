@@ -121,8 +121,9 @@ it('mengisi satu baris aktif per modul dengan urutan bawaan dan tidak menimpa is
         ->toBe([
             [JenisModul::Layanan, 1, true],
             [JenisModul::Portofolio, 2, true],
-            [JenisModul::Tutorial, 3, true],
-            [JenisModul::Ajakan, 4, true],
+            // Urutan seksi beranda: Ajakan tepat di bawah Portofolio.
+            [JenisModul::Ajakan, 3, true],
+            [JenisModul::Tutorial, 4, true],
             [JenisModul::Artikel, 5, true],
             [JenisModul::Faq, 6, true],
         ]);

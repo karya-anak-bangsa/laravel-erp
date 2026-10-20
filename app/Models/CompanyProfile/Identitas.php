@@ -44,6 +44,15 @@ class Identitas extends Model
         'link_whatsapp',
     ];
 
+    protected function casts(): array
+    {
+        // Daftar email & telepon; yang pertama kontak utama (data terstruktur beranda).
+        return [
+            'email' => 'array',
+            'telepon' => 'array',
+        ];
+    }
+
     protected static function booted(): void
     {
         // Setiap perubahan (admin, seeder, kode lain) langsung tampil di frontend. Dibuang setelah commit

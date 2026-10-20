@@ -47,8 +47,8 @@ Catatan implementasi:
 | meta_keyword | VARCHAR(255) NULL | tidak dirender di halaman |
 | logo_website | VARCHAR(255) | path file |
 | favicon_website | VARCHAR(255) | path file (PNG/ICO) |
-| email | VARCHAR(150) | |
-| telepon | VARCHAR(30) | |
+| email | JSON | array string 1–3 alamat (maks. 150 karakter), mis. `["info@karyaanakbangsa.co.id"]`; cast `array`. Semua tampil di footer; yang pertama kontak utama di data terstruktur beranda |
+| telepon | JSON | array string 1–3 nomor (maks. 30 karakter), mis. `["0812-3456-7890"]`; cast `array`. Di footer hanya tampil bila `link_whatsapp` kosong; yang pertama kontak utama di data terstruktur beranda |
 | alamat | TEXT | |
 | link_youtube | VARCHAR(255) NULL | |
 | link_instagram | VARCHAR(255) NULL | |
@@ -237,7 +237,7 @@ Tampil atau tidaknya serta urutan modul di menu navbar, Tautan Cepat footer, dan
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_modul_website | BIGINT UNSIGNED PK | |
-| jenis | VARCHAR(20) UNIQUE | enum `JenisModul`: layanan, portofolio, tutorial, ajakan, artikel, faq. Nama dan tempat tampil setiap modul ada di enum; Tutorial hanya punya menu, Ajakan hanya punya seksi |
+| jenis | VARCHAR(20) UNIQUE | enum `JenisModul`: layanan, portofolio, ajakan, tutorial, artikel, faq. Nama dan tempat tampil setiap modul ada di enum; Tutorial hanya punya menu, Ajakan hanya punya seksi |
 | urutan_ke | UNSIGNED SMALLINT DEFAULT 0 | Urutan menu dan seksi beranda (Hero selalu pertama); angka sama mengikuti urutan bawaan (urutan case enum) |
 | status_aktif | BOOLEAN DEFAULT true | Nonaktif = menu dan seksi berandanya disembunyikan |
 | created_at, updated_at, deleted_at | | |
@@ -245,7 +245,7 @@ Tampil atau tidaknya serta urutan modul di menu navbar, Tautan Cepat footer, dan
 Catatan implementasi:
 - Hero tidak termasuk karena selalu menjadi seksi pertama dan memuat judul utama beranda (h1); hero yang tampil diatur lewat `tb_hero.status_aktif`.
 - Modul yang belum punya baris dianggap aktif dengan urutan bawaan; bila database gagal, semua modul tampil dengan urutan bawaan (`ModulWebsiteService`).
-- Data awal (`ModulWebsiteSeeder`): enam modul aktif dengan urutan 1–6 (Layanan, Portofolio, Tutorial, Ajakan, Artikel, FAQ) = susunan menu dan seksi beranda semula; dijalankan ulang hanya menambah modul yang belum punya baris.
+- Data awal (`ModulWebsiteSeeder`): enam modul aktif dengan urutan 1–6 (Layanan, Portofolio, Ajakan, Tutorial, Artikel, FAQ) = urutan seksi beranda (Ajakan tepat di bawah Portofolio), dengan Tutorial yang hanya punya menu di antara Portofolio dan Artikel; dijalankan ulang hanya menambah modul yang belum punya baris.
 
 ---
 

@@ -24,7 +24,7 @@ it('membuang modul nonaktif dan mengurutkan menurut urutan_ke, angka sama mengik
     ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Tutorial]);
     ModulWebsite::factory()->create(['jenis' => JenisModul::Faq, 'urutan_ke' => 1]);
     ModulWebsite::factory()->create(['jenis' => JenisModul::Artikel, 'urutan_ke' => 1]);
-    // Layanan, Portofolio, dan Ajakan belum punya baris: aktif dengan urutan bawaan 1, 2, dan 4.
+    // Layanan, Portofolio, dan Ajakan belum punya baris: aktif dengan urutan bawaan 1, 2, dan 3.
 
     $modul = layananModulBaru();
 

@@ -29,6 +29,8 @@ class DataTerstruktur
     public static function beranda(Identitas $identitas): array
     {
         $akar = Seo::alamat();
+        // Kontak utama = isian pertama; Google meminta satu nomor utama untuk pelanggan.
+        $telepon = $identitas->telepon[0] ?? null;
 
         return self::dokumen([
             array_filter([
@@ -38,8 +40,8 @@ class DataTerstruktur
                 'url' => $akar,
                 'logo' => Seo::alamat($identitas->logo_url),
                 'description' => $identitas->meta_deskripsi,
-                'email' => $identitas->email,
-                'telephone' => Str::after(TautanKontak::telepon($identitas->telepon), 'tel:'),
+                'email' => $identitas->email[0] ?? null,
+                'telephone' => $telepon !== null ? Str::after(TautanKontak::telepon($telepon), 'tel:') : null,
                 'address' => ['@type' => 'PostalAddress', 'streetAddress' => $identitas->alamat, 'addressCountry' => 'ID'],
                 'sameAs' => array_values(array_filter([$identitas->link_instagram, $identitas->link_youtube])),
             ], fn (mixed $nilai): bool => filled($nilai)),

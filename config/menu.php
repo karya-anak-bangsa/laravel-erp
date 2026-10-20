@@ -10,7 +10,7 @@
 |
 | - label : teks menu
 | - ikon  : nama ikon Font Awesome solid tanpa awalan "fa-". Dashboard memakai
-|           landmark; semua menu modul memakai book (pilihan pemilik)
+|           landmark, Pengaturan Sistem gear, menu modul lain book (pilihan pemilik)
 | - rute  : nama rute tujuan
 | - aktif : pola nama rute yang membuat menu tampil aktif (default = rute)
 | - sub   : (opsional) submenu .nav-sublink berisi label, rute, aktif (tanpa ikon);
@@ -109,20 +109,20 @@ return [
         'judul' => 'Pengaturan Sistem',
         'item' => [
             [
-                'label' => 'Identitas',
-                'ikon' => 'book',
+                'label' => 'Identitas Website',
+                'ikon' => 'gear',
                 'rute' => 'admin.identitas.edit',
                 'aktif' => 'admin.identitas.*',
             ],
             [
                 'label' => 'Manajemen Modul',
-                'ikon' => 'book',
+                'ikon' => 'gear',
                 'rute' => 'admin.modul-website.index',
                 'aktif' => 'admin.modul-website.*',
             ],
             [
                 'label' => 'Manajemen Template',
-                'ikon' => 'book',
+                'ikon' => 'gear',
                 'rute' => 'admin.template.index',
                 'aktif' => 'admin.template.*',
             ],

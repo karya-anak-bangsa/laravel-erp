@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('meta_keyword', 255)->nullable();
             $table->string('logo_website', 255);
             $table->string('favicon_website', 255);
-            $table->string('email', 150);
-            $table->string('telepon', 30);
+            // Daftar 1–3 nilai (UpdateIdentitasRequest::MAKS_KONTAK); yang pertama kontak utama.
+            $table->json('email');
+            $table->json('telepon');
             $table->text('alamat');
             $table->string('link_youtube', 255)->nullable();
             $table->string('link_instagram', 255)->nullable();

@@ -6,9 +6,22 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateIdentitasRequest extends FormRequest
 {
+    // Batas masing-masing email dan telepon agar kolom Kontak di footer tetap ringkas.
+    public const MAKS_KONTAK = 3;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        // Baris repeater yang dibiarkan kosong dibuang; indeks diurutkan ulang agar pesan error (email.1) cocok
+        // dengan baris yang tampil.
+        $this->merge([
+            'email' => $this->daftarTerisi('email'),
+            'telepon' => $this->daftarTerisi('telepon'),
+        ]);
     }
 
     /**
@@ -26,8 +39,10 @@ class UpdateIdentitasRequest extends FormRequest
             // Aturan image tidak menerima .ico, padahal format itu lazim untuk favicon. Tanpa WEBP: Google Search tidak
             // menampilkan favicon WEBP di hasil pencarian.
             'favicon_website' => ['nullable', 'file', 'mimes:png,ico', 'max:512'],
-            'email' => ['required', 'email', 'max:150'],
-            'telepon' => ['required', 'string', 'max:30', 'regex:/^\+?[0-9][0-9 \-]*$/'],
+            'email' => ['required', 'array', 'max:'.self::MAKS_KONTAK],
+            'email.*' => ['required', 'string', 'email', 'max:150', 'distinct:ignore_case'],
+            'telepon' => ['required', 'array', 'max:'.self::MAKS_KONTAK],
+            'telepon.*' => ['required', 'string', 'max:30', 'regex:/^\+?[0-9][0-9 \-]*$/', 'distinct'],
             'alamat' => ['required', 'string', 'max:1000'],
             'link_youtube' => ['nullable', 'url:http,https', 'max:255'],
             'link_instagram' => ['nullable', 'url:http,https', 'max:255'],
@@ -41,7 +56,13 @@ class UpdateIdentitasRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'telepon.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda hubung, dan awalan +.',
+            'email.required' => 'Isi minimal satu email.',
+            'email.max' => 'Email maksimal :max alamat.',
+            'email.*.distinct' => 'Email tidak boleh berulang.',
+            'telepon.required' => 'Isi minimal satu nomor telepon.',
+            'telepon.max' => 'Telepon maksimal :max nomor.',
+            'telepon.*.distinct' => 'Nomor telepon tidak boleh berulang.',
+            'telepon.*.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda hubung, dan awalan +.',
             'favicon_website.mimes' => 'Favicon harus berupa file bertipe PNG atau ICO.',
         ];
     }
@@ -60,11 +81,23 @@ class UpdateIdentitasRequest extends FormRequest
             'logo_website' => 'logo',
             'favicon_website' => 'favicon',
             'email' => 'email',
+            'email.*' => 'email',
             'telepon' => 'telepon',
+            'telepon.*' => 'telepon',
             'alamat' => 'alamat',
             'link_youtube' => 'link YouTube',
             'link_instagram' => 'link Instagram',
             'link_whatsapp' => 'link WhatsApp',
         ];
+    }
+
+    /**
+     * @return list<mixed>
+     */
+    private function daftarTerisi(string $kunci): array
+    {
+        $daftar = $this->input($kunci);
+
+        return is_array($daftar) ? array_values(array_filter($daftar, fn ($nilai) => filled($nilai))) : [];
     }
 }

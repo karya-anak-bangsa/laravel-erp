@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\Admin\CompanyProfile\UpdateIdentitasRequest;
 use App\Models\CompanyProfile\Identitas;
 use App\Models\Pengguna;
 use Database\Seeders\IdentitasSeeder;
@@ -20,8 +21,8 @@ function dataIdentitasValid(array $timpa = []): array
         'alamat_website' => 'https://karyaanakbangsa.co.id',
         'meta_deskripsi' => 'Jasa pembuatan website, mobile apps, dan pelatihan IT.',
         'meta_keyword' => 'website, mobile apps, pelatihan IT',
-        'email' => 'info@karyaanakbangsa.co.id',
-        'telepon' => '+62 812-3456-7890',
+        'email' => ['info@karyaanakbangsa.co.id'],
+        'telepon' => ['+62 812-3456-7890'],
         'alamat' => 'Jl. Merdeka No. 1, Jakarta',
         'link_youtube' => 'https://www.youtube.com/@karyaanakbangsa',
         'link_instagram' => 'https://www.instagram.com/karyaanakbangsa',
@@ -51,12 +52,13 @@ it('menampilkan form identitas berisi data tersimpan', function () {
         ->assertSee('data-confirm-variant="success"', false);
 });
 
-it('menandai menu identitas sebagai menu aktif', function () {
+it('menandai menu Identitas Website sebagai menu aktif', function () {
     Identitas::factory()->create();
 
     $this->actingAs($this->admin)
         ->get(route('admin.identitas.edit'))
-        ->assertSee('class="nav-link active" href="'.route('admin.identitas.edit').'"', false);
+        ->assertSee('class="nav-link active" href="'.route('admin.identitas.edit').'"', false)
+        ->assertSee('<span class="current" aria-current="page">Identitas Website</span>', false);
 });
 
 it('menampilkan 404 bila baris identitas belum dibuat seeder', function () {
@@ -74,8 +76,59 @@ it('memperbarui identitas tanpa mengganti logo dan favicon', function () {
 
     $identitas->refresh();
     expect($identitas->judul_website)->toBe('Jasa Website & Pelatihan IT')
-        ->and($identitas->telepon)->toBe('+62 812-3456-7890')
+        ->and($identitas->telepon)->toBe(['+62 812-3456-7890'])
         ->and($identitas->logo_website)->toBe($logoLama);
+});
+
+it('menampilkan satu baris isian untuk setiap email dan telepon tersimpan', function () {
+    Identitas::factory()->create(['email' => ['info@tkab.id', 'cs@tkab.id'], 'telepon' => ['0812-1111-2222']]);
+
+    $html = $this->actingAs($this->admin)->get(route('admin.identitas.edit'))->assertOk()->getContent();
+
+    expect($html)
+        ->toContain('name="email[0]" value="info@tkab.id"')
+        ->toContain('name="email[1]" value="cs@tkab.id"')
+        ->toContain('name="telepon[0]" value="0812-1111-2222"')
+        ->not->toContain('name="telepon[1]"')
+        ->toContain('data-repeater-maks="'.UpdateIdentitasRequest::MAKS_KONTAK.'"')
+        ->toContain('Tambah Email')
+        ->toContain('Tambah Telepon')
+        // Baris kosong untuk tombol tambah ada di <template>.
+        ->toContain('name="email[__i__]"')
+        ->toContain('name="telepon[__i__]"');
+});
+
+it('menyimpan beberapa email dan telepon, baris kosong dibuang dan diurutkan ulang', function () {
+    $identitas = Identitas::factory()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.identitas.update'), dataIdentitasValid([
+            'email' => ['info@tkab.id', '', 'cs@tkab.id'],
+            'telepon' => [null, '0812-1111-2222', '021 555 0000'],
+        ]))
+        ->assertSessionHasNoErrors();
+
+    $identitas->refresh();
+    expect($identitas->email)->toBe(['info@tkab.id', 'cs@tkab.id'])
+        ->and($identitas->telepon)->toBe(['0812-1111-2222', '021 555 0000']);
+});
+
+it('membangun ulang baris email dari isian sebelumnya dengan pesan galat di baris yang salah', function () {
+    Identitas::factory()->create(['email' => ['lama@tkab.id']]);
+
+    $html = $this->actingAs($this->admin)
+        ->from(route('admin.identitas.edit'))
+        ->followingRedirects()
+        ->put(route('admin.identitas.update'), dataIdentitasValid(['email' => ['info@tkab.id', '', 'bukan-email']]))
+        ->getContent();
+
+    // Baris kosong dibuang (old() berisi kiriman mentah), jadi isian yang salah kini baris kedua, sama dengan indeks
+    // pesan galatnya (email.1).
+    expect($html)
+        ->toContain('name="email[0]" value="info@tkab.id"')
+        ->not->toContain('name="email[2]"')
+        ->toMatch('#name="email\[1\]" value="bukan-email"[^>]*class="form-control is-invalid">\s*<div class="form-error">#')
+        ->not->toContain('value="lama@tkab.id"');
 });
 
 it('mengganti logo dan favicon lalu menghapus berkas lama', function () {
@@ -131,8 +184,16 @@ it('memvalidasi isian identitas', function (array $data, string $kolom) {
     'nama perusahaan kosong' => [['nama_perusahaan' => ''], 'nama_perusahaan'],
     'judul website terlalu panjang' => [['judul_website' => str_repeat('a', 151)], 'judul_website'],
     'alamat website bukan URL' => [['alamat_website' => 'karyaanakbangsa'], 'alamat_website'],
-    'email tidak valid' => [['email' => 'bukan-email'], 'email'],
-    'telepon berisi huruf' => [['telepon' => '0812-ABC'], 'telepon'],
+    'email kosong' => [['email' => ['', null]], 'email'],
+    'email bukan daftar' => [['email' => 'info@karyaanakbangsa.co.id'], 'email'],
+    'email tidak valid' => [['email' => ['bukan-email']], 'email.0'],
+    'email berulang' => [['email' => ['info@karyaanakbangsa.co.id', 'INFO@karyaanakbangsa.co.id']], 'email.1'],
+    'email lebih dari 3' => [['email' => ['a@tkab.id', 'b@tkab.id', 'c@tkab.id', 'd@tkab.id']], 'email'],
+    'email terlalu panjang' => [['email' => [str_repeat('a', 140).'@tkab.co.id']], 'email.0'],
+    'telepon kosong' => [['telepon' => ['']], 'telepon'],
+    'telepon berisi huruf' => [['telepon' => ['0812-ABC']], 'telepon.0'],
+    'telepon berulang' => [['telepon' => ['0812-1111-2222', '0812-1111-2222']], 'telepon.1'],
+    'telepon lebih dari 3' => [['telepon' => ['0811', '0812', '0813', '0814']], 'telepon'],
     'alamat kosong' => [['alamat' => ''], 'alamat'],
     'instagram bukan URL' => [['link_instagram' => '@karyaanakbangsa'], 'link_instagram'],
     'logo bukan gambar' => [['logo_website' => UploadedFile::fake()->create('logo.pdf', 10, 'application/pdf')], 'logo_website'],
@@ -147,10 +208,21 @@ it('menampilkan pesan validasi berbahasa Indonesia', function () {
     Identitas::factory()->create();
 
     $this->actingAs($this->admin)
-        ->put(route('admin.identitas.update'), dataIdentitasValid(['nama_perusahaan' => '', 'telepon' => 'abc']))
+        ->put(route('admin.identitas.update'), dataIdentitasValid(['nama_perusahaan' => '', 'email' => [''], 'telepon' => ['abc']]))
         ->assertSessionHasErrors([
             'nama_perusahaan' => 'Kolom nama perusahaan wajib diisi.',
-            'telepon' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda hubung, dan awalan +.',
+            'email' => 'Isi minimal satu email.',
+            'telepon.0' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda hubung, dan awalan +.',
+        ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.identitas.update'), dataIdentitasValid([
+            'email' => ['info@tkab.id', 'info@tkab.id'],
+            'telepon' => ['0811', '0812', '0813', '0814'],
+        ]))
+        ->assertSessionHasErrors([
+            'email.1' => 'Email tidak boleh berulang.',
+            'telepon' => 'Telepon maksimal 3 nomor.',
         ]);
 });
 
@@ -162,7 +234,8 @@ it('membuat baris identitas awal beserta logo dan favicon dari seeder', function
         ->and($identitas->alamat_website)->toBe('https://karyaanakbangsa.co.id')
         ->and($identitas->meta_deskripsi)->toStartWith('Kami membantu bisnis tumbuh')
         ->and(mb_strlen($identitas->meta_deskripsi))->toBeLessThanOrEqual(160)
-        ->and($identitas->email)->toBe('info@karyaanakbangsa.co.id')
+        ->and($identitas->email)->toBe(['info@karyaanakbangsa.co.id'])
+        ->and($identitas->telepon)->toBe(['0812-3456-7890'])
         ->and($identitas->link_whatsapp)->toBe('https://wa.me/6281234567890')
         ->and($identitas->link_youtube)->toBeNull()
         ->and($identitas->link_instagram)->toBeNull();
@@ -182,10 +255,10 @@ it('menyimpan identitas dari seeder tanpa perlu dilengkapi admin lebih dulu', fu
 
 it('menjalankan seeder ulang tanpa menimpa isian admin', function () {
     $this->seed(IdentitasSeeder::class);
-    Identitas::query()->update(['email' => 'info@karyaanakbangsa.co.id']);
+    Identitas::sole()->update(['email' => ['cs@karyaanakbangsa.co.id']]);
 
     $this->seed(IdentitasSeeder::class);
 
     expect(Identitas::count())->toBe(1)
-        ->and(Identitas::first()->email)->toBe('info@karyaanakbangsa.co.id');
+        ->and(Identitas::first()->email)->toBe(['cs@karyaanakbangsa.co.id']);
 });

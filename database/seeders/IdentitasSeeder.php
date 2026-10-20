@@ -29,8 +29,8 @@ class IdentitasSeeder extends Seeder
             // Logo lebar berlatar transparan: tema Monochrome menghitamkannya dan footer memutihkannya lewat filter CSS.
             'logo_website' => $this->salinBerkasAwal(database_path('seeders/berkas/identitas/logo-tkab.webp'), Identitas::FOLDER, Identitas::DISK),
             'favicon_website' => $this->salinBerkasAwal(public_path('favicon.png'), Identitas::FOLDER, Identitas::DISK),
-            'email' => 'info@karyaanakbangsa.co.id',
-            'telepon' => '0812-3456-7890',
+            'email' => ['info@karyaanakbangsa.co.id'],
+            'telepon' => ['0812-3456-7890'],
             'alamat' => 'Jl. Pipit 3 No 146, RT06 RW10, Depok Jaya, Pancoran Mas, Kota Depok 16432',
             'link_whatsapp' => 'https://wa.me/6281234567890',
         ]);

@@ -50,22 +50,26 @@
                         <x-web.ikon nama="lokasi" :tebal="1.75" class="mt-1" />
                         <address class="leading-6 text-pretty not-italic">{{ $identitas->alamat }}</address>
                     </li>
-                    <li class="flex items-center gap-x-3">
-                        <x-web.ikon nama="email" :tebal="1.75" />
-                        <a href="mailto:{{ $identitas->email }}" class="tautan-kaki">{{ TautanKontak::emailBisaPatah($identitas->email) }}</a>
-                    </li>
-                    {{-- Nomor cukup satu: logo WhatsApp + nomor WhatsApp (pilihan pemilik 2026-10-11); telepon hanya cadangan
-                         bila link WhatsApp kosong. --}}
+                    @foreach ($identitas->email as $email)
+                        <li class="flex items-center gap-x-3">
+                            <x-web.ikon nama="email" :tebal="1.75" />
+                            <a href="mailto:{{ $email }}" class="tautan-kaki">{{ TautanKontak::emailBisaPatah($email) }}</a>
+                        </li>
+                    @endforeach
+                    {{-- Nomor cukup satu: logo WhatsApp + nomor WhatsApp (pilihan pemilik 2026-10-11); semua nomor telepon
+                         hanya cadangan bila link WhatsApp kosong. --}}
                     @if (filled($identitas->link_whatsapp))
                         <li class="flex items-center gap-x-3">
                             <x-web.ikon nama="whatsapp" class="logo-wa" />
                             <x-web.tautan-luar :href="$identitas->link_whatsapp" class="tautan-kaki"><span class="sr-only">WhatsApp </span>{{ TautanKontak::tampilanWhatsapp($identitas->link_whatsapp) }}</x-web.tautan-luar>
                         </li>
                     @else
-                        <li class="flex items-center gap-x-3">
-                            <x-web.ikon nama="telepon" :tebal="1.75" />
-                            <a href="{{ TautanKontak::telepon($identitas->telepon) }}" class="tautan-kaki">{{ $identitas->telepon }}</a>
-                        </li>
+                        @foreach ($identitas->telepon as $telepon)
+                            <li class="flex items-center gap-x-3">
+                                <x-web.ikon nama="telepon" :tebal="1.75" />
+                                <a href="{{ TautanKontak::telepon($telepon) }}" class="tautan-kaki">{{ $telepon }}</a>
+                            </li>
+                        @endforeach
                     @endif
                     @if (filled($identitas->link_instagram))
                         <li class="flex items-center gap-x-3">

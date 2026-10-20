@@ -84,7 +84,9 @@ it('menyusun menu sidebar: artikel sebagai submenu dan identitas di pengaturan s
             'class="nav-sublink" href="'.route('admin.kategori-artikel.index').'" >Kategori Artikel</a>',
             'FAQ',
             'Pengaturan Sistem</div>',
-            'href="'.route('admin.identitas.edit').'"',
+            'href="'.route('admin.identitas.edit').'"', 'fa-gear', '<span class="nav-text">Identitas Website</span>',
+            'href="'.route('admin.modul-website.index').'"', 'fa-gear',
+            'href="'.route('admin.template.index').'"', 'fa-gear',
         ], false)
         // Modul Kontak Kami dihapus 2026-10-20: kontak lewat WhatsApp.
         ->assertDontSee('Kontak Kami');

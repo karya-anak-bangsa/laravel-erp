@@ -5,15 +5,16 @@ namespace App\Enums\CompanyProfile;
 /**
  * Modul website yang diatur Pengaturan Sistem › Manajemen Modul: tampil atau tidaknya serta urutannya di menu navbar,
  * Tautan Cepat footer, dan seksi beranda. Halaman modul (artikel, portofolio, tutorial) tidak ikut diatur. Urutan case
- * = urutan bawaan (ModulWebsiteSeeder), yaitu susunan menu dan seksi beranda semula. Hero tidak termasuk karena selalu
- * menjadi seksi pertama dan memuat judul utama beranda (h1).
+ * = urutan bawaan (ModulWebsiteSeeder), yaitu urutan seksi beranda (Ajakan tepat di bawah Portofolio); Tutorial yang
+ * hanya punya menu berada sebelum Artikel agar menunya tetap di antara Portofolio dan Artikel. Hero tidak termasuk
+ * karena selalu menjadi seksi pertama dan memuat judul utama beranda (h1).
  */
 enum JenisModul: string
 {
     case Layanan = 'layanan';
     case Portofolio = 'portofolio';
-    case Tutorial = 'tutorial';
     case Ajakan = 'ajakan';
+    case Tutorial = 'tutorial';
     case Artikel = 'artikel';
     case Faq = 'faq';
 
@@ -22,8 +23,8 @@ enum JenisModul: string
         return match ($this) {
             self::Layanan => 'Layanan',
             self::Portofolio => 'Portofolio',
-            self::Tutorial => 'Tutorial',
             self::Ajakan => 'Ajakan',
+            self::Tutorial => 'Tutorial',
             self::Artikel => 'Artikel',
             self::Faq => 'FAQ',
         };

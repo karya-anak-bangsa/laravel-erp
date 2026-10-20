@@ -21,7 +21,9 @@ beforeEach(function () {
         'nama_perusahaan' => 'PT Uji SEO',
         'judul_website' => 'Situs Uji SEO',
         'meta_deskripsi' => 'Ringkasan situs uji.',
-        'telepon' => '0812-3456-7890',
+        // Data terstruktur memakai email & telepon pertama sebagai kontak utama.
+        'email' => ['info@uji.id', 'cs@uji.id'],
+        'telepon' => ['0812-3456-7890', '021 555 0000'],
         'link_instagram' => 'https://www.instagram.com/akunuji',
         'link_youtube' => 'https://www.youtube.com/@kanaluji',
     ]);
@@ -242,6 +244,7 @@ describe('data terstruktur', function () {
                 'url' => $this->akar,
                 'logo' => $this->akar.'/storage/'.$this->identitas->logo_website,
                 'description' => 'Ringkasan situs uji.',
+                'email' => 'info@uji.id',
                 'telephone' => '+6281234567890',
                 'sameAs' => ['https://www.instagram.com/akunuji', 'https://www.youtube.com/@kanaluji'],
             ])

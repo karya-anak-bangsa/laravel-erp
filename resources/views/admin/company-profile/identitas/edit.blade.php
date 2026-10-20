@@ -1,7 +1,20 @@
 @extends('layouts.admin', ['breadcrumb' => [
     'Pengaturan Sistem' => null,
-    'Identitas' => null,
+    'Identitas Website' => null,
 ]])
+
+@use('App\Http\Requests\Admin\CompanyProfile\UpdateIdentitasRequest')
+
+@php
+    // Setelah validasi gagal, baris repeater dibangun ulang dari isian sebelumnya. old() berisi kiriman mentah, jadi baris
+    // kosong dibuang seperti di UpdateIdentitasRequest agar indeks baris sama dengan indeks pesan galat (email.1).
+    // Minimal satu baris karena wajib.
+    $daftarKontak = function (string $nama) use ($identitas): array {
+        $daftar = array_values(array_filter((array) old($nama, $identitas->{$nama}), fn ($nilai) => filled($nilai)));
+
+        return $daftar !== [] ? $daftar : [''];
+    };
+@endphp
 
 @section('content')
     <x-admin.page-header title="Pengaturan Sistem" />
@@ -42,10 +55,33 @@
 
             <x-admin.card title="Kontak" subtitle="Tampil di footer website.">
                 <div class="form-row">
-                    <x-admin.form-input name="email" type="email" label="Email" :value="$identitas->email"
-                        :required="true" maxlength="150" placeholder="mis. info@karyaanakbangsa.co.id" />
-                    <x-admin.form-input name="telepon" type="tel" label="Telepon" :value="$identitas->telepon"
-                        :required="true" maxlength="30" placeholder="mis. 0812 3456 7890" />
+                    @foreach (['email' => 'Email', 'telepon' => 'Telepon'] as $nama => $label)
+                        <div class="form-group" data-repeater data-repeater-maks="{{ UpdateIdentitasRequest::MAKS_KONTAK }}">
+                            <div class="form-label"><span class="required">*</span>{{ $label }}</div>
+                            <div class="repeater-daftar" data-repeater-daftar>
+                                @foreach ($daftarKontak($nama) as $i => $nilai)
+                                    @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => $i, 'nilai' => $nilai])
+                                @endforeach
+                            </div>
+                            <template data-repeater-templat>
+                                @include('admin.company-profile.identitas._baris-kontak', ['nama' => $nama, 'i' => '__i__', 'nilai' => null])
+                            </template>
+                            <button type="button" class="btn btn-outline btn-sm repeater-tambah" data-repeater-tambah>
+                                <x-admin.icon name="plus" />
+                                Tambah {{ $label }}
+                            </button>
+                            <div class="form-help">
+                                @if ($nama === 'email')
+                                    Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; email pertama menjadi email utama.
+                                @else
+                                    Maksimal {{ UpdateIdentitasRequest::MAKS_KONTAK }}; tampil di footer hanya bila link WhatsApp kosong.
+                                @endif
+                            </div>
+                            @error($nama)
+                                <div class="form-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @endforeach
                 </div>
                 <x-admin.form-textarea name="alamat" label="Alamat" :value="$identitas->alamat" :required="true"
                     rows="3" maxlength="1000" />
