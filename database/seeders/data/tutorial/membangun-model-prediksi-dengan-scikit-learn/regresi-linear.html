@@ -1,0 +1,49 @@
+<p>Tutorial ini mengajak Anda membangun model prediksi dengan scikit-learn, mulai dari regresi linear hingga menyimpan model ke berkas. Anda cukup menyiapkan Python beserta pandas, scikit-learn, dan JupyterLab, serta memahami cara membagi data latih dan data uji. Semuanya dibahas di tutorial "Pengantar Machine Learning dengan Python".</p>
+<p>Materi pertama ini membangun model regresi linear yang menebak harga rumah dari data sensus.</p>
+<h2>Mengenal Regresi Linear</h2>
+<p>Regresi linear menebak angka dengan menjumlahkan setiap fitur yang sudah dikalikan bobotnya masing-masing, ditambah sebuah konstanta:</p>
+<pre><code>tebakan = b0 + b1 × fitur_1 + b2 × fitur_2 + ... + b8 × fitur_8</code></pre>
+<p>Bobot <code>b1</code> sampai <code>b8</code> disebut koefisien, sedangkan <code>b0</code> adalah konstanta. Pelatihan mencari nilai-nilai yang membuat selisih antara tebakan dan harga sebenarnya sekecil mungkin. Hasilnya mudah dijelaskan karena setiap koefisien menunjukkan arah dan besar pengaruh satu fitur terhadap tebakan.</p>
+<h2>Memuat Data Harga Rumah California</h2>
+<p>Buat <em>notebook</em> baru, lalu muat <em>dataset</em> bawaan scikit-learn berikut:</p>
+<pre><code>import pandas as pd
+from sklearn.datasets import fetch_california_housing
+
+rumah = fetch_california_housing(as_frame=True)
+X = rumah.data
+y = rumah.target
+
+print(X.shape)
+X.head()</code></pre>
+<p>Fungsi <code>fetch_california_housing()</code> mengunduh datanya dari internet saat pertama kali dipanggil, lalu menyimpannya di folder <code>scikit_learn_data</code> di direktori pengguna. Pemanggilan berikutnya langsung membaca salinan lokal tersebut tanpa mengunduh ulang.</p>
+<p><em>Dataset</em> ini berisi 20.640 baris dari sensus California tahun 1990. Setiap baris mewakili satu blok wilayah dengan delapan fitur, antara lain <code>MedInc</code> (median pendapatan dalam puluhan ribu dolar AS), <code>HouseAge</code> (median usia rumah), <code>AveRooms</code> (rata-rata jumlah ruangan), serta <code>Latitude</code> dan <code>Longitude</code> (lokasi). Label <code>y</code> adalah median harga rumah dalam satuan seratus ribu dolar AS. Nilai 2,5, misalnya, berarti 250.000 dolar.</p>
+<h2>Membagi Data dan Melatih Model</h2>
+<p>Bagi data seperti biasa, lalu latih model dengan kelas <code>LinearRegression</code>:</p>
+<pre><code>from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+X_latih, X_uji, y_latih, y_uji = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model_linear = LinearRegression()
+model_linear.fit(X_latih, y_latih)</code></pre>
+<p>Parameter <code>stratify</code> tidak dipakai di sini karena label regresi berupa angka kontinu, bukan kelas. <code>fit()</code> mencari koefisien terbaik dari 16.512 baris data latih dalam waktu kurang dari satu detik.</p>
+<h2>Menebak Harga Rumah</h2>
+<p>Model yang sudah dilatih bisa langsung menebak harga rumah di data uji:</p>
+<pre><code>prediksi = model_linear.predict(X_uji)
+
+print(prediksi[:5].round(2))
+print(y_uji.head().to_numpy().round(2))</code></pre>
+<pre><code>[0.72 1.76 2.71 2.84 2.6 ]
+[0.48 0.46 5.   2.19 2.78]</code></pre>
+<p>Baris pertama berisi tebakan model, sedangkan baris kedua berisi harga sebenarnya. Sebagian tebakan cukup dekat, sebagian lagi meleset jauh, misalnya rumah ketiga yang ditebak 2,71 meskipun harga sebenarnya 5,0. Nilai 5,0 adalah batas atas <em>dataset</em> ini. Semua harga di atas 500.000 dolar dicatat sebagai 5,0 sehingga sulit ditebak dengan tepat oleh model linear.</p>
+<h2>Membaca Koefisien</h2>
+<p>Koefisien hasil pelatihan bisa dilihat langsung dari model:</p>
+<pre><code>koefisien = pd.Series(model_linear.coef_, index=X.columns)
+
+print(koefisien.round(3))
+print(model_linear.intercept_)</code></pre>
+<p>Atribut berakhiran garis bawah, seperti <code>coef_</code> dan <code>intercept_</code>, adalah hasil pelatihan dan baru tersedia setelah <code>fit()</code> dipanggil. <code>intercept_</code> berisi konstanta <code>b0</code>. Koefisien <code>MedInc</code> bernilai sekitar 0,45: setiap kenaikan median pendapatan sebesar 10.000 dolar menaikkan tebakan harga sekitar 45.000 dolar, dengan fitur lain tetap. Koefisien <code>Latitude</code> dan <code>Longitude</code> bernilai negatif sehingga tebakan harga turun ke arah utara dan ke arah timur yang menjauhi pantai.</p>
+<p>Besar koefisien antarfitur belum bisa dibandingkan langsung karena skalanya berbeda. <code>Population</code> bernilai ribuan, sedangkan <code>MedInc</code> umumnya hanya bernilai satuan. Masalah ini kita atasi di materi keempat.</p>
+<p>Model regresi pertama sudah jadi, tetapi kinerjanya baru akan diukur di materi ketiga. Pada materi berikutnya, kita akan membangun model klasifikasi dengan <em>decision tree</em>.</p>

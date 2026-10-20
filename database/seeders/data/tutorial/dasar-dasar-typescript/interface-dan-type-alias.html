@@ -1,0 +1,63 @@
+<p>Tipe objek yang ditulis langsung pada variabel cepat menjadi panjang dan harus diulang setiap kali dipakai. TypeScript menyediakan dua cara untuk memberi nama pada sebuah tipe, yaitu <em>interface</em> dan <em>type alias</em>. Materi ini memakai contoh data produk toko daring di berkas baru <code>src/produk.ts</code>.</p>
+<h2>Mendefinisikan <em>Interface</em></h2>
+<p><em>Interface</em> mendeskripsikan bentuk sebuah objek, yaitu properti apa saja yang dimilikinya beserta tipenya:</p>
+<pre><code>interface Produk {
+  readonly id: number;
+  nama: string;
+  harga: number;
+  stok?: number;
+}
+
+const kaus: Produk = { id: 1, nama: 'Kaus Polos', harga: 75000 };
+const topi: Produk = { id: 2, nama: 'Topi Rajut', harga: 50000, stok: 8 };</code></pre>
+<p>Nama <em>interface</em> lazim diawali huruf kapital. Properti <code>stok</code> bersifat opsional, sedangkan <code>readonly</code> pada <code>id</code> membuatnya tidak bisa diubah setelah objek dibuat.</p>
+<h2>Kesalahan yang Langsung Tertangkap</h2>
+<p>Coba tambahkan tiga baris yang salah berikut:</p>
+<pre><code>const tas: Produk = { id: 3, nama: 'Tas Kanvas' };
+const sepatu: Produk = { id: 4, nama: 'Sepatu Kets', harga: 250000, warna: 'hitam' };
+kaus.id = 10;</code></pre>
+<p>TypeScript menolak ketiganya. Baris pertama tidak memiliki <code>harga</code> yang wajib ada. Baris kedua memuat properti <code>warna</code> yang tidak dikenal <code>Produk</code>. Baris ketiga mengubah <code>id</code> yang bersifat <code>readonly</code>. Perlu dicatat, <code>readonly</code> hanya dijaga saat kompilasi; JavaScript hasil kompilasinya tetap bisa mengubah nilai itu. Hapus ketiga baris tersebut sebelum melanjutkan.</p>
+<h2>Memakai <em>Interface</em> pada Fungsi</h2>
+<p>Setelah didefinisikan, <em>interface</em> bisa dipakai sebagai tipe parameter fungsi:</p>
+<pre><code>function formatProduk(produk: Produk): string {
+  return `${produk.nama} - Rp${produk.harga}`;
+}
+
+console.log(formatProduk(kaus)); // Kaus Polos - Rp75000</code></pre>
+<p>Di dalam fungsi, editor langsung menyarankan <code>nama</code>, <code>harga</code>, dan properti lain milik <code>Produk</code>. <em>Interface</em> juga bisa diperluas dengan <code>extends</code> untuk membuat tipe yang lebih khusus:</p>
+<pre><code>interface ProdukDigital extends Produk {
+  ukuranBerkasMb: number;
+}
+
+const panduan: ProdukDigital = { id: 5, nama: 'Panduan TypeScript', harga: 90000, ukuranBerkasMb: 4 };
+console.log(formatProduk(panduan)); // Panduan TypeScript - Rp90000</code></pre>
+<p>Tipe <code>ProdukDigital</code> memiliki semua properti <code>Produk</code> ditambah <code>ukuranBerkasMb</code>. Objek <code>panduan</code> tetap bisa dikirim ke <code>formatProduk()</code> karena bentuknya mencakup semua yang dibutuhkan <code>Produk</code>.</p>
+<h2>Memberi Nama Tipe dengan <em>Type Alias</em></h2>
+<p><em>Type alias</em> ditulis dengan kata kunci <code>type</code> dan bisa memberi nama pada tipe apa pun, bukan hanya objek:</p>
+<pre><code>type Rupiah = number;
+
+type ItemKeranjang = {
+  produk: Produk;
+  jumlah: number;
+};
+
+function hitungSubtotal(item: ItemKeranjang): Rupiah {
+  return item.produk.harga * item.jumlah;
+}
+
+const keranjang: ItemKeranjang[] = [
+  { produk: kaus, jumlah: 2 },
+  { produk: topi, jumlah: 1 },
+];
+
+for (const item of keranjang) {
+  console.log(`${item.produk.nama}: Rp${hitungSubtotal(item)}`);
+}</code></pre>
+<p>Tipe <code>Rupiah</code> tetap berupa <code>number</code>, tetapi namanya menjelaskan makna nilainya. <em>Type alias</em> juga bisa menggabungkan beberapa tipe dengan operator <code>&amp;</code>, misalnya <code>type ProdukDiskon = Produk &amp; { persenDiskon: number }</code>.</p>
+<h2>Memilih <em>Interface</em> atau <em>Type Alias</em></h2>
+<p>Keduanya hampir selalu bisa saling menggantikan saat mendeskripsikan bentuk objek. Pegangan sederhana berikut banyak dipakai tim pengembang:</p>
+<ul>
+<li><p>Pakai <em>interface</em> untuk bentuk objek, terutama yang akan diperluas dengan <code>extends</code>.</p></li>
+<li><p>Pakai <em>type alias</em> untuk tipe yang bukan objek biasa, seperti gabungan beberapa tipe, <em>tuple</em>, atau nama lain bagi tipe primitif.</p></li>
+</ul>
+<p>Apa pun pilihannya, pakailah secara konsisten dalam satu proyek. Pada materi berikutnya, kita akan memberi tipe pada fungsi secara lebih lengkap serta mengenal <em>union type</em> dan <em>narrowing</em>.</p>

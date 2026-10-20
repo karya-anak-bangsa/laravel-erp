@@ -1,0 +1,49 @@
+<p>Model yang dilatih di <em>notebook</em> hanya tersimpan di memori. Begitu <em>kernel</em> dimatikan, model itu hilang dan harus dilatih ulang. Materi terakhir ini membahas cara menyatukan persiapan data dan model dalam satu <em>pipeline</em>, menyimpannya ke berkas, lalu memakainya untuk menebak data baru.</p>
+<h2>Menggabungkan Langkah dengan <em>Pipeline</em></h2>
+<p>Lanjutkan <em>notebook</em> regresi dari materi pertama. Di sana, koefisien belum bisa dibandingkan karena skala fiturnya berbeda-beda. Penyamaan skala fitur (<em>feature scaling</em>) dengan <code>StandardScaler</code> mengatasinya: setiap fitur diubah agar rata-ratanya 0 dan simpangan bakunya 1. Persiapan seperti ini harus diterapkan dengan cara yang sama pada data latih, data uji, dan data baru. Objek <code>Pipeline</code> menyatukannya dengan model:</p>
+<pre><code>from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+model_harga = Pipeline([
+    ("skala", StandardScaler()),
+    ("regresi", LinearRegression()),
+])
+model_harga.fit(X_latih, y_latih)
+
+print(model_harga.score(X_uji, y_uji))</code></pre>
+<p>Setiap langkah diberi nama, yaitu <code>skala</code> dan <code>regresi</code>. Saat <code>fit()</code> dipanggil, <em>pipeline</em> menghitung rata-rata dan simpangan baku dari data latih saja, lalu melatih regresinya. Saat <code>predict()</code> atau <code>score()</code> dipanggil, data lain otomatis diubah dengan nilai dari data latih tersebut. Dengan begitu, informasi data uji tidak bocor ke model.</p>
+<p>Skor R² tetap sekitar 0,58 karena penyamaan skala tidak mengubah tebakan regresi linear. Bedanya, koefisien di <code>model_harga.named_steps["regresi"].coef_</code> kini sebanding. Ternyata <code>MedInc</code>, <code>Latitude</code>, dan <code>Longitude</code> adalah fitur yang paling berpengaruh. Pada model yang bergantung pada jarak antardata, seperti <em>k-nearest neighbors</em>, penyamaan skala bahkan mengubah hasil tebakan.</p>
+<h2>Menyimpan Model ke Berkas</h2>
+<p>Simpan <em>pipeline</em> yang sudah dilatih dengan joblib:</p>
+<pre><code>import joblib
+
+joblib.dump(model_harga, "model_harga.joblib")</code></pre>
+<p>Pustaka joblib sudah terpasang bersama scikit-learn. Berkas <code>model_harga.joblib</code> menyimpan seluruh <em>pipeline</em>, termasuk nilai skala dan koefisien hasil pelatihan.</p>
+<p>Catat juga versi scikit-learn yang dipakai, misalnya di <code>requirements.txt</code>. Berkas model sebaiknya dimuat dengan versi yang sama. Versi yang berbeda memunculkan peringatan <code>InconsistentVersionWarning</code> dan hasilnya tidak dijamin benar.</p>
+<h2>Memakai Model untuk Data Baru</h2>
+<p>Model yang tersimpan bisa dipakai di <em>notebook</em> lain atau di skrip Python biasa. Buat berkas <code>prediksi_harga.py</code> di folder yang sama:</p>
+<pre><code>import joblib
+import pandas as pd
+
+model_harga = joblib.load("model_harga.joblib")
+
+rumah_baru = pd.DataFrame([{
+    "MedInc": 5.0,
+    "HouseAge": 20.0,
+    "AveRooms": 6.0,
+    "AveBedrms": 1.0,
+    "Population": 1200.0,
+    "AveOccup": 3.0,
+    "Latitude": 34.05,
+    "Longitude": -118.25,
+}])
+
+harga = model_harga.predict(rumah_baru)
+print(harga.round(2))</code></pre>
+<p>Jalankan dengan <code>python prediksi_harga.py</code> dari terminal yang lingkungan virtualnya aktif. Hasilnya kira-kira <code>[2.44]</code>, yaitu sekitar 244.000 dolar untuk blok wilayah di pusat kota Los Angeles dengan median pendapatan 50.000 dolar. Nama dan urutan kolom <code>rumah_baru</code> harus sama dengan data latih karena scikit-learn menolak data yang kolomnya berbeda.</p>
+<h2>Waspadai Berkas Model dari Sumber Tak Tepercaya</h2>
+<p>Pustaka joblib menyimpan model dengan format <code>pickle</code> milik Python. Saat dimuat, berkas seperti ini bisa menjalankan kode apa pun yang tersimpan di dalamnya, termasuk kode jahat yang menghapus berkas atau mencuri data. Oleh karena itu, jangan pernah memanggil <code>joblib.load()</code> untuk berkas model dari sumber yang tidak Anda percayai, misalnya lampiran <em>email</em> atau unduhan dari forum. Dokumentasi scikit-learn juga menyebutkan format yang lebih aman untuk berbagi model, seperti skops dan <em>Open Neural Network Exchange</em> (ONNX).</p>
+<h2>Rangkuman Seri</h2>
+<p>Sepanjang tutorial ini, Anda sudah membangun model regresi linear untuk menebak harga rumah dan pohon keputusan untuk mengklasifikasikan tumor. Anda juga sudah mengukur kinerja keduanya dengan MAE, RMSE, R², akurasi, presisi, dan <em>recall</em>, lalu menyimpan model dalam <em>pipeline</em> yang siap dipakai ulang. Pola <code>fit()</code>, <code>predict()</code>, dan <code>score()</code> yang sama berlaku untuk hampir semua model scikit-learn.</p>
+<p>Langkah berikutnya bisa berupa mencoba model lain seperti <code>RandomForestClassifier</code>, mencari parameter terbaik dengan <code>GridSearchCV</code>, atau menyediakan model lewat <em>Application Programming Interface</em> (API) agar bisa dipakai aplikasi web. Asisten berbasis kecerdasan buatan bisa mempercepat percobaan itu selama Anda tetap memahami setiap baris kodenya, seperti dibahas di artikel <a href="/artikel/coding-dengan-bantuan-ai-lebih-cepat-tanpa-kehilangan-pemahaman">Coding dengan Bantuan AI: Lebih Cepat tanpa Kehilangan Pemahaman</a>.</p>

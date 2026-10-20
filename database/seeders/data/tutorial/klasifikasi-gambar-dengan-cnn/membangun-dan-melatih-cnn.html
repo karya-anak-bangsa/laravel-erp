@@ -1,0 +1,55 @@
+<p><em>Dataset</em> foto bunga sudah siap dipakai. Materi ini menyusun CNN dari nol, menambahkan augmentasi data agar model tidak cepat menghafal, lalu melatihnya. Lanjutkan kode di berkas <code>bunga.py</code> dari materi sebelumnya.</p>
+<h2>Augmentasi Data</h2>
+<p>Dengan hanya sekitar 2.900 foto latih, CNN mudah mengalami <em>overfitting</em>. Augmentasi data membuat variasi baru dari foto yang ada, misalnya dengan membalik atau sedikit memutarnya. Model seolah-olah melihat foto yang berbeda di setiap <em>epoch</em>.</p>
+<pre><code>augmentasi = keras.Sequential([
+    keras.layers.RandomFlip("horizontal"),
+    keras.layers.RandomRotation(0.1),
+])</code></pre>
+<p><code>RandomFlip("horizontal")</code> membalik sebagian foto secara acak seperti bayangan cermin, sedangkan <code>RandomRotation(0.1)</code> memutar foto secara acak hingga 10 persen dari satu putaran penuh atau sekitar 36 derajat. Kedua lapisan ini hanya bekerja saat pelatihan. Saat <code>evaluate()</code> dan <code>predict()</code>, foto diteruskan apa adanya.</p>
+<h2>Menyusun CNN</h2>
+<pre><code>model = keras.Sequential([
+    keras.Input(shape=ukuran_gambar + (3,)),
+    augmentasi,
+    keras.layers.Rescaling(1.0 / 255),
+    keras.layers.Conv2D(16, 3, padding="same", activation="relu"),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(32, 3, padding="same", activation="relu"),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(64, 3, padding="same", activation="relu"),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Dropout(0.2),
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(len(nama_kelas), activation="softmax"),
+])
+
+model.summary()</code></pre>
+<p>Mari kita bahas susunannya dari atas:</p>
+<ul>
+<li><p><code>ukuran_gambar + (3,)</code> menghasilkan bentuk <code>(160, 160, 3)</code>, yaitu tinggi, lebar, dan tiga kanal warna.</p></li>
+<li><p><code>Rescaling(1.0 / 255)</code> mengubah nilai piksel menjadi 0 sampai 1 di dalam model sehingga foto baru kelak tidak perlu dinormalisasi secara terpisah.</p></li>
+<li><p><code>Conv2D(16, 3, padding="same")</code> berisi 16 <em>kernel</em> 3 × 3. Opsi <code>padding="same"</code> menambahkan bingkai bernilai nol di tepi gambar agar ukuran <em>feature map</em> tidak menyusut.</p></li>
+<li><p><code>MaxPooling2D()</code> memakai ukuran bawaan 2 × 2 sehingga lebar <em>feature map</em> berubah dari 160 menjadi 80, 40, dan akhirnya 20. Jumlah <em>kernel</em> justru dinaikkan di setiap tahap agar model bisa mengenali lebih banyak pola.</p></li>
+<li><p><code>Dropout(0.2)</code> mematikan 20 persen keluaran secara acak sebelum diratakan oleh <code>Flatten</code>.</p></li>
+<li><p><code>Dense</code> terakhir berisi lima neuron, satu untuk setiap kelas bunga, dengan fungsi aktivasi <em>softmax</em> seperti pada model MNIST.</p></li>
+</ul>
+<p>Ringkasan model menunjukkan sekitar 3,3 juta parameter. Sebagian besar berasal dari lapisan <code>Dense</code> berisi 128 neuron yang menerima 20 × 20 × 64 nilai dari <code>Flatten</code>.</p>
+<h2>Kompilasi dan Pelatihan</h2>
+<pre><code>model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"],
+)
+
+riwayat = model.fit(
+    data_latih,
+    validation_data=data_validasi,
+    epochs=15,
+)</code></pre>
+<p>Pengaturan <code>compile()</code> sama dengan model MNIST karena label kita juga berupa bilangan bulat. Bedanya ada di <code>fit()</code>. <em>Dataset</em> sudah terbagi per <em>batch</em> dan sudah memiliki data validasi sendiri sehingga kita tidak lagi menulis <code>batch_size</code> atau <code>validation_split</code>, melainkan <code>validation_data</code>.</p>
+<p>Keras mungkin menampilkan peringatan bahwa opsi <code>shuffle</code> diabaikan. Peringatan ini wajar karena data latih sudah diacak di materi sebelumnya. Di CPU, setiap <em>epoch</em> bisa memakan waktu beberapa detik sampai beberapa menit, bergantung pada kecepatan komputer. Jalankan kode di Google Colab dengan GPU bila ingin lebih cepat.</p>
+<h2>Membaca Hasil Pelatihan</h2>
+<pre><code>loss_validasi, akurasi_validasi = model.evaluate(data_validasi)
+print(f"Akurasi data validasi: {akurasi_validasi:.4f}")</code></pre>
+<p>Model ini biasanya mencapai akurasi validasi sekitar 70–80 persen. Angka itu jauh di atas tebakan acak yang hanya 20 persen untuk lima kelas, tetapi model masih sering keliru, terutama pada bunga yang bentuk atau warnanya mirip. Bandingkan juga <code>riwayat.history["accuracy"]</code> dengan <code>riwayat.history["val_accuracy"]</code>. Selisih yang kecil menandakan augmentasi dan <code>Dropout</code> berhasil menahan <em>overfitting</em>.</p>
+<p>Seri ini memakai data validasi sebagai acuan agar tetap ringkas. Pada proyek nyata, sisihkan juga data uji yang terpisah. Pada materi berikutnya, kita akan memakai <em>transfer learning</em> dengan MobileNetV2 untuk menaikkan akurasi tanpa menambah jumlah foto.</p>

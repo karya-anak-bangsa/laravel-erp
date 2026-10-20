@@ -1,0 +1,52 @@
+<p>Aplikasi nyata sering membutuhkan beberapa variasi tipe dari data yang sama: ringkasan untuk daftar, data baru tanpa <code>id</code>, atau perubahan sebagian. Menulis ulang setiap variasi secara manual berisiko: saat satu tipe berubah, tipe lain mudah terlupa. TypeScript menyediakan <em>utility types</em>, yaitu tipe <em>generic</em> bawaan yang membentuk tipe baru dari tipe yang sudah ada.</p>
+<h2>Tipe Dasar Pengguna</h2>
+<p>Buat berkas <code>src/pengguna.ts</code> berisi tipe utama katalog:</p>
+<pre><code>export interface Pengguna {
+  id: number;
+  name: string;
+  email: string;
+  website: string;
+}</code></pre>
+<p>Nama propertinya mengikuti data JSONPlaceholder agar cocok saat data diambil di materi terakhir. Data aslinya juga memuat properti lain seperti <code>address</code> dan <code>company</code>, tetapi kita cukup mencatat yang dibutuhkan. Tambahkan semua tipe berikutnya di berkas yang sama.</p>
+<h2>Memilih dan Membuang Properti</h2>
+<p><code>Pick</code> mengambil sebagian properti, sedangkan <code>Omit</code> membuang properti tertentu:</p>
+<pre><code>export type RingkasanPengguna = Pick&lt;Pengguna, 'id' | 'name' | 'email'&gt;;
+
+export type PenggunaBaru = Omit&lt;Pengguna, 'id'&gt;;</code></pre>
+<p>Tipe <code>RingkasanPengguna</code> cocok untuk daftar singkat yang tidak memerlukan <code>website</code>. Adapun <code>PenggunaBaru</code> cocok untuk formulir tambah data karena <code>id</code> biasanya diberikan oleh server. TypeScript juga memeriksa nama properti di antara tanda kutip, jadi salah ketik seperti <code>'nama'</code> langsung ditolak. Kedua tipe ini selalu mengikuti <code>Pengguna</code>: bila tipe salah satu propertinya berubah, <code>RingkasanPengguna</code> dan <code>PenggunaBaru</code> ikut berubah tanpa perlu disunting.</p>
+<h2>Membuat Semua Properti Opsional</h2>
+<p><code>Partial</code> mengubah semua properti menjadi opsional. Tipe ini cocok untuk data perubahan yang hanya berisi bagian yang diganti:</p>
+<pre><code>export type PerubahanPengguna = Partial&lt;PenggunaBaru&gt;;
+
+export function perbaruiPengguna(pengguna: Pengguna, perubahan: PerubahanPengguna): Pengguna {
+  return { ...pengguna, ...perubahan };
+}</code></pre>
+<p>Operator <em>spread</em> (<code>...</code>) menyalin semua properti <code>pengguna</code>, lalu menimpanya dengan isi <code>perubahan</code>. Hasilnya berupa objek baru, sedangkan objek lama tidak berubah. Tipe <code>PerubahanPengguna</code> disusun dari <code>PenggunaBaru</code> yang tidak memuat <code>id</code> sehingga <code>id</code> tidak bisa ikut diubah lewat fungsi ini. Beberapa <em>utility types</em> memang bisa digabung seperti ini.</p>
+<h2>Memetakan Kunci ke Nilai</h2>
+<p><code>Record</code> membuat tipe objek dari daftar kunci dan tipe nilainya. Contoh berikut menyiapkan label kolom untuk ringkasan pengguna:</p>
+<pre><code>export const labelKolom: Record&lt;keyof RingkasanPengguna, string&gt; = {
+  id: 'No.',
+  name: 'Nama',
+  email: 'Email',
+};</code></pre>
+<p>Operator <code>keyof</code> menghasilkan gabungan nama properti, yaitu <code>'id' | 'name' | 'email'</code>. Bila salah satu label terlewat, TypeScript langsung menolak objek ini. Saat <code>RingkasanPengguna</code> kelak bertambah properti, kompilator mengingatkan Anda untuk menambah labelnya juga.</p>
+<h2>Melindungi Data dari Perubahan</h2>
+<p><code>Readonly</code> membuat semua properti hanya bisa dibaca. Coba dengan mengganti isi <code>src/main.ts</code>:</p>
+<pre><code>import './style.css';
+import { labelKolom, perbaruiPengguna, type Pengguna } from './pengguna.ts';
+
+const contoh: Readonly&lt;Pengguna&gt; = {
+  id: 1,
+  name: 'Leanne Graham',
+  email: 'Sincere@april.biz',
+  website: 'hildegard.org',
+};
+
+contoh.website = 'leanne.dev'; // galat
+
+const diperbarui = perbaruiPengguna(contoh, { website: 'leanne.dev' });
+
+console.log(labelKolom.name, diperbarui.name); // Nama Leanne Graham
+console.log(diperbarui.website); // leanne.dev</code></pre>
+<p>Kata <code>type</code> di dalam <code>import</code> menandakan bahwa <code>Pengguna</code> hanya berupa tipe. Opsi <code>verbatimModuleSyntax</code> yang aktif di templat Vite mewajibkan penanda ini. Alih-alih mengubah <code>contoh</code> secara langsung, <code>perbaruiPengguna()</code> membuat objek baru. Hapus baris bertanda galat setelah mencobanya. Ingat juga bahwa <code>Readonly</code> bersifat dangkal: objek di dalam properti tetap bisa diubah. Gunakan <code>readonly Pengguna[]</code> pada <em>array</em> agar <code>push()</code> ikut ditolak.</p>
+<p>Pada materi berikutnya, kita akan mengambil data pengguna sungguhan dari API dan memastikan bentuknya sesuai dengan tipe <code>Pengguna</code>.</p>

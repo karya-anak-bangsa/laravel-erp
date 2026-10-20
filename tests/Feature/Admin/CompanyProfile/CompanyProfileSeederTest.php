@@ -34,9 +34,9 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
         ->and(Faq::count())->toBe(5)
         ->and(KategoriArtikel::count())->toBe(10)
         ->and(Artikel::count())->toBe(32)
-        ->and(KategoriTutorial::count())->toBe(3)
-        ->and(Tutorial::count())->toBe(1)
-        ->and(MateriTutorial::count())->toBe(8)
+        ->and(KategoriTutorial::count())->toBe(5)
+        ->and(Tutorial::count())->toBe(10)
+        ->and(MateriTutorial::count())->toBe(40)
         ->and(Template::aktif()->pluck('nama')->all())->toBe(['TKAB Full Color', 'TKAB Monochrome']);
 });
 
@@ -83,7 +83,7 @@ it('menjalankan seeder company profile ulang tanpa duplikasi data maupun gambar'
     expect(Hero::count())->toBe(5)
         ->and(Portofolio::count())->toBe(7)
         ->and(Artikel::count())->toBe(32)
-        ->and(MateriTutorial::count())->toBe(8)
+        ->and(MateriTutorial::count())->toBe(40)
         ->and(Template::count())->toBe(2)
         ->and(Storage::disk('public')->allFiles())->toHaveCount($jumlahBerkas);
 });

@@ -1,0 +1,74 @@
+<p>Seri ini mengajak Anda membuat aplikasi daftar tugas yang berjalan di peramban tanpa <em>framework</em>, hanya dengan satu berkas <code>index.html</code> dan satu berkas <code>app.js</code>. Anda cukup memahami dasar HTML serta variabel, fungsi, <em>array</em>, dan objek di JavaScript seperti yang dibahas di tutorial "Dasar-Dasar JavaScript Modern".</p>
+<p>Materi pertama ini menyiapkan kedua berkas tersebut, mengenalkan <em>Document Object Model</em> (DOM), lalu menampilkan daftar tugas dari data di JavaScript.</p>
+<h2>Menyiapkan Berkas Proyek</h2>
+<p>Buat folder <code>daftar-tugas</code>, lalu buat berkas <code>index.html</code> di dalamnya:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Daftar Tugas&lt;/title&gt;
+  &lt;style&gt;
+    .selesai { text-decoration: line-through; color: #6b7280; }
+  &lt;/style&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Daftar Tugas&lt;/h1&gt;
+    &lt;p id="ringkasan"&gt;&lt;/p&gt;
+
+    &lt;form id="formulir-tugas"&gt;
+      &lt;input type="text" id="isian-tugas" aria-label="Tugas baru" placeholder="Tulis tugas baru" required&gt;
+      &lt;button type="submit"&gt;Tambah&lt;/button&gt;
+    &lt;/form&gt;
+
+    &lt;ul id="daftar-tugas"&gt;&lt;/ul&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Atribut <code>defer</code> membuat peramban menjalankan <code>app.js</code> setelah seluruh HTML selesai dibaca. Tanpa atribut ini, skrip berjalan sebelum formulir dan <code>&lt;ul&gt;</code> terbentuk sehingga kode kita tidak bisa menemukannya. Buat juga berkas <code>app.js</code> yang masih kosong di folder yang sama, lalu buka <code>index.html</code> dengan mengeklik dua kali berkasnya.</p>
+<h2>Mengenal DOM</h2>
+<p>Saat membuka halaman, peramban mengubah HTML menjadi pohon objek yang disebut DOM. Setiap elemen HTML menjadi simpul yang bisa dibaca dan diubah lewat JavaScript. Perubahan itu langsung tampil di layar tanpa memuat ulang halaman. Pintu masuknya adalah objek <code>document</code>.</p>
+<p>Lihat sendiri pohon tersebut lewat tab <strong>Elements</strong> di DevTools. Coba juga ketik <code>document.title = 'Halo DOM'</code> di konsol dan perhatikan judul tab peramban yang langsung berubah.</p>
+<h2>Memilih Elemen</h2>
+<p>Isi <code>app.js</code> dengan kode berikut:</p>
+<pre><code>const formulirTugas = document.querySelector('#formulir-tugas');
+const isianTugas = document.querySelector('#isian-tugas');
+const elemenDaftar = document.querySelector('#daftar-tugas');
+const elemenRingkasan = document.querySelector('#ringkasan');</code></pre>
+<p><code>querySelector()</code> menerima selektor CSS dan mengembalikan elemen pertama yang cocok, atau <code>null</code> bila tidak ada yang cocok. Tanda <code>#</code> berarti mencari elemen berdasarkan atribut <code>id</code>. Selektor lain juga bisa dipakai, misalnya <code>'.selesai'</code> untuk kelas atau <code>'main h1'</code> untuk elemen bertingkat. Bila membutuhkan semua elemen yang cocok, gunakan <code>querySelectorAll()</code>.</p>
+<h2>Menampilkan Daftar Tugas</h2>
+<p>Data tugas disimpan sebagai <em>array</em> berisi objek. Tambahkan kode berikut di bawah pemilihan elemen tadi:</p>
+<pre><code>const daftarTugas = [
+  { id: 1, judul: 'Mempelajari DOM', selesai: true },
+  { id: 2, judul: 'Membuat formulir tugas', selesai: false },
+];
+
+function tampilkanTugas() {
+  elemenDaftar.replaceChildren();
+
+  for (const tugas of daftarTugas) {
+    const item = document.createElement('li');
+    item.textContent = tugas.judul;
+    item.classList.toggle('selesai', tugas.selesai);
+    elemenDaftar.append(item);
+  }
+
+  const jumlahSelesai = daftarTugas.filter((tugas) =&gt; tugas.selesai).length;
+  elemenRingkasan.textContent = daftarTugas.length === 0
+    ? 'Belum ada tugas.'
+    : `${jumlahSelesai} dari ${daftarTugas.length} tugas selesai`;
+}
+
+tampilkanTugas();</code></pre>
+<p>Simpan berkasnya, lalu muat ulang halaman. Kedua tugas tampil sebagai daftar dan tugas pertama dicoret karena sudah selesai. Berikut peran setiap bagian di dalam <code>tampilkanTugas()</code>:</p>
+<ul>
+<li><p><code>replaceChildren()</code> tanpa argumen mengosongkan isi <code>&lt;ul&gt;</code> agar daftar tidak menumpuk setiap kali fungsi dipanggil.</p></li>
+<li><p><code>document.createElement('li')</code> membuat elemen baru di memori, sedangkan <code>append()</code> menempelkannya ke halaman.</p></li>
+<li><p><code>classList.toggle('selesai', tugas.selesai)</code> memasang kelas <code>selesai</code> bila argumen kedua bernilai <code>true</code> dan melepasnya bila <code>false</code>. Kelas inilah yang memicu gaya coretan di <code>&lt;style&gt;</code>.</p></li>
+<li><p>Operator kondisional pada ringkasan menampilkan <code>Belum ada tugas.</code> saat daftar kosong.</p></li>
+</ul>
+<h2>Mengisi Teks dengan Aman</h2>
+<p>Properti <code>textContent</code> mengisi elemen dengan teks apa adanya. Anda mungkin pernah melihat <code>innerHTML</code> untuk keperluan yang sama. Properti itu membaca isinya sebagai HTML sehingga judul tugas seperti <code>&lt;img src="x" onerror="alert(1)"&gt;</code> akan menjalankan kode di dalam atribut <code>onerror</code>. Celah ini disebut <em>Cross-Site Scripting</em> (XSS). Selama isinya berasal dari pengguna, selalu gunakan <code>textContent</code>.</p>
+<p>Daftar tugas sudah tampil, tetapi datanya masih tertulis di kode. Pada materi berikutnya, kita akan menangani <em>event</em> agar pengguna bisa menambah, mencentang, dan menghapus tugas.</p>

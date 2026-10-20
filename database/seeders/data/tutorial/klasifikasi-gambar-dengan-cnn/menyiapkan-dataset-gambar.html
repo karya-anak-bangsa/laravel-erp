@@ -1,0 +1,58 @@
+<p>Sebelum melatih CNN, kita perlu menyusun foto dan memuatnya dalam format yang dipahami Keras. Materi ini membahas struktur folder per kelas, cara memuat foto dengan <code>keras.utils.image_dataset_from_directory</code>, serta cara mempercepat pembacaan data selama pelatihan.</p>
+<h2>Struktur Folder per Kelas</h2>
+<p>Keras mengenali kelas dari nama folder. Setiap kelas memiliki satu folder berisi foto-fotonya. Semua folder kelas berada di dalam satu folder induk:</p>
+<pre><code>flower_photos/
+    daisy/
+    dandelion/
+    roses/
+    sunflowers/
+    tulips/</code></pre>
+<p>Nama berkas fotonya bebas. Bila memakai foto sendiri, buat susunan yang sama, misalnya folder <code>hewan/kucing/</code> dan <code>hewan/anjing/</code>. Usahakan setiap kelas berisi setidaknya beberapa ratus foto dengan jumlah yang tidak terlalu timpang antarkelas.</p>
+<h2>Mengunduh Contoh <em>Dataset</em></h2>
+<p>Unduh berkas foto bunga lewat peramban dari alamat berikut, lalu simpan di folder proyek, misalnya <code>belajar-keras</code>:</p>
+<pre><code>https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz</code></pre>
+<p>Buka terminal di folder yang sama, lalu ekstrak berkasnya. Perintah <code>tar</code> sudah tersedia di Windows 10 dan 11, macOS, serta Linux:</p>
+<pre><code>tar -xzf flower_photos.tgz</code></pre>
+<p>Hasilnya adalah folder <code>flower_photos</code> berisi lima folder kelas dan satu berkas lisensi. Berkas yang tidak berada di dalam folder kelas akan diabaikan Keras. Pengguna Colab bisa menjalankan kedua langkah ini di sel <em>notebook</em> dengan perintah <code>!wget</code> dan <code>!tar</code>.</p>
+<h2>Memuat Foto dengan <code>image_dataset_from_directory</code></h2>
+<p>Buat berkas <code>bunga.py</code> di folder proyek. Berkas ini akan terus dilanjutkan sampai materi terakhir:</p>
+<pre><code>import keras
+import tensorflow as tf
+
+folder_data = "flower_photos"
+ukuran_gambar = (160, 160)
+
+data_latih, data_validasi = keras.utils.image_dataset_from_directory(
+    folder_data,
+    validation_split=0.2,
+    subset="both",
+    seed=123,
+    image_size=ukuran_gambar,
+    batch_size=32,
+)
+
+nama_kelas = data_latih.class_names
+print(nama_kelas)</code></pre>
+<p>Fungsi ini mendata semua foto, memberi label sesuai nama folder, dan mengubah ukuran setiap foto menjadi 160 × 160 piksel saat dibaca. Parameter <code>validation_split=0.2</code> bersama <code>subset="both"</code> membagi foto menjadi 80 persen data latih dan 20 persen data validasi. Nilai <code>seed</code> membuat pembagian itu tetap sama setiap kali skrip dijalankan. Foto juga dikelompokkan per <em>batch</em> berisi 32 foto. Keluarannya:</p>
+<pre><code>Found 3670 files belonging to 5 classes.
+Using 2936 files for training.
+Using 734 files for validation.
+['daisy', 'dandelion', 'roses', 'sunflowers', 'tulips']</code></pre>
+<p>Urutan <code>nama_kelas</code> mengikuti abjad nama folder: label 0 berarti <code>daisy</code>, label 1 berarti <code>dandelion</code>, dan seterusnya. Simpan daftar ini sekarang karena atribut <code>class_names</code> tidak lagi tersedia setelah <em>dataset</em> diolah lebih lanjut.</p>
+<h2>Melihat Isi Satu <em>Batch</em></h2>
+<pre><code>for gambar, label in data_latih.take(1):
+    print(gambar.shape)
+    print(label.numpy())</code></pre>
+<p><code>take(1)</code> mengambil satu <em>batch</em> saja. Bentuk <code>(32, 160, 160, 3)</code> berarti 32 foto berukuran 160 × 160 dengan tiga kanal warna, sedangkan label berupa 32 bilangan bulat antara 0 dan 4. Nilai pikselnya masih 0 sampai 255. Normalisasinya akan dilakukan di dalam model pada materi berikutnya.</p>
+<h2>Mempercepat dengan <code>cache</code> dan <code>prefetch</code></h2>
+<pre><code>AUTOTUNE = tf.data.AUTOTUNE
+
+data_latih = data_latih.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
+data_validasi = data_validasi.cache().prefetch(buffer_size=AUTOTUNE)</code></pre>
+<p><em>Dataset</em> buatan Keras ini berupa objek <code>tf.data.Dataset</code> milik TensorFlow. Itulah alasan kita mengimpor <code>tensorflow</code> di awal berkas.</p>
+<ul>
+<li><p><code>cache()</code> menyimpan foto yang sudah dibaca di memori selama <em>epoch</em> pertama sehingga <em>epoch</em> berikutnya tidak perlu membuka berkas foto lagi.</p></li>
+<li><p><code>shuffle(1000)</code> mengacak urutan <em>batch</em> di setiap <em>epoch</em> karena isi <em>cache</em> selalu keluar dalam urutan yang sama.</p></li>
+<li><p><code>prefetch()</code> menyiapkan <em>batch</em> berikutnya selagi model mengolah <em>batch</em> yang sedang berjalan. Nilai <code>AUTOTUNE</code> membiarkan TensorFlow menentukan jumlah <em>batch</em> yang disiapkan.</p></li>
+</ul>
+<p>Seluruh foto berukuran 160 × 160 ini membutuhkan sekitar 1 GB memori. Bila memori komputer Anda terbatas, tulis <code>cache("cache_latih")</code> dan <code>cache("cache_validasi")</code> agar <em>cache</em> disimpan di <em>disk</em>. Pada materi berikutnya, kita akan membangun CNN dengan lapisan <code>Conv2D</code> dan <code>MaxPooling2D</code>, lalu melatihnya dengan <em>dataset</em> ini.</p>

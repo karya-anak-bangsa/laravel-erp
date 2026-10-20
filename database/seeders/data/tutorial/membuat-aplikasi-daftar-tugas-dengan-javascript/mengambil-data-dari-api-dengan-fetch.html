@@ -1,0 +1,65 @@
+<p>Sejauh ini, semua tugas berasal dari ketikan pengguna. Aplikasi web sungguhan sering mengambil data dari server lewat <em>Application Programming Interface</em> (API). Materi terakhir ini menambahkan tombol untuk mengambil contoh tugas dari API dengan <code>fetch()</code>, menunggu hasilnya dengan <code>async</code> dan <code>await</code>, serta menangani galat dengan <code>try</code> dan <code>catch</code>.</p>
+<h2>Mengenal API JSONPlaceholder</h2>
+<p>API adalah pintu yang disediakan sebuah layanan agar program lain bisa meminta datanya. Kita memakai JSONPlaceholder, API contoh gratis yang memang dibuat untuk latihan. Buka alamat berikut di peramban:</p>
+<pre><code>https://jsonplaceholder.typicode.com/todos?_limit=5</code></pre>
+<p>Peramban menampilkan <em>array</em> JSON berisi lima tugas. Parameter <code>_limit=5</code> membatasi jumlahnya. Setiap tugas berbentuk seperti berikut:</p>
+<pre><code>{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}</code></pre>
+<p>Nama propertinya berbeda dengan data kita: <code>title</code> setara dengan <code>judul</code>, sedangkan <code>completed</code> setara dengan <code>selesai</code>. Kita akan menyesuaikannya saat data diterima.</p>
+<h2>Menambahkan Tombol Contoh</h2>
+<p>Tambahkan tombol berikut di <code>index.html</code>, tepat di bawah formulir:</p>
+<pre><code>&lt;button type="button" id="tombol-contoh"&gt;Ambil contoh tugas&lt;/button&gt;</code></pre>
+<p>Di <code>app.js</code>, tambahkan alamat API dan pilih tombol tersebut di bawah pemilihan elemen lainnya:</p>
+<pre><code>const ALAMAT_CONTOH = 'https://jsonplaceholder.typicode.com/todos?_limit=5';
+const tombolContoh = document.querySelector('#tombol-contoh');</code></pre>
+<h2>Mengambil Data dengan <code>fetch</code></h2>
+<p>Tambahkan fungsi berikut di atas baris <code>tampilkanTugas();</code> yang paling bawah:</p>
+<pre><code>async function ambilContohTugas() {
+  tombolContoh.disabled = true;
+  elemenRingkasan.textContent = 'Mengambil contoh tugas...';
+
+  try {
+    const respons = await fetch(ALAMAT_CONTOH);
+
+    if (!respons.ok) {
+      throw new Error(`server membalas dengan status ${respons.status}`);
+    }
+
+    const dataContoh = await respons.json();
+    const tugasBaru = dataContoh.map((data) =&gt; ({
+      id: Date.now() + data.id,
+      judul: data.title,
+      selesai: data.completed,
+    }));
+
+    daftarTugas.push(...tugasBaru);
+    simpanTugas();
+    tampilkanTugas();
+  } catch (galat) {
+    elemenRingkasan.textContent = `Gagal mengambil contoh tugas: ${galat.message}`;
+  } finally {
+    tombolContoh.disabled = false;
+  }
+}
+
+tombolContoh.addEventListener('click', ambilContohTugas);</code></pre>
+<p><code>fetch()</code> mengirim permintaan ke alamat API dan mengembalikan <code>Promise</code>, yaitu objek yang mewakili hasil yang baru tersedia nanti. <code>await</code> menunggu <code>Promise</code> itu selesai tanpa membekukan halaman sehingga pengguna tetap bisa menggulir atau mengetik selama data diambil. Di skrip biasa seperti <code>app.js</code>, <code>await</code> hanya boleh dipakai di dalam fungsi bertanda <code>async</code>. Penjelasan lebih lengkap ada di artikel <a href="/artikel/memahami-asyncawait-di-javascript-lewat-contoh-sehari-hari">Memahami Async/Await di JavaScript lewat Contoh Sehari-hari</a>.</p>
+<p>Isi jawaban server dibaca dengan <code>respons.json()</code> yang juga perlu ditunggu. Setelah itu, <code>map()</code> mengubah setiap data dari API menjadi objek tugas kita. Objek di dalam <em>arrow function</em> dibungkus tanda kurung agar kurung kurawalnya tidak dianggap sebagai isi fungsi. <code>Date.now() + data.id</code> menjaga kelima <code>id</code> tetap berbeda meskipun dibuat pada milidetik yang sama. Operator <em>spread</em> pada <code>...tugasBaru</code> memasukkan kelima tugas ke <code>daftarTugas</code> sekaligus.</p>
+<h2>Menangani Galat dengan <code>try</code> dan <code>catch</code></h2>
+<p>Permintaan ke server bisa gagal karena sambungan internet terputus atau alamatnya salah. Kode di dalam <code>try</code> dijalankan seperti biasa. Begitu terjadi galat, JavaScript langsung melompat ke <code>catch</code> dan menerima objek galatnya sebagai parameter <code>galat</code>. Blok <code>finally</code> selalu dijalankan, baik permintaan berhasil maupun gagal. Dengan begitu, tombol pasti aktif kembali.</p>
+<p>Perlu diingat, <code>fetch()</code> hanya gagal bila permintaannya tidak sampai ke server. Jawaban dengan status galat seperti 404 atau 500 tetap dianggap berhasil. Oleh karena itu, kode di atas memeriksa <code>respons.ok</code> dan melempar galat sendiri dengan <code>throw</code> bila statusnya di luar rentang 200–299.</p>
+<p>Coba ubah <code>ALAMAT_CONTOH</code> menjadi <code>https://jsonplaceholder.typicode.com/salah</code>, lalu klik tombolnya. Ringkasan akan menampilkan <code>Gagal mengambil contoh tugas: server membalas dengan status 404</code>. Kembalikan alamatnya setelah mencoba.</p>
+<p>Teknik yang sama bisa melindungi <code>muatTugas()</code> dari data rusak yang disinggung di materi sebelumnya. Ganti baris <code>return JSON.parse(dataTersimpan);</code> di fungsi tersebut dengan kode berikut:</p>
+<pre><code>try {
+  return JSON.parse(dataTersimpan);
+} catch {
+  return [];
+}</code></pre>
+<p>Bila isi <code>localStorage</code> bukan JSON yang sah, aplikasi kini mulai dengan daftar kosong alih-alih berhenti karena galat. Parameter pada <code>catch</code> boleh dihilangkan bila objek galatnya tidak dipakai.</p>
+<h2>Rangkuman Seri</h2>
+<p>Selamat, aplikasi daftar tugas Anda kini lengkap. Sepanjang seri ini, Anda sudah memilih dan mengubah elemen DOM, menangani <em>event</em> dengan delegasi, menyimpan data di <code>localStorage</code> dengan bantuan JSON, dan mengambil data dari API dengan <code>fetch()</code>. Konsep yang sama tetap dipakai saat Anda kelak beralih ke <em>framework</em> seperti React atau Vue.</p>
+<p>Langkah berikutnya bisa berupa tampilan yang lebih rapi dengan CSS, fitur mengubah judul tugas, atau filter Semua, Aktif, dan Selesai. Saat kode makin besar, pertimbangkan TypeScript agar kesalahan tipe data tertangkap sebelum aplikasi dijalankan.</p>

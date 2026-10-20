@@ -1,0 +1,46 @@
+<p>Seri ini mengajak Anda membangun model yang mengenali jenis bunga dari foto dengan <em>Convolutional Neural Network</em> (CNN), jenis jaringan saraf tiruan yang dirancang khusus untuk gambar. Anda cukup menguasai dasar Python, sudah memasang TensorFlow, dan mengenal lapisan <code>Dense</code> serta <em>method</em> <code>compile()</code> dan <code>fit()</code> di Keras. Semua itu dibahas di tutorial "Pengantar Deep Learning dengan Keras".</p>
+<p>Materi pertama ini membahas konsep di balik CNN, yaitu konvolusi, <em>kernel</em>, <em>feature map</em>, dan <em>pooling</em>. Contoh kodenya hanya memakai NumPy agar setiap langkah perhitungan bisa diamati langsung.</p>
+<h2>Keterbatasan Lapisan <code>Dense</code> untuk Gambar</h2>
+<p>Model pengenal angka tulisan tangan di tutorial pengantar memakai <code>Flatten</code> untuk meratakan gambar menjadi deretan piksel. Cara ini membuang informasi letak: model tidak tahu piksel mana yang bersebelahan. Jumlah bobotnya juga membengkak. Foto berwarna berukuran 160 × 160 piksel dengan tiga kanal warna berisi 76.800 nilai. Satu lapisan <code>Dense</code> berisi 128 neuron saja sudah membutuhkan lebih dari 9,8 juta bobot.</p>
+<h2>Konvolusi dan <em>Kernel</em></h2>
+<p>CNN menempuh cara lain. Sebuah filter kecil, biasanya berukuran 3 × 3, digeser di atas gambar. Pada setiap posisi, nilai piksel dikalikan dengan nilai filter, lalu dijumlahkan menjadi satu angka. Operasi ini disebut konvolusi. Matriks bobot pada filter itu disebut <em>kernel</em>.</p>
+<p>Contoh berikut memakai <em>kernel</em> pendeteksi tepi tegak pada gambar 5 × 5 yang bagian kirinya gelap (0) dan bagian kanannya terang (9):</p>
+<pre><code>import numpy as np
+
+gambar = np.array([
+    [0, 0, 0, 9, 9],
+    [0, 0, 0, 9, 9],
+    [0, 0, 0, 9, 9],
+    [0, 0, 0, 9, 9],
+    [0, 0, 0, 9, 9],
+])
+kernel = np.array([
+    [-1, 0, 1],
+    [-1, 0, 1],
+    [-1, 0, 1],
+])
+
+hasil = np.zeros((3, 3))
+for i in range(3):
+    for j in range(3):
+        hasil[i, j] = np.sum(gambar[i:i + 3, j:j + 3] * kernel)
+
+print(hasil)</code></pre>
+<p>Perulangan tersebut mengambil potongan 3 × 3 dari gambar di setiap posisi, mengalikannya dengan <em>kernel</em>, lalu menjumlahkan hasilnya. Keluarannya:</p>
+<pre><code>[[ 0. 27. 27.]
+ [ 0. 27. 27.]
+ [ 0. 27. 27.]]</code></pre>
+<p>Gambar 5 × 5 menyusut menjadi 3 × 3 karena <em>kernel</em> 3 × 3 hanya muat di sembilan posisi. Nilai besar muncul di posisi yang mencakup peralihan dari gelap ke terang, sedangkan daerah yang seragam bernilai nol. Dengan kata lain, <em>kernel</em> ini menyorot tepi tegak.</p>
+<h2><em>Feature Map</em> dan Lapisan Bertingkat</h2>
+<p>Hasil konvolusi disebut <em>feature map</em>, yaitu peta yang menunjukkan letak sebuah pola di gambar. Di CNN, kita tidak menulis nilai <em>kernel</em> sendiri. Model mempelajarinya selama pelatihan, sama seperti bobot lapisan <code>Dense</code>. Lapisan <code>Conv2D(32, 3)</code> di Keras berisi 32 <em>kernel</em> berukuran 3 × 3 sehingga menghasilkan 32 <em>feature map</em> sekaligus.</p>
+<p>Lapisan konvolusi pertama biasanya belajar mengenali tepi dan warna. Lapisan berikutnya menggabungkan <em>feature map</em> itu menjadi tekstur dan bentuk. Lapisan yang lebih dalam kemudian mengenali bagian utuh, seperti kelopak atau tangkai bunga.</p>
+<h2>Meringkas dengan <em>Pooling</em></h2>
+<p><em>Pooling</em> memperkecil <em>feature map</em> sambil mempertahankan informasi terpenting. Jenis yang paling umum, <em>max pooling</em> 2 × 2, membagi <em>feature map</em> menjadi kotak-kotak 2 × 2 dan hanya mengambil nilai terbesar dari setiap kotak. Contohnya, kotak berisi 1, 3, 4, dan 2 diringkas menjadi 4.</p>
+<p>Lebar dan tinggi <em>feature map</em> pun menyusut separuh sehingga perhitungan di lapisan berikutnya lebih ringan. Model juga menjadi lebih tahan terhadap pergeseran kecil karena posisi pola tidak harus tepat sama. Di Keras, lapisan ini bernama <code>MaxPooling2D</code>.</p>
+<h2>Alasan CNN Cocok untuk Gambar</h2>
+<ul>
+<li><p><strong>Bobot dipakai bersama.</strong> <em>Kernel</em> yang sama digeser ke seluruh gambar. Lapisan <code>Conv2D(32, 3)</code> pada foto berwarna hanya memiliki 896 parameter, jauh lebih sedikit daripada 9,8 juta bobot lapisan <code>Dense</code> tadi.</p></li>
+<li><p><strong>Letak piksel diperhatikan.</strong> Setiap <em>kernel</em> melihat piksel yang bersebelahan sehingga pola lokal seperti tepi dan sudut mudah dikenali.</p></li>
+<li><p><strong>Pola dikenali di mana pun.</strong> Bunga di pojok kiri dan bunga di tengah foto memicu <em>kernel</em> yang sama.</p></li>
+</ul>
+<p>Sepanjang seri ini, kita memakai kumpulan foto bunga dari tim TensorFlow yang berisi 3.670 foto dalam lima kelas, antara lain mawar, bunga matahari, dan tulip. Anda juga bisa memakai foto milik sendiri, misalnya foto kucing dan anjing. Pada materi berikutnya, kita akan menyusun foto-foto tersebut dalam folder per kelas dan memuatnya menjadi <em>dataset</em> yang siap dipakai Keras.</p>

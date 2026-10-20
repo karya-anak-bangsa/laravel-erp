@@ -1,0 +1,41 @@
+<p>Model <em>machine learning</em> dinilai dari kemampuannya menebak data yang belum pernah dilihatnya. Materi terakhir seri ini membahas cara menyiapkan ujian yang adil bagi model: memisahkan fitur dan label, lalu membagi data menjadi data latih dan data uji.</p>
+<h2>Memisahkan Fitur dan Label</h2>
+<p>Lanjutkan <em>notebook</em> dari materi sebelumnya. Jika Anda membuka <em>notebook</em> baru, jalankan dulu kode pemuatan <em>dataset</em> dan penggantian nama kolom dari materi itu. Setelah itu, pisahkan fitur dan label:</p>
+<pre><code>X = data[["panjang_kelopak", "lebar_kelopak", "panjang_mahkota", "lebar_mahkota"]]
+y = data["jenis"]
+
+print(X.shape)
+print(y.shape)</code></pre>
+<p>Hasilnya <code>(150, 4)</code> dan <code>(150,)</code>. Kurung siku ganda memilih beberapa kolom sekaligus dan menghasilkan <code>DataFrame</code>, sedangkan kurung siku tunggal menghasilkan <code>Series</code>, yaitu satu kolom. Nama <code>X</code> berhuruf kapital dan <code>y</code> berhuruf kecil adalah kebiasaan di dunia <em>machine learning</em>: <code>X</code> berupa tabel fitur, sedangkan <code>y</code> berupa deret label.</p>
+<p>Kolom <code>target</code> sengaja tidak dimasukkan ke <code>X</code> karena isinya adalah label dalam bentuk angka. Model yang diberi kunci jawaban tentu akan terlihat sempurna, padahal ia tidak belajar apa pun.</p>
+<h2>Mengapa Model Tidak Boleh Diuji dengan Data Latih</h2>
+<p>Bayangkan seorang guru memberikan soal ujian yang persis sama dengan soal latihan. Siswa yang menghafal jawaban akan mendapat nilai sempurna tanpa benar-benar memahami materinya. Model pun demikian. Model yang terlalu menghafal data latih mengalami <em>overfitting</em>: nilainya tinggi di data latih, tetapi anjlok di data baru.</p>
+<p>Oleh karena itu, sebagian data disisihkan sebagai data uji sejak awal. Data uji tidak boleh dipakai selama pelatihan dan baru dibuka saat menilai model, seperti soal ujian yang dirahasiakan sampai hari ujian.</p>
+<h2>Membagi Data dengan <code>train_test_split</code></h2>
+<p>Pustaka scikit-learn menyediakan fungsi <code>train_test_split</code> untuk membagi data secara acak:</p>
+<pre><code>from sklearn.model_selection import train_test_split
+
+X_latih, X_uji, y_latih, y_uji = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+print(X_latih.shape, X_uji.shape)</code></pre>
+<p>Fungsi ini mengacak urutan baris, lalu memisahkannya menjadi empat bagian dengan urutan yang selalu sama: fitur latih, fitur uji, label latih, dan label uji. Hasil <code>print()</code> di atas adalah <code>(120, 4) (30, 4)</code>, yang berarti 120 bunga untuk belajar dan 30 bunga untuk menguji.</p>
+<h2>Memahami <code>test_size</code>, <code>random_state</code>, dan <code>stratify</code></h2>
+<ul>
+<li><p><code>test_size=0.2</code> menyisihkan 20 persen data sebagai data uji. Nilai 0,2 sampai 0,3 lazim dipakai, sedangkan data yang sangat besar cukup disisihkan sebagian kecil saja.</p></li>
+<li><p><code>random_state=42</code> mengunci hasil pengacakan. Angka berapa pun boleh dipakai. Selama angkanya tidak diganti, pembagian datanya selalu sama setiap kali kode dijalankan. Tanpa parameter ini, hasil percobaan sulit dibandingkan karena data ujinya berubah-ubah.</p></li>
+<li><p><code>stratify=y</code> menjaga perbandingan jumlah setiap kelas. Data uji iris akan berisi tepat 10 bunga dari setiap jenis, sama seimbangnya dengan data asli. Periksa hasilnya dengan <code>y_uji.value_counts()</code>.</p></li>
+</ul>
+<h2>Membuktikan Bahaya Menguji dengan Data Latih</h2>
+<p>Latih sebuah model sederhana, lalu bandingkan skornya di kedua data:</p>
+<pre><code>from sklearn.tree import DecisionTreeClassifier
+
+model_pohon = DecisionTreeClassifier(random_state=42)
+model_pohon.fit(X_latih, y_latih)
+
+print("Skor data latih:", model_pohon.score(X_latih, y_latih))
+print("Skor data uji  :", model_pohon.score(X_uji, y_uji))</code></pre>
+<p><code>score()</code> menghitung akurasi, yaitu porsi tebakan yang benar. Hasilnya kira-kira 1,0 untuk data latih dan 0,93 untuk data uji. Skor sempurna di data latih tampak mengesankan, padahal model meleset pada 2 dari 30 bunga baru. Selisih ini kecil karena iris tergolong mudah; pada data nyata, selisihnya bisa jauh lebih besar.</p>
+<p>Aturan yang sama berlaku untuk persiapan data. Nilai seperti median pengisi sel kosong sebaiknya dihitung dari data latih saja agar informasi data uji tidak bocor ke model.</p>
+<p>Seri ini sudah membawa Anda mengenal konsep <em>machine learning</em>, menyiapkan lingkungan kerja, memahami isi data, dan membagi data latih serta data uji. Lanjutkan ke tutorial "Membangun Model Prediksi dengan scikit-learn" untuk melatih model regresi dan klasifikasi, mengukur kinerjanya, lalu menyimpannya agar bisa dipakai ulang.</p>

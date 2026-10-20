@@ -1,0 +1,68 @@
+<p>CNN yang dilatih dari nol dengan sekitar 3.000 foto memberikan hasil yang terbatas. <em>Transfer learning</em> menawarkan jalan pintas: kita memakai model praterlatih, yaitu model yang sudah dilatih pada <em>dataset</em> raksasa, lalu menyesuaikannya dengan kasus kita. Materi ini memakai MobileNetV2, model ringan yang sudah dilatih dengan lebih dari satu juta foto ImageNet dalam 1.000 kategori.</p>
+<p>Lanjutkan berkas <code>bunga.py</code>. Kode <em>dataset</em> dan lapisan <code>augmentasi</code> tetap dipakai, sedangkan model CNN dari materi sebelumnya sebaiknya dihapus agar tidak ikut dilatih ulang.</p>
+<h2>Memuat MobileNetV2 tanpa Lapisan Atas</h2>
+<pre><code>model_dasar = keras.applications.MobileNetV2(
+    input_shape=ukuran_gambar + (3,),
+    include_top=False,
+    weights="imagenet",
+)
+model_dasar.trainable = False</code></pre>
+<p>Argumen <code>weights="imagenet"</code> mengunduh bobot hasil pelatihan ImageNet saat pertama dijalankan. <code>include_top=False</code> membuang lapisan klasifikasi aslinya yang berisi 1.000 kelas karena kita hanya membutuhkan lima. Bagian yang tersisa mengubah foto 160 × 160 menjadi <em>feature map</em> berukuran 5 × 5 dengan 1.280 kanal. Baris <code>trainable = False</code> membekukan seluruh bobotnya agar pengetahuan yang sudah ada tidak rusak saat lapisan baru mulai dilatih.</p>
+<h2>Menyusun Model Baru</h2>
+<p>Kali ini kita menyusun model dengan cara fungsional: setiap lapisan dipanggil seperti fungsi, lalu hasilnya diteruskan ke lapisan berikutnya. Cara ini dibutuhkan karena <code>preprocess_input</code> bukan lapisan, melainkan fungsi biasa yang tidak bisa dimasukkan ke daftar <code>keras.Sequential</code>.</p>
+<pre><code>masukan = keras.Input(shape=ukuran_gambar + (3,))
+x = augmentasi(masukan)
+x = keras.applications.mobilenet_v2.preprocess_input(x)
+x = model_dasar(x)
+x = keras.layers.GlobalAveragePooling2D()(x)
+x = keras.layers.Dropout(0.2)(x)
+keluaran = keras.layers.Dense(len(nama_kelas), activation="softmax")(x)
+
+model = keras.Model(masukan, keluaran)</code></pre>
+<p><code>preprocess_input</code> mengubah nilai piksel dari 0–255 menjadi −1 sampai 1, sesuai dengan format data saat MobileNetV2 dilatih. Langkah ini menggantikan <code>Rescaling</code> di materi sebelumnya. <code>GlobalAveragePooling2D</code> merata-ratakan setiap <em>feature map</em> 5 × 5 menjadi satu angka sehingga lapisan <code>Dense</code> terakhir menerima 1.280 fitur. Terakhir, <code>keras.Model()</code> menyatukan rangkaian itu menjadi satu model.</p>
+<h2>Melatih Lapisan Baru</h2>
+<pre><code>model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"],
+)
+
+riwayat = model.fit(data_latih, validation_data=data_validasi, epochs=10)</code></pre>
+<p>Hanya 6.405 parameter di lapisan <code>Dense</code> terakhir yang dilatih. Akurasi validasi biasanya sudah melampaui 80 persen sejak <em>epoch</em> pertama dan mendekati 90 persen di akhir pelatihan, jauh di atas CNN buatan sendiri.</p>
+<h2><em>Fine-Tuning</em> Singkat</h2>
+<p>Setelah lapisan baru stabil, buka sebagian lapisan atas MobileNetV2 agar ikut menyesuaikan diri dengan foto bunga:</p>
+<pre><code>model_dasar.trainable = True
+for lapisan in model_dasar.layers[:100]:
+    lapisan.trainable = False
+for lapisan in model_dasar.layers:
+    if isinstance(lapisan, keras.layers.BatchNormalization):
+        lapisan.trainable = False
+
+model.compile(
+    optimizer=keras.optimizers.Adam(learning_rate=1e-5),
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"],
+)
+
+riwayat_lanjutan = model.fit(data_latih, validation_data=data_validasi, epochs=5)</code></pre>
+<p>MobileNetV2 terdiri atas 154 lapisan. Kode di atas membuka semuanya, membekukan kembali 100 lapisan pertama yang mengenali pola dasar, lalu tetap membekukan semua lapisan <code>BatchNormalization</code>. Lapisan ini menyimpan statistik data ImageNet; bila ikut dilatih dengan <em>batch</em> kecil, statistiknya bergeser dan akurasi bisa turun tajam. Model wajib dikompilasi ulang setiap kali status <code>trainable</code> berubah. <em>Learning rate</em> dibuat sangat kecil agar bobot yang sudah bagus hanya bergeser sedikit. Tanpa itu, <em>fine-tuning</em> justru bisa merusak hasil pelatihan sebelumnya. Dengan pengaturan ini, akurasi validasi biasanya naik lagi hingga sekitar 90 persen.</p>
+<h2>Menyimpan Model dan Memprediksi Foto Baru</h2>
+<pre><code>model.save("model_bunga.keras")</code></pre>
+<p>Berkas <code>.keras</code> menyimpan susunan, bobot, dan pengaturan model dalam satu berkas. Buat skrip baru <code>prediksi.py</code> yang memuat model itu dan menebak jenis bunga pada satu foto:</p>
+<pre><code>import keras
+import numpy as np
+
+nama_kelas = ["daisy", "dandelion", "roses", "sunflowers", "tulips"]
+model = keras.models.load_model("model_bunga.keras")
+
+gambar = keras.utils.load_img("foto_bunga.jpg", target_size=(160, 160))
+x = keras.utils.img_to_array(gambar)
+x = np.expand_dims(x, axis=0)
+
+prediksi = model.predict(x)
+indeks = np.argmax(prediksi[0])
+print(f"{nama_kelas[indeks]} ({prediksi[0][indeks]:.1%})")</code></pre>
+<p>Ganti <code>foto_bunga.jpg</code> dengan foto bunga milik Anda yang tidak termasuk dalam <em>dataset</em>. <code>load_img()</code> membaca foto tersebut sekaligus mengubah ukurannya menjadi 160 × 160. Fungsi ini memakai pustaka Pillow yang ikut terpasang bersama Matplotlib; bila belum ada, jalankan <code>pip install pillow</code>. <code>expand_dims()</code> menambahkan dimensi <em>batch</em>, sedangkan <code>np.argmax()</code> memilih kelas dengan peluang tertinggi. Normalisasi tidak perlu ditulis ulang karena <code>preprocess_input</code> sudah menjadi bagian dari model.</p>
+<h2>Rangkuman Seri</h2>
+<p>Sepanjang seri ini, Anda sudah mempelajari cara CNN membaca gambar lewat konvolusi dan <em>pooling</em>, menyiapkan <em>dataset</em> dari folder per kelas, melatih CNN sendiri dengan augmentasi data, hingga memakai <em>transfer learning</em> dan <em>fine-tuning</em> dengan MobileNetV2. Pola yang sama berlaku untuk hampir semua tugas klasifikasi gambar. Anda cukup mengganti isi foldernya.</p>
+<p>Sebagai langkah berikutnya, Anda bisa mencoba model praterlatih lain di <code>keras.applications</code>, mengumpulkan foto dari kasus sendiri, atau memasang model di aplikasi web dan seluler. Asisten kecerdasan buatan bisa mempercepat penulisan kode eksperimen tersebut; cara memakainya dengan tepat dibahas di artikel <a href="/artikel/coding-dengan-bantuan-ai-lebih-cepat-tanpa-kehilangan-pemahaman">Coding dengan Bantuan AI: Lebih Cepat tanpa Kehilangan Pemahaman</a>.</p>

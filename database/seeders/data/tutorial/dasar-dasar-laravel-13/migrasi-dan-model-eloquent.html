@@ -18,7 +18,7 @@
 <p><code>id()</code> membuat kolom kunci primer yang bertambah otomatis, sedangkan <code>timestamps()</code> membuat kolom <code>created_at</code> dan <code>updated_at</code> yang diisi Laravel saat data dibuat dan diubah. Tahun terbit memakai <code>unsignedSmallInteger</code> karena nilainya selalu berupa bilangan bulat positif yang kecil.</p>
 <p><em>Method</em> <code>down()</code> berisi kebalikannya, yaitu <code>Schema::dropIfExists('buku')</code>. Laravel menjalankannya saat Anda membatalkan migrasi. Sekarang jalankan migrasinya:</p>
 <pre><code>php artisan migrate</code></pre>
-<p>Tabel buku kini ada di basis data perpustakaan. Bila ada kolom yang salah, jalankan <code>php artisan migrate:rollback</code> untuk membatalkan migrasi terakhir, perbaiki berkasnya, lalu jalankan <code>php artisan migrate</code> lagi. Setelah tabelnya berisi data sungguhan, jangan mengubah migrasi lama. Buat migrasi baru untuk setiap perubahan, seperti yang akan kita lakukan di materi terakhir.</p>
+<p>Tabel buku kini ada di basis data perpustakaan. Bila ada kolom yang salah, jalankan <code>php artisan migrate:rollback</code> untuk membatalkan migrasi terakhir, perbaiki berkasnya, lalu jalankan <code>php artisan migrate</code> lagi. Setelah tabelnya berisi data sungguhan, jangan mengubah migrasi lama. Buat migrasi baru untuk setiap perubahan, seperti yang akan kita lakukan di tutorial lanjutan saat menambahkan fitur hapus.</p>
 <h2>Membuat Model Eloquent</h2>
 <p>Eloquent adalah <em>Object-Relational Mapping</em> (ORM) bawaan Laravel. Setiap tabel diwakili satu kelas model sehingga Anda bisa membaca dan menulis data tanpa menyusun SQL sendiri. Buat modelnya:</p>
 <pre><code>php artisan make:model Buku</code></pre>
@@ -49,4 +49,4 @@ App\Models\Buku::find(1);
 App\Models\Buku::where('tahun_terbit', '&lt;', 2000)-&gt;pluck('judul');</code></pre>
 <p>Perintah pertama menghitung jumlah buku, perintah kedua mengambil buku ber-id 1, dan perintah ketiga mengambil judul buku yang terbit sebelum tahun 2000. Eloquent menyusun SQL-nya untuk Anda. Ketik <code>exit</code> untuk keluar dari Tinker.</p>
 <p>Bila tabel buku kelak berisi ribuan baris dan pencarian per kolom mulai terasa lambat, baca juga artikel <a href="/artikel/mengenal-indeks-di-mysql-agar-query-tidak-lambat">Mengenal Indeks di MySQL agar Query Tidak Lambat</a>.</p>
-<p>Tabel dan model sudah siap. Pada materi berikutnya, kita akan mengganti daftar judul yang ditulis langsung di <em>controller</em> dengan data asli dari tabel buku.</p>
+<p>Tabel dan model sudah siap, begitu pula dasar aplikasi perpustakaan kita. Lanjutkan ke tutorial "Membangun CRUD dengan Laravel 13" untuk mengganti daftar judul yang ditulis langsung di <em>controller</em> dengan data asli dari tabel buku, lalu menambah, mengubah, dan menghapusnya.</p>

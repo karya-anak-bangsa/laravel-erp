@@ -1,0 +1,43 @@
+<p>Aplikasi rekomendasi film, filter <em>email</em> spam, dan fitur pengenal wajah di ponsel bekerja dengan cara yang mirip: komputer menemukan pola dari banyak contoh, bukan dari aturan yang ditulis satu per satu oleh pemrogram. Pendekatan inilah yang disebut <em>machine learning</em>.</p>
+<p>Seri ini mengajak Anda mengenal dasar-dasar <em>machine learning</em> dengan Python dan scikit-learn. Materi pertama membahas konsepnya dengan sedikit kode: perbedaan belajar dari data dengan menulis aturan, jenis-jenis <em>machine learning</em>, dan alur kerja sebuah proyek.</p>
+<h2>Apa Itu <em>Machine Learning</em></h2>
+<p><em>Machine learning</em> adalah cabang kecerdasan buatan yang membuat komputer mampu belajar dari data. Hasil belajarnya disebut model, yaitu fungsi yang menerima data baru dan mengeluarkan prediksi. Model bisa menebak harga rumah dari luas dan lokasinya atau menebak jenis bunga dari ukuran mahkotanya. Semakin banyak dan semakin baik contoh datanya, semakin tepat pula tebakannya.</p>
+<h2>Belajar dari Data, Bukan dari Aturan Tertulis</h2>
+<p>Bayangkan Anda diminta menebak jenis bunga iris dari panjang mahkota bunganya. Cara pemrograman biasa adalah menulis aturannya sendiri:</p>
+<pre><code>def tebak_jenis(panjang_mahkota):
+    if panjang_mahkota &lt; 2.5:
+        return "setosa"
+    if panjang_mahkota &lt; 5.0:
+        return "versicolor"
+    return "virginica"</code></pre>
+<p>Aturan ini bekerja selama Anda tahu batas angkanya. Masalahnya, batas yang tepat sering tidak diketahui, apalagi bila ada puluhan ukuran yang harus dipertimbangkan sekaligus. <em>Machine learning</em> membalik caranya: kita memberikan contoh data beserta jawabannya, lalu algoritma mencari aturannya sendiri.</p>
+<pre><code>from sklearn.tree import DecisionTreeClassifier
+
+X = [[1.4], [1.3], [4.7], [4.5], [6.0], [5.1]]
+y = ["setosa", "setosa", "versicolor", "versicolor", "virginica", "virginica"]
+
+model = DecisionTreeClassifier()
+model.fit(X, y)
+print(model.predict([[4.2]]))</code></pre>
+<p>Anda belum perlu menjalankan kode ini karena lingkungan kerjanya baru disiapkan pada materi berikutnya. <code>X</code> berisi panjang mahkota enam bunga, sedangkan <code>y</code> berisi jenisnya. <em>Method</em> <code>fit()</code> melatih model dari contoh tersebut, kemudian <code>predict()</code> menebak jenis bunga baru yang panjang mahkotanya 4,2 cm. Hasilnya <code>['versicolor']</code>, padahal kita tidak pernah menulis batas angka apa pun.</p>
+<h2><em>Supervised Learning</em> dan <em>Unsupervised Learning</em></h2>
+<p>Contoh bunga di atas termasuk <em>supervised learning</em> karena setiap contoh sudah dilengkapi jawaban yang benar. Data yang menjadi dasar tebakan disebut fitur, misalnya panjang mahkota. Hal yang ingin ditebak disebut label, misalnya jenis bunga. Model belajar memetakan fitur ke label.</p>
+<p><em>Unsupervised learning</em> bekerja tanpa label. Algoritmanya mencari struktur di dalam data, misalnya mengelompokkan pelanggan toko daring menurut kebiasaan belanjanya tanpa tahu kelompok apa yang seharusnya ada. Teknik ini disebut pengelompokan atau <em>clustering</em>. Seri ini berfokus pada <em>supervised learning</em> karena jenis inilah yang paling banyak dipakai dan paling mudah diukur hasilnya.</p>
+<h2>Regresi dan Klasifikasi</h2>
+<p><em>Supervised learning</em> terbagi lagi menurut jenis labelnya:</p>
+<ul>
+<li><p><strong>Regresi</strong> menebak angka yang nilainya kontinu, misalnya harga rumah, suhu besok, atau jumlah penjualan bulan depan.</p></li>
+<li><p><strong>Klasifikasi</strong> menebak kategori, misalnya jenis bunga, <em>email</em> spam atau bukan, dan pelanggan yang akan berhenti berlangganan atau tidak.</p></li>
+</ul>
+<p>Satu pertanyaan sederhana membantu menentukan jenisnya: apakah jawabannya bisa dirata-ratakan? Harga rumah bisa dirata-ratakan sehingga termasuk regresi. Jenis bunga tidak bisa dirata-ratakan sehingga termasuk klasifikasi.</p>
+<h2>Alur Kerja Proyek <em>Machine Learning</em></h2>
+<p>Hampir semua proyek <em>machine learning</em> mengikuti urutan langkah yang sama:</p>
+<ol>
+<li><p><strong>Merumuskan masalah</strong>, yaitu menentukan hal yang ingin ditebak dan jenis tugasnya.</p></li>
+<li><p><strong>Mengumpulkan dan memahami data</strong>, termasuk memeriksa isi, ukuran, dan nilai yang kosong.</p></li>
+<li><p><strong>Membagi data</strong> menjadi data latih untuk belajar dan data uji untuk menilai.</p></li>
+<li><p><strong>Melatih model</strong> dengan data latih.</p></li>
+<li><p><strong>Mengevaluasi model</strong> dengan data uji yang belum pernah dilihatnya.</p></li>
+<li><p><strong>Memakai model</strong> untuk menebak data baru dan melatihnya ulang saat data bertambah.</p></li>
+</ol>
+<p>Langkah kedua sering memakan waktu paling lama. Kualitas model sangat bergantung pada kualitas datanya: data yang berantakan menghasilkan tebakan yang berantakan pula. Pada materi berikutnya, kita akan menyiapkan Python, JupyterLab, dan scikit-learn agar contoh kode di atas bisa dijalankan di komputer Anda.</p>

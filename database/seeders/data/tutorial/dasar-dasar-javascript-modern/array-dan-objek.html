@@ -1,0 +1,70 @@
+<p>Toko buku menyimpan banyak judul dan setiap judul memiliki penulis serta harga. Data seperti ini ditampung dengan dua struktur yang paling sering dipakai di JavaScript, yaitu <em>array</em> dan objek. Materi terakhir seri ini membahas keduanya, lalu menggabungkannya menjadi keranjang belanja.</p>
+<h2>Menyimpan Daftar dengan <em>Array</em></h2>
+<p><em>Array</em> menyimpan banyak nilai secara berurutan di dalam tanda kurung siku:</p>
+<pre><code>const daftarJudul = ['Laskar Pelangi', 'Bumi Manusia', 'Ronggeng Dukuh Paruk'];
+
+console.log(daftarJudul[0]);     // Laskar Pelangi
+console.log(daftarJudul.length); // 3
+
+daftarJudul.push('Cantik Itu Luka');
+console.log(daftarJudul.includes('Bumi Manusia'));   // true
+console.log(daftarJudul.indexOf('Cantik Itu Luka')); // 3</code></pre>
+<p>Setiap isi <em>array</em> memiliki indeks yang dimulai dari <code>0</code>, jadi isi terakhir berada di indeks <code>length - 1</code>. <code>push()</code> menambahkan isi di akhir <em>array</em>, <code>includes()</code> memeriksa keberadaan sebuah nilai, dan <code>indexOf()</code> mencari indeksnya.</p>
+<p>Perhatikan bahwa <code>daftarJudul</code> dibuat dengan <code>const</code>, tetapi isinya tetap bisa ditambah. <code>const</code> hanya melarang variabel diisi ulang dengan nilai lain dan tidak melarang perubahan isi <em>array</em> atau objek yang disimpannya.</p>
+<h2>Mengelompokkan Data dengan Objek</h2>
+<p>Objek mengelompokkan beberapa nilai yang saling berkaitan di dalam kurung kurawal:</p>
+<pre><code>const buku = {
+  judul: 'Laskar Pelangi',
+  penulis: 'Andrea Hirata',
+  harga: 85000,
+  tersedia: true,
+};
+
+console.log(buku.judul);      // Laskar Pelangi
+console.log(buku['penulis']); // Andrea Hirata
+
+buku.harga = 80000;
+buku.tahunTerbit = 2005;
+delete buku.tersedia;</code></pre>
+<p>Setiap pasangan nama dan nilai di dalam objek disebut properti. Properti dibaca dengan titik, seperti <code>buku.judul</code>, atau dengan tanda kurung siku bila namanya tersimpan di variabel. Menulis properti yang belum ada akan menambahkannya, sedangkan <code>delete</code> menghapusnya. Properti yang berisi fungsi disebut <em>method</em>, misalnya <code>push()</code> pada <em>array</em> tadi.</p>
+<h2><em>Array</em> Berisi Objek</h2>
+<p>Keranjang belanja cocok disimpan sebagai <em>array</em> yang setiap isinya berupa objek:</p>
+<pre><code>const keranjang = [
+  { judul: 'Laskar Pelangi', harga: 85000, jumlah: 2 },
+  { judul: 'Bumi Manusia', harga: 60000, jumlah: 1 },
+  { judul: 'Ronggeng Dukuh Paruk', harga: 30000, jumlah: 1 },
+];
+
+for (const item of keranjang) {
+  console.log(`${item.judul} x${item.jumlah}`);
+}</code></pre>
+<p>Bentuk ini akan sering Anda temui, termasuk pada data yang dikirim server. Setiap item memiliki properti yang sama sehingga mudah diolah dengan perulangan.</p>
+<h2>Mengolah <em>Array</em> dengan <code>map</code>, <code>filter</code>, dan <code>reduce</code></h2>
+<p><em>Array</em> memiliki banyak <em>method</em> bawaan yang menerima <em>callback</em> dan menjalankannya untuk setiap item:</p>
+<pre><code>const formatRupiah = (angka) =&gt; `Rp${angka.toLocaleString('id-ID')}`;
+
+const judulSaja = keranjang.map((item) =&gt; item.judul);
+const bukuMurah = keranjang.filter((item) =&gt; item.harga &lt; 70000);
+const bukuBumi = keranjang.find((item) =&gt; item.judul === 'Bumi Manusia');
+const totalBelanja = keranjang.reduce((total, item) =&gt; total + item.harga * item.jumlah, 0);
+
+console.log(judulSaja);                  // ['Laskar Pelangi', 'Bumi Manusia', 'Ronggeng Dukuh Paruk']
+console.log(bukuMurah.length);           // 2
+console.log(bukuBumi.harga);             // 60000
+console.log(formatRupiah(totalBelanja)); // Rp260.000</code></pre>
+<ul>
+<li><p><code>map()</code> membuat <em>array</em> baru dari hasil <em>callback</em>, misalnya judulnya saja.</p></li>
+<li><p><code>filter()</code> membuat <em>array</em> baru berisi item yang membuat <em>callback</em> bernilai <code>true</code>.</p></li>
+<li><p><code>find()</code> mengembalikan item pertama yang cocok, atau <code>undefined</code> bila tidak ada yang cocok.</p></li>
+<li><p><code>reduce()</code> meringkas semua item menjadi satu nilai. Argumen <code>0</code> adalah nilai awal <code>total</code>.</p></li>
+</ul>
+<p>Keempat <em>method</em> ini tidak mengubah <code>keranjang</code> sehingga data aslinya tetap utuh. Dengan aturan diskon dari materi kedua, belanja Rp260.000 ini berhak atas diskon 10%.</p>
+<h2>Membongkar dan Menyalin Data</h2>
+<p>Ada dua penulisan singkat yang akan sering Anda jumpai di kode JavaScript modern:</p>
+<pre><code>const { judul, harga } = keranjang[0];
+console.log(judul, harga); // Laskar Pelangi 85000
+
+const itemBaru = { ...keranjang[0], jumlah: 3 };
+const keranjangBaru = [...keranjang, { judul: 'Cantik Itu Luka', harga: 95000, jumlah: 1 }];</code></pre>
+<p>Baris pertama mengambil properti <code>judul</code> dan <code>harga</code> ke dalam variabel bernama sama. Teknik ini disebut <em>destructuring</em>. Tanda tiga titik atau operator <em>spread</em> menyalin seluruh isi objek atau <em>array</em> ke wadah baru. Pada objek, properti yang ditulis setelahnya menimpa nilai lama sehingga <code>itemBaru</code> berisi <code>jumlah: 3</code>. Pada <em>array</em>, isi baru ditambahkan di akhir salinan. Hasilnya, <code>keranjang</code> asli tetap tidak berubah.</p>
+<p>Anda kini sudah memahami dasar-dasar JavaScript modern, mulai dari variabel, tipe data, dan operator hingga percabangan, perulangan, fungsi, <em>array</em>, dan objek. Lanjutkan ke tutorial "Membuat Aplikasi Daftar Tugas dengan JavaScript" untuk memakai semua dasar ini dalam aplikasi sungguhan yang berjalan di peramban.</p>

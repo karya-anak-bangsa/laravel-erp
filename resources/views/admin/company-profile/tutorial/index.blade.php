@@ -30,7 +30,7 @@
             @if (request()->anyFilled(['q', 'kategori', 'status']))
                 <x-admin.empty-state title="Tutorial tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />
             @else
-                <x-admin.empty-state title="Belum ada tutorial" description="Tutorial berisi materi berurutan, mis. Tutorial Laravel 13 dengan 8 materi." />
+                <x-admin.empty-state title="Belum ada tutorial" description="Tutorial berisi materi berurutan, mis. Dasar-Dasar Laravel 13 dengan 4 materi." />
             @endif
         @else
             <div class="table-responsive">

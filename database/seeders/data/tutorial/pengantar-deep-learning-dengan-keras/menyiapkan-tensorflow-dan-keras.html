@@ -1,0 +1,38 @@
+<p>Keras adalah pustaka Python untuk menyusun dan melatih jaringan saraf tiruan dengan kode yang ringkas. Sejak Keras 3, pustaka ini bisa berjalan di atas beberapa mesin komputasi (<em>backend</em>), yaitu TensorFlow, JAX, dan PyTorch. Seri ini memakai TensorFlow karena Keras ikut terpasang bersamanya dan langsung memakainya sebagai <em>backend</em> bawaan.</p>
+<p>Materi ini menyiapkan lingkungan kerja di komputer Anda, memeriksa apakah TensorFlow mengenali GPU, dan memperkenalkan Google Colab sebagai alternatif tanpa instalasi.</p>
+<h2>Membuat Lingkungan Virtual</h2>
+<p>Lingkungan virtual memisahkan pustaka proyek ini dari proyek Python lain sehingga versinya tidak saling bertabrakan. Pastikan dulu versi Python Anda termasuk yang didukung TensorFlow; daftarnya tercantum di halaman instalasi resmi TensorFlow. Setelah itu, jalankan perintah berikut di terminal untuk membuat folder proyek beserta lingkungan virtualnya:</p>
+<pre><code>mkdir belajar-keras
+cd belajar-keras
+python -m venv .venv</code></pre>
+<p>Aktifkan lingkungan virtual dengan perintah yang sesuai sistem operasi Anda:</p>
+<pre><code># Windows (PowerShell atau Command Prompt)
+.venv\Scripts\activate
+
+# macOS dan Linux
+source .venv/bin/activate</code></pre>
+<p>Tulisan <code>(.venv)</code> akan muncul di awal baris terminal. Bila PowerShell menolak menjalankan skrip aktivasi, jalankan <code>Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code> satu kali, lalu ulangi perintahnya. Panduan lebih lengkap tentang lingkungan virtual ada di artikel <a href="/artikel/belajar-python-dari-nol-instalasi-virtual-environment-dan-program-pertama">Belajar Python dari Nol: Instalasi, Virtual Environment, dan Program Pertama</a>.</p>
+<h2>Memasang TensorFlow</h2>
+<p>Dengan lingkungan virtual yang masih aktif, jalankan dua perintah berikut:</p>
+<pre><code>python -m pip install --upgrade pip
+pip install tensorflow matplotlib</code></pre>
+<p>Perintah pertama memperbarui pip karena versi lama kadang gagal menemukan paket TensorFlow yang sesuai. Perintah kedua memasang TensorFlow beserta Keras dan NumPy, ditambah Matplotlib untuk menggambar grafik di materi keempat. Ukuran unduhannya cukup besar sehingga prosesnya bisa memakan waktu beberapa menit.</p>
+<h2>Memeriksa Versi dan GPU</h2>
+<p>Buat berkas <code>cek_lingkungan.py</code> di folder <code>belajar-keras</code>:</p>
+<pre><code>import keras
+import tensorflow as tf
+
+print("TensorFlow:", tf.__version__)
+print("Keras:", keras.__version__)
+print("Backend:", keras.backend.backend())
+print("GPU:", tf.config.list_physical_devices("GPU"))</code></pre>
+<p>Jalankan dengan <code>python cek_lingkungan.py</code>. Baris <code>Backend</code> seharusnya menampilkan <code>tensorflow</code>. Bila baris <code>GPU</code> berisi daftar kosong <code>[]</code>, TensorFlow berjalan di <em>Central Processing Unit</em> (CPU). Kondisi ini tidak menjadi masalah di seri ini karena model MNIST cukup kecil dan selesai dilatih dalam hitungan menit.</p>
+<p>TensorFlow juga sering mencetak beberapa baris informasi atau peringatan saat pertama dimuat. Selama skrip tetap mencetak keempat baris di atas, pesan tersebut aman diabaikan.</p>
+<h2>GPU di Windows</h2>
+<p>TensorFlow versi baru tidak lagi mendukung GPU di Windows secara langsung. Pengguna Windows yang memiliki GPU NVIDIA bisa memakai WSL2, fitur Windows untuk menjalankan Linux di dalam Windows. Di dalam WSL2 atau di Linux, pasang TensorFlow beserta pustaka CUDA dengan satu perintah:</p>
+<pre><code>pip install "tensorflow[and-cuda]"</code></pre>
+<p>Perintah ini membutuhkan <em>driver</em> NVIDIA yang sudah terpasang. Jika langkah tersebut terasa merepotkan, gunakan Google Colab.</p>
+<h2>Memakai Google Colab</h2>
+<p>Google Colab adalah layanan <em>notebook</em> Jupyter gratis yang berjalan di peramban. TensorFlow, Keras, dan Matplotlib sudah terpasang sehingga Anda bisa langsung menulis kode. Buka <code>colab.research.google.com</code>, masuk dengan akun Google, lalu buat <em>notebook</em> baru.</p>
+<p>Pelatihan berjalan jauh lebih cepat dengan GPU. Buka menu Runtime › Change runtime type, lalu pilih salah satu GPU yang tersedia. Kuota GPU gratis terbatas, jadi akhiri sesi bila sudah selesai. Semua kode di seri ini berjalan sama, baik di komputer sendiri maupun di Colab.</p>
+<p>Pada materi berikutnya, kita akan memuat <em>dataset</em> MNIST dan menyusun jaringan saraf pertama dengan Keras.</p>

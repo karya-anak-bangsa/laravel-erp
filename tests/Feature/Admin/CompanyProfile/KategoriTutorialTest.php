@@ -241,17 +241,19 @@ it('boleh menghapus kategori yang tutorialnya sudah dihapus semua', function () 
     $this->assertSoftDeleted($kategori);
 });
 
-it('membuat tiga kategori awal beserta slug dari seeder tanpa menimpa isian admin', function () {
+it('membuat lima kategori awal beserta slug dari seeder tanpa menimpa isian admin', function () {
     $this->seed(KategoriTutorialSeeder::class);
 
-    expect(KategoriTutorial::orderBy('id_kategori_tutorial')->pluck('slug', 'nama_kategori')->all())
-        ->toBe(['Pemrograman Web' => 'pemrograman-web', 'Pemrograman Mobile' => 'pemrograman-mobile', 'Basis Data' => 'basis-data']);
+    expect(KategoriTutorial::orderBy('id_kategori_tutorial')->pluck('slug', 'nama_kategori')->all())->toBe([
+        'Deep Learning' => 'deep-learning', 'JavaScript' => 'javascript', 'Laravel' => 'laravel',
+        'Machine Learning' => 'machine-learning', 'TypeScript' => 'typescript',
+    ]);
 
-    KategoriTutorial::query()->where('nama_kategori', 'Basis Data')->update(['nama_kategori' => 'Basis Data Relasional']);
+    KategoriTutorial::query()->where('nama_kategori', 'Laravel')->update(['nama_kategori' => 'Laravel 13']);
 
     $this->seed(KategoriTutorialSeeder::class);
 
-    expect(KategoriTutorial::count())->toBe(3)
-        ->and(KategoriTutorial::where('nama_kategori', 'Basis Data Relasional')->exists())->toBeTrue()
-        ->and(KategoriTutorial::where('nama_kategori', 'Basis Data')->exists())->toBeFalse();
+    expect(KategoriTutorial::count())->toBe(5)
+        ->and(KategoriTutorial::where('nama_kategori', 'Laravel 13')->exists())->toBeTrue()
+        ->and(KategoriTutorial::where('nama_kategori', 'Laravel')->exists())->toBeFalse();
 });

@@ -1,0 +1,53 @@
+<p>Regresi menebak angka, sedangkan klasifikasi menebak kategori. Materi ini membangun model klasifikasi dengan pohon keputusan atau <em>decision tree</em>, salah satu algoritma yang paling mudah dipahami karena cara kerjanya mirip rangkaian pertanyaan ya atau tidak.</p>
+<h2>Cara Kerja <em>Decision Tree</em></h2>
+<p>Pohon keputusan membagi data berulang kali dengan satu pertanyaan tentang satu fitur di setiap langkah, misalnya "apakah radius sel lebih dari 16,8?". Setiap pertanyaan dipilih agar kelompok yang terbentuk semurni mungkin, yaitu sebagian besar isinya berasal dari kelas yang sama. Pembagian berhenti di daun, yaitu ujung cabang yang berisi tebakan kelas.</p>
+<h2>Menyiapkan Data Tumor Payudara</h2>
+<p>Buat <em>notebook</em> baru agar variabel dari materi sebelumnya tidak tertimpa. Contoh kali ini memakai <em>dataset</em> bawaan scikit-learn berisi 569 hasil pemeriksaan tumor payudara. Setiap baris memiliki 30 fitur hasil pengukuran inti sel dari citra mikroskop, sedangkan labelnya bernilai 0 untuk tumor ganas dan 1 untuk tumor jinak.</p>
+<pre><code>from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+tumor = load_breast_cancer(as_frame=True)
+X = tumor.data
+y = tumor.target
+
+print(tumor.target_names)
+print(y.value_counts())
+
+X_latih, X_uji, y_latih, y_uji = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)</code></pre>
+<p><code>target_names</code> berisi <code>['malignant' 'benign']</code>, yaitu ganas untuk label 0 dan jinak untuk label 1. Hasil <code>value_counts()</code> menunjukkan 357 tumor jinak dan 212 tumor ganas. Jumlah keduanya tidak seimbang sehingga <code>stratify=y</code> diperlukan agar perbandingan itu tetap terjaga di data uji.</p>
+<h2>Melatih Pohon Keputusan</h2>
+<p>Latih model dengan kelas <code>DecisionTreeClassifier</code>, lalu tebak kelas data uji:</p>
+<pre><code>from sklearn.tree import DecisionTreeClassifier
+
+model_pohon = DecisionTreeClassifier(max_depth=3, random_state=42)
+model_pohon.fit(X_latih, y_latih)
+
+prediksi = model_pohon.predict(X_uji)
+print(prediksi[:10])
+print(y_uji.head(10).to_numpy())</code></pre>
+<p><code>max_depth=3</code> membatasi pohon paling banyak tiga tingkat pertanyaan. <code>random_state</code> membuat hasil pelatihan selalu sama karena algoritma ini mengacak urutan fitur saat mencari pertanyaan terbaik. Hasil <code>predict()</code> berupa deretan angka 0 dan 1 yang bisa langsung dibandingkan dengan label sebenarnya di baris kedua.</p>
+<p>Selain kelas, <code>model_pohon.predict_proba(X_uji)</code> memberikan peluang setiap kelas, misalnya 0,9 untuk ganas dan 0,1 untuk jinak. Peluang ini menunjukkan seberapa yakin model terhadap tebakannya.</p>
+<h2>Mengatur Kedalaman dengan <code>max_depth</code></h2>
+<p>Pohon tanpa batas kedalaman akan terus bertanya sampai setiap daun hanya berisi satu kelas. Hasilnya sempurna di data latih, tetapi pohon itu cenderung menghafal. Bandingkan beberapa kedalaman dengan perulangan berikut:</p>
+<pre><code>for kedalaman in [1, 2, 3, 5, None]:
+    pohon = DecisionTreeClassifier(max_depth=kedalaman, random_state=42)
+    pohon.fit(X_latih, y_latih)
+    skor_latih = pohon.score(X_latih, y_latih)
+    skor_uji = pohon.score(X_uji, y_uji)
+    print(f"kedalaman {kedalaman}: latih {skor_latih:.3f}, uji {skor_uji:.3f}")</code></pre>
+<p>Hasilnya kira-kira seperti berikut:</p>
+<pre><code>kedalaman 1: latih 0.923, uji 0.921
+kedalaman 2: latih 0.958, uji 0.895
+kedalaman 3: latih 0.976, uji 0.939
+kedalaman 5: latih 0.993, uji 0.921
+kedalaman None: latih 1.000, uji 0.912</code></pre>
+<p>Tanpa batas kedalaman, skor data latih mencapai 1,000, tetapi skor data uji justru lebih rendah daripada kedalaman 3. Inilah <em>overfitting</em>. Sebaliknya, pohon yang terlalu dangkal belum menangkap pola yang ada dan mengalami <em>underfitting</em>; skor data latihnya pun paling rendah. Memilih kedalaman dengan melihat skor data uji sebenarnya sama dengan mengintip soal ujian. Materi berikutnya memperkenalkan cara yang lebih tepat.</p>
+<h2>Membaca Aturan Pohon</h2>
+<p>Fungsi <code>export_text()</code> menampilkan isi pohon sebagai teks:</p>
+<pre><code>from sklearn.tree import export_text
+
+print(export_text(model_pohon, feature_names=list(X.columns)))</code></pre>
+<p>Keluarannya berupa aturan bertingkat. Pertanyaan pertamanya kira-kira <code>worst radius &lt;= 16.80</code>, yaitu apakah nilai radius inti sel terbesar tidak lebih dari 16,8. Setiap cabang diakhiri <code>class: 0</code> atau <code>class: 1</code> sebagai tebakan. Aturan seperti ini bisa dibaca dan diperiksa langsung oleh manusia, kelebihan yang jarang dimiliki algoritma lain.</p>
+<p>Pada materi berikutnya, kita akan mengukur kinerja model regresi dan klasifikasi dengan metrik yang lebih lengkap daripada akurasi.</p>

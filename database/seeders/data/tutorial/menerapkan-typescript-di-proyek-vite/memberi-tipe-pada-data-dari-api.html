@@ -1,0 +1,82 @@
+<p>Saatnya katalog menampilkan data sungguhan dari <code>https://jsonplaceholder.typicode.com/users</code>. Materi terakhir ini membahas cara memberi tipe pada hasil <code>fetch()</code>, alasan data dari luar program tidak bisa dipercaya begitu saja, dan cara memeriksanya dengan <em>type guard</em>.</p>
+<h2>Versi Pertama Fungsi Pengambil Data</h2>
+<p>Buat berkas <code>src/api.ts</code>:</p>
+<pre><code>import type { Pengguna } from './pengguna.ts';
+
+const ALAMAT_API = 'https://jsonplaceholder.typicode.com/users';
+
+export async function ambilPengguna(): Promise&lt;Pengguna[]&gt; {
+  const respons = await fetch(ALAMAT_API);
+
+  if (!respons.ok) {
+    throw new Error(`Permintaan gagal dengan status ${respons.status}.`);
+  }
+
+  return respons.json();
+}</code></pre>
+<p>Tipe <code>Promise&lt;Pengguna[]&gt;</code> adalah tipe <em>generic</em> dari materi kedua: fungsi ini menjanjikan <em>array</em> berisi <code>Pengguna</code> setelah selesai. Pemeriksaan <code>respons.ok</code> diperlukan karena <code>fetch()</code> tidak melempar galat untuk kode status seperti 404 atau 500. Bila <code>async</code> dan <code>await</code> masih terasa asing, baca artikel <a href="/artikel/memahami-asyncawait-di-javascript-lewat-contoh-sehari-hari">Memahami Async/Await di JavaScript lewat Contoh Sehari-hari</a>.</p>
+<h2>Batas Pemeriksaan Tipe</h2>
+<p>Kode di atas lolos kompilasi, tetapi menyimpan celah. <code>respons.json()</code> mengembalikan <code>Promise&lt;any&gt;</code>. TypeScript menerima nilai <code>any</code> sebagai tipe apa pun tanpa memeriksanya. Bila suatu hari API mengganti <code>name</code> menjadi <code>fullName</code>, kompilasi tetap berhasil, tetapi katalog menampilkan <code>undefined</code>.</p>
+<p>Ingat juga bahwa semua anotasi tipe dibuang sebelum kode dijalankan. TypeScript hanya memeriksa kode yang Anda tulis, bukan data yang baru datang saat program berjalan. Data dari luar, seperti respons API, masukan pengguna, atau isi <code>localStorage</code>, perlu Anda periksa sendiri.</p>
+<h2>Memeriksa Data Sebelum Dipakai</h2>
+<p>Langkah pertama adalah menyimpan hasil <code>json()</code> sebagai <code>unknown</code>. Ganti baris <code>return respons.json();</code> dengan:</p>
+<pre><code>  const data: unknown = await respons.json();
+
+  if (!Array.isArray(data) || !data.every(apakahPengguna)) {
+    throw new Error('Format data pengguna tidak sesuai.');
+  }
+
+  return data;</code></pre>
+<p>Berbeda dengan <code>any</code>, nilai <code>unknown</code> tidak bisa dipakai sebelum diperiksa. <code>Array.isArray()</code> memastikan data berupa <em>array</em>, sedangkan <code>every()</code> menguji setiap isinya dengan fungsi <code>apakahPengguna()</code> yang akan kita tulis berikut ini.</p>
+<h2>Menulis <em>Type Guard</em></h2>
+<p>Tambahkan fungsi berikut di atas <code>ambilPengguna()</code>:</p>
+<pre><code>function apakahPengguna(nilai: unknown): nilai is Pengguna {
+  return (
+    typeof nilai === 'object' &amp;&amp;
+    nilai !== null &amp;&amp;
+    'id' in nilai &amp;&amp;
+    typeof nilai.id === 'number' &amp;&amp;
+    'name' in nilai &amp;&amp;
+    typeof nilai.name === 'string' &amp;&amp;
+    'email' in nilai &amp;&amp;
+    typeof nilai.email === 'string' &amp;&amp;
+    'website' in nilai &amp;&amp;
+    typeof nilai.website === 'string'
+  );
+}</code></pre>
+<p>Tipe kembalian <code>nilai is Pengguna</code> menjadikan fungsi ini <em>type guard</em>: bila hasilnya <code>true</code>, TypeScript memperlakukan <code>nilai</code> sebagai <code>Pengguna</code>. Isinya memakai <em>narrowing</em> dari tutorial pertama. Operator <code>in</code> memastikan properti ada, lalu <code>typeof</code> memastikan tipenya.</p>
+<h2>Menampilkan Katalog</h2>
+<p>Ganti isi <code>src/main.ts</code>:</p>
+<pre><code>import './style.css';
+import { ambilPengguna } from './api.ts';
+
+async function tampilkanKatalog(wadah: HTMLDivElement): Promise&lt;void&gt; {
+  wadah.textContent = 'Memuat data pengguna...';
+
+  try {
+    const judul = document.createElement('h1');
+    const daftar = document.createElement('ul');
+
+    judul.textContent = 'Katalog Pengguna';
+
+    for (const pengguna of await ambilPengguna()) {
+      const item = document.createElement('li');
+      item.textContent = `${pengguna.name} (${pengguna.email})`;
+      daftar.append(item);
+    }
+
+    wadah.replaceChildren(judul, daftar);
+  } catch (galat) {
+    wadah.textContent = galat instanceof Error ? galat.message : 'Terjadi galat.';
+  }
+}
+
+const app = document.querySelector&lt;HTMLDivElement&gt;('#app');
+
+if (app) {
+  tampilkanKatalog(app);
+}</code></pre>
+<p>Properti <code>textContent</code> menampilkan data sebagai teks biasa sehingga isi dari API tidak dijalankan sebagai HTML. Variabel <code>galat</code> di dalam <code>catch</code> bertipe <code>unknown</code>, jadi <code>instanceof Error</code> memastikan <code>message</code> benar-benar ada. Saat <code>npm run dev</code> berjalan, halaman menampilkan judul katalog dan sepuluh nama pengguna.</p>
+<h2>Rangkuman Seri</h2>
+<p>Selamat, katalog pengguna Anda kini menampilkan data API dengan tipe yang terjaga dari awal sampai akhir. Sepanjang seri ini, Anda sudah menyiapkan proyek Vite, menulis fungsi dan <em>interface generic</em>, membentuk variasi tipe dengan <em>utility types</em>, serta memeriksa data dari luar dengan <code>unknown</code> dan <em>type guard</em>.</p>
+<p>Langkah berikutnya bisa berupa paginasi katalog dengan <code>potongHalaman()</code> dari materi kedua, kolom pencarian nama, atau pustaka validasi skema seperti Zod yang menghasilkan tipe dan pemeriksaan sekaligus dari satu definisi.</p>

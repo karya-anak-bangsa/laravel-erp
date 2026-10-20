@@ -1,0 +1,72 @@
+<p>Program jarang berjalan lurus dari atas ke bawah. Toko buku perlu memberi diskon hanya untuk belanja dengan nilai tertentu dan menghitung total dari banyak buku sekaligus. Materi ini membahas percabangan untuk membuat keputusan dan perulangan untuk mengulang perintah.</p>
+<h2>Percabangan dengan <code>if</code> dan <code>else</code></h2>
+<p>Pernyataan <code>if</code> menjalankan blok kode hanya bila kondisinya bernilai <code>true</code>. Tambahkan <code>else if</code> dan <code>else</code> untuk menangani kemungkinan lain:</p>
+<pre><code>const totalBelanja = 255000;
+let persenDiskon;
+
+if (totalBelanja &gt;= 200000) {
+  persenDiskon = 10;
+} else if (totalBelanja &gt;= 100000) {
+  persenDiskon = 5;
+} else {
+  persenDiskon = 0;
+}
+
+console.log(`Diskon ${persenDiskon}%`); // Diskon 10%</code></pre>
+<p>JavaScript memeriksa kondisi dari atas. Begitu satu kondisi terpenuhi, blok lainnya dilewati. Oleh karena itu, kondisi yang paling ketat ditulis lebih dulu. Bila urutannya dibalik, belanja Rp255.000 hanya mendapat diskon 5% karena kondisi <code>totalBelanja &gt;= 100000</code> sudah terpenuhi lebih dulu.</p>
+<h2>Operator Kondisional dan <code>switch</code></h2>
+<p>Keputusan dengan dua kemungkinan bisa ditulis dalam satu baris memakai operator kondisional <code>? :</code> yang sering disebut operator <em>ternary</em>:</p>
+<pre><code>const ongkosKirim = totalBelanja &gt;= 150000 ? 0 : 15000;
+console.log(ongkosKirim); // 0</code></pre>
+<p>Bagian sebelum <code>?</code> adalah kondisi. Nilai setelah <code>?</code> dipakai bila kondisinya benar, sedangkan nilai setelah <code>:</code> dipakai bila kondisinya salah. Saat satu nilai dibandingkan dengan banyak pilihan tetap, <code>switch</code> lebih mudah dibaca:</p>
+<pre><code>const metodeBayar = 'transfer';
+
+switch (metodeBayar) {
+  case 'transfer':
+    console.log('Kirim pembayaran ke rekening toko.');
+    break;
+  case 'tunai':
+    console.log('Bayar saat buku diterima.');
+    break;
+  default:
+    console.log('Metode bayar tidak dikenal.');
+}</code></pre>
+<p>Jangan lupa menulis <code>break</code> di akhir setiap <code>case</code>. Tanpa <code>break</code>, JavaScript ikut menjalankan <code>case</code> di bawahnya. Blok <code>default</code> dijalankan bila tidak ada <code>case</code> yang cocok.</p>
+<h2>Nilai <em>Truthy</em> dan <em>Falsy</em></h2>
+<p>Kondisi <code>if</code> tidak harus berupa <em>boolean</em>. Nilai yang dianggap salah (<em>falsy</em>) antara lain <code>false</code>, <code>0</code>, <code>''</code>, <code>null</code>, <code>undefined</code>, dan <code>NaN</code>. Nilai lain, termasuk <em>string</em> <code>'0'</code> dan <em>array</em> kosong, dianggap benar (<em>truthy</em>).</p>
+<pre><code>const catatanPembeli = '';
+
+if (catatanPembeli) {
+  console.log(`Catatan: ${catatanPembeli}`);
+} else {
+  console.log('Tidak ada catatan.');
+}</code></pre>
+<p><em>String</em> kosong termasuk <em>falsy</em> sehingga kode di atas menampilkan <code>Tidak ada catatan.</code> Pola ini sering dipakai untuk memeriksa apakah sebuah isian sudah diisi.</p>
+<h2>Perulangan dengan <code>for</code></h2>
+<p>Perulangan <code>for</code> cocok bila jumlah putarannya sudah diketahui:</p>
+<pre><code>for (let i = 1; i &lt;= 3; i++) {
+  console.log(`Buku ke-${i} dibungkus`);
+}</code></pre>
+<p>Bagian di dalam tanda kurung terdiri atas tiga hal: nilai awal <code>let i = 1</code>, kondisi <code>i &lt;= 3</code> yang diperiksa sebelum setiap putaran, dan <code>i++</code> yang menambah <code>i</code> sebesar satu setelah setiap putaran. Hasilnya tiga baris, dari <code>Buku ke-1 dibungkus</code> sampai <code>Buku ke-3 dibungkus</code>.</p>
+<p>Saat menelusuri setiap isi sebuah daftar, <code>for...of</code> lebih ringkas karena tidak memerlukan penghitung:</p>
+<pre><code>const daftarHarga = [85000, 60000, 30000];
+let total = 0;
+
+for (const harga of daftarHarga) {
+  total += harga;
+}
+
+console.log(total); // 175000</code></pre>
+<p><code>total += harga</code> adalah cara singkat menulis <code>total = total + harga</code>. Daftar dalam tanda kurung siku ini disebut <em>array</em> dan akan dibahas lengkap di materi keempat.</p>
+<h2>Perulangan dengan <code>while</code></h2>
+<p>Perulangan <code>while</code> terus berjalan selama kondisinya benar. Bentuk ini cocok bila jumlah putarannya belum pasti:</p>
+<pre><code>let stok = 3;
+
+while (stok &gt; 0) {
+  console.log(`Sisa stok: ${stok}`);
+  stok--;
+}
+
+console.log('Stok habis.');</code></pre>
+<p>Pastikan kondisinya suatu saat bernilai <code>false</code>. Tanpa <code>stok--</code>, perulangan tidak pernah berhenti dan tab peramban akan macet. Di dalam semua jenis perulangan, perintah <code>break</code> menghentikan perulangan lebih awal, sedangkan <code>continue</code> melompati sisa putaran saat itu.</p>
+<p>Pada materi berikutnya, kita akan membungkus perhitungan seperti subtotal dan diskon ke dalam fungsi agar bisa dipakai berulang kali.</p>

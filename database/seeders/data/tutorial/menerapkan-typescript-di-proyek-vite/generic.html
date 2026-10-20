@@ -1,0 +1,62 @@
+<p>Katalog kita akan berisi data pengguna, tetapi fungsi bantu seperti mengambil item pertama atau mencari data berdasarkan <code>id</code> juga berguna bagi produk, artikel, dan data lain. <em>Generic</em> memungkinkan Anda menulis fungsi dan tipe seperti itu sekali saja tanpa kehilangan informasi tipe. Kita menulis fungsi-fungsinya di berkas baru <code>src/utilitas.ts</code>.</p>
+<h2>Masalah Tipe yang Terlalu Longgar</h2>
+<p>Cara termudah membuat fungsi yang menerima data apa saja adalah memakai <code>any</code>. Contoh berikut cukup diamati, tidak perlu ditulis:</p>
+<pre><code>function ambilPertama(daftar: any[]): any {
+  return daftar[0];
+}
+
+const pertama = ambilPertama(['Ani', 'Budi']);
+pertama.toFixed(2); // lolos kompilasi, gagal saat berjalan</code></pre>
+<p>Fungsi ini berjalan, tetapi TypeScript tidak lagi tahu bahwa hasilnya berupa teks. Kesalahan memanggil <code>toFixed()</code> pada <em>string</em> baru ketahuan saat program berjalan.</p>
+<h2>Menulis Fungsi <em>Generic</em></h2>
+<p>Ganti <code>any</code> dengan parameter tipe yang ditulis di antara tanda <code>&lt;</code> dan <code>&gt;</code>. Tulis versi yang benar di <code>src/utilitas.ts</code>:</p>
+<pre><code>export function ambilPertama&lt;T&gt;(daftar: T[]): T | undefined {
+  return daftar[0];
+}</code></pre>
+<p>Huruf <code>T</code> adalah parameter tipe, yaitu wadah bagi tipe yang baru diketahui saat fungsi dipanggil. Saat Anda memanggil <code>ambilPertama(['Ani', 'Budi'])</code>, TypeScript menyimpulkan <code>T</code> sebagai <code>string</code> sehingga hasilnya bertipe <code>string | undefined</code>. Tipe <code>undefined</code> ikut disebut karena <em>array</em> kosong tidak memiliki item pertama. Anda juga bisa menyebut tipenya secara eksplisit, misalnya <code>ambilPertama&lt;number&gt;([80, 95])</code>.</p>
+<h2>Membatasi Parameter Tipe</h2>
+<p>Kadang fungsi <em>generic</em> perlu memastikan data memiliki properti tertentu. Batasi parameter tipenya dengan <code>extends</code>:</p>
+<pre><code>export function cariBerdasarkanId&lt;T extends { id: number }&gt;(daftar: T[], id: number): T | undefined {
+  return daftar.find((item) =&gt; item.id === id);
+}</code></pre>
+<p>Fungsi ini menerima <em>array</em> objek apa pun asalkan setiap objek memiliki <code>id</code> bertipe <code>number</code>. TypeScript menolak pemanggilan dengan <code>['Ani', 'Budi']</code> karena <em>string</em> tidak memiliki <code>id</code>. Tipe hasilnya tetap lengkap: bila yang dikirim data pengguna, yang kembali juga data pengguna beserta semua propertinya.</p>
+<h2><em>Interface Generic</em></h2>
+<p>Parameter tipe juga bisa dipakai pada <em>interface</em>. Tambahkan tipe halaman data dan fungsi pemotongnya:</p>
+<pre><code>export interface Halaman&lt;T&gt; {
+  isi: T[];
+  nomor: number;
+  totalHalaman: number;
+}
+
+export function potongHalaman&lt;T&gt;(daftar: T[], nomor: number, ukuran: number): Halaman&lt;T&gt; {
+  const awal = (nomor - 1) * ukuran;
+
+  return {
+    isi: daftar.slice(awal, awal + ukuran),
+    nomor,
+    totalHalaman: Math.ceil(daftar.length / ukuran),
+  };
+}</code></pre>
+<p>Tipe <code>Halaman&lt;Pengguna&gt;</code>, misalnya, berarti properti <code>isi</code> pada halaman itu berupa <em>array</em> <code>Pengguna</code>. Satu definisi itu berlaku bagi data jenis apa pun. Sebenarnya Anda sudah sering memakai tipe <em>generic</em> bawaan, misalnya <code>Array&lt;string&gt;</code>. Tipe <code>Promise&lt;T&gt;</code> akan kita pakai di materi terakhir, sedangkan <code>document.querySelector&lt;HTMLDivElement&gt;()</code> memberi tahu TypeScript jenis elemen yang dicari.</p>
+<h2>Mencoba di Halaman</h2>
+<p>Ganti isi <code>src/main.ts</code> dengan kode berikut, lalu buka konsol di alat pengembang peramban:</p>
+<pre><code>import './style.css';
+import { ambilPertama, cariBerdasarkanId, potongHalaman } from './utilitas.ts';
+
+const contohPengguna = [
+  { id: 1, name: 'Leanne Graham' },
+  { id: 2, name: 'Ervin Howell' },
+  { id: 3, name: 'Clementine Bauch' },
+];
+
+const app = document.querySelector&lt;HTMLDivElement&gt;('#app');
+const halamanPertama = potongHalaman(contohPengguna, 1, 2);
+
+if (app) {
+  app.innerHTML = '&lt;h1&gt;Katalog Pengguna&lt;/h1&gt;';
+}
+
+console.log(ambilPertama(contohPengguna)?.name); // Leanne Graham
+console.log(cariBerdasarkanId(contohPengguna, 3)?.name); // Clementine Bauch
+console.log(halamanPertama.isi.length, halamanPertama.totalHalaman); // 2 2</code></pre>
+<p>Tanda <code>?.</code> diperlukan karena <code>ambilPertama()</code> dan <code>cariBerdasarkanId()</code> bisa mengembalikan <code>undefined</code>. Pada materi berikutnya, kita akan membuat tipe <code>Pengguna</code> yang lengkap dan membentuk variasinya dengan <em>utility types</em>.</p>

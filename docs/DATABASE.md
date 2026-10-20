@@ -148,17 +148,17 @@ Catatan implementasi: slug hanya ikut berubah saat judul diubah selama artikel m
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_kategori_tutorial | BIGINT UNSIGNED PK | |
-| nama_kategori | VARCHAR(100) | topik, mis. Pemrograman Web |
+| nama_kategori | VARCHAR(100) | topik spesifik, mis. Laravel |
 | slug | VARCHAR(220) UNIQUE | URL halaman kategori (`/tutorial/kategori/{slug}`), dibuat otomatis dari nama oleh `KategoriTutorialService` |
 | created_at, updated_at, deleted_at | | |
 
 Catatan implementasi:
 - Slug ikut berubah saat nama diubah **hanya selama kategori belum punya tutorial tayang** (terbit dan bermateri); setelah itu dikunci, sama dengan slug kategori artikel. Slug tutorial `kategori` dicadangkan `TutorialService` agar alamat materinya tidak tertutup halaman kategori.
-- Tiga kategori awal dari `KategoriTutorialSeeder`: Pemrograman Web, Pemrograman Mobile, Basis Data. Di admin diurutkan abjad seperti data master lain.
+- Lima kategori awal dari `KategoriTutorialSeeder`: Deep Learning, JavaScript, Laravel, Machine Learning, TypeScript. Berbeda dengan kategori portofolio yang umum (jenis layanan), kategori tutorial (dan artikel) berupa topik spesifik. Di admin diurutkan abjad seperti data master lain.
 - Kategori yang masih dipakai tutorial (yang belum dihapus) tidak bisa dihapus; dicek di aplikasi karena `restrictOnDelete` tidak berlaku untuk soft delete.
 
 ### tb_tutorial
-Seri materi berurutan, mis. "Tutorial Laravel 13": materi sederhana untuk promosi (pemasaran) di website. Berbeda dari materi Pelatihan IT, Sertifikasi IT, dan Bootcamp yang lebih kompleks dan mengikuti standar SKKNI; modul-modul itu (bagian C) kelak berdiri sendiri tanpa mengubah tabel ini.
+Seri materi berurutan, mis. "Dasar-Dasar Laravel 13": materi sederhana untuk promosi (pemasaran) di website. Berbeda dari materi Pelatihan IT, Sertifikasi IT, dan Bootcamp yang lebih kompleks dan mengikuti standar SKKNI; modul-modul itu (bagian C) kelak berdiri sendiri tanpa mengubah tabel ini.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|

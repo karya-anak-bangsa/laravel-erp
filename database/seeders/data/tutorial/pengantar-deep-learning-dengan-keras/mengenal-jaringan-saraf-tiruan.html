@@ -1,0 +1,43 @@
+<p>Pengenalan wajah di ponsel, terjemahan otomatis, dan <em>chatbot</em> yang mampu menjawab pertanyaan memiliki satu kesamaan: semuanya digerakkan oleh <em>deep learning</em>. Teknik ini memakai jaringan saraf tiruan berlapis-lapis yang belajar langsung dari contoh data. Seri ini mengajak Anda memahami dasarnya, lalu membangun model pertama dengan Keras.</p>
+<p>Materi pertama ini membahas cara kerja jaringan saraf tiruan, mulai dari satu neuron sampai susunan lapisannya. Kode di materi ini hanya membutuhkan NumPy. Bila NumPy belum terpasang, coba kodenya setelah materi kedua atau langsung di Google Colab.</p>
+<h2>Dari <em>Machine Learning</em> ke <em>Deep Learning</em></h2>
+<p><em>Machine learning</em> klasik, seperti regresi linear atau pohon keputusan, bekerja baik pada data berbentuk tabel. Namun, pada data mentah seperti foto, pemrogram harus lebih dulu merancang fiturnya secara manual, misalnya jumlah garis tepi atau sebaran warna. Kualitas model pun sangat bergantung pada fitur buatan tangan tersebut.</p>
+<p><em>Deep learning</em> menempuh jalan lain. Jaringan saraf tiruan dengan banyak lapisan mempelajari fiturnya sendiri: lapisan awal mengenali pola sederhana, sedangkan lapisan berikutnya menggabungkannya menjadi pola yang makin rumit. Konsekuensinya, <em>deep learning</em> membutuhkan lebih banyak data dan daya komputasi yang lebih besar, biasanya dari <em>Graphics Processing Unit</em> (GPU).</p>
+<h2>Neuron, Bobot, dan Bias</h2>
+<p>Satu neuron tiruan menerima beberapa masukan, mengalikan setiap masukan dengan bobotnya, menjumlahkan hasilnya, lalu menambahkan bias. Bobot menentukan seberapa penting sebuah masukan, sedangkan bias menggeser hasil akhirnya. Mari kita hitung dengan NumPy:</p>
+<pre><code>import numpy as np
+
+masukan = np.array([2.0, 1.0, 3.0])
+bobot = np.array([0.5, -1.5, 0.25])
+bias = -0.5
+
+z = np.dot(masukan, bobot) + bias
+print(z)  # -0.25</code></pre>
+<p><code>np.dot()</code> menjumlahkan hasil perkalian setiap masukan dengan bobotnya: 2 × 0,5 + 1 × (−1,5) + 3 × 0,25 = 0,25. Setelah ditambah bias −0,5, hasilnya −0,25. Saat jaringan belajar, nilai bobot dan bias inilah yang terus diubah sedikit demi sedikit agar keluarannya makin tepat.</p>
+<h2>Fungsi Aktivasi</h2>
+<p>Hasil penjumlahan tadi masih bersifat linear. Jika setiap neuron hanya menjumlahkan, tumpukan lapisan sebanyak apa pun tetap setara dengan satu persamaan linear sehingga jaringan tidak mampu mempelajari pola yang rumit. Fungsi aktivasi memberikan sifat nonlinear pada keluaran setiap neuron:</p>
+<pre><code>def relu(z):
+    return np.maximum(0, z)
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+print(relu(z))     # 0.0
+print(sigmoid(z))  # kira-kira 0.438</code></pre>
+<p><em>Rectified Linear Unit</em> (ReLU) mengubah nilai negatif menjadi nol dan meneruskan nilai positif apa adanya. Nilai <code>z</code> kita negatif sehingga ReLU menghasilkan <code>0.0</code>. Coba ubah bias menjadi <code>0.5</code>; nilai <code>z</code> menjadi <code>0.75</code> dan ReLU meneruskannya tanpa perubahan. Fungsi sederhana ini cepat dihitung dan menjadi pilihan umum di lapisan tersembunyi.</p>
+<p>Fungsi sigmoid memadatkan nilai apa pun ke rentang 0 sampai 1 sehingga cocok untuk peluang ya atau tidak. Ada juga <em>softmax</em> yang mengubah sekumpulan nilai menjadi peluang dengan total 1. Fungsi ini biasa dipakai di lapisan keluaran untuk klasifikasi banyak kelas.</p>
+<h2>Lapisan dan Jaringan</h2>
+<p>Neuron disusun dalam lapisan. Lapisan masukan menerima data, lapisan tersembunyi mengolahnya, dan lapisan keluaran memberikan jawaban. Pada lapisan yang terhubung penuh, setiap neuron menerima keluaran dari semua neuron di lapisan sebelumnya. Keras menyebut lapisan seperti ini <code>Dense</code>.</p>
+<p>Sebagai gambaran, model pengenal angka tulisan tangan yang akan kita bangun menerima gambar 28 × 28 piksel, yaitu 784 nilai masukan. Model meneruskannya ke satu lapisan tersembunyi berisi 128 neuron, kemudian ke lapisan keluaran berisi 10 neuron, satu untuk setiap angka 0 sampai 9. Kata <em>deep</em> merujuk pada banyaknya lapisan tersembunyi yang bertumpuk.</p>
+<h2>Cara Jaringan Belajar</h2>
+<p>Pada awalnya, bobot diisi nilai acak sehingga tebakan model hampir selalu salah. Pelatihan memperbaikinya lewat putaran yang berulang:</p>
+<ol>
+<li><p>Model menebak keluaran untuk sekumpulan data latih.</p></li>
+<li><p>Fungsi <em>loss</em> mengukur seberapa jauh tebakan itu dari jawaban yang benar.</p></li>
+<li><p><em>Backpropagation</em> menghitung pengaruh setiap bobot terhadap nilai <em>loss</em> tersebut.</p></li>
+<li><p><em>Optimizer</em> mengubah bobot sedikit ke arah yang menurunkan <em>loss</em>. Besar langkahnya ditentukan oleh <em>learning rate</em>.</p></li>
+</ol>
+<p>Putaran ini diulang ribuan kali hingga nilai <em>loss</em> cukup kecil. Kabar baiknya, Keras mengerjakan semua perhitungan itu untuk Anda. Tugas kita adalah menyusun lapisan, memilih fungsi <em>loss</em> dan <em>optimizer</em>, serta menyediakan data yang baik.</p>
+<p>Prinsip yang sama juga menggerakkan model bahasa di balik <em>chatbot</em> modern, hanya dengan ukuran yang jauh lebih besar. Cara model seperti itu menjawab dari dokumen perusahaan dibahas di artikel <a href="/artikel/mengenal-rag-cara-chatbot-menjawab-dari-dokumen-perusahaan">Mengenal RAG, Cara Chatbot Menjawab dari Dokumen Perusahaan</a>. Pada materi berikutnya, kita akan menyiapkan TensorFlow dan Keras di komputer Anda atau di Google Colab.</p>

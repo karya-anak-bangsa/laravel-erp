@@ -267,14 +267,22 @@ it('membuat tutorial contoh dari seeder dummy tanpa menggandakan saat dijalankan
     $this->seed([KategoriTutorialSeeder::class, TutorialDummySeeder::class]);
     $this->seed([KategoriTutorialSeeder::class, TutorialDummySeeder::class]);
 
-    $tutorial = Tutorial::sole();
+    $semua = Tutorial::with(['kategoriTutorial', 'materiTutorial'])->get();
     expect(KategoriTutorial::query()->pluck('nama_kategori')->all())->toBe(KategoriTutorialSeeder::NAMA)
-        ->and($tutorial->judul)->toBe('Tutorial Laravel 13')
-        ->and($tutorial->kategoriTutorial->nama_kategori)->toBe('Pemrograman Web')
-        ->and($tutorial->status_publikasi)->toBe(StatusPublikasi::Terbit)
-        ->and($tutorial->materiTutorial->pluck('urutan_ke')->all())->toBe(range(1, 8))
+        // Dua tutorial per kategori, semuanya terbit dengan empat materi.
+        ->and($semua->countBy(fn (Tutorial $item) => $item->kategoriTutorial->nama_kategori)->sortKeys()->all())
+        ->toBe(array_fill_keys(KategoriTutorialSeeder::NAMA, 2))
+        ->and($semua->every(fn (Tutorial $item) => $item->status_publikasi === StatusPublikasi::Terbit
+            && $item->materiTutorial->pluck('urutan_ke')->all() === range(1, 4)))->toBeTrue()
+        // Tutorial dasar setiap kategori tampil lebih dulu di daftar publik.
+        ->and(Tutorial::query()->terbaru()->limit(5)->pluck('judul')->all())->toBe([
+            'Dasar-Dasar Laravel 13', 'Dasar-Dasar JavaScript Modern', 'Dasar-Dasar TypeScript',
+            'Pengantar Machine Learning dengan Python', 'Pengantar Deep Learning dengan Keras',
+        ]);
+
+    $tutorial = $semua->firstWhere('judul', 'Dasar-Dasar Laravel 13');
+    expect($tutorial->kategoriTutorial->nama_kategori)->toBe('Laravel')
         ->and($tutorial->materiTutorial->first()->judul)->toBe('Fitur-Fitur Baru di Laravel 13')
-        ->and($tutorial->materiTutorial->last()->judul)->toBe('Menghapus Data dari Basis Data')
         // Sampul memakai ulang ilustrasi Laravel artikel.
         ->and(Storage::disk('public')->get($tutorial->gambar))->toBe(file_get_contents(database_path('seeders/berkas/artikel/laravel.webp')))
         // Baris baru & indentasi di dalam blok kode dipertahankan.
@@ -287,7 +295,7 @@ it('menulis isi materi seeder hanya dengan format yang didukung editor', functio
     $tag = fn (string $html): array => preg_match_all('#</?[a-z0-9]+#', $html, $cocok) ? $cocok[0] : [];
     $semuaBerkas = glob(database_path('seeders/data/tutorial/*/*.html'));
 
-    expect($semuaBerkas)->toHaveCount(8);
+    expect($semuaBerkas)->toHaveCount(40);
 
     foreach ($semuaBerkas as $berkas) {
         $html = (string) file_get_contents($berkas);

@@ -1,0 +1,58 @@
+<p>TypeScript adalah bahasa pemrograman sumber terbuka buatan Microsoft yang menambahkan sistem tipe ke JavaScript. Kode JavaScript yang sah juga sah secara sintaksis di TypeScript sehingga Anda bisa mempelajarinya sedikit demi sedikit di atas pengetahuan JavaScript yang sudah Anda miliki.</p>
+<p>Materi ini menjelaskan manfaat pemeriksaan tipe, cara memasang TypeScript di proyek, dan cara mengompilasi berkas <code>.ts</code> pertama menjadi <code>.js</code>.</p>
+<h2>Mengapa Tipe Itu Penting</h2>
+<p>Perhatikan fungsi JavaScript berikut. Fungsi ini menjumlahkan harga barang dan ongkos kirim:</p>
+<pre><code>function hitungTotal(harga, ongkir) {
+  return harga + ongkir;
+}
+
+console.log(hitungTotal('50000', 10000)); // 5000010000</code></pre>
+<p>Harga dikirim sebagai <em>string</em> sehingga operator <code>+</code> menyambung teks, bukan menjumlahkan angka. JavaScript tidak menganggapnya salah. Galat seperti ini baru ketahuan saat program berjalan, bahkan bisa jadi pengguna yang pertama kali menemukannya.</p>
+<p>TypeScript menangkap kesalahan itu sebelum program dijalankan. Selain itu, ada beberapa manfaat lain:</p>
+<ul>
+<li><p>Editor seperti VS Code bisa menyarankan nama properti dan <em>method</em> dengan tepat karena mengetahui tipe setiap variabel.</p></li>
+<li><p>Saat Anda mengganti nama atau bentuk data, kompilator menunjukkan semua bagian kode yang terdampak.</p></li>
+<li><p>Tipe berfungsi sebagai dokumentasi yang selalu sesuai dengan kode.</p></li>
+</ul>
+<p>Peramban hanya memahami JavaScript. Oleh karena itu, kompilator TypeScript yang bernama <code>tsc</code> mengubah kode TypeScript menjadi JavaScript biasa sebelum dijalankan. Bila Anda masih menimbang perlu tidaknya beralih, baca artikel <a href="/artikel/mengenal-typescript-kapan-proyek-javascript-perlu-beralih">Mengenal TypeScript: Kapan Proyek JavaScript Perlu Beralih?</a></p>
+<h2>Memasang TypeScript di Proyek</h2>
+<p>Pastikan Node.js sudah terpasang; npm ikut terpasang bersamanya. Buka terminal, lalu buat folder proyek baru:</p>
+<pre><code>mkdir belajar-typescript
+cd belajar-typescript
+npm init -y
+npm install -D typescript
+npx tsc --version</code></pre>
+<p>Perintah <code>npm init -y</code> membuat berkas <code>package.json</code>. Opsi <code>-D</code> mencatat TypeScript sebagai <code>devDependencies</code>, yaitu paket yang hanya dibutuhkan selama pengembangan. Perintah <code>npx tsc</code> menjalankan kompilator yang terpasang di folder <code>node_modules</code> proyek ini sehingga setiap proyek bisa memakai versi TypeScript yang berbeda. Perintah terakhir menampilkan nomor versi bila pemasangan berhasil.</p>
+<h2>Menyiapkan Pengaturan Kompilator</h2>
+<p>Buat berkas <code>tsconfig.json</code> di folder proyek. Berkas ini memberi tahu <code>tsc</code> letak kode sumber, tempat hasil kompilasi, dan seberapa ketat pemeriksaan tipenya:</p>
+<pre><code>{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "nodenext",
+    "strict": true,
+    "moduleDetection": "force",
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}</code></pre>
+<p>Opsi <code>target</code> menentukan versi JavaScript hasil kompilasi, sedangkan <code>module</code> bernilai <code>nodenext</code> mengikuti aturan modul Node.js. Opsi <code>strict</code> mengaktifkan pemeriksaan ketat yang sangat dianjurkan untuk proyek baru. Opsi <code>moduleDetection</code> bernilai <code>force</code> membuat setiap berkas berdiri sendiri sehingga nama variabel di berkas yang berbeda tidak saling bentrok. Opsi <code>rootDir</code> dan <code>outDir</code> menetapkan kode sumber di folder <code>src</code> dan hasil kompilasi di folder <code>dist</code>.</p>
+<p>Perintah <code>npx tsc --init</code> juga bisa membuat <code>tsconfig.json</code> secara otomatis. Namun, isinya jauh lebih panjang dan berbeda antarversi, jadi kita memakai versi ringkas di atas.</p>
+<h2>Mengompilasi Berkas Pertama</h2>
+<p>Buat folder <code>src</code>, lalu tulis berkas <code>src/halo.ts</code>:</p>
+<pre><code>function hitungTotal(harga: number, ongkir: number): number {
+  return harga + ongkir;
+}
+
+const total = hitungTotal(50000, 10000);
+console.log(`Total belanja: Rp${total}`);</code></pre>
+<p>Tulisan <code>: number</code> setelah parameter dan setelah tanda kurung tutup adalah anotasi tipe. Artinya, <code>harga</code> dan <code>ongkir</code> wajib berupa angka, begitu pula nilai yang dikembalikan fungsi. Kompilasi berkas itu, lalu jalankan hasilnya:</p>
+<pre><code>npx tsc
+node dist/halo.js</code></pre>
+<p>Terminal menampilkan <code>Total belanja: Rp60000</code>. Buka <code>dist/halo.js</code>: isinya JavaScript biasa tanpa anotasi tipe, ditambah beberapa baris dari pengaturan modul yang bisa Anda abaikan.</p>
+<h2>Membaca Pesan Galat</h2>
+<p>Ubah pemanggilan fungsi menjadi <code>hitungTotal('50000', 10000)</code>, lalu jalankan <code>npx tsc</code> lagi. Kompilator melaporkan galat dengan pesan kurang lebih seperti ini:</p>
+<pre><code>src/halo.ts:5:27 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.</code></pre>
+<p>Pesan itu menyebut lokasi galat (berkas, baris 5, kolom 27), kode galatnya, dan penjelasannya: argumen bertipe <code>string</code> tidak boleh diberikan ke parameter bertipe <code>number</code>. VS Code menampilkan galat yang sama sebagai garis bawah merah tanpa perlu menjalankan <code>tsc</code>.</p>
+<p>Perlu diingat, <code>tsc</code> tetap menulis <code>dist/halo.js</code> meskipun ada galat. Bila Anda ingin <code>tsc</code> tidak menulis berkas apa pun saat ada galat, tambahkan <code>"noEmitOnError": true</code> di dalam <code>compilerOptions</code>. Setelah mencoba, kembalikan argumennya menjadi angka agar kompilasi bersih.</p>
+<p>TypeScript sudah terpasang dan siap dipakai. Pada materi berikutnya, kita akan mengenal tipe-tipe dasar TypeScript dan cara menuliskan anotasi tipe.</p>

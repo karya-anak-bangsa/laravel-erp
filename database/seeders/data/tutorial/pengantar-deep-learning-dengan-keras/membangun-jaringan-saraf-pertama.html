@@ -1,0 +1,52 @@
+<p>Lingkungan kerja sudah siap. Sekarang kita membangun model yang mengenali angka tulisan tangan dari <em>dataset</em> MNIST. <em>Dataset</em> ini berisi 70.000 gambar angka 0 sampai 9 berukuran 28 × 28 piksel dalam skala abu-abu, terdiri atas 60.000 data latih dan 10.000 data uji.</p>
+<p>Tulis semua kode materi ini di satu berkas, misalnya <code>mnist.py</code> di folder <code>belajar-keras</code>, atau di satu <em>notebook</em> Colab. Materi berikutnya melanjutkan berkas yang sama.</p>
+<h2>Memuat <em>Dataset</em> MNIST</h2>
+<pre><code>import keras
+
+(x_latih, y_latih), (x_uji, y_uji) = keras.datasets.mnist.load_data()
+
+print(x_latih.shape, y_latih.shape)
+print(x_uji.shape, y_uji.shape)</code></pre>
+<p>Saat pertama dijalankan, Keras mengunduh MNIST dan menyimpannya di folder <code>.keras/datasets</code> di dalam folder pengguna sehingga pemanggilan berikutnya tidak perlu mengunduh lagi. Hasil cetaknya:</p>
+<pre><code>(60000, 28, 28) (60000,)
+(10000, 28, 28) (10000,)</code></pre>
+<p><code>x_latih</code> berisi 60.000 gambar berupa matriks 28 × 28, sedangkan <code>y_latih</code> berisi label angka untuk setiap gambar. Data uji disimpan terpisah dan baru dipakai setelah model selesai dilatih.</p>
+<h2>Normalisasi Data</h2>
+<p>Setiap piksel berupa bilangan bulat dari 0 (hitam) sampai 255 (putih). Jaringan saraf belajar lebih stabil bila masukannya bernilai kecil, jadi kita ubah rentangnya menjadi 0 sampai 1:</p>
+<pre><code>x_latih = x_latih.astype("float32") / 255
+x_uji = x_uji.astype("float32") / 255</code></pre>
+<p><code>astype("float32")</code> mengubah tipe data menjadi bilangan pecahan sebelum dibagi. Label tidak perlu diubah karena sudah berupa angka 0 sampai 9.</p>
+<h2>Menyusun Model dengan <code>keras.Sequential</code></h2>
+<pre><code>model = keras.Sequential([
+    keras.Input(shape=(28, 28)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(10, activation="softmax"),
+])
+
+model.summary()</code></pre>
+<p><code>keras.Sequential</code> menyusun lapisan secara berurutan dari atas ke bawah:</p>
+<ul>
+<li><p><code>keras.Input(shape=(28, 28))</code> memberi tahu model bentuk satu data masukan. Keras tidak menghitungnya sebagai lapisan.</p></li>
+<li><p><code>Flatten</code> meratakan matriks 28 × 28 menjadi vektor berisi 784 nilai agar bisa diterima lapisan <code>Dense</code>.</p></li>
+<li><p><code>Dense(128, activation="relu")</code> adalah lapisan tersembunyi berisi 128 neuron dengan fungsi aktivasi ReLU.</p></li>
+<li><p><code>Dense(10, activation="softmax")</code> adalah lapisan keluaran. Setiap neuron mewakili satu angka, sedangkan <em>softmax</em> mengubah keluarannya menjadi peluang dengan total 1.</p></li>
+</ul>
+<p><code>model.summary()</code> menampilkan ringkasan lapisan beserta jumlah parameternya, yaitu 101.770 secara total. Lapisan <code>Dense</code> pertama saja memiliki 100.480 parameter, terdiri atas 784 × 128 bobot dan 128 bias. Seluruh parameter inilah yang akan diubah selama pelatihan.</p>
+<p>Ringkasan tersebut juga menampilkan bentuk keluaran setiap lapisan. Keluaran lapisan tersembunyi, misalnya, berbentuk <code>(None, 128)</code>. Nilai <code>None</code> mewakili jumlah data dalam satu <em>batch</em> yang baru diketahui saat model dipakai.</p>
+<h2>Kompilasi Model</h2>
+<p>Sebelum dilatih, model perlu dikompilasi untuk menentukan cara belajarnya:</p>
+<pre><code>model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"],
+)</code></pre>
+<p><em>Optimizer</em> Adam mengubah bobot sekaligus menyesuaikan besar langkahnya secara otomatis sehingga cocok sebagai pilihan awal. Fungsi <em>loss</em> <code>sparse_categorical_crossentropy</code> dipakai untuk klasifikasi banyak kelas dengan label berupa bilangan bulat. Bila label berbentuk <em>one-hot</em>, yaitu vektor yang bernilai 1 hanya di posisi kelasnya, gunakan <code>categorical_crossentropy</code>. Adapun <code>metrics=["accuracy"]</code> meminta Keras menampilkan akurasi selama pelatihan.</p>
+<h2>Menguji Prediksi Sebelum Pelatihan</h2>
+<pre><code>prediksi = model.predict(x_uji[:1])
+print(prediksi.round(2))
+print("Label sebenarnya:", y_uji[0])</code></pre>
+<p><code>x_uji[:1]</code> mengambil gambar uji pertama dalam bentuk <em>batch</em> berisi satu data karena <code>predict()</code> selalu menerima sekumpulan data. Keluarannya berupa sepuluh peluang, kira-kira seperti ini:</p>
+<pre><code>[[0.13 0.07 0.09 0.16 0.09 0.09 0.07 0.11 0.1  0.09]]
+Label sebenarnya: 7</code></pre>
+<p>Bobot model masih acak sehingga peluangnya tersebar tanpa pola yang jelas, padahal gambar tersebut adalah angka 7. Model memang belum belajar apa pun. Pada materi berikutnya, kita akan melatih model ini dengan <code>fit()</code>, mengukur akurasinya pada data uji, dan mengatasi <em>overfitting</em>.</p>

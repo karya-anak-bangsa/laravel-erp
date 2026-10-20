@@ -2,7 +2,7 @@
 <div class="row col-8-4">
     <x-admin.card title="Kategori Tutorial" subtitle="Mengelompokkan tutorial di website.">
         <x-admin.form-input name="nama_kategori" label="Nama Kategori" :value="$kategoriTutorial->nama_kategori" :required="true"
-            maxlength="100" placeholder="mis. Pemrograman Web"
+            maxlength="100" placeholder="mis. Laravel"
             :hint="match (true) {
                 ! $kategoriTutorial->exists => 'Alamat halaman kategori (slug) dibuat otomatis dari nama dan tidak berubah lagi setelah kategori dipakai tutorial yang tayang.',
                 $kategoriTutorial->slugTerkunci() => 'Alamat halaman kategori: /tutorial/kategori/'.$kategoriTutorial->slug.' — tetap meskipun nama diubah, agar tautan yang sudah tersebar tidak rusak.',

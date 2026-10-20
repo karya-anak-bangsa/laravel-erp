@@ -5,7 +5,7 @@
 <div class="row col-8-4">
     <x-admin.card title="Konten Tutorial" subtitle="Judul dan pengantar seri; isi pelajarannya ditulis per materi.">
         <x-admin.form-input name="judul" label="Judul" :value="$tutorial->judul" :required="true" maxlength="200"
-            placeholder="mis. Tutorial Laravel 13"
+            placeholder="mis. Dasar-Dasar Laravel 13"
             :hint="match (true) {
                 ! $tutorial->exists => 'Alamat halaman (slug) dibuat otomatis dari judul dan tidak berubah lagi setelah tutorial terbit.',
                 $tutorial->status_publikasi === StatusPublikasi::Terbit => 'Alamat halaman tetap meskipun judul diubah, agar tautan yang sudah dibagikan tidak rusak.',

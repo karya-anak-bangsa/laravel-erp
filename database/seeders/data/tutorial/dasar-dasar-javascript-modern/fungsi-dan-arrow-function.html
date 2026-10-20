@@ -1,0 +1,61 @@
+<p>Perhitungan subtotal dan diskon pada materi sebelumnya ditulis langsung di kode. Bila perhitungan yang sama dibutuhkan di banyak tempat, kita terpaksa menyalinnya berulang kali. Fungsi mengatasi masalah ini dengan membungkus sekumpulan perintah dalam satu nama yang bisa dipanggil kapan saja.</p>
+<h2>Membuat dan Memanggil Fungsi</h2>
+<p>Fungsi dibuat dengan kata kunci <code>function</code>, diikuti nama fungsi dan daftar parameternya:</p>
+<pre><code>function hitungSubtotal(harga, jumlah) {
+  return harga * jumlah;
+}
+
+console.log(hitungSubtotal(85000, 3)); // 255000
+console.log(hitungSubtotal(60000, 2)); // 120000</code></pre>
+<p><code>harga</code> dan <code>jumlah</code> adalah parameter, yaitu nama sementara untuk nilai yang diterima fungsi. Nilai yang dikirim saat pemanggilan, seperti <code>85000</code> dan <code>3</code>, disebut argumen. Kata kunci <code>return</code> mengembalikan hasil sekaligus menghentikan fungsi. Fungsi tanpa <code>return</code> tetap berjalan, tetapi hasilnya selalu <code>undefined</code>.</p>
+<h2>Nilai Bawaan Parameter</h2>
+<p>Parameter bisa diberi nilai bawaan yang dipakai saat argumennya tidak dikirim:</p>
+<pre><code>function hitungDiskon(total, persen = 5) {
+  return total * persen / 100;
+}
+
+console.log(hitungDiskon(200000));     // 10000
+console.log(hitungDiskon(200000, 10)); // 20000</code></pre>
+<p>Perlu diingat, JavaScript tidak memeriksa tipe argumen. Pemanggilan <code>hitungSubtotal('85000', 3)</code> tetap menghasilkan <code>255000</code> karena operator <code>*</code> mengubah <em>string</em> menjadi angka. Namun, operator <code>+</code> menyambung teks sehingga <code>'85000' + 15000</code> menghasilkan <code>'8500015000'</code> tanpa pesan galat sedikit pun. Kelemahan ini menjadi salah satu alasan banyak proyek beralih ke TypeScript, seperti dibahas di artikel <a href="/artikel/mengenal-typescript-kapan-proyek-javascript-perlu-beralih">Mengenal TypeScript: Kapan Proyek JavaScript Perlu Beralih?</a></p>
+<h2>Ekspresi Fungsi dan <em>Arrow Function</em></h2>
+<p>Fungsi juga bisa disimpan di variabel sebagai ekspresi fungsi, seperti <code>hitungOngkir</code> di bawah ini. Bentuk yang lebih ringkas adalah <em>arrow function</em> yang ditulis dengan tanda <code>=&gt;</code>:</p>
+<pre><code>const hitungOngkir = function (berat) {
+  return berat * 10000;
+};
+
+const formatRupiah = (angka) =&gt; `Rp${angka.toLocaleString('id-ID')}`;
+
+console.log(hitungOngkir(2));      // 20000
+console.log(formatRupiah(255000)); // Rp255.000</code></pre>
+<p>Bila isi <em>arrow function</em> hanya satu ekspresi, kurung kurawal dan <code>return</code> boleh dihilangkan karena hasil ekspresinya otomatis dikembalikan. Tanda kurung di sekitar parameter tunggal juga boleh dihilangkan, misalnya <code>angka =&gt; angka * 2</code>. Adapun <code>toLocaleString('id-ID')</code> menulis angka dengan pemisah ribuan sesuai format Indonesia.</p>
+<p>Bila isinya lebih dari satu perintah, kurung kurawal dan <code>return</code> tetap diperlukan:</p>
+<pre><code>const hitungTotal = (harga, jumlah, persenDiskon = 0) =&gt; {
+  const subtotal = hitungSubtotal(harga, jumlah);
+  const potongan = hitungDiskon(subtotal, persenDiskon);
+  return subtotal - potongan;
+};
+
+console.log(formatRupiah(hitungTotal(85000, 3, 10))); // Rp229.500</code></pre>
+<p><em>Arrow function</em> tidak memiliki <code>this</code> sendiri. Perbedaan ini baru terasa saat fungsi dipakai sebagai <em>method</em> objek, jadi untuk sekarang keduanya bisa dianggap setara.</p>
+<h2>Fungsi sebagai Argumen</h2>
+<p>Di JavaScript, fungsi adalah nilai biasa sehingga bisa dikirim ke fungsi lain. Fungsi yang dikirim seperti ini disebut <em>callback</em>:</p>
+<pre><code>function prosesPesanan(total, setelahSelesai) {
+  console.log(`Memproses pesanan ${formatRupiah(total)}`);
+  setelahSelesai();
+}
+
+prosesPesanan(229500, () =&gt; console.log('Pesanan siap dikirim.'));
+
+setTimeout(() =&gt; console.log('Jangan lupa cek status pengiriman.'), 2000);</code></pre>
+<p><code>prosesPesanan()</code> memanggil <em>callback</em> setelah tugas utamanya selesai. Fungsi bawaan <code>setTimeout()</code> bekerja dengan cara serupa: <em>callback</em> di atas dijalankan setelah 2000 milidetik atau dua detik. Pola <em>callback</em> akan sering muncul saat Anda menangani klik tombol di halaman web.</p>
+<h2>Cakupan Variabel</h2>
+<p>Variabel yang dibuat dengan <code>let</code> atau <code>const</code> di dalam fungsi hanya berlaku di dalam fungsi itu:</p>
+<pre><code>function hitungPoin(total) {
+  const poin = Math.floor(total / 10000);
+  return poin;
+}
+
+console.log(hitungPoin(229500)); // 22
+console.log(poin); // ReferenceError: poin is not defined</code></pre>
+<p>Batasan ini disebut cakupan (<em>scope</em>). Berkat cakupan, variabel di dalam fungsi tidak bertabrakan dengan variabel bernama sama di bagian kode lain.</p>
+<p>Pada materi berikutnya, kita akan menyimpan banyak buku sekaligus di dalam <em>array</em> dan objek, lalu mengolahnya dengan fungsi seperti <code>formatRupiah()</code>.</p>

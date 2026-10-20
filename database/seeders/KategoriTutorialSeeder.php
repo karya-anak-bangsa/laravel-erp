@@ -9,9 +9,10 @@ use Illuminate\Database\Seeder;
 class KategoriTutorialSeeder extends Seeder
 {
     /**
-     * Kategori awal tutorial berupa topik (pilihan pemilik 2026-10-20); namanya bisa diubah admin.
+     * Kategori awal tutorial berupa topik spesifik, tidak umum seperti kategori portofolio (pilihan pemilik 2026-10-20);
+     * namanya bisa diubah admin.
      */
-    public const NAMA = ['Pemrograman Web', 'Pemrograman Mobile', 'Basis Data'];
+    public const NAMA = ['Deep Learning', 'JavaScript', 'Laravel', 'Machine Learning', 'TypeScript'];
 
     public function run(KategoriTutorialService $kategoriTutorialService): void
     {

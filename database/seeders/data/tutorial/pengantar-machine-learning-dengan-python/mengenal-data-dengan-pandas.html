@@ -1,0 +1,48 @@
+<p>Sebelum melatih model, kita perlu mengenal datanya lebih dulu: berapa banyak barisnya, apa saja kolomnya, dan apakah ada nilai yang kosong. Materi ini memakai pandas, pustaka Python yang paling populer untuk mengolah data berbentuk tabel.</p>
+<p>Contohnya adalah <em>dataset</em> iris yang sudah disinggung di materi pertama. <em>Dataset</em> ini berisi ukuran 150 bunga iris dari tiga jenis, yaitu <code>setosa</code>, <code>versicolor</code>, dan <code>virginica</code>.</p>
+<h2>Memuat <em>Dataset</em> Iris</h2>
+<p>Buat <em>notebook</em> baru di folder <code>belajar-ml</code>, lalu jalankan kode berikut:</p>
+<pre><code>import pandas as pd
+from sklearn.datasets import load_iris
+
+iris = load_iris(as_frame=True)
+data = iris.frame
+data.head()</code></pre>
+<p>Argumen <code>as_frame=True</code> membuat scikit-learn mengembalikan data sebagai <code>DataFrame</code>, yaitu tabel milik pandas. Atribut <code>frame</code> berisi empat kolom ukuran bunga dan kolom <code>target</code> yang mencatat jenisnya sebagai angka 0, 1, atau 2. <code>head()</code> menampilkan lima baris pertama. Di Jupyter, nilai pada baris terakhir sel otomatis ditampilkan tanpa <code>print()</code>.</p>
+<p>Data milik Anda sendiri biasanya tersimpan sebagai berkas <em>Comma-Separated Values</em> (CSV) atau Excel. Muat berkas seperti itu dengan <code>pd.read_csv("penjualan.csv")</code> atau <code>pd.read_excel("penjualan.xlsx")</code> yang memerlukan pustaka openpyxl; hasilnya sama-sama <code>DataFrame</code>. Pengolahan berkas Excel dibahas lebih lengkap di artikel <a href="/artikel/mengolah-data-excel-dengan-python-dan-pandas-untuk-pekerjaan-kantor">Mengolah Data Excel dengan Python dan pandas untuk Pekerjaan Kantor</a>.</p>
+<h2>Merapikan Nama Kolom</h2>
+<p>Nama kolom bawaannya berbahasa Inggris dan memuat spasi, misalnya <code>petal length (cm)</code>. Ganti dengan nama yang lebih ringkas, lalu tambahkan kolom berisi nama jenis bunga:</p>
+<pre><code>data = data.rename(columns={
+    "sepal length (cm)": "panjang_kelopak",
+    "sepal width (cm)": "lebar_kelopak",
+    "petal length (cm)": "panjang_mahkota",
+    "petal width (cm)": "lebar_mahkota",
+})
+data["jenis"] = data["target"].map({0: "setosa", 1: "versicolor", 2: "virginica"})</code></pre>
+<p><code>rename()</code> mengembalikan <code>DataFrame</code> baru sehingga hasilnya perlu disimpan kembali ke <code>data</code>. <code>map()</code> menerjemahkan setiap angka di kolom <code>target</code> menjadi nama jenis yang mudah dibaca.</p>
+<h2>Membaca Ringkasan Data</h2>
+<p>Dua <em>method</em> berikut memberikan gambaran umum isi tabel:</p>
+<pre><code>data.info()
+data.describe().round(2)</code></pre>
+<p><code>info()</code> menunjukkan jumlah baris, jumlah nilai yang terisi (<code>Non-Null Count</code>), dan tipe data setiap kolom. Keempat ukuran bunga bertipe <code>float64</code> atau bilangan desimal, <code>target</code> bertipe <code>int64</code> atau bilangan bulat, sedangkan <code>jenis</code> bertipe teks. <code>describe()</code> menghitung statistik setiap kolom angka:</p>
+<pre><code>       panjang_kelopak  lebar_kelopak  panjang_mahkota  lebar_mahkota  target
+count           150.00         150.00           150.00         150.00  150.00
+mean              5.84           3.06             3.76           1.20    1.00
+std               0.83           0.44             1.77           0.76    0.82
+min               4.30           2.00             1.00           0.10    0.00
+25%               5.10           2.80             1.60           0.30    0.00
+50%               5.80           3.00             4.35           1.30    1.00
+75%               6.40           3.30             5.10           1.80    2.00
+max               7.90           4.40             6.90           2.50    2.00</code></pre>
+<p>Baris <code>mean</code> adalah rata-rata, <code>std</code> simpangan baku, dan <code>50%</code> median. Panjang mahkota berkisar antara 1 dan 6,9 cm dengan sebaran yang lebar. Statistik kolom <code>target</code> tidak bermakna karena angkanya hanya kode jenis.</p>
+<h2>Menghitung Kategori dengan <code>value_counts()</code></h2>
+<p>Kolom kategori seperti <code>jenis</code> paling mudah diperiksa dengan menghitung jumlah setiap nilainya:</p>
+<pre><code>data["jenis"].value_counts()</code></pre>
+<p>Hasilnya menunjukkan 50 bunga untuk setiap jenis sehingga datanya seimbang. Pada data nyata, satu kategori sering jauh lebih banyak daripada yang lain. Kita juga bisa membandingkan rata-rata ukuran setiap jenis:</p>
+<pre><code>data.groupby("jenis")[["panjang_mahkota", "lebar_mahkota"]].mean()</code></pre>
+<p>Rata-rata panjang mahkota <code>setosa</code> sekitar 1,5 cm, <code>versicolor</code> 4,3 cm, dan <code>virginica</code> 5,6 cm. Perbedaan sebesar ini menandakan bahwa ukuran mahkota akan menjadi fitur yang kuat untuk membedakan jenis bunga.</p>
+<h2>Memeriksa Nilai Kosong</h2>
+<p>Gabungan <code>isna()</code> dan <code>sum()</code> menghitung jumlah sel kosong di setiap kolom:</p>
+<pre><code>data.isna().sum()</code></pre>
+<p>Hasilnya nol di setiap kolom karena <em>dataset</em> iris sudah bersih. Data nyata hampir selalu memiliki sel kosong, misalnya dari formulir yang tidak diisi lengkap. Banyak model scikit-learn menolak data yang berisi nilai kosong. Oleh karena itu, buang baris tersebut dengan <code>dropna()</code> atau isi sel kosongnya, misalnya dengan median kolomnya: <code>data["panjang_mahkota"].fillna(data["panjang_mahkota"].median())</code>. Membuang baris memang paling mudah, tetapi bisa menghilangkan banyak data bila sel kosongnya tersebar.</p>
+<p>Kini kita tahu isi <em>dataset</em> iris: 150 baris, empat fitur ukuran, satu label jenis, dan tanpa nilai kosong. Pada materi berikutnya, kita akan memisahkan fitur dan label, lalu membagi data menjadi data latih dan data uji.</p>

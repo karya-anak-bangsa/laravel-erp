@@ -1,0 +1,58 @@
+<p>Sebagian besar logika program berada di dalam fungsi sehingga tipe pada fungsi memberi manfaat paling besar. Materi terakhir seri ini membahas tipe parameter dan nilai kembalian, <em>union type</em> bagi nilai yang bisa berupa beberapa tipe, serta <em>narrowing</em> untuk memastikan tipe yang sedang ditangani. Tulis contohnya di berkas baru <code>src/kasir.ts</code>.</p>
+<h2>Tipe Parameter dan Nilai Kembalian</h2>
+<p>Setiap parameter diberi anotasi, sedangkan tipe nilai kembalian ditulis setelah tanda kurung tutup:</p>
+<pre><code>function hitungTagihan(harga: number, jumlah: number, potongan = 0): number {
+  return harga * jumlah - potongan;
+}
+
+function sapaPelanggan(nama?: string): string {
+  return `Terima kasih, ${nama ?? 'Pelanggan'}!`;
+}
+
+const cetakStruk = (total: number): void =&gt; {
+  console.log(`Total bayar: Rp${total}`);
+};
+
+cetakStruk(hitungTagihan(75000, 2, 10000)); // Total bayar: Rp140000
+console.log(sapaPelanggan()); // Terima kasih, Pelanggan!</code></pre>
+<p>Parameter <code>potongan</code> memiliki nilai bawaan <code>0</code> sehingga tipenya disimpulkan sebagai <code>number</code> dan boleh tidak diisi. Tanda <code>?</code> membuat <code>nama</code> opsional; nilainya <code>undefined</code> bila tidak diisi. Tipe <code>void</code> menandakan fungsi tidak mengembalikan nilai. Seperti terlihat pada <code>cetakStruk</code>, <em>arrow function</em> diberi tipe dengan cara yang sama.</p>
+<h2>Nilai dengan Beberapa Kemungkinan Tipe</h2>
+<p><em>Union type</em> ditulis dengan tanda <code>|</code> dan berarti nilai boleh berupa salah satu dari tipe yang disebutkan. Gabungan tipe literal sangat berguna bagi daftar pilihan yang tetap:</p>
+<pre><code>type StatusPesanan = 'menunggu' | 'dikirim' | 'selesai';
+
+let status: StatusPesanan = 'menunggu';
+status = 'dikirim';
+status = 'batal'; // galat</code></pre>
+<p>TypeScript menolak <code>'batal'</code> karena nilai itu tidak ada di daftar. Editor juga menyarankan ketiga pilihan yang sah saat Anda mengetik tanda kutip.</p>
+<h2>Mempersempit Tipe dengan <em>Narrowing</em></h2>
+<p>Nilai bertipe <code>number | string</code> hanya boleh dipakai dengan cara yang sah bagi kedua tipe sekaligus. Akibatnya, <code>kode.toUpperCase()</code> ditolak karena angka tidak memiliki <em>method</em> itu. Periksa tipenya dulu dengan <code>typeof</code>:</p>
+<pre><code>function formatKodePesanan(kode: number | string): string {
+  if (typeof kode === 'number') {
+    return `INV-${kode.toString().padStart(5, '0')}`;
+  }
+
+  return kode.toUpperCase();
+}
+
+console.log(formatKodePesanan(42)); // INV-00042
+console.log(formatKodePesanan('inv-00077')); // INV-00077</code></pre>
+<p>Di dalam blok <code>if</code>, TypeScript tahu bahwa <code>kode</code> pasti angka. Setelah blok itu, satu-satunya kemungkinan yang tersisa adalah <code>string</code>. Proses mempersempit tipe berdasarkan pemeriksaan seperti ini disebut <em>narrowing</em>. TypeScript juga mengenali pemeriksaan lain, antara lain <code>=== null</code>, <code>instanceof</code>, dan operator <code>in</code>.</p>
+<h2>Membedakan Objek dengan Properti Penanda</h2>
+<p>Teknik <em>narrowing</em> paling terasa manfaatnya saat menangani beberapa bentuk objek. Beri setiap bentuk sebuah properti penanda bernilai literal, misalnya <code>metode</code>:</p>
+<pre><code>type Pembayaran =
+  | { metode: 'tunai'; uangDiterima: number }
+  | { metode: 'transfer'; namaBank: string };
+
+function jelaskanPembayaran(pembayaran: Pembayaran, total: number): string {
+  switch (pembayaran.metode) {
+    case 'tunai':
+      return `Kembalian: Rp${pembayaran.uangDiterima - total}`;
+    case 'transfer':
+      return `Dibayar lewat transfer ${pembayaran.namaBank}`;
+  }
+}
+
+console.log(jelaskanPembayaran({ metode: 'tunai', uangDiterima: 200000 }, 140000)); // Kembalian: Rp60000</code></pre>
+<p>Di setiap <code>case</code>, TypeScript hanya mengizinkan properti milik bentuk yang sesuai, jadi <code>namaBank</code> tidak bisa dibaca di cabang <code>'tunai'</code>. Bila kelak Anda menambah metode baru, misalnya <code>'dompet-digital'</code>, kompilator mengingatkan bahwa fungsi ini belum menangani metode tersebut. Pola ini dikenal sebagai <em>discriminated union</em>.</p>
+<h2>Langkah Berikutnya</h2>
+<p>Selamat, Anda sudah menguasai dasar-dasar TypeScript: anotasi tipe, inferensi, <em>interface</em>, <em>type alias</em>, <em>union type</em>, dan <em>narrowing</em>. Lanjutkan ke tutorial "Menerapkan TypeScript di Proyek Vite" untuk memakai semua bekal ini di proyek web sungguhan, lengkap dengan <em>generic</em>, <em>utility types</em>, dan data dari <em>Application Programming Interface</em> (API).</p>

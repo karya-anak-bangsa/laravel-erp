@@ -1,0 +1,54 @@
+<p>Pada materi sebelumnya, kita memberi anotasi <code>number</code> pada parameter fungsi <code>hitungTotal()</code>. Materi ini membahas tipe-tipe dasar yang paling sering dipakai, kapan anotasi perlu ditulis, dan kapan TypeScript bisa menyimpulkan tipenya sendiri.</p>
+<p>Tulis contoh-contoh berikut di berkas baru <code>src/tipe-data.ts</code>. Jalankan <code>npx tsc</code> untuk melihat galatnya, lalu <code>node dist/tipe-data.js</code> untuk menjalankan hasilnya. Baris bertanda <code>// galat</code> sengaja salah; hapus setelah Anda membaca pesannya.</p>
+<h2>Anotasi Tipe pada Variabel</h2>
+<p>Anotasi ditulis dengan titik dua setelah nama variabel, diikuti nama tipenya:</p>
+<pre><code>let namaProduk: string = 'Kaus Polos';
+let harga: number = 75000;
+let tersedia: boolean = true;
+
+harga = 'tujuh puluh lima ribu'; // galat</code></pre>
+<p>Tipe <code>string</code> menampung teks, <code>number</code> menampung semua jenis angka, baik bilangan bulat maupun pecahan, dan <code>boolean</code> menampung nilai <code>true</code> atau <code>false</code>. TypeScript menolak baris terakhir dengan pesan <code>Type 'string' is not assignable to type 'number'</code> karena <code>harga</code> sudah ditetapkan sebagai angka.</p>
+<h2>Inferensi Tipe</h2>
+<p>Anotasi tidak selalu perlu ditulis. Bila variabel langsung diberi nilai awal, TypeScript menyimpulkan tipenya sendiri. Kemampuan ini disebut inferensi tipe (<em>type inference</em>):</p>
+<pre><code>let jumlah = 3;
+const kategori = 'pakaian';
+
+jumlah = 'tiga'; // galat</code></pre>
+<p>Arahkan penunjuk <em>mouse</em> ke nama variabel di VS Code untuk melihat hasil inferensinya. Variabel <code>jumlah</code> bertipe <code>number</code>, sedangkan <code>kategori</code> bertipe <code>'pakaian'</code>, yaitu tipe literal yang hanya menerima teks itu. Nilai <code>const</code> tidak bisa diganti sehingga TypeScript memakai tipe yang paling sempit. Perbedaan kedua kata kunci ini dibahas di artikel <a href="/artikel/perbedaan-var-let-dan-const-di-javascript-dan-kapan-memakainya">Perbedaan var, let, dan const di JavaScript dan Kapan Memakainya</a>.</p>
+<p>Dalam praktik, tulis anotasi pada parameter fungsi dan biarkan inferensi bekerja pada variabel yang langsung diberi nilai.</p>
+<h2><em>Array</em> dan <em>Tuple</em></h2>
+<p>Tipe <em>array</em> ditulis dengan tanda <code>[]</code> setelah tipe isinya. Bentuk lain yang setara adalah <code>Array&lt;string&gt;</code>:</p>
+<pre><code>const daftarHarga: number[] = [75000, 120000, 45000];
+const daftarUkuran: Array&lt;string&gt; = ['S', 'M', 'L'];
+const stokUkuran: [string, number] = ['M', 12];
+
+daftarHarga.push('gratis'); // galat</code></pre>
+<p>Variabel <code>daftarHarga</code> hanya boleh berisi angka sehingga <code>push('gratis')</code> ditolak. Adapun <code>stokUkuran</code> adalah <em>tuple</em>, yaitu <em>array</em> yang jumlah isinya tetap dan tipe setiap posisinya sudah ditentukan: posisi pertama teks, posisi kedua angka.</p>
+<h2>Tipe Objek</h2>
+<p>Bentuk objek juga bisa dituliskan langsung sebagai anotasi. Tanda <code>?</code> setelah nama properti berarti properti itu boleh tidak ada:</p>
+<pre><code>const kaus: { nama: string; harga: number; diskon?: number } = {
+  nama: 'Kaus Polos',
+  harga: 75000,
+};
+
+console.log(kaus.warna); // galat</code></pre>
+<p>TypeScript menolak <code>kaus.warna</code> karena properti itu tidak ada pada tipenya. Salah ketik nama properti, yang di JavaScript hanya menghasilkan <code>undefined</code>, kini langsung ketahuan.</p>
+<h2>Tipe yang Perlu Diwaspadai</h2>
+<p>TypeScript juga memiliki beberapa tipe khusus yang perlu dipahami sejak awal:</p>
+<pre><code>let bebas: any = 'teks';
+bebas.toFixed(2); // lolos kompilasi, tetapi gagal saat berjalan
+
+let masukan: unknown = 'teks';
+masukan.toUpperCase(); // galat
+
+if (typeof masukan === 'string') {
+  console.log(masukan.toUpperCase());
+}
+
+let catatan: string = null; // galat</code></pre>
+<ul>
+<li><p>Tipe <code>any</code> mematikan pemeriksaan tipe sepenuhnya: <code>bebas.toFixed(2)</code> lolos kompilasi, tetapi menghentikan program dengan <code>TypeError</code> saat dijalankan. Hindari tipe ini karena manfaat TypeScript ikut hilang.</p></li>
+<li><p>Tipe <code>unknown</code> juga menerima nilai apa saja, tetapi wajib diperiksa dulu sebelum dipakai. Pemeriksaan dengan <code>typeof</code> seperti di atas dibahas lebih dalam pada materi keempat.</p></li>
+<li><p>Nilai <code>null</code> dan <code>undefined</code> tidak bisa diberikan ke tipe lain saat <code>strict</code> aktif. Variabel yang boleh kosong diberi tipe gabungan, misalnya <code>string | null</code>.</p></li>
+</ul>
+<p>Pada materi berikutnya, kita akan merapikan tipe objek yang panjang dengan <em>interface</em> dan <em>type alias</em> agar bisa dipakai ulang.</p>

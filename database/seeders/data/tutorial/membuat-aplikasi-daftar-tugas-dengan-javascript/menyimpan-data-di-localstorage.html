@@ -1,0 +1,61 @@
+<p>Aplikasi daftar tugas sudah bisa menambah, mencentang, dan menghapus tugas, tetapi semua perubahan hilang begitu halaman dimuat ulang. Data tersebut hanya hidup di memori selama halaman terbuka. Materi ini menyimpannya di <code>localStorage</code> agar tugas tetap ada saat halaman dibuka kembali.</p>
+<h2>Mengenal <code>localStorage</code></h2>
+<p><code>localStorage</code> adalah tempat penyimpanan bawaan peramban untuk pasangan kunci dan nilai. Datanya bertahan meskipun peramban ditutup dan hanya bisa dibaca oleh halaman dari situs yang sama. Coba perintah berikut di konsol:</p>
+<pre><code>localStorage.setItem('nama', 'Rina');
+localStorage.getItem('nama'); // 'Rina'
+localStorage.removeItem('nama');
+localStorage.getItem('nama'); // null</code></pre>
+<p><code>setItem()</code> menyimpan nilai dengan sebuah kunci, <code>getItem()</code> membacanya kembali, dan <code>removeItem()</code> menghapusnya. Bila kuncinya tidak ada, <code>getItem()</code> mengembalikan <code>null</code>.</p>
+<h2>Mengubah Data Menjadi <em>String</em> JSON</h2>
+<p><code>localStorage</code> hanya bisa menyimpan <em>string</em>. Objek yang disimpan langsung akan berubah menjadi teks yang tidak berguna:</p>
+<pre><code>localStorage.setItem('coba', { judul: 'Belajar' });
+localStorage.getItem('coba'); // '[object Object]'</code></pre>
+<p>Solusinya adalah format <em>JavaScript Object Notation</em> (JSON). <code>JSON.stringify()</code> mengubah objek atau <em>array</em> menjadi <em>string</em> JSON, sedangkan <code>JSON.parse()</code> mengubah <em>string</em> itu kembali menjadi data JavaScript:</p>
+<pre><code>const teks = JSON.stringify([{ id: 1, judul: 'Belajar', selesai: false }]);
+console.log(teks); // [{"id":1,"judul":"Belajar","selesai":false}]
+
+const dataKembali = JSON.parse(teks);
+console.log(dataKembali[0].judul); // Belajar</code></pre>
+<p>JSON mirip objek JavaScript, tetapi nama properti dan teksnya wajib memakai tanda petik ganda. Format ini juga lazim dipakai untuk bertukar data dengan server, seperti yang akan kita lakukan di materi terakhir. Hapus kunci percobaan tadi dengan <code>localStorage.removeItem('coba')</code>.</p>
+<h2>Menyimpan dan Memuat Daftar Tugas</h2>
+<p>Buka <code>app.js</code>, lalu tambahkan konstanta berikut di baris paling atas:</p>
+<pre><code>const KUNCI_PENYIMPANAN = 'daftar-tugas';</code></pre>
+<p>Setelah itu, ganti seluruh deklarasi <code>const daftarTugas = [...]</code> beserta kedua contoh tugasnya dengan kode berikut:</p>
+<pre><code>function muatTugas() {
+  const dataTersimpan = localStorage.getItem(KUNCI_PENYIMPANAN);
+
+  if (dataTersimpan === null) {
+    return [];
+  }
+
+  return JSON.parse(dataTersimpan);
+}
+
+function simpanTugas() {
+  localStorage.setItem(KUNCI_PENYIMPANAN, JSON.stringify(daftarTugas));
+}
+
+const daftarTugas = muatTugas();</code></pre>
+<p><code>muatTugas()</code> membaca data lama dan mengembalikan <em>array</em> kosong saat aplikasi pertama kali dibuka. <code>simpanTugas()</code> menulis seluruh isi <code>daftarTugas</code> ke <code>localStorage</code>. Nama kunci ditulis sekali sebagai konstanta agar tidak salah ketik di dua tempat. Huruf kapital dengan garis bawah lazim dipakai untuk menandai nilai tetap seperti ini.</p>
+<h2>Menyimpan Setiap Perubahan</h2>
+<p>Data perlu disimpan setiap kali isinya berubah. Tambahkan <code>simpanTugas();</code> tepat sebelum <code>tampilkanTugas();</code> di <em>event listener</em> formulir sehingga isinya menjadi seperti berikut:</p>
+<pre><code>formulirTugas.addEventListener('submit', (event) =&gt; {
+  event.preventDefault();
+
+  const judul = isianTugas.value.trim();
+  if (judul === '') {
+    return;
+  }
+
+  daftarTugas.push({ id: Date.now(), judul, selesai: false });
+  formulirTugas.reset();
+  isianTugas.focus();
+  simpanTugas();
+  tampilkanTugas();
+});</code></pre>
+<p>Lakukan hal yang sama di <em>event listener</em> daftar, tepat sebelum <code>tampilkanTugas();</code> di bagian akhirnya. Baris <code>tampilkanTugas();</code> yang paling bawah tidak perlu didahului <code>simpanTugas();</code> karena saat itu data baru saja dimuat dan belum berubah.</p>
+<h2>Memeriksa Data di DevTools</h2>
+<p>Muat ulang halaman, tambahkan beberapa tugas, lalu tutup dan buka kembali halamannya. Tugas Anda masih ada. Di Chrome atau Edge, buka tab <strong>Application</strong> di DevTools, lalu pilih <strong>Local Storage</strong> di panel kiri. Kunci <code>daftar-tugas</code> berisi <em>string</em> JSON yang sama persis dengan isi <code>daftarTugas</code>.</p>
+<p>Nilai di panel itu juga bisa diubah langsung. Bila isinya diubah hingga tidak lagi berupa JSON yang sah, <code>JSON.parse()</code> akan menghentikan skrip dengan galat <code>SyntaxError</code>. Cara menangani galat seperti ini dibahas di materi berikutnya.</p>
+<p>Ingat juga batasannya. Data <code>localStorage</code> hanya tersimpan di peramban dan perangkat itu, kapasitasnya terbatas, dan isinya bisa dibaca oleh skrip apa pun di halaman yang sama. Jangan menyimpan data rahasia seperti kata sandi atau token di sini.</p>
+<p>Pada materi berikutnya, kita akan mengambil contoh tugas dari server lain dengan <code>fetch()</code>, lalu menyimpannya bersama tugas buatan Anda.</p>

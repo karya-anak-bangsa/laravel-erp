@@ -1,0 +1,71 @@
+<p>Aplikasi daftar tugas dari materi sebelumnya baru bisa menampilkan data. Materi ini membuatnya interaktif: pengguna bisa menambah tugas lewat formulir, mencentang tugas yang selesai, dan menghapus tugas. Semua itu dilakukan dengan menangani <em>event</em>.</p>
+<h2>Mengenal <em>Event</em></h2>
+<p><em>Event</em> adalah sinyal dari peramban bahwa sesuatu baru saja terjadi, misalnya tombol diklik, tuts papan ketik ditekan, atau formulir dikirim. <em>Method</em> <code>addEventListener()</code> mendaftarkan fungsi yang dijalankan setiap kali <em>event</em> tertentu terjadi:</p>
+<pre><code>elemenRingkasan.addEventListener('click', () =&gt; {
+  console.log('Ringkasan diklik');
+});</code></pre>
+<p>Tempelkan kode itu sementara di akhir <code>app.js</code>, muat ulang halaman, lalu klik teks ringkasan. Pesan akan muncul di konsol DevTools. Hapus kembali kode percobaan ini sebelum melanjutkan.</p>
+<h2>Menambah Tugas dari Formulir</h2>
+<p>Tambahkan kode berikut di atas baris <code>tampilkanTugas();</code> yang paling bawah:</p>
+<pre><code>formulirTugas.addEventListener('submit', (event) =&gt; {
+  event.preventDefault();
+
+  const judul = isianTugas.value.trim();
+  if (judul === '') {
+    return;
+  }
+
+  daftarTugas.push({ id: Date.now(), judul, selesai: false });
+  formulirTugas.reset();
+  isianTugas.focus();
+  tampilkanTugas();
+});</code></pre>
+<p>Fungsi ini menerima objek <code>event</code> yang berisi keterangan tentang kejadiannya. Secara bawaan, peramban mengirim formulir dengan memuat ulang halaman. <code>preventDefault()</code> membatalkan perilaku itu agar data di JavaScript tidak hilang.</p>
+<p>Atribut <code>required</code> sudah menolak isian kosong, tetapi isian berupa spasi saja tetap lolos. Oleh karena itu, <code>trim()</code> membuang spasi di awal dan akhir teks sebelum diperiksa. <code>Date.now()</code> menghasilkan jumlah milidetik sejak 1 Januari 1970 sehingga cukup unik sebagai <code>id</code> sederhana. Penulisan <code>judul</code> tanpa titik dua di dalam objek adalah singkatan dari <code>judul: judul</code>.</p>
+<h2>Menambahkan Kotak Centang dan Tombol Hapus</h2>
+<p>Setiap tugas membutuhkan kotak centang dan tombol hapus. Ubah isi perulangan di <code>tampilkanTugas()</code> menjadi seperti berikut:</p>
+<pre><code>for (const tugas of daftarTugas) {
+  const item = document.createElement('li');
+  item.dataset.id = tugas.id;
+  item.classList.toggle('selesai', tugas.selesai);
+
+  const kotakCentang = document.createElement('input');
+  kotakCentang.type = 'checkbox';
+  kotakCentang.checked = tugas.selesai;
+
+  const label = document.createElement('label');
+  label.append(kotakCentang, ` ${tugas.judul}`);
+
+  const tombolHapus = document.createElement('button');
+  tombolHapus.type = 'button';
+  tombolHapus.className = 'tombol-hapus';
+  tombolHapus.textContent = 'Hapus';
+
+  item.append(label, ' ', tombolHapus);
+  elemenDaftar.append(item);
+}</code></pre>
+<p><code>item.dataset.id</code> menulis atribut <code>data-id</code> pada <code>&lt;li&gt;</code> sebagai penanda tugas. Kotak centang dibungkus <code>&lt;label&gt;</code> agar pengguna cukup mengeklik judulnya untuk mencentang. Teks yang dikirim ke <code>append()</code> juga dimasukkan apa adanya sehingga judul tugas tetap aman seperti saat memakai <code>textContent</code>.</p>
+<h2>Delegasi <em>Event</em></h2>
+<p>Kita bisa saja memasang <code>addEventListener()</code> pada setiap tombol hapus. Namun, tombol itu dibuat ulang setiap kali daftar ditampilkan sehingga pemasangannya harus terus diulang. Cara yang lebih rapi adalah delegasi <em>event</em>, yaitu memasang satu <em>event listener</em> pada <code>&lt;ul&gt;</code>. Cara ini bekerja karena klik pada elemen di dalam <code>&lt;ul&gt;</code> merambat ke atas (<em>bubbling</em>) hingga sampai ke <code>&lt;ul&gt;</code>. Tambahkan kode berikut di bawah <em>event listener</em> formulir:</p>
+<pre><code>elemenDaftar.addEventListener('click', (event) =&gt; {
+  const item = event.target.closest('li');
+  if (item === null) {
+    return;
+  }
+
+  const id = Number(item.dataset.id);
+  const indeks = daftarTugas.findIndex((tugas) =&gt; tugas.id === id);
+
+  if (event.target.matches('.tombol-hapus')) {
+    daftarTugas.splice(indeks, 1);
+  } else if (event.target.matches('input[type="checkbox"]')) {
+    daftarTugas[indeks].selesai = event.target.checked;
+  } else {
+    return;
+  }
+
+  tampilkanTugas();
+});</code></pre>
+<p><code>event.target</code> adalah elemen yang benar-benar diklik. <code>closest('li')</code> mencari <code>&lt;li&gt;</code> terdekat ke arah atas, sedangkan <code>matches()</code> memeriksa apakah elemen yang diklik adalah tombol hapus atau kotak centang. Nilai <code>data-id</code> selalu berupa <em>string</em>, jadi <code>Number()</code> mengubahnya menjadi angka sebelum dibandingkan dengan <code>===</code>. Terakhir, <code>splice(indeks, 1)</code> membuang satu tugas tepat di indeks tersebut.</p>
+<p>Klik pada judul tugas sebenarnya menghasilkan dua klik. Klik pertama mengenai <code>&lt;label&gt;</code> dan diabaikan oleh <code>return</code> di blok <code>else</code>. Setelah itu, peramban meneruskan klik ke kotak centang sehingga klik kedua mengubah status tugas.</p>
+<p>Coba tambahkan beberapa tugas, centang sebagian, lalu hapus satu tugas. Ringkasan di atas daftar ikut berubah. Namun, semua tugas kembali seperti semula begitu halaman dimuat ulang. Pada materi berikutnya, kita akan menyimpan daftar tugas di <code>localStorage</code> agar setiap perubahan tetap tersimpan.</p>

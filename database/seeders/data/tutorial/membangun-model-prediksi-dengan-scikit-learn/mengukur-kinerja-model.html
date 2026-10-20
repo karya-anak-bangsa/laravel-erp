@@ -1,0 +1,53 @@
+<p>Model regresi dan klasifikasi dari dua materi sebelumnya sudah bisa menebak, tetapi seberapa baik tebakannya? Materi ini membahas metrik yang paling sering dipakai untuk menjawab pertanyaan itu, ditambah validasi silang untuk penilaian yang lebih andal.</p>
+<p>Bagian regresi dijalankan di <em>notebook</em> materi pertama, sedangkan bagian klasifikasi dijalankan di <em>notebook</em> materi kedua.</p>
+<h2>Metrik Regresi: MAE, RMSE, dan R²</h2>
+<p>Mulai dari model harga rumah. Ketiga metrik berikut membandingkan <code>prediksi</code> dengan harga sebenarnya di <code>y_uji</code>:</p>
+<pre><code>from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
+
+print("MAE :", mean_absolute_error(y_uji, prediksi))
+print("RMSE:", root_mean_squared_error(y_uji, prediksi))
+print("R2  :", r2_score(y_uji, prediksi))</code></pre>
+<ul>
+<li><p><em>Mean Absolute Error</em> (MAE) adalah rata-rata selisih mutlak antara tebakan dan harga sebenarnya. Nilainya sekitar 0,53, yang berarti tebakan rata-rata meleset sekitar 53.000 dolar.</p></li>
+<li><p><em>Root Mean Squared Error</em> (RMSE) menguadratkan selisih sebelum dirata-ratakan, lalu mengambil akarnya. Hasilnya sekitar 0,75, lebih besar daripada MAE karena kesalahan besar mendapat hukuman lebih berat.</p></li>
+<li><p>Koefisien determinasi (R²) menunjukkan porsi variasi harga yang bisa dijelaskan model. Nilai 1 berarti sempurna, sedangkan 0 berarti model tidak lebih baik daripada selalu menebak rata-rata. Model kita mendapat sekitar 0,58.</p></li>
+</ul>
+<p>Versi lama scikit-learn menghitung RMSE dengan <code>mean_squared_error(..., squared=False)</code>. Parameter <code>squared</code> sudah dihapus, jadi gunakan <code>root_mean_squared_error()</code>.</p>
+<h2>Akurasi dan Jebakannya</h2>
+<p>Pindah ke <em>notebook</em> klasifikasi, lalu hitung akurasi model pohon:</p>
+<pre><code>from sklearn.metrics import accuracy_score
+
+print(accuracy_score(y_uji, prediksi))
+print((y_uji == 1).mean())</code></pre>
+<p>Akurasinya sekitar 0,94. Baris kedua menghitung porsi tumor jinak di data uji, yaitu sekitar 0,63. Artinya, model asal-asalan yang selalu menebak jinak pun sudah meraih akurasi 63 persen tanpa pernah menemukan satu pun tumor ganas. Akurasi tinggi belum tentu berarti model berguna, terutama bila jumlah kelasnya tidak seimbang.</p>
+<h2>Membaca <em>Confusion Matrix</em></h2>
+<p><em>Confusion matrix</em> merinci tebakan yang benar dan salah untuk setiap kelas:</p>
+<pre><code>from sklearn.metrics import confusion_matrix
+
+print(confusion_matrix(y_uji, prediksi))</code></pre>
+<pre><code>[[38  4]
+ [ 3 69]]</code></pre>
+<p>Baris menunjukkan label sebenarnya, sedangkan kolom menunjukkan tebakan model. Keduanya berurutan 0 (ganas) lalu 1 (jinak). Dari 42 tumor ganas, 38 tertebak benar dan 4 lolos sebagai jinak. Dari 72 tumor jinak, 69 tertebak benar dan 3 dianggap ganas. Angka pastinya bisa sedikit berbeda, tetapi cara membacanya tetap sama. Tumor ganas yang lolos sebagai jinak adalah kesalahan yang jauh lebih berbahaya karena pasien bisa tidak mendapat penanganan.</p>
+<h2>Presisi, <em>Recall</em>, dan <code>classification_report</code></h2>
+<p>Fungsi <code>classification_report()</code> merangkum metrik penting dari <em>confusion matrix</em> sekaligus:</p>
+<pre><code>from sklearn.metrics import classification_report
+
+print(classification_report(y_uji, prediksi, target_names=["ganas", "jinak"]))</code></pre>
+<p>Laporan ini menampilkan beberapa metrik untuk setiap kelas:</p>
+<ul>
+<li><p><strong>Presisi</strong> menjawab pertanyaan "dari semua yang ditebak ganas, berapa yang benar-benar ganas?". Nilainya untuk kelas ganas adalah 38 dibagi 41, sekitar 0,93.</p></li>
+<li><p><strong><em>Recall</em></strong> menjawab pertanyaan "dari semua tumor ganas, berapa yang berhasil ditemukan?". Nilainya adalah 38 dibagi 42, sekitar 0,90.</p></li>
+<li><p><strong><em>F1-score</em></strong> adalah rata-rata harmonik presisi dan <em>recall</em>, sedangkan <code>support</code> adalah jumlah data uji di setiap kelas.</p></li>
+</ul>
+<p>Pada kasus tumor, <em>recall</em> kelas ganas lebih penting daripada presisinya karena melewatkan tumor ganas lebih merugikan daripada pemeriksaan lanjutan yang ternyata tidak perlu.</p>
+<h2>Validasi Silang dengan <code>cross_val_score</code></h2>
+<p>Skor dari satu kali pembagian data bisa kebetulan tinggi atau rendah, tergantung data yang masuk ke data uji. Validasi silang (<em>cross-validation</em>) membagi data latih menjadi beberapa bagian, misalnya lima. Model dilatih dengan empat bagian dan diuji dengan satu bagian sisanya. Proses itu diulang sampai setiap bagian pernah menjadi penguji.</p>
+<pre><code>from sklearn.model_selection import cross_val_score
+
+skor = cross_val_score(
+    DecisionTreeClassifier(max_depth=3, random_state=42), X_latih, y_latih, cv=5
+)
+print(skor.round(3))
+print(f"Rata-rata: {skor.mean():.3f}")</code></pre>
+<p>Hasilnya berupa lima skor akurasi yang berkisar antara 0,90 dan 0,97 dengan rata-rata sekitar 0,92. Rata-rata ini lebih bisa dipercaya daripada satu skor tunggal. Validasi silang juga merupakan cara yang tepat untuk memilih <code>max_depth</code> karena data uji tetap tersimpan sampai penilaian akhir.</p>
+<p>Pada materi berikutnya, kita akan menyimpan model ke berkas agar bisa dipakai ulang tanpa melatihnya dari awal.</p>

@@ -1,0 +1,59 @@
+<p>JavaScript adalah bahasa pemrograman yang menghidupkan halaman web, mulai dari tombol yang menanggapi klik hingga formulir yang memeriksa isiannya sendiri. Bahasa ini juga bisa berjalan di luar peramban lewat Node.js, misalnya untuk membuat server atau alat bantu pengembang.</p>
+<p>Materi pertama ini membahas cara menjalankan kode JavaScript, menyimpan nilai di variabel, mengenal tipe data dasar, dan mengolah nilai dengan operator. Contoh sepanjang seri ini memakai data toko buku sederhana.</p>
+<h2>Menjalankan Kode JavaScript</h2>
+<p>Cara tercepat mencoba JavaScript adalah lewat konsol peramban. Buka Chrome, Edge, atau Firefox, tekan <code>F12</code> (di macOS, <code>Cmd+Option+I</code>) untuk membuka DevTools, lalu pilih tab <strong>Console</strong>. Ketik kode berikut dan tekan <code>Enter</code>:</p>
+<pre><code>console.log('Halo, JavaScript!');</code></pre>
+<p><code>console.log()</code> menampilkan nilai di konsol. Fungsi ini akan sering kita pakai untuk melihat isi variabel dan hasil perhitungan.</p>
+<p>Cara kedua adalah Node.js. Pasang versi <em>Long Term Support</em> (LTS) dari situs resminya, simpan kode tadi di berkas <code>latihan.js</code>, lalu jalankan perintah berikut di terminal dari folder yang sama:</p>
+<pre><code>node latihan.js</code></pre>
+<p>Teks <code>Halo, JavaScript!</code> akan tampil di terminal. Semua contoh di materi ini bisa dijalankan dengan kedua cara tersebut.</p>
+<h2>Menyimpan Nilai dengan <code>let</code> dan <code>const</code></h2>
+<p>Variabel adalah wadah bernama untuk menyimpan nilai. JavaScript modern menyediakan dua kata kunci untuk membuatnya:</p>
+<pre><code>const namaToko = 'Toko Buku Nusantara';
+let jumlahBeli = 2;
+
+jumlahBeli = 3;
+console.log(namaToko, jumlahBeli); // Toko Buku Nusantara 3</code></pre>
+<p><code>const</code> dipakai untuk nilai yang tidak akan diganti, sedangkan <code>let</code> dipakai untuk nilai yang bisa berubah, seperti <code>jumlahBeli</code>. Bila Anda mencoba mengganti nilai <code>namaToko</code>, JavaScript menghentikan kode dengan galat <code>TypeError</code>. Biasakan memakai <code>const</code> lebih dulu, lalu beralih ke <code>let</code> hanya bila nilainya memang perlu diganti.</p>
+<p>Anda mungkin juga menemukan kata kunci <code>var</code> di kode lama. Perbedaannya dibahas di artikel <a href="/artikel/perbedaan-var-let-dan-const-di-javascript-dan-kapan-memakainya">Perbedaan var, let, dan const di JavaScript dan Kapan Memakainya</a>. Nama variabel di JavaScript lazim ditulis dengan gaya <em>camelCase</em>, yaitu kata pertama berhuruf kecil dan kata berikutnya diawali huruf kapital.</p>
+<h2>Tipe Data Dasar</h2>
+<p>Setiap nilai memiliki tipe. Operator <code>typeof</code> menunjukkan tipe sebuah nilai:</p>
+<pre><code>const judulBuku = 'Laskar Pelangi';
+const hargaBuku = 85000;
+const tersedia = true;
+let catatan;
+
+console.log(typeof judulBuku); // string
+console.log(typeof hargaBuku); // number
+console.log(typeof tersedia);  // boolean
+console.log(typeof catatan);   // undefined</code></pre>
+<p>Berikut tipe data dasar yang paling sering dipakai:</p>
+<ul>
+<li><p><code>string</code> untuk teks, ditulis di antara tanda petik tunggal, tanda petik ganda, atau tanda petik terbalik (<code>`</code>).</p></li>
+<li><p><code>number</code> untuk angka. Tipe ini tidak membedakan bilangan bulat dan pecahan, jadi <code>85000</code> dan <code>4.5</code> bertipe sama.</p></li>
+<li><p><code>boolean</code> hanya bernilai <code>true</code> atau <code>false</code> dan menjadi dasar setiap keputusan di kode.</p></li>
+<li><p><code>undefined</code> menandakan variabel yang belum diberi nilai, seperti <code>catatan</code> di atas.</p></li>
+<li><p><code>null</code> menandakan nilai yang sengaja dikosongkan. Uniknya, <code>typeof null</code> menghasilkan <code>'object'</code> karena kekeliruan pada versi awal JavaScript yang dipertahankan agar kode lama tetap berjalan.</p></li>
+</ul>
+<p>Tanda petik terbalik membentuk <em>template literal</em> yang bisa menyisipkan nilai variabel lewat <code>${...}</code>:</p>
+<pre><code>const pesan = `${judulBuku} seharga Rp${hargaBuku}`;
+console.log(pesan); // Laskar Pelangi seharga Rp85000</code></pre>
+<h2>Operator Aritmetika</h2>
+<p>Operator aritmetika bekerja seperti di matematika: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, dan <code>%</code> untuk sisa bagi.</p>
+<pre><code>const subtotal = hargaBuku * jumlahBeli;
+console.log(subtotal);     // 255000
+console.log(subtotal / 2); // 127500
+console.log(17 % 5);       // 2
+console.log('5' + 3);      // 53 (string)
+console.log('5' - 3);      // 2 (number)</code></pre>
+<p>Perhatikan dua baris terakhir. Bila salah satu nilainya <em>string</em>, operator <code>+</code> menyambung teks alih-alih menjumlahkan, sedangkan <code>-</code> mengubah <em>string</em> menjadi angka lebih dulu. Ubah isian dari pengguna menjadi angka dengan <code>Number()</code> sebelum dihitung agar hasilnya tidak mengejutkan.</p>
+<h2>Operator Perbandingan dan Logika</h2>
+<p>Operator perbandingan menghasilkan nilai <em>boolean</em> dan sering digabung dengan operator logika:</p>
+<pre><code>console.log(5 == '5');                       // true
+console.log(5 === '5');                      // false
+console.log(hargaBuku &gt;= 50000 &amp;&amp; tersedia); // true
+console.log(jumlahBeli &gt; 5 || tersedia);     // true
+console.log(!tersedia);                      // false</code></pre>
+<p>Operator <code>==</code> menyamakan tipe nilai sebelum membandingkan sehingga angka <code>5</code> dianggap sama dengan <em>string</em> <code>'5'</code>. Operator <code>===</code> membandingkan nilai sekaligus tipenya. Selalu gunakan <code>===</code> dan <code>!==</code> agar hasil perbandingan mudah ditebak.</p>
+<p>Operator logika menggabungkan beberapa kondisi: <code>&amp;&amp;</code> bernilai <code>true</code> bila kedua sisinya benar, <code>||</code> bernilai <code>true</code> bila salah satu sisinya benar, dan <code>!</code> membalik nilai <em>boolean</em>.</p>
+<p>Pada materi berikutnya, kita akan memakai operator perbandingan dan logika ini untuk membuat keputusan lewat percabangan serta mengulang perintah dengan perulangan.</p>

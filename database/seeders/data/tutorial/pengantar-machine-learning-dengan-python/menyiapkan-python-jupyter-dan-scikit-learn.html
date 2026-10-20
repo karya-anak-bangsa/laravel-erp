@@ -1,0 +1,43 @@
+<p>Materi sebelumnya membahas konsep <em>machine learning</em> tanpa menjalankan kode. Sekarang kita menyiapkan lingkungan kerjanya, yaitu Python, lingkungan virtual, pustaka pandas dan scikit-learn, serta JupyterLab untuk menulis kode secara interaktif.</p>
+<h2>Memeriksa Python</h2>
+<p>Buka terminal, yaitu PowerShell di Windows atau aplikasi Terminal di macOS dan Linux, lalu periksa versi Python:</p>
+<pre><code>python --version</code></pre>
+<p>Di macOS dan Linux, perintahnya sering bernama <code>python3</code>. Jika Python belum terpasang, ikuti panduan di artikel <a href="/artikel/belajar-python-dari-nol-instalasi-virtual-environment-dan-program-pertama">Belajar Python dari Nol: Instalasi, Virtual Environment, dan Program Pertama</a>. Bila pemasangan pustaka nanti gagal pada versi Python yang baru saja dirilis, pakai satu versi sebelumnya.</p>
+<h2>Membuat Lingkungan Virtual</h2>
+<p>Setiap proyek sebaiknya memiliki lingkungan virtual (<em>virtual environment</em>) sendiri, yaitu folder berisi Python beserta pustaka khusus proyek itu. Dengan begitu, versi pustaka di satu proyek tidak bentrok dengan proyek lain. Buat folder proyek dan lingkungan virtualnya:</p>
+<pre><code>mkdir belajar-ml
+cd belajar-ml
+python -m venv .venv</code></pre>
+<p>Modul <code>venv</code> membuat folder <code>.venv</code> di dalam proyek. Di macOS dan Linux, ganti <code>python</code> dengan <code>python3</code> pada perintah terakhir. Aktifkan lingkungan tersebut sesuai sistem operasi Anda:</p>
+<pre><code># Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# macOS dan Linux
+source .venv/bin/activate</code></pre>
+<p>Tulisan <code>(.venv)</code> akan muncul di awal baris terminal sebagai tanda lingkungan sudah aktif. Setelah itu, perintah <code>python</code> juga berlaku di macOS dan Linux. Jika PowerShell menolak menjalankan skrip aktivasi, jalankan <code>Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code> sekali, lalu ulangi aktivasinya. Perintah <code>deactivate</code> menonaktifkan lingkungan virtual.</p>
+<h2>Memasang Pustaka dengan pip</h2>
+<p>Selama lingkungan virtual aktif, pustaka yang dipasang dengan pip hanya masuk ke folder <code>.venv</code>:</p>
+<pre><code>python -m pip install --upgrade pip
+python -m pip install pandas scikit-learn jupyterlab</code></pre>
+<p>Perintah pertama memperbarui pip. Perintah kedua memasang tiga pustaka utama seri ini beserta dependensinya, termasuk NumPy untuk perhitungan angka dan joblib yang kelak dipakai untuk menyimpan model. Bentuk <code>python -m pip</code> memastikan pip yang dipakai berasal dari Python di lingkungan yang sedang aktif.</p>
+<p>Simpan daftar pustaka beserta versinya agar proyek mudah dipasang ulang di komputer lain:</p>
+<pre><code>python -m pip freeze &gt; requirements.txt</code></pre>
+<p>Rekan Anda cukup membuat lingkungan virtualnya sendiri, lalu menjalankan <code>python -m pip install -r requirements.txt</code>.</p>
+<h2>Menjalankan JupyterLab</h2>
+<p>JupyterLab adalah editor berbasis peramban untuk menulis <em>notebook</em>, yaitu berkas berekstensi <code>.ipynb</code> yang berisi sel-sel kode beserta hasilnya. Format ini cocok untuk <em>machine learning</em> karena data bisa diperiksa sedikit demi sedikit. Jalankan perintah berikut dari terminal yang lingkungan virtualnya aktif:</p>
+<pre><code>jupyter lab</code></pre>
+<p>Peramban akan membuka JupyterLab secara otomatis. Di halaman <strong>Launcher</strong>, klik <strong>Python 3 (ipykernel)</strong> untuk membuat <em>notebook</em> baru. Ketik kode di sebuah sel, lalu tekan <strong>Shift+Enter</strong> untuk menjalankannya. Hentikan JupyterLab dengan menekan <strong>Ctrl+C</strong> dua kali di terminal.</p>
+<p>VS Code dengan ekstensi Jupyter juga bisa membuka <em>notebook</em>; pilih Python dari folder <code>.venv</code> sebagai <em>kernel</em>. Google Colab bahkan berjalan di peramban tanpa pemasangan apa pun. Pustaka pandas dan scikit-learn pun sudah tersedia di sana.</p>
+<h2>Memeriksa Versi Pustaka</h2>
+<p>Ketik kode berikut di sel pertama <em>notebook</em>:</p>
+<pre><code>import sys
+
+import pandas as pd
+import sklearn
+
+print(sys.version)
+print(pd.__version__)
+print(sklearn.__version__)</code></pre>
+<p>Ketiga baris <code>print()</code> menampilkan versi Python, pandas, dan scikit-learn. Perhatikan bahwa pustakanya dipasang dengan nama <code>scikit-learn</code>, tetapi diimpor sebagai <code>sklearn</code>. Singkatan <code>pd</code> untuk pandas adalah kebiasaan umum yang juga dipakai dokumentasi resminya.</p>
+<p>Galat <code>ModuleNotFoundError</code> berarti <em>notebook</em> tidak memakai Python dari lingkungan virtual. Tutup JupyterLab, aktifkan kembali <code>.venv</code>, lalu jalankan <code>jupyter lab</code> lagi. Rincian lengkap tentang pustaka dan sistem Anda bisa dilihat dengan <code>sklearn.show_versions()</code>.</p>
+<p>Lingkungan kerja sudah siap. Pada materi berikutnya, kita akan memuat <em>dataset</em> pertama dan mengenal isinya dengan pandas.</p>
