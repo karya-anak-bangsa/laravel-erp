@@ -1009,24 +1009,42 @@ table.table td.kolom-aksi {
 }
 
 // Uji skala teks & jarak di dashboard (permintaan pemilik 2026-10-22), diterapkan ke semua halaman admin setelah
-// dinyatakan solid. Kepala kartu satu tingkat di atas isinya (judul 15 lawan judul baris 13, subjudul 13 lawan
-// keterangan 12); ukuran dan tinggi baris bulat agar tepi kartu jatuh di piksel utuh. Jarak tepi kartu ke huruf ±16px
-// di setiap bagian kartu, sama dengan jarak kiri: padding teks 12px ditambah separuh sisa tinggi barisnya, sedangkan
-// footer yang berisi tombol langsung 16px.
+// dinyatakan solid. Proporsinya mengacu pada template Zenith pilihan pemilik, tetapi lebih rapat karena nilai Zenith
+// (isi 14px, padding 20px) tampak dizoom di kartu sempit: empat ukuran teks (12 label & keterangan, 13 isi seperti
+// tabel admin, 16 judul kartu, 24 judul halaman & angka) dengan tinggi baris bulat agar tepi kartu jatuh di piksel
+// utuh, padding kartu 16px, baris daftar 12px 16px, sel tabel 8px 16px, serta jarak 24px dari judul halaman dan
+// antarbaris kartu. Bayangan, warna, sudut, dan garis kepala kartu tetap gaya Gentelella (bayangan Zenith dinilai
+// pemilik terlalu tebal).
 .halaman-dashboard {
+    .page-header {
+        margin-bottom: 24px;
+    }
+
     .page-title {
-        line-height: 24px;
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 700;
+        letter-spacing: -0.6px;
+    }
+
+    .row:not(:last-child) {
+        margin-bottom: 24px;
+    }
+
+    .card-header {
+        padding: 16px;
     }
 
     .card-title {
-        font-size: 15px;
-        line-height: 20px;
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: -0.4px;
     }
 
     .card-subtitle {
         margin-top: 0;
-        font-size: 13px;
-        line-height: 18px;
+        font-size: 12px;
+        line-height: 16px;
     }
 
     .card-footer {
@@ -1068,18 +1086,16 @@ table.table td.kolom-aksi {
         outline-offset: 2px;
     }
 
-    // Padding seperti kepala kartu: bawaan Gentelella 16px membuat jarak ke huruf ±19px sehingga kartu ini tampak
-    // lebih lapang dari kartu lain.
+    // Jarak ikon ke teks sama dengan padding kartu (16px).
     .stat {
-        gap: 12px;
-        padding: 12px 16px;
+        gap: 16px;
     }
 
     // Huruf biasa: label kapital bawaan (11,5px) tampak setinggi teks 15px karena huruf kapital Inter 34% lebih tinggi
     // dari huruf kecil.
     .stat-label {
-        font-size: 13px;
-        line-height: 18px;
+        font-size: 12px;
+        line-height: 16px;
         letter-spacing: normal;
         text-transform: none;
     }
@@ -1087,6 +1103,8 @@ table.table td.kolom-aksi {
     .stat-value {
         font-size: 24px;
         line-height: 28px;
+        font-weight: 700;
+        letter-spacing: -0.6px;
     }
 
     .stat-subtext {
@@ -1128,7 +1146,8 @@ table.table td.kolom-aksi {
 }
 
 // Daftar ringkas dashboard (Terakhir diperbarui, Belum tampil): baris bergaris pemisah berisi judul dan
-// keterangan, label status di kanan. Padding sama dengan kepala kartu (12px 16px).
+// keterangan, label status di kanan. Padding 12px 16px membuat jarak tepi baris ke huruf ±16px, sama dengan kepala
+// kartu.
 .daftar-ringkas {
     margin: 0;
     padding: 0;
@@ -1147,7 +1166,7 @@ table.table td.kolom-aksi {
     }
 }
 
-// Judul baris 13px seperti isi tabel admin; sebelumnya mewarisi 14px dari body sehingga lebih besar dari judul kartu.
+// Judul baris 13px seperti isi tabel admin, satu tingkat di bawah judul kartu (16px).
 .isi-ringkas {
     flex: 1;
     min-width: 0;
@@ -1155,10 +1174,15 @@ table.table td.kolom-aksi {
     line-height: 18px;
 }
 
+// Satu baris berelipsis: judul panjang yang patah membuat tinggi baris tidak seragam di kartu sempit (Belum tampil).
+// Judul lengkap tampil lewat atribut title.
 .judul-ringkas {
+    display: block;
+    overflow: hidden;
     color: var(--text);
     font-weight: var(--font-weight-medium);
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 a.judul-ringkas:hover {
@@ -1172,10 +1196,10 @@ a.judul-ringkas:hover {
 }
 
 // Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.
-// Label huruf biasa 13px seperti nilainya (label kapital 11px tampak lebih tinggi dari huruf isi). Garis dipasang per
-// sel, bukan collapse, agar baris jatuh di piksel utuh; garis label disamakan dengan garis nilai, dan garis label
-// terakhir dibuang karena menumpuk dengan garis footer. Semua baris setinggi baris berchip (chip 22 + padding 16 +
-// garis 1).
+// Label huruf biasa 13px seperti nilainya (label kapital 11px bawaan tampak lebih tinggi dari huruf isi). Garis
+// dipasang per sel, bukan collapse, agar baris jatuh di piksel utuh; garis label disamakan dengan garis nilai, dan
+// garis label terakhir dibuang karena menumpuk dengan garis footer. Semua baris setinggi baris berchip (chip 22 +
+// padding 16 + garis 1).
 table.table.tabel-status-situs {
     border-collapse: separate;
     border-spacing: 0;
@@ -1183,7 +1207,7 @@ table.table.tabel-status-situs {
     th,
     td {
         height: 39px;
-        line-height: 18px;
+        line-height: 20px;
     }
 
     th {

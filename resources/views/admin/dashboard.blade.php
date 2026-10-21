@@ -35,7 +35,7 @@
                     @foreach ($terakhirDiperbarui as $item)
                         <li>
                             <div class="isi-ringkas">
-                                <a href="{{ $item['url'] }}" class="judul-ringkas">{{ Str::limit($item['judul'], 100) }}</a>
+                                <a href="{{ $item['url'] }}" class="judul-ringkas" title="{{ $item['judul'] }}">{{ Str::limit($item['judul'], 100) }}</a>
                                 <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
                             </div>
                         </li>
@@ -101,7 +101,7 @@
                         @foreach ($belumTampil as $item)
                             <li>
                                 <div class="isi-ringkas">
-                                    <a href="{{ $item['url'] }}" class="judul-ringkas">{{ Str::limit($item['judul'], 100) }}</a>
+                                    <a href="{{ $item['url'] }}" class="judul-ringkas" title="{{ $item['judul'] }}">{{ Str::limit($item['judul'], 100) }}</a>
                                     <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
                                 </div>
                                 <span class="chip chip-yellow">{{ $item['status'] }}</span>

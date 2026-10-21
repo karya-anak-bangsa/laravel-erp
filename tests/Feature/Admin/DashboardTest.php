@@ -149,9 +149,9 @@ describe('ringkasan dashboard', function () {
             ->get(route('admin.dashboard'))
             ->assertSeeInOrder([
                 '<div class="card-title">Terakhir diperbarui</div>',
-                'href="'.route('admin.faq.edit', $faq).'" class="judul-ringkas">FAQ terbaru?</a>', 'FAQ · 20 Oktober 2026, 10:00',
-                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel kemarin</a>', 'Artikel · 19 Oktober 2026, 10:00',
-                'href="'.route('admin.hero.edit', $hero).'" class="judul-ringkas">Hero lama</a>', 'Hero · 01 Oktober 2026, 10:00',
+                'href="'.route('admin.faq.edit', $faq).'" class="judul-ringkas" title="FAQ terbaru?">FAQ terbaru?</a>', 'FAQ · 20 Oktober 2026, 10:00',
+                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas" title="Artikel kemarin">Artikel kemarin</a>', 'Artikel · 19 Oktober 2026, 10:00',
+                'href="'.route('admin.hero.edit', $hero).'" class="judul-ringkas" title="Hero lama">Hero lama</a>', 'Hero · 01 Oktober 2026, 10:00',
             ], false)
             ->assertDontSee('Artikel terhapus');
     });
@@ -178,9 +178,9 @@ describe('ringkasan dashboard', function () {
             ->get(route('admin.dashboard'))
             ->assertSeeInOrder([
                 '<div class="card-title">Belum tampil</div>',
-                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'chip-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'chip-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas">Tutorial kosong</a>', 'chip-yellow">Belum ada materi',
+                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas" title="Artikel draf">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'chip-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas" title="Tutorial draf">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'chip-yellow">Draf',
+                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas" title="Tutorial kosong">Tutorial kosong</a>', 'chip-yellow">Belum ada materi',
             ], false)
             ->getContent();
 
