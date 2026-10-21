@@ -1,4 +1,5 @@
 @use('App\Enums\Sistem\AksiAktivitas')
+@use('App\Models\Sistem\LogAktivitas')
 
 @extends('layouts.admin', ['breadcrumb' => ['Pengaturan Sistem' => null, 'Log Aktivitas' => null]])
 
@@ -20,8 +21,10 @@
         </select>
     </x-admin.filter-bar>
 
-    {{-- Hanya daftar baca tanpa tombol tambah, ubah, atau hapus: log ditulis otomatis dan jejaknya tidak bisa dihapus. --}}
-    <x-admin.card title="Log Aktivitas" :flush="true">
+    {{-- Hanya daftar baca tanpa tombol tambah, ubah, atau hapus: log ditulis otomatis dan jejaknya tidak bisa dihapus
+         dari panel. --}}
+    <x-admin.card title="Log Aktivitas" :subtitle="'Aktivitas '.LogAktivitas::MASA_SIMPAN_HARI.' hari terakhir; yang lebih lama dihapus otomatis.'"
+        :flush="true">
         @if ($logAktivitas->isEmpty())
             @if (request()->anyFilled(['q', 'pengguna', 'aktivitas']))
                 <x-admin.empty-state title="Aktivitas tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />

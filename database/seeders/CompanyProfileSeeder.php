@@ -15,9 +15,7 @@ class CompanyProfileSeeder extends Seeder
     {
         $this->call([
             IdentitasSeeder::class,
-            // HeroDummySeeder wajib setelah HeroSeeder: HeroSeeder dilewati bila tabel hero sudah berisi.
             HeroSeeder::class,
-            HeroDummySeeder::class,
             LayananSeeder::class,
             KategoriPortofolioSeeder::class,
             PortofolioDummySeeder::class,

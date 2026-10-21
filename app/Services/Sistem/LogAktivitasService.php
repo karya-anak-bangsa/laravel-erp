@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * Penulis Log Aktivitas (Pengaturan Sistem): dipanggil trait MencatatAktivitas untuk perubahan data dan listener event
- * Login/Logout di AppServiceProvider. Baris log hanya ditambah, tidak pernah diubah atau dihapus.
+ * Login/Logout di AppServiceProvider. Baris log tidak pernah diubah, dan dihapus permanen setelah masa simpannya.
  */
 class LogAktivitasService
 {
@@ -36,6 +36,10 @@ class LogAktivitasService
      */
     public function catat(AksiAktivitas $aksi, Pengguna $pengguna, ?Model $subjek = null, ?string $nama = null, array $isian = []): LogAktivitas
     {
+        // Dibersihkan setiap kali ada log baru, tanpa cron (pilihan pemilik). Halaman log hanya terbuka setelah masuk,
+        // dan masuk sendiri menulis log, sehingga log yang melewati masa simpan tidak pernah tampil.
+        LogAktivitas::query()->where('created_at', '<', now()->subDays(LogAktivitas::MASA_SIMPAN_HARI))->delete();
+
         return LogAktivitas::create([
             'id_pengguna' => $pengguna->getKey(),
             'aksi' => $aksi,

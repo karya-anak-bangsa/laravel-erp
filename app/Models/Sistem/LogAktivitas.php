@@ -14,12 +14,15 @@ use Illuminate\Support\Str;
 
 /**
  * Satu kejadian di Log Aktivitas, ditulis LogAktivitasService. Tanpa updated_at dan soft delete: baris log tidak pernah
- * diubah atau dihapus dari aplikasi.
+ * diubah, dan dihapus permanen setelah masa simpannya.
  */
 class LogAktivitas extends Model
 {
     /** @use HasFactory<LogAktivitasFactory> */
     use HasFactory;
+
+    // Log yang lebih lama dihapus permanen agar tidak menumpuk (pilihan pemilik 2026-10-21).
+    public const MASA_SIMPAN_HARI = 7;
 
     public const UPDATED_AT = null;
 

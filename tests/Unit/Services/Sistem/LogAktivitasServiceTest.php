@@ -55,6 +55,17 @@ it('mencatat masuk tanpa data dan memotong nama data sampai 255 karakter', funct
         ->and(mb_strlen($hapus->label_subjek))->toBe(255);
 });
 
+it('menghapus permanen log yang melewati masa simpan 7 hari setiap kali log baru ditulis', function () {
+    $lama = LogAktivitas::factory()->for($this->admin, 'pengguna')->create(['created_at' => now()->subDays(7)->subMinute()]);
+    $masihDisimpan = LogAktivitas::factory()->for($this->admin, 'pengguna')->create(['created_at' => now()->subDays(7)->addMinute()]);
+
+    $baru = $this->layanan->catat(AksiAktivitas::Masuk, $this->admin);
+
+    expect(LogAktivitas::query()->pluck('id_log_aktivitas')->sort()->values()->all())
+        ->toBe([$masihDisimpan->id_log_aktivitas, $baru->id_log_aktivitas])
+        ->and(LogAktivitas::find($lama->id_log_aktivitas))->toBeNull();
+});
+
 it('mencatat isian yang ditandai walau tidak ada kolom tabel yang berubah', function () {
     // Dibuat dan disimpan dalam detik yang sama, jadi updated_at pun tidak berubah dan event updated tidak terpicu.
     $portofolio = Portofolio::factory()->create(['judul' => 'Website Sekolah']);

@@ -23,13 +23,13 @@ class HeroSeeder extends Seeder
         }
 
         Hero::create([
-            'judul' => 'Solusi Digital & Talenta IT untuk Indonesia',
-            'deskripsi' => TeksHtml::dariTeksPolos('Kami membantu bisnis tumbuh lewat website dan aplikasi mobile, serta menyiapkan talenta IT melalui pelatihan, sertifikasi, dan bootcamp.'),
+            'judul' => 'Solusi IT terbaik untuk digitalisasi bisnis Anda',
+            'deskripsi' => TeksHtml::dariTeksPolos('Kami menghadirkan solusi digital modern yang membantu bisnis berkembang lebih cepat, efisien, dan siap menghadapi era teknologi.'),
             'gambar' => $this->salinBerkasAwal(public_path('img/hero.webp'), Hero::FOLDER, Hero::DISK),
             'keyword' => ['Website', 'Mobile Apps', 'Pelatihan IT', 'Sertifikasi IT', 'Bootcamp'],
             'cta' => [
-                ['label' => 'Hubungi Kami', 'url' => 'https://wa.me/6281234567890', 'gaya' => GayaCta::Primary->value],
-                // Anchor ke seksi beranda: halaman portofolio tersendiri belum ada.
+                // Sama dengan link WhatsApp di IdentitasSeeder agar semua tombol WhatsApp menuju nomor yang sama.
+                ['label' => 'Hubungi Kami', 'url' => 'https://wa.me/6281932855946', 'gaya' => GayaCta::Primary->value],
                 ['label' => 'Lihat Portofolio', 'url' => '#portofolio', 'gaya' => GayaCta::Secondary->value],
             ],
             'status_aktif' => true,

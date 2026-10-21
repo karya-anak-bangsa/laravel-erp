@@ -232,11 +232,11 @@ it('membuat baris identitas awal beserta logo dan favicon dari seeder', function
     $identitas = Identitas::sole();
     expect($identitas->nama_perusahaan)->toBe('PT. Teknologi Karya Anak Bangsa')
         ->and($identitas->alamat_website)->toBe('https://karyaanakbangsa.co.id')
-        ->and($identitas->meta_deskripsi)->toStartWith('Kami membantu bisnis tumbuh')
+        ->and($identitas->meta_deskripsi)->toStartWith('Kami menghadirkan solusi digital')
         ->and(mb_strlen($identitas->meta_deskripsi))->toBeLessThanOrEqual(160)
-        ->and($identitas->email)->toBe(['info@karyaanakbangsa.co.id'])
-        ->and($identitas->telepon)->toBe(['0812-3456-7890'])
-        ->and($identitas->link_whatsapp)->toBe('https://wa.me/6281234567890')
+        ->and($identitas->email)->toBe(['aryajayaalamsyah@gmail.com'])
+        ->and($identitas->telepon)->toBe(['0819-3285-5946', '0811-888-475'])
+        ->and($identitas->link_whatsapp)->toBe('https://wa.me/6281932855946')
         ->and($identitas->link_youtube)->toBeNull()
         ->and($identitas->link_instagram)->toBeNull();
     Storage::disk('public')->assertExists([$identitas->logo_website, $identitas->favicon_website]);

@@ -27,7 +27,7 @@ it('mengisi data company profile yang sama di produksi seperti di lokal', functi
     $this->artisan('db:seed', ['--class' => CompanyProfileSeeder::class, '--force' => true])->assertSuccessful();
 
     expect(Identitas::count())->toBe(1)
-        ->and(Hero::count())->toBe(5)
+        ->and(Hero::count())->toBe(1)
         ->and(Layanan::count())->toBe(5)
         ->and(KategoriPortofolio::count())->toBe(5)
         ->and(Portofolio::count())->toBe(7)
@@ -65,6 +65,15 @@ it('tidak memberi CTA hero tautan mati: hanya anchor seksi beranda yang ada atau
         ->each(fn (string $anchor) => expect($beranda)->toContain('id="'.substr($anchor, 1).'"'));
 });
 
+it('mengarahkan tombol WhatsApp hero ke nomor yang sama dengan identitas', function () {
+    $this->seed(CompanyProfileSeeder::class);
+
+    $whatsapp = collect(Hero::sole()->cta)->pluck('url')->filter(fn (string $url) => str_starts_with($url, 'https://wa.me/'));
+
+    expect($whatsapp)->not->toBeEmpty()
+        ->each->toBe(Identitas::sole()->link_whatsapp);
+});
+
 it('memakai logo lebar berlatar transparan untuk identitas awal', function () {
     $this->seed(CompanyProfileSeeder::class);
 
@@ -80,7 +89,7 @@ it('menjalankan seeder company profile ulang tanpa duplikasi data maupun gambar'
 
     $this->seed(CompanyProfileSeeder::class);
 
-    expect(Hero::count())->toBe(5)
+    expect(Hero::count())->toBe(1)
         ->and(Portofolio::count())->toBe(7)
         ->and(Artikel::count())->toBe(32)
         ->and(MateriTutorial::count())->toBe(40)

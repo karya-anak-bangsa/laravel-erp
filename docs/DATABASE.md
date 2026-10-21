@@ -6,7 +6,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 
 - Tabel domain: `tb_<entitas>` (tunggal). PK: `id_<entitas>` BIGINT UNSIGNED AUTO_INCREMENT (`$table->id('id_<entitas>')`).
 - FK bernama sama dengan PK rujukan. Bila ada dua FK ke tabel yang sama, beri akhiran: `id_pengguna_pengirim`, `id_pengguna_penerima`.
-- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete), kecuali tabel gambar anak yang barisnya bagian dari induknya (`tb_gambar_portofolio`) dan tabel log yang tidak pernah diubah atau dihapus (`tb_log_aktivitas`, hanya `created_at`).
+- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete), kecuali tabel gambar anak yang barisnya bagian dari induknya (`tb_gambar_portofolio`) dan tabel log yang tidak pernah diubah dan dihapus permanen setelah masa simpannya (`tb_log_aktivitas`, hanya `created_at`).
 - Boolean berawalan `status_` (mis. `status_baca`, `status_aktif`).
 - Nilai pilihan tetap: `VARCHAR(20)` + PHP backed enum (bukan tipe ENUM MySQL, agar mudah ditambah).
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
@@ -36,7 +36,7 @@ Catatan implementasi:
 - **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout dan reset password), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
 
 ### tb_log_aktivitas
-Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Hanya ditambah, tidak pernah diubah atau dihapus dari aplikasi.
+Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Tidak pernah diubah, dan dihapus permanen setelah 7 hari.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
@@ -54,7 +54,7 @@ Catatan implementasi:
 - Ditulis otomatis oleh trait `App\Models\Concerns\MencatatAktivitas` (event model `created`, `updated`, `deleted`, `restored`) dan listener event `Login`/`Logout` di `AppServiceProvider`, lewat `LogAktivitasService`. Hanya bila ada pengguna yang login, jadi seeder, tinker, dan factory test tidak menulis log; simpan yang tidak mengubah isian apa pun juga tidak dicatat.
 - Perubahan lewat query massal tidak memicu event model, sehingga tercatat lewat data induknya: materi yang ikut terhapus bersama tutorialnya tercatat sebagai "Hapus" tutorial, hero/template lain yang dinonaktifkan otomatis tercatat sebagai "Ubah" status pada yang diaktifkan, dan gambar tambahan portofolio sebagai isian "Gambar Tambahan" portofolionya.
 - Tidak diisi seeder: isinya catatan kejadian, bukan konten, sehingga tidak termasuk aturan "seeder = database lokal". Reset Data Produksi ikut mengosongkannya.
-- Disimpan tanpa batas waktu (pilihan pemilik 2026-10-21); pembersihan otomatis menyusul bersama Backup database terjadwal (butuh cron).
+- Disimpan 7 hari (`LogAktivitas::MASA_SIMPAN_HARI`, pilihan pemilik 2026-10-21) agar tidak menumpuk: setiap kali log baru ditulis, log yang lebih lama dihapus permanen (`LogAktivitasService::catat()`), tanpa cron.
 
 ---
 

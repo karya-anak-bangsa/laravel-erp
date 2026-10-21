@@ -77,6 +77,7 @@ it('menampilkan log terbaru lebih dulu sesuai standar admin', function () {
             '<option value="">Semua pengguna</option>', '>Budi Santoso</option>',
             '<option value="">Semua aktivitas</option>', '<option value="aktifkan_kembali" >Aktifkan kembali</option>',
             '<div class="card-title">Log Aktivitas</div>',
+            '<div class="card-subtitle">Aktivitas 7 hari terakhir; yang lebih lama dihapus otomatis.</div>',
             '<th class="kolom-pas">Waktu</th>', '<th class="kolom-pas">Pengguna</th>', '<th class="kolom-pas">Aktivitas</th>',
             '<th class="kolom-pas">Data</th>', '<th class="kolom-lebar">Nama Data</th>', '<th class="kolom-aksi">Aksi</th>',
             '<td class="kolom-pas">21 Oktober 2026, 14:32</td>', '<td class="kolom-pas">Budi Santoso</td>',

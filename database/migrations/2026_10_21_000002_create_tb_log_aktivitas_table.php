@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Hanya ditambah, tidak pernah diubah atau dihapus dari aplikasi, jadi tanpa updated_at dan deleted_at.
+        // Tidak pernah diubah dan dihapus permanen setelah masa simpannya, jadi tanpa updated_at dan deleted_at.
         Schema::create('tb_log_aktivitas', function (Blueprint $table) {
             $table->id('id_log_aktivitas');
             // Akun pengguna hanya soft delete, jadi pelaku selalu bisa ditelusuri.
