@@ -30,7 +30,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 | created_at, updated_at, deleted_at | TIMESTAMP NULL | |
 
 Catatan implementasi:
-- Model `App\Models\Pengguna extends Authenticatable` (dipakai `config/auth.php`). Tabel bawaan `sessions` tetap dipakai; `password_reset_tokens` ikut dibuat migration bawaan, tetapi tidak dipakai karena fitur lupa kata sandi tidak dibuat.
+- Model `App\Models\Pengguna extends Authenticatable` (dipakai `config/auth.php`). Tabel bawaan `sessions` tetap dipakai; tabel bawaan `password_reset_tokens` tidak dibuat karena fitur lupa kata sandi tidak ada (CLAUDE.md §10).
 - `deleted_at` terisi = akun **Nonaktif**: tidak bisa login dan sesinya berakhir, tetap tercantum di Manajemen Pengguna, dan bisa diaktifkan kembali (`restore()`) dengan email & kata sandi lamanya (pilihan pemilik).
 - `email` UNIQUE termasuk akun Nonaktif, sehingga validasinya tanpa `withoutTrashed()`: email akun Nonaktif tidak bisa dipakai akun baru (pilihan pemilik).
 - **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.

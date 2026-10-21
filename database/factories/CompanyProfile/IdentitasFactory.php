@@ -4,6 +4,7 @@ namespace Database\Factories\CompanyProfile;
 
 use App\Models\CompanyProfile\Identitas;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 
 /**
  * @extends Factory<Identitas>
@@ -22,7 +23,7 @@ class IdentitasFactory extends Factory
             'judul_website' => fake()->sentence(4),
             'alamat_website' => fake()->url(),
             'meta_deskripsi' => fake()->sentence(),
-            'meta_keyword' => implode(', ', fake()->words(4)),
+            'meta_keyword' => Collection::times(4, fn (): string => fake()->word())->implode(', '),
             'logo_website' => Identitas::FOLDER.'/'.fake()->uuid().'.png',
             'favicon_website' => Identitas::FOLDER.'/'.fake()->uuid().'.png',
             'email' => [fake()->companyEmail()],

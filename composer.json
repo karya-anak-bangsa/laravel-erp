@@ -47,6 +47,10 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
+        "coverage": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "@php -d extension=pcov -d pcov.enabled=1 vendor/bin/pest --coverage"
+        ],
         "lint": "pint",
         "analyse": "phpstan analyse --memory-limit=1G",
         "check": [

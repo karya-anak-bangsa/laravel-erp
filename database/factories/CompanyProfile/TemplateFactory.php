@@ -28,7 +28,7 @@ class TemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => 'Template '.fake()->unique()->words(2, true),
+            'nama' => 'Template '.fake()->unique()->word().' '.fake()->word(),
             'jenis' => JenisTemplate::FullColor,
             'warna_utama' => fake()->hexColor(),
             'warna_aksen' => fake()->hexColor(),

@@ -136,17 +136,25 @@ class RingkasanService
     private function terbaruDari(string $modul, Builder $query, string $kolomJudul, string $rute, int $jumlah): array
     {
         $kunci = $query->getModel()->getKeyName();
+        $hasil = [];
 
-        return $query->latest('updated_at')->latest($kunci)->limit($jumlah)
-            ->get([$kunci, $kolomJudul, 'updated_at'])
-            ->map(fn (Model $item): array => [
+        foreach ($query->latest('updated_at')->latest($kunci)->limit($jumlah)->get([$kunci, $kolomJudul, 'updated_at']) as $item) {
+            $diperbarui = $item->getAttribute('updated_at');
+
+            // Kosong bila baris diisi di luar Eloquent; tanpa waktu simpan, baris itu tidak bisa diurutkan.
+            if (! $diperbarui instanceof CarbonInterface) {
+                continue;
+            }
+
+            $hasil[] = [
                 'modul' => $modul,
                 'judul' => (string) $item->getAttribute($kolomJudul),
-                'diperbarui' => $item->getAttribute('updated_at'),
+                'diperbarui' => $diperbarui,
                 'url' => route($rute, $item),
-            ])
-            ->values()
-            ->all();
+            ];
+        }
+
+        return $hasil;
     }
 
     /**

@@ -52,6 +52,33 @@ function pngBerprofil(int $lebar, int $tinggi, string $namaProfil): string
     return substr($png, 0, 33).pack('N', strlen($data)).'iCCP'.$data.pack('N', crc32('iCCP'.$data)).substr($png, 33);
 }
 
+/** JPEG polos dengan segmen APP2 ICC_PROFILE (profil warna) bernama $namaProfil, tepat setelah penanda SOI. */
+function jpegBerprofil(int $lebar, int $tinggi, string $namaProfil): string
+{
+    ob_start();
+    imagejpeg(imagecreatetruecolor($lebar, $tinggi));
+    $jpeg = (string) ob_get_clean();
+    $data = "ICC_PROFILE\0\x01\x01lcms\0desc {$namaProfil}";
+
+    return "\xFF\xD8\xFF\xE2".pack('n', strlen($data) + 2).$data.substr($jpeg, 2);
+}
+
+/** WebP format diperluas: chunk VP8X bertanda ICC, chunk ICCP bernama $namaProfil, lalu gambar VP8 dari GD. */
+function webpBerprofil(int $lebar, int $tinggi, string $namaProfil): string
+{
+    ob_start();
+    imagewebp(imagecreatetruecolor($lebar, $tinggi));
+    $webp = (string) ob_get_clean();
+    $profil = "lcms\0desc {$namaProfil}";
+    $isi = 'WEBP'
+        .'VP8X'.pack('V', 10)."\x20\0\0\0".substr(pack('V', $lebar - 1), 0, 3).substr(pack('V', $tinggi - 1), 0, 3)
+        // Isi chunk RIFF berpanjang ganjil diberi satu byte pengisi.
+        .'ICCP'.pack('V', strlen($profil)).$profil.(strlen($profil) % 2 === 1 ? "\0" : '')
+        .substr($webp, 12);
+
+    return 'RIFF'.pack('V', strlen($isi)).$isi;
+}
+
 it('memperkecil gambar besar menjadi WebP bersisi terpanjang 1600 px bila dioptimalkan', function () {
     $path = $this->layanan->simpan(UploadedFile::fake()->image('besar.png', 3200, 1800), 'uji/gambar', 'local', optimalkanGambar: true);
 
@@ -109,23 +136,34 @@ it('memutar foto JPEG sesuai orientasi EXIF', function (int $orientasi, array $u
         ->and($warna['green'])->toBeLessThan(60);
 })->with([
     'tegak' => [1, [1600, 900], [20, 20]],
+    'dicerminkan mendatar' => [2, [1600, 900], [1580, 20]],
+    'diputar 180°' => [3, [1600, 900], [1580, 880]],
+    'dicerminkan vertikal' => [4, [1600, 900], [20, 880]],
+    'dicerminkan lalu diputar 90° berlawanan jarum jam' => [5, [900, 1600], [20, 20]],
     'diputar 90° searah jarum jam' => [6, [900, 1600], [880, 20]],
+    'dicerminkan lalu diputar 90° searah jarum jam' => [7, [900, 1600], [880, 1580]],
     'diputar 90° berlawanan jarum jam' => [8, [900, 1600], [20, 1580]],
 ]);
 
-it('hanya mengonversi gambar berprofil warna sRGB', function (string $profil, string $ekstensi) {
-    $berkas = UploadedFile::fake()->createWithContent('ilustrasi.png', pngBerprofil(3200, 1800, $profil));
+it('hanya mengonversi gambar berprofil warna sRGB', function (string $format, string $profil, array $tersimpan) {
+    $isi = match ($format) {
+        'png' => pngBerprofil(3200, 1800, $profil),
+        'jpg' => jpegBerprofil(3200, 1800, $profil),
+        'webp' => webpBerprofil(3200, 1800, $profil),
+    };
+    $berkas = UploadedFile::fake()->createWithContent("ilustrasi.{$format}", $isi);
 
     $path = $this->layanan->simpan($berkas, 'uji/gambar', 'local', optimalkanGambar: true);
 
-    // Profil selain sRGB terbuang oleh GD sehingga warnanya bergeser; berkas asli disimpan utuh.
-    expect($path)->toEndWith($ekstensi);
-    if ($ekstensi === '.png') {
-        expect(Storage::disk('local')->get($path))->toBe($berkas->get());
-    }
+    // Profil selain sRGB terbuang oleh GD sehingga warnanya bergeser; berkas asli disimpan dengan ukuran & formatnya.
+    expect(ukuranTersimpan($path))->toBe($tersimpan);
 })->with([
-    'sRGB' => ['sRGB IEC61966-2.1', '.webp'],
-    'Display P3' => ['Display P3', '.png'],
+    'PNG sRGB' => ['png', 'sRGB IEC61966-2.1', [1600, 900, 'image/webp']],
+    'PNG Display P3' => ['png', 'Display P3', [3200, 1800, 'image/png']],
+    'JPEG sRGB' => ['jpg', 'sRGB IEC61966-2.1', [1600, 900, 'image/webp']],
+    'JPEG Display P3' => ['jpg', 'Display P3', [3200, 1800, 'image/jpeg']],
+    'WebP sRGB' => ['webp', 'sRGB IEC61966-2.1', [1600, 900, 'image/webp']],
+    'WebP Display P3' => ['webp', 'Display P3', [3200, 1800, 'image/webp']],
 ]);
 
 it('menyimpan berkas asli bila gambar tidak terbaca', function () {

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengguna;
 use App\Models\Sistem\LogAktivitas;
 use App\Services\Sistem\LogAktivitasService;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,9 +43,9 @@ class LogAktivitasController extends Controller
         ]);
     }
 
-    public function kosongkan(Request $request, LogAktivitasService $logAktivitasService): RedirectResponse
+    public function kosongkan(#[CurrentUser] Pengguna $pengguna, LogAktivitasService $logAktivitasService): RedirectResponse
     {
-        $logAktivitasService->kosongkan($request->user());
+        $logAktivitasService->kosongkan($pengguna);
 
         return redirect()->route('admin.log-aktivitas.index')->with('success', 'Log aktivitas berhasil dikosongkan.');
     }

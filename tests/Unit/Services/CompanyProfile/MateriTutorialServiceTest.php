@@ -65,3 +65,11 @@ it('mengunci slug materi begitu tutorialnya terbit', function () {
     expect($materi->refresh()->slug)->toBe('judul-lama')
         ->and($materi->judul)->toBe('Judul Baru');
 });
+
+it('tidak mengunci slug materi yang tutorialnya sudah terhapus', function () {
+    $terbit = Tutorial::factory()->terbit()->create();
+    $materi = MateriTutorial::factory()->for($terbit)->create();
+    $terbit->delete();
+
+    expect($materi->refresh()->slugTerkunci())->toBeFalse();
+});

@@ -10,6 +10,7 @@ use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use App\Services\CompanyProfile\RingkasanService;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $this->ringkasan = app(RingkasanService::class);
@@ -54,6 +55,14 @@ it('mengurutkan konten terakhir diperbarui lintas modul dan membatasi jumlahnya'
             route('admin.faq.edit', $faq),
             route('admin.hero.edit', $hero),
         ]);
+});
+
+it('melewati konten tanpa waktu simpan, mis. yang diisi di luar Eloquent', function () {
+    Faq::factory()->create(['pertanyaan' => 'Tanya?']);
+    $hero = Hero::factory()->create(['judul' => 'Tanpa waktu']);
+    DB::table('tb_hero')->where('id_hero', $hero->id_hero)->update(['updated_at' => null]);
+
+    expect($this->ringkasan->terakhirDiperbarui()->pluck('judul')->all())->toBe(['Tanya?']);
 });
 
 it('mengambil artikel & tutorial yang belum tampil, terakhir disimpan lebih dulu, dan membatasi jumlahnya', function () {

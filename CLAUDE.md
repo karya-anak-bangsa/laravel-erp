@@ -45,6 +45,7 @@ Panduan utama untuk Claude Code di repositori ini. Baca seluruhnya di awal sesi;
 - **Editor**: VS Code + Claude Code. Tulis perintah terminal yang berjalan di Git Bash maupun PowerShell (hindari `sudo` dan `&&` pada PowerShell lama).
 - **Layar acuan**: laptop 14 inci 1920×1200 berskala 125% (layar CSS 1536×960; area tampil Chrome ±1536×790 dengan bilah bookmark, dipakai untuk menilai tampilan yang bergantung pada tinggi layar); tampilan wajib tetap responsif di tablet & ponsel.
 - **Database**: MySQL `laravel_erp` (user `root`, tanpa password); test memakai `laravel_erp_testing`. Proyek wajib MySQL (`DB_CONNECTION=mysql`), bukan SQLite bawaan skeleton.
+- **Cakupan test**: ekstensi PCOV 1.0.12 (`php_pcov.dll` build TS VS16 x64 dari downloads.php.net) di folder `ext` PHP Laragon, tidak diaktifkan di `php.ini` dan hanya dimuat `composer coverage`. Bila versi PHP Laragon diganti, salin ulang DLL yang cocok.
 
 ## 4. Tech Stack
 
@@ -82,6 +83,7 @@ php artisan test                        # jalankan test
 composer lint                           # vendor/bin/pint
 composer analyse                        # vendor/bin/phpstan analyse
 composer check                          # pint --test + phpstan + test (wajib sebelum commit kode)
+composer coverage                       # test + laporan cakupan baris per berkas (PCOV, §3)
 ```
 
 ## 6. Arsitektur
@@ -142,7 +144,7 @@ resources/views/{layouts,errors,components/{admin,web},admin/<modul>/<entitas-ke
 | Variabel & method | camelCase | `$kategoriArtikel`, `buatSlug()` |
 | Relasi | camelCase | `kategoriArtikel()`, `artikel()` |
 
-Tabel infrastruktur framework (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `password_reset_tokens`) **tetap memakai nama default Laravel** karena dipakai internal oleh framework.
+Tabel infrastruktur framework (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`) **tetap memakai nama default Laravel** karena dipakai internal oleh framework.
 
 ## 8. Pola Kode Wajib (karena PK/tabel non-standar)
 
@@ -201,6 +203,7 @@ Schema::create('tb_artikel', function (Blueprint $table) {
 - Route model binding otomatis memakai `$primaryKey`; override `getRouteKeyName()` hanya bila memakai slug di frontend publik.
 - `Route::resource()` untuk nama berakhiran *-s* (mis. `kelas`) wajib diberi `->parameters(['kelas' => 'kelas'])`; tanpanya Laravel memotong parameternya menjadi `{kela}`.
 - Kolom `user_id` di tabel `sessions` berisi nilai `id_pengguna`; ini normal.
+- Pengguna yang sedang login di controller: parameter `#[CurrentUser] Pengguna $pengguna`. `$request->user()` bertipe nullable sehingga ditolak Larastan bila langsung dipakai.
 - Factory untuk FK: `'id_kategori_artikel' => KategoriArtikel::factory()`.
 
 ## 9. Konvensi Fitur

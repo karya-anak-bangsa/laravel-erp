@@ -6,6 +6,7 @@ use App\Enums\CompanyProfile\StatusPublikasi;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\KategoriArtikel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -26,7 +27,7 @@ class ArtikelFactory extends Factory
             'id_kategori_artikel' => KategoriArtikel::factory(),
             'judul' => $judul,
             'slug' => Str::slug($judul),
-            'deskripsi' => '<p>'.implode('</p><p>', fake()->paragraphs(3)).'</p>',
+            'deskripsi' => Collection::times(3, fn (): string => '<p>'.fake()->paragraph().'</p>')->implode(''),
             'gambar' => Artikel::FOLDER.'/'.fake()->uuid().'.webp',
             'tanggal' => fake()->dateTimeBetween('-60 days')->format('Y-m-d'),
             'status_publikasi' => fake()->randomElement(StatusPublikasi::cases()),

@@ -46,3 +46,4 @@ Prasyarat: PHP 8.3+, Composer 2, Node.js 20+, MySQL 8 (Laragon).
 | `composer analyse` | Analisis statis dengan Larastan |
 | `composer test` | Menjalankan test (Pest) |
 | `composer check` | Pint (cek saja) + Larastan + test — wajib lulus sebelum commit |
+| `composer coverage` | Test + laporan cakupan baris per berkas (butuh ekstensi PCOV, lihat `CLAUDE.md` §3) |

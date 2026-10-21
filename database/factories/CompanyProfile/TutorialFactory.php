@@ -20,7 +20,7 @@ class TutorialFactory extends Factory
      */
     public function definition(): array
     {
-        $judul = 'Tutorial '.ucwords(fake()->unique()->words(3, true));
+        $judul = 'Tutorial '.ucwords(fake()->unique()->word().' '.fake()->word().' '.fake()->word());
 
         return [
             'id_kategori_tutorial' => KategoriTutorial::factory(),

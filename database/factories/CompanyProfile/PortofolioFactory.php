@@ -5,6 +5,7 @@ namespace Database\Factories\CompanyProfile;
 use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Portofolio;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -25,7 +26,7 @@ class PortofolioFactory extends Factory
             'id_kategori_portofolio' => KategoriPortofolio::factory(),
             'judul' => $judul,
             'slug' => Str::slug($judul),
-            'deskripsi' => '<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>',
+            'deskripsi' => Collection::times(2, fn (): string => '<p>'.fake()->paragraph().'</p>')->implode(''),
             'gambar' => Portofolio::FOLDER.'/'.fake()->uuid().'.webp',
         ];
     }

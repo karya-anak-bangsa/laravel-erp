@@ -142,6 +142,16 @@ it('memakai config bila database tidak terbaca agar halaman tetap tampil', funct
     Log::shouldHaveReceived('warning')->withArgs(fn (string $pesan) => str_contains($pesan, 'tidak terbaca dari database'))->once();
 });
 
+it('memakai nilai bawaan bila template aktif berisi nilai yang tidak dikenal lagi', function () {
+    Log::spy();
+    $template = Template::factory()->aktif()->create(['nama' => 'Font Lama']);
+    // Mis. font yang kelak dihapus dari FontTemplate; ditulis tanpa model karena cast enum menolaknya.
+    DB::table('tb_template')->where('id_template', $template->id_template)->update(['font' => 'font-terhapus']);
+
+    expect((new TemaService)->templateAktif(JenisTemplate::FullColor))->toMatchArray(['nama' => 'TKAB Full Color', 'font' => FontTemplate::Geist]);
+    Log::shouldHaveReceived('warning')->withArgs(fn (string $pesan) => str_contains($pesan, 'dari database tidak valid'))->once();
+});
+
 it('memakai template pratinjau untuk jenisnya dan menjadikannya tema halaman', function () {
     $pratinjau = new Template(['nama' => 'Coba Hijau', 'jenis' => 'monochrome', 'nada_dasar' => 'hijau', 'font' => 'inter', 'sudut' => 'bulat', 'skala' => 'lega', 'lebar_konten' => 'standar', 'ketebalan_judul' => 'bold', 'bayangan' => 'tegas']);
     $layanan = (new TemaService)->pratinjau($pratinjau);

@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Tanpa remember_token: fitur "ingat saya" sengaja tidak ada (docs/DATABASE.md §A).
+        // Tanpa remember_token dan tabel password_reset_tokens: fitur "ingat saya" dan lupa kata sandi sengaja
+        // tidak ada (docs/DATABASE.md §A).
         Schema::create('tb_pengguna', function (Blueprint $table) {
             $table->id('id_pengguna');
             $table->string('nama', 100);
@@ -20,12 +21,6 @@ return new class extends Migration
             $table->string('peran', 20);
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
@@ -44,7 +39,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tb_pengguna');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

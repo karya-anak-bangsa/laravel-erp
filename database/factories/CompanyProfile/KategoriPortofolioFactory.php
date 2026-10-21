@@ -18,7 +18,7 @@ class KategoriPortofolioFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama_kategori' => ucwords(fake()->unique()->words(2, true)),
+            'nama_kategori' => ucwords(fake()->unique()->word().' '.fake()->word()),
         ];
     }
 }

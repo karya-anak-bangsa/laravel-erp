@@ -8,8 +8,9 @@ parameters:
         - database/
         - routes/
 
-    # Dimulai dari 5, dinaikkan bertahap (ROADMAP: Penguatan Kualitas).
-    level: 5
+    # Level 8 menangkap nilai null yang bisa berujung galat 500. Level 9–10 tidak dipakai (pilihan pemilik):
+    # keduanya menuntut tipe rinci untuk setiap nilai mixed (config, input, atribut model) dengan manfaat kecil.
+    level: 8
 
     # Model memakai method casts() (CLAUDE.md §8); tanpa ini Larastan hanya membaca tipe kolom migration,
     # sehingga atribut ber-cast enum dianggap string.

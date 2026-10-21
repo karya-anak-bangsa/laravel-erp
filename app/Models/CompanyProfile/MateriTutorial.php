@@ -68,7 +68,7 @@ class MateriTutorial extends Model
      */
     public function slugTerkunci(): bool
     {
-        return $this->tutorial->status_publikasi === StatusPublikasi::Terbit;
+        return $this->tutorial?->status_publikasi === StatusPublikasi::Terbit;
     }
 
     /**

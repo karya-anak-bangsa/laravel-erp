@@ -19,7 +19,7 @@ class KategoriArtikelFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama_kategori' => ucwords(fake()->unique()->words(2, true)),
+            'nama_kategori' => ucwords(fake()->unique()->word().' '.fake()->word()),
             // Dari nama akhir (termasuk nama yang ditimpa test), seperti slug buatan KategoriArtikelService.
             'slug' => fn (array $atribut): string => Str::slug($atribut['nama_kategori']),
         ];
