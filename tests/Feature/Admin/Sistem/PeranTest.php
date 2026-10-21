@@ -43,6 +43,8 @@ it('menolak Administrator mengubah data Pengaturan Sistem', function () {
     $modul = ModulWebsite::factory()->create(['jenis' => JenisModul::Faq]);
     $template = Template::factory()->create();
     $lain = Pengguna::factory()->create();
+    $nonaktif = Pengguna::factory()->create();
+    $nonaktif->delete();
 
     $permintaan = [
         ['put', route('admin.identitas.update')],
@@ -59,6 +61,7 @@ it('menolak Administrator mengubah data Pengaturan Sistem', function () {
         ['get', route('admin.pengguna.edit', $lain)],
         ['put', route('admin.pengguna.update', $lain)],
         ['delete', route('admin.pengguna.destroy', $lain)],
+        ['patch', route('admin.pengguna.aktifkan', $nonaktif)],
     ];
 
     foreach ($permintaan as [$metode, $alamat]) {
@@ -67,7 +70,8 @@ it('menolak Administrator mengubah data Pengaturan Sistem', function () {
 
     expect($modul->refresh()->trashed())->toBeFalse()
         ->and($template->refresh()->trashed())->toBeFalse()
-        ->and($lain->refresh()->trashed())->toBeFalse();
+        ->and($lain->refresh()->trashed())->toBeFalse()
+        ->and($nonaktif->refresh()->trashed())->toBeTrue();
 });
 
 it('menampilkan peringatan modul nonaktif tanpa tautan bagi Administrator', function () {

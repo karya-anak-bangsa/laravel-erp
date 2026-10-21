@@ -18,6 +18,7 @@ it('mengarahkan tamu ke halaman login', function () {
     $this->get(route('admin.pengguna.edit', $pengguna))->assertRedirect(route('login'));
     $this->put(route('admin.pengguna.update', $pengguna), $data)->assertRedirect(route('login'));
     $this->delete(route('admin.pengguna.destroy', $pengguna))->assertRedirect(route('login'));
+    $this->patch(route('admin.pengguna.aktifkan', $pengguna))->assertRedirect(route('login'));
 
     expect(Pengguna::count())->toBe(2);
 });
@@ -35,10 +36,12 @@ it('menampilkan daftar pengguna urut abjad sesuai standar admin', function () {
             'class="card kartu-filter"',
             '<div class="card-title">Manajemen Pengguna</div>',
             'href="'.route('admin.pengguna.create').'"',
-            '<table class="table">', '<th class="kolom-pas">Nama</th>', '<th>Email</th>', '<th class="kolom-status">Peran</th>',
+            '<table class="table">', '<th class="kolom-pas">Nama</th>', '<th class="kolom-pas">Email</th>', '<th>Peran</th>',
+            '<th class="kolom-status">Status</th>', '<th class="kolom-aksi">Aksi</th>',
             'Agus Salim', '<span class="chip chip-purple">Super Administrator</span>',
             'Budi Santoso', '<span class="chip chip-purple">Super Administrator</span>',
-            'Citra Lestari', '<td>'.$citra->email.'</td>', '<span class="chip chip-blue">Administrator</span>',
+            'Citra Lestari', '<td class="kolom-pas">'.$citra->email.'</td>', '<td><span class="chip chip-blue">Administrator</span></td>',
+            '<td class="kolom-status">', '<span class="chip chip-green">Aktif</span>',
             'data-detail-title="Detail Pengguna"', '<th scope="row">Email</th>', '<th scope="row">Peran</th>',
             '<td><span class="chip chip-blue">Administrator</span></td>',
             '<th scope="row">Status</th>', '<span class="chip chip-green">Aktif</span>', '09 Oktober 2026, 08:30',
@@ -64,20 +67,24 @@ it('menandai akun sendiri dan menonaktifkan tombol ubah & hapusnya', function ()
         ->assertSee('action="'.route('admin.pengguna.destroy', $lain).'"', false);
 });
 
-it('menampilkan akun terhapus sebagai Nonaktif tanpa tombol ubah dan hapus', function () {
+it('menampilkan akun terhapus sebagai Nonaktif dengan tombol aktifkan kembali', function () {
     $iim = Pengguna::factory()->administrator()->create(['nama' => 'Iim Karimah', 'email' => 'iim@example.com']);
     $iim->delete();
 
     $this->actingAs($this->admin)
         ->get(route('admin.pengguna.index'))
         ->assertSeeInOrder([
-            'Budi Santoso</span>',
-            'Iim Karimah</span>', '<span class="chip chip-red">Nonaktif</span>', 'iim@example.com',
+            'Budi Santoso</span>', '<span class="chip chip-green">Aktif</span>',
+            'Iim Karimah</span>', 'iim@example.com', '<span class="chip chip-red">Nonaktif</span>',
             '<th scope="row">Status</th>', '<span class="chip chip-red">Nonaktif</span>',
-            'title="Akun nonaktif tidak bisa diubah"', 'title="Akun sudah nonaktif"',
+            'title="Akun nonaktif tidak bisa diubah sebelum diaktifkan kembali"',
+            'action="'.route('admin.pengguna.aktifkan', $iim).'"', 'data-confirm-title="Aktifkan kembali pengguna?"',
+            'data-confirm-variant="success"', 'name="_method" value="PATCH"', 'title="Aktifkan kembali"', 'fa-user-check',
         ], false)
         ->assertDontSee('href="'.route('admin.pengguna.edit', $iim).'"', false)
-        ->assertDontSee('action="'.route('admin.pengguna.destroy', $iim).'"', false);
+        ->assertDontSee('action="'.route('admin.pengguna.destroy', $iim).'"', false)
+        // Tombol aktifkan kembali hanya untuk akun nonaktif.
+        ->assertDontSee('action="'.route('admin.pengguna.aktifkan', $this->admin).'"', false);
 
     // Pencarian ikut mencakup akun nonaktif.
     $this->actingAs($this->admin)
@@ -273,6 +280,22 @@ it('menghapus pengguna lain dan mengeluarkannya dari sesinya', function () {
     // Soft delete membuat sesi akun itu tidak lagi menemukan akunnya.
     auth()->forgetGuards();
     $this->withSession([$kunciSesi => $lain->id_pengguna])->get(route('admin.dashboard'))->assertRedirect(route('login'));
+});
+
+it('mengaktifkan kembali akun nonaktif dengan email dan kata sandi lamanya', function () {
+    $iim = Pengguna::factory()->create(['email' => 'iim@example.com', 'password' => 'rahasia123']);
+    $iim->delete();
+    $kredensial = ['email' => 'iim@example.com', 'password' => 'rahasia123'];
+
+    expect(auth()->validate($kredensial))->toBeFalse();
+
+    $this->actingAs($this->admin)
+        ->patch(route('admin.pengguna.aktifkan', $iim))
+        ->assertRedirect(route('admin.pengguna.index'))
+        ->assertSessionHas('success', 'Pengguna berhasil diaktifkan kembali.');
+
+    expect($iim->refresh()->trashed())->toBeFalse()
+        ->and(auth()->validate($kredensial))->toBeTrue();
 });
 
 it('menolak menghapus akun yang sedang dipakai', function () {

@@ -17,7 +17,7 @@
         </x-slot>
 
         {{-- Daftar tanpa pencarian tidak pernah kosong karena memuat akun yang sedang login. Akun terhapus ikut tercantum
-             sebagai Nonaktif (pilihan pemilik). --}}
+             sebagai Nonaktif dan bisa diaktifkan kembali (pilihan pemilik). --}}
         @if ($pengguna->isEmpty())
             <x-admin.empty-state title="Pengguna tidak ditemukan" description="Coba ubah kata kunci pencarian." />
         @else
@@ -26,21 +26,19 @@
                     <thead>
                         <tr>
                             <th class="kolom-pas">Nama</th>
-                            <th>Email</th>
-                            <th class="kolom-status">Peran</th>
+                            <th class="kolom-pas">Email</th>
+                            <th>Peran</th>
+                            <th class="kolom-status">Status</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($pengguna as $item)
                             @php
-                                // Alasan tombol Ubah & Hapus dinonaktifkan; server juga menolak kedua aksinya.
-                                $alasanTerkunci = match (true) {
-                                    $item->is($akunSaya) => [
-                                        'ubah' => 'akun Anda diubah lewat menu pengguna › Profil Saya',
-                                        'hapus' => 'akun yang sedang dipakai tidak bisa dihapus',
-                                    ],
-                                    $item->trashed() => ['ubah' => 'akun nonaktif tidak bisa diubah', 'hapus' => 'akun sudah nonaktif'],
+                                // Alasan tombol Ubah dinonaktifkan; server juga menolaknya.
+                                $alasanUbahTerkunci = match (true) {
+                                    $item->is($akunSaya) => 'akun Anda diubah lewat menu pengguna › Profil Saya',
+                                    $item->trashed() => 'akun nonaktif tidak bisa diubah sebelum diaktifkan kembali',
                                     default => null,
                                 };
                             @endphp
@@ -49,13 +47,16 @@
                                     <span class="cell-strong">{{ $item->nama }}</span>
                                     @if ($item->is($akunSaya))
                                         (Anda)
-                                    @elseif ($item->trashed())
-                                        <span class="chip chip-red">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td>{{ $item->email }}</td>
+                                <td class="kolom-pas">{{ $item->email }}</td>
+                                <td><span class="chip {{ $item->peran->kelasChip() }}">{{ $item->peran->label() }}</span></td>
                                 <td class="kolom-status">
-                                    <span class="chip {{ $item->peran->kelasChip() }}">{{ $item->peran->label() }}</span>
+                                    @if ($item->trashed())
+                                        <span class="chip chip-red">Nonaktif</span>
+                                    @else
+                                        <span class="chip chip-green">Aktif</span>
+                                    @endif
                                 </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
@@ -97,22 +98,38 @@
                                                 </table>
                                             </div>
                                         </x-admin.detail-button>
-                                        @if ($alasanTerkunci)
+                                        @if ($alasanUbahTerkunci)
                                             <button type="button" class="btn btn-warning btn-ikon" disabled
-                                                title="{{ ucfirst($alasanTerkunci['ubah']) }}" aria-label="Ubah ({{ $alasanTerkunci['ubah'] }})">
+                                                title="{{ ucfirst($alasanUbahTerkunci) }}" aria-label="Ubah ({{ $alasanUbahTerkunci }})">
                                                 <x-admin.icon name="pen-to-square" />
-                                            </button>
-                                            <button type="button" class="btn btn-danger btn-ikon" disabled
-                                                title="{{ ucfirst($alasanTerkunci['hapus']) }}" aria-label="Hapus ({{ $alasanTerkunci['hapus'] }})">
-                                                <x-admin.icon name="trash-can" />
                                             </button>
                                         @else
                                             <a href="{{ route('admin.pengguna.edit', $item) }}" class="btn btn-warning btn-ikon" title="Ubah" aria-label="Ubah">
                                                 <x-admin.icon name="pen-to-square" />
                                             </a>
+                                        @endif
+                                        @if ($item->is($akunSaya))
+                                            {{-- Selalu ada satu akun yang bisa login; server juga menolak. --}}
+                                            <button type="button" class="btn btn-danger btn-ikon" disabled
+                                                title="Akun yang sedang dipakai tidak bisa dihapus" aria-label="Hapus (akun yang sedang dipakai tidak bisa dihapus)">
+                                                <x-admin.icon name="trash-can" />
+                                            </button>
+                                        @elseif ($item->trashed())
+                                            {{-- Menggantikan tombol Hapus: akun terhapus = Nonaktif, jadi kebalikannya = mengaktifkan kembali. --}}
+                                            <form method="POST" action="{{ route('admin.pengguna.aktifkan', $item) }}" style="display:inline"
+                                                data-confirm="Akun “{{ $item->nama }}” bisa dipakai login lagi dengan email dan kata sandi lamanya."
+                                                data-confirm-title="Aktifkan kembali pengguna?" data-confirm-label="Ya, aktifkan"
+                                                data-confirm-variant="success">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-success btn-ikon" title="Aktifkan kembali" aria-label="Aktifkan kembali">
+                                                    <x-admin.icon name="user-check" />
+                                                </button>
+                                            </form>
+                                        @else
                                             <x-admin.delete-button :action="route('admin.pengguna.destroy', $item)" :ikon-saja="true"
                                                 title="Hapus pengguna?"
-                                                :message="'Akun “'.$item->nama.'” tidak bisa dipakai login lagi dan tetap tercantum di daftar sebagai Nonaktif. Emailnya tidak bisa dipakai akun baru.'" />
+                                                :message="'Akun “'.$item->nama.'” tidak bisa dipakai login lagi sampai diaktifkan kembali. Emailnya tidak bisa dipakai akun baru.'" />
                                         @endif
                                     </div>
                                 </td>

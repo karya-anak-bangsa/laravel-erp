@@ -76,6 +76,14 @@ class PenggunaController extends Controller
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 
+    // Email & kata sandi lama tetap berlaku: email akun terhapus memang tidak pernah bisa dipakai akun lain.
+    public function aktifkan(Pengguna $pengguna): RedirectResponse
+    {
+        $pengguna->restore();
+
+        return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil diaktifkan kembali.');
+    }
+
     // Akun sendiri hanya diubah lewat menu pengguna › Profil Saya (pilihan pemilik), yang tidak memuat isian peran
     // sehingga peran sendiri tidak bisa diubah.
     private function tolakAkunSendiri(): RedirectResponse
