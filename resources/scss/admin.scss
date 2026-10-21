@@ -987,10 +987,11 @@ table.table td.kolom-aksi {
     justify-content: center;
 }
 
-// Tombol Tambah Data (<x-admin.tombol-tambah>) di ponsel hanya ikon, persegi seperti .btn-ikon (pola
-// paradiplomasi-v2); namanya tetap di title & aria-label.
+// Tombol di kepala kartu daftar (Tambah Data <x-admin.tombol-tambah>, Kosongkan Log) di ponsel hanya ikon, persegi
+// seperti .btn-ikon (pola paradiplomasi-v2); namanya tetap di title & aria-label.
 @media (max-width: 768px) {
-    .tombol-tambah {
+    .tombol-tambah,
+    .tombol-ikon-ponsel {
         aspect-ratio: 1;
         padding-inline: 0;
         justify-content: center;

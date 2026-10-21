@@ -5,8 +5,8 @@ namespace App\Enums\Sistem;
 use App\Enums\Concerns\MenyediakanOpsi;
 
 /**
- * Jenis aktivitas di Log Aktivitas: perubahan data lewat panel admin, serta masuk & keluar panel admin (label sama
- * dengan tombol Masuk di halaman login dan Keluar di menu pengguna).
+ * Jenis aktivitas di Log Aktivitas: perubahan data lewat panel admin, masuk & keluar panel admin (label sama dengan
+ * tombol Masuk di halaman login dan Keluar di menu pengguna), serta pengosongan log itu sendiri.
  */
 enum AksiAktivitas: string
 {
@@ -18,6 +18,7 @@ enum AksiAktivitas: string
     case AktifkanKembali = 'aktifkan_kembali';
     case Masuk = 'masuk';
     case Keluar = 'keluar';
+    case Kosongkan = 'kosongkan';
 
     public function label(): string
     {
@@ -28,6 +29,7 @@ enum AksiAktivitas: string
             self::AktifkanKembali => 'Aktifkan kembali',
             self::Masuk => 'Masuk',
             self::Keluar => 'Keluar',
+            self::Kosongkan => 'Kosongkan log',
         };
     }
 }

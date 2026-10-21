@@ -36,13 +36,13 @@ Catatan implementasi:
 - **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout dan reset password), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
 
 ### tb_log_aktivitas
-Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Tidak pernah diubah, dan dihapus permanen setelah 7 hari.
+Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Tidak pernah diubah; dihapus permanen setelah 7 hari atau lewat tombol Kosongkan Log.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | id_log_aktivitas | BIGINT UNSIGNED PK | urutan kejadian |
 | id_pengguna | BIGINT UNSIGNED FK → tb_pengguna | `restrictOnDelete`. Pelaku; akun Nonaktif tetap tercantum karena hanya soft delete |
-| aksi | VARCHAR(20) | INDEX. enum `AksiAktivitas`: tambah, ubah, hapus, aktifkan_kembali, masuk, keluar |
+| aksi | VARCHAR(20) | INDEX. enum `AksiAktivitas`: tambah, ubah, hapus, aktifkan_kembali, masuk, keluar, kosongkan |
 | subjek_type | VARCHAR(255) NULL | `nullableMorphs('subjek')` + INDEX `(subjek_type, subjek_id)`. Alias jenis data (morph map), mis. `artikel`; NULL untuk masuk & keluar |
 | subjek_id | BIGINT UNSIGNED NULL | PK data yang diubah |
 | label_subjek | VARCHAR(255) NULL | nama data saat aksi terjadi (mis. judul artikel), agar tetap terbaca walau data kemudian diganti nama atau dihapus |
@@ -55,6 +55,7 @@ Catatan implementasi:
 - Perubahan lewat query massal tidak memicu event model, sehingga tercatat lewat data induknya: materi yang ikut terhapus bersama tutorialnya tercatat sebagai "Hapus" tutorial, hero/template lain yang dinonaktifkan otomatis tercatat sebagai "Ubah" status pada yang diaktifkan, dan gambar tambahan portofolio sebagai isian "Gambar Tambahan" portofolionya.
 - Tidak diisi seeder: isinya catatan kejadian, bukan konten, sehingga tidak termasuk aturan "seeder = database lokal". Reset Data Produksi ikut mengosongkannya.
 - Disimpan 7 hari (`LogAktivitas::MASA_SIMPAN_HARI`, pilihan pemilik 2026-10-21) agar tidak menumpuk: setiap kali log baru ditulis, log yang lebih lama dihapus permanen (`LogAktivitasService::catat()`), tanpa cron.
+- Tombol Kosongkan Log (Super Administrator) menghapus permanen semua log dalam satu transaksi, lalu menulis satu baris `kosongkan` berisi pelakunya agar pengosongan tidak bisa dilakukan diam-diam (pilihan pemilik 2026-10-21).
 
 ---
 

@@ -32,15 +32,40 @@ function ringkasanLog(): array
 }
 
 it('mengarahkan tamu ke halaman login', function () {
+    LogAktivitas::factory()->create();
+
     $this->get(route('admin.log-aktivitas.index'))->assertRedirect(route('login'));
+    $this->delete(route('admin.log-aktivitas.kosongkan'))->assertRedirect(route('login'));
+
+    expect(LogAktivitas::count())->toBe(1);
 });
 
-it('hanya menyediakan daftar baca tanpa tambah, ubah, atau hapus log', function () {
-    expect(Route::has('admin.log-aktivitas.index'))->toBeTrue();
+it('tidak menyediakan tambah, ubah, atau hapus per baris log; log hanya bisa dikosongkan seluruhnya', function () {
+    expect(Route::has('admin.log-aktivitas.index'))->toBeTrue()
+        ->and(Route::has('admin.log-aktivitas.kosongkan'))->toBeTrue();
 
     foreach (['create', 'store', 'show', 'edit', 'update', 'destroy'] as $aksi) {
         expect(Route::has("admin.log-aktivitas.{$aksi}"))->toBeFalse();
     }
+});
+
+it('mengosongkan seluruh log lalu mencatat pengosongannya sebagai satu baris', function () {
+    $ani = Pengguna::factory()->create();
+    LogAktivitas::factory()->count(3)->for($ani, 'pengguna')->create();
+    LogAktivitas::factory()->for($this->admin, 'pengguna')->create([
+        'aksi' => AksiAktivitas::Hapus, 'subjek_type' => 'faq', 'subjek_id' => 1, 'label_subjek' => 'Pertanyaan lama?',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->delete(route('admin.log-aktivitas.kosongkan'))
+        ->assertRedirect(route('admin.log-aktivitas.index'))
+        ->assertSessionHas('success', 'Log aktivitas berhasil dikosongkan.');
+
+    expect(ringkasanLog())->toEqual([[AksiAktivitas::Kosongkan, null, null, null]])
+        ->and(LogAktivitas::sole()->id_pengguna)->toBe($this->admin->id_pengguna);
+
+    $this->get(route('admin.log-aktivitas.index'))
+        ->assertSeeInOrder(['<td class="kolom-pas">Budi Santoso</td>', '<td class="kolom-pas">Kosongkan log</td>'], false);
 });
 
 it('menampilkan log terbaru lebih dulu sesuai standar admin', function () {
@@ -78,6 +103,13 @@ it('menampilkan log terbaru lebih dulu sesuai standar admin', function () {
             '<option value="">Semua aktivitas</option>', '<option value="aktifkan_kembali" >Aktifkan kembali</option>',
             '<div class="card-title">Log Aktivitas</div>',
             '<div class="card-subtitle">Aktivitas 7 hari terakhir; yang lebih lama dihapus otomatis.</div>',
+            // Kosongkan Log berlaku untuk semua log, dengan konfirmasi.
+            'action="'.route('admin.log-aktivitas.kosongkan').'"',
+            'data-confirm="Sebanyak 2 log aktivitas akan dihapus permanen dan tidak bisa dikembalikan. Pengosongan ini tetap tercatat sebagai satu log baru."',
+            'data-confirm-title="Kosongkan log aktivitas?" data-confirm-label="Ya, kosongkan"',
+            'name="_method" value="DELETE"',
+            '<button type="submit" class="btn btn-danger tombol-ikon-ponsel" title="Kosongkan Log" aria-label="Kosongkan Log">',
+            '<span class="label-tombol">Kosongkan Log</span>',
             '<th class="kolom-pas">Waktu</th>', '<th class="kolom-pas">Pengguna</th>', '<th class="kolom-pas">Aktivitas</th>',
             '<th class="kolom-pas">Data</th>', '<th class="kolom-lebar">Nama Data</th>', '<th class="kolom-aksi">Aksi</th>',
             '<td class="kolom-pas">21 Oktober 2026, 14:32</td>', '<td class="kolom-pas">Budi Santoso</td>',
@@ -265,13 +297,17 @@ it('membedakan empty state log kosong dan hasil pencarian kosong', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.log-aktivitas.index'))
         ->assertSee('Belum ada aktivitas')
-        ->assertDontSee('<table class="table">', false);
+        ->assertDontSee('<table class="table">', false)
+        // Tidak ada yang bisa dikosongkan. Alamat rutenya sama dengan form filter, jadi yang dicek tombolnya.
+        ->assertDontSee('title="Kosongkan Log"', false);
 
     LogAktivitas::factory()->for($this->admin, 'pengguna')->create();
 
+    // Hasil filter kosong, tetapi tombol tetap ada karena berlaku untuk semua log.
     $this->get(route('admin.log-aktivitas.index', ['q' => 'tidak-ada']))
         ->assertSee('Aktivitas tidak ditemukan')
-        ->assertSee('Coba ubah kata kunci atau filter pencarian.');
+        ->assertSee('Coba ubah kata kunci atau filter pencarian.')
+        ->assertSee('data-confirm="Sebanyak 1 log aktivitas akan dihapus permanen', false);
 });
 
 it('memberi nama dan label isian form untuk setiap jenis data yang dicatat', function () {

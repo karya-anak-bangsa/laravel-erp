@@ -66,6 +66,19 @@ it('menghapus permanen log yang melewati masa simpan 7 hari setiap kali log baru
         ->and(LogAktivitas::find($lama->id_log_aktivitas))->toBeNull();
 });
 
+it('mengosongkan semua log dan menyisakan satu baris pengosongan oleh penggunanya', function () {
+    LogAktivitas::factory()->count(3)->create();
+
+    $this->layanan->kosongkan($this->admin);
+
+    $log = LogAktivitas::query()->sole();
+    expect($log->aksi)->toBe(AksiAktivitas::Kosongkan)
+        ->and($log->aksi->label())->toBe('Kosongkan log')
+        ->and($log->id_pengguna)->toBe($this->admin->id_pengguna)
+        ->and($log->subjek_type)->toBeNull()
+        ->and($log->alamat_ip)->toBe('127.0.0.1');
+});
+
 it('mencatat isian yang ditandai walau tidak ada kolom tabel yang berubah', function () {
     // Dibuat dan disimpan dalam detik yang sama, jadi updated_at pun tidak berubah dan event updated tidak terpicu.
     $portofolio = Portofolio::factory()->create(['judul' => 'Website Sekolah']);

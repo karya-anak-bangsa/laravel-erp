@@ -62,6 +62,7 @@ it('menolak Administrator mengubah data Pengaturan Sistem', function () {
         ['put', route('admin.pengguna.update', $lain)],
         ['delete', route('admin.pengguna.destroy', $lain)],
         ['patch', route('admin.pengguna.aktifkan', $nonaktif)],
+        ['delete', route('admin.log-aktivitas.kosongkan')],
     ];
 
     foreach ($permintaan as [$metode, $alamat]) {

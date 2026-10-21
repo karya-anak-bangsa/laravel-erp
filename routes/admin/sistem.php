@@ -17,8 +17,11 @@ Route::resource('pengguna', PenggunaController::class)->except('show')->middlewa
 Route::patch('pengguna/{pengguna}/aktifkan', [PenggunaController::class, 'aktifkan'])
     ->withTrashed()->middleware('can:kelola-sistem')->name('pengguna.aktifkan');
 
-// Jejak aktivitas pengguna (Pengaturan Sistem › Log Aktivitas): hanya Super Administrator, hanya daftar baca.
+// Jejak aktivitas pengguna (Pengaturan Sistem › Log Aktivitas): hanya Super Administrator; daftar baca yang hanya bisa
+// dikosongkan seluruhnya.
 Route::resource('log-aktivitas', LogAktivitasController::class)->only('index')->middleware('can:kelola-sistem');
+Route::delete('log-aktivitas', [LogAktivitasController::class, 'kosongkan'])
+    ->middleware('can:kelola-sistem')->name('log-aktivitas.kosongkan');
 
 // Akun yang sedang login (menu pengguna › Profil Saya): semua peran.
 Route::singleton('profil', ProfilController::class)->only(['edit', 'update']);

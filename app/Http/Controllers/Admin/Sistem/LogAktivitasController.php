@@ -6,13 +6,16 @@ use App\Enums\Sistem\AksiAktivitas;
 use App\Http\Controllers\Controller;
 use App\Models\Pengguna;
 use App\Models\Sistem\LogAktivitas;
+use App\Services\Sistem\LogAktivitasService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+// Log ditulis otomatis, jadi tidak ada tambah, ubah, atau hapus per baris; dari panel log hanya bisa dikosongkan
+// seluruhnya (pilihan pemilik).
 class LogAktivitasController extends Controller
 {
-    // Hanya daftar baca: log tidak bisa ditambah, diubah, atau dihapus dari panel admin agar jejaknya utuh.
     public function index(Request $request): View
     {
         $q = $request->string('q')->trim()->value();
@@ -32,8 +35,17 @@ class LogAktivitasController extends Controller
 
         return view('admin.sistem.log-aktivitas.index', [
             'logAktivitas' => $logAktivitas,
+            // Tombol Kosongkan Log berlaku untuk semua log, bukan hanya hasil filter.
+            'jumlahLog' => LogAktivitas::query()->count(),
             // Akun Nonaktif tetap bisa dipilih karena aktivitasnya tetap tercatat.
             'opsiPengguna' => Pengguna::withTrashed()->orderBy('nama')->pluck('nama', 'id_pengguna')->all(),
         ]);
+    }
+
+    public function kosongkan(Request $request, LogAktivitasService $logAktivitasService): RedirectResponse
+    {
+        $logAktivitasService->kosongkan($request->user());
+
+        return redirect()->route('admin.log-aktivitas.index')->with('success', 'Log aktivitas berhasil dikosongkan.');
     }
 }

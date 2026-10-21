@@ -21,10 +21,25 @@
         </select>
     </x-admin.filter-bar>
 
-    {{-- Hanya daftar baca tanpa tombol tambah, ubah, atau hapus: log ditulis otomatis dan jejaknya tidak bisa dihapus
-         dari panel. --}}
+    {{-- Log ditulis otomatis, jadi tanpa tombol tambah, ubah, atau hapus per baris; dari panel hanya bisa dikosongkan
+         seluruhnya, dan pengosongannya tercatat sebagai satu baris baru (pilihan pemilik). --}}
     <x-admin.card title="Log Aktivitas" :subtitle="'Aktivitas '.LogAktivitas::MASA_SIMPAN_HARI.' hari terakhir; yang lebih lama dihapus otomatis.'"
         :flush="true">
+        @if ($jumlahLog > 0)
+            <x-slot:aksi>
+                <form method="POST" action="{{ route('admin.log-aktivitas.kosongkan') }}" style="display:inline"
+                    data-confirm="Sebanyak {{ $jumlahLog }} log aktivitas akan dihapus permanen dan tidak bisa dikembalikan. Pengosongan ini tetap tercatat sebagai satu log baru."
+                    data-confirm-title="Kosongkan log aktivitas?" data-confirm-label="Ya, kosongkan">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger tombol-ikon-ponsel" title="Kosongkan Log" aria-label="Kosongkan Log">
+                        <x-admin.icon name="trash-can" />
+                        <span class="label-tombol">Kosongkan Log</span>
+                    </button>
+                </form>
+            </x-slot>
+        @endif
+
         @if ($logAktivitas->isEmpty())
             @if (request()->anyFilled(['q', 'pengguna', 'aktivitas']))
                 <x-admin.empty-state title="Aktivitas tidak ditemukan" description="Coba ubah kata kunci atau filter pencarian." />

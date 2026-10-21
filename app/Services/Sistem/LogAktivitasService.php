@@ -7,11 +7,13 @@ use App\Models\Pengguna;
 use App\Models\Sistem\LogAktivitas;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * Penulis Log Aktivitas (Pengaturan Sistem): dipanggil trait MencatatAktivitas untuk perubahan data dan listener event
- * Login/Logout di AppServiceProvider. Baris log tidak pernah diubah, dan dihapus permanen setelah masa simpannya.
+ * Login/Logout di AppServiceProvider. Baris log tidak pernah diubah, dan dihapus permanen setelah masa simpannya atau
+ * lewat tombol Kosongkan Log.
  */
 class LogAktivitasService
 {
@@ -50,5 +52,17 @@ class LogAktivitasService
             'perubahan' => $isian === [] ? null : $isian,
             'alamat_ip' => request()->ip(),
         ]);
+    }
+
+    /**
+     * Menghapus permanen semua log (tombol Kosongkan Log), lalu mencatat pengosongan itu sebagai satu baris baru agar
+     * tidak bisa dilakukan diam-diam (pilihan pemilik).
+     */
+    public function kosongkan(Pengguna $pengguna): void
+    {
+        DB::transaction(function () use ($pengguna): void {
+            LogAktivitas::query()->delete();
+            $this->catat(AksiAktivitas::Kosongkan, $pengguna);
+        });
     }
 }
