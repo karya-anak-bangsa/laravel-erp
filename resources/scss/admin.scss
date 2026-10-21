@@ -1008,6 +1008,49 @@ table.table td.kolom-aksi {
     justify-content: center;
 }
 
+// Uji skala teks & jarak di dashboard (permintaan pemilik 2026-10-22), diterapkan ke semua halaman admin setelah
+// dinyatakan solid. Kepala kartu satu tingkat di atas isinya (judul 15 lawan judul baris 13, subjudul 13 lawan
+// keterangan 12); ukuran dan tinggi baris bulat agar tepi kartu jatuh di piksel utuh. Jarak tepi kartu ke huruf ±16px
+// di setiap bagian kartu, sama dengan jarak kiri: padding teks 12px ditambah separuh sisa tinggi barisnya, sedangkan
+// footer yang berisi tombol langsung 16px.
+.halaman-dashboard {
+    .page-title {
+        line-height: 24px;
+    }
+
+    .card-title {
+        font-size: 15px;
+        line-height: 20px;
+    }
+
+    .card-subtitle {
+        margin-top: 0;
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .card-footer {
+        padding: 16px;
+    }
+
+    .btn {
+        font-size: 13px;
+    }
+
+    .chip {
+        font-size: 12px;
+    }
+
+    .empty-state .empty-state-title {
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .empty-state .empty-state-text {
+        font-size: 12px;
+    }
+}
+
 // Kartu angka dashboard (<x-admin.statistik>): seluruh kartu menuju daftar modulnya. Ikon Font Awesome menggantikan
 // SVG di kotak .stat-icon Gentelella.
 .kartu-statistik {
@@ -1023,6 +1066,33 @@ table.table td.kolom-aksi {
     &:focus-visible {
         outline: 2px solid var(--primary);
         outline-offset: 2px;
+    }
+
+    // Padding seperti kepala kartu: bawaan Gentelella 16px membuat jarak ke huruf ±19px sehingga kartu ini tampak
+    // lebih lapang dari kartu lain.
+    .stat {
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    // Huruf biasa: label kapital bawaan (11,5px) tampak setinggi teks 15px karena huruf kapital Inter 34% lebih tinggi
+    // dari huruf kecil.
+    .stat-label {
+        font-size: 13px;
+        line-height: 18px;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        line-height: 28px;
+    }
+
+    .stat-subtext {
+        margin-top: 0;
+        font-size: 12px;
+        line-height: 16px;
     }
 }
 
@@ -1058,7 +1128,7 @@ table.table td.kolom-aksi {
 }
 
 // Daftar ringkas dashboard (Terakhir diperbarui, Belum tampil): baris bergaris pemisah berisi judul dan
-// keterangan, label status di kanan. Jarak tepinya sama dengan kepala kartu (16px).
+// keterangan, label status di kanan. Padding sama dengan kepala kartu (12px 16px).
 .daftar-ringkas {
     margin: 0;
     padding: 0;
@@ -1068,7 +1138,7 @@ table.table td.kolom-aksi {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 10px 16px;
+        padding: 12px 16px;
         border-bottom: 1px solid var(--border-color-light);
 
         &:last-child {
@@ -1077,9 +1147,12 @@ table.table td.kolom-aksi {
     }
 }
 
+// Judul baris 13px seperti isi tabel admin; sebelumnya mewarisi 14px dari body sehingga lebih besar dari judul kartu.
 .isi-ringkas {
     flex: 1;
     min-width: 0;
+    font-size: 13px;
+    line-height: 18px;
 }
 
 .judul-ringkas {
@@ -1093,15 +1166,43 @@ a.judul-ringkas:hover {
 }
 
 .keterangan-ringkas {
-    margin-top: 2px;
     font-size: 12px;
+    line-height: 16px;
     color: var(--text-muted);
 }
 
 // Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.
-.tabel-status-situs th {
-    width: 1%;
-    white-space: nowrap;
+// Label huruf biasa 13px seperti nilainya (label kapital 11px tampak lebih tinggi dari huruf isi). Garis dipasang per
+// sel, bukan collapse, agar baris jatuh di piksel utuh; garis label disamakan dengan garis nilai, dan garis label
+// terakhir dibuang karena menumpuk dengan garis footer. Semua baris setinggi baris berchip (chip 22 + padding 16 +
+// garis 1).
+table.table.tabel-status-situs {
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th,
+    td {
+        height: 39px;
+        line-height: 18px;
+    }
+
+    th {
+        width: 1%;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: var(--font-weight-medium);
+        letter-spacing: normal;
+        text-transform: none;
+        border-bottom-color: var(--border-color-light);
+    }
+
+    td {
+        color: var(--text);
+    }
+
+    tr:last-child th {
+        border-bottom: 0;
+    }
 }
 
 // Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat

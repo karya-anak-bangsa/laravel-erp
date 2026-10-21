@@ -3,6 +3,8 @@
 @extends('layouts.admin')
 
 @section('content')
+    {{-- Batas uji skala teks & jarak baru (admin.scss); dilepas setelah skala itu berlaku di semua halaman admin. --}}
+    <div class="halaman-dashboard">
     <x-admin.page-header title="Dashboard" />
 
     {{-- Ringkasan Company Profile dari tabel yang sudah ada (App\Services\CompanyProfile\RingkasanService). --}}
@@ -109,5 +111,6 @@
                 @endif
             </x-admin.card>
         </div>
+    </div>
     </div>
 @endsection
