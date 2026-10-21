@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function (): void {
-            Route::middleware(['web', 'auth'])
+            // auth.session: sesi berakhir begitu kata sandi akunnya diganti, kecuali sesi tempat kata sandi diganti.
+            Route::middleware(['web', 'auth', 'auth.session'])
                 ->prefix('admin')
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));

@@ -180,6 +180,26 @@ it('mengganti kata sandi pengguna bila diisi', function () {
     expect(Hash::check('baru1234', $pengguna->refresh()->password))->toBeTrue();
 });
 
+it('mengakhiri sesi pengguna yang kata sandinya diganti admin lain', function () {
+    $lain = Pengguna::factory()->create(['password' => 'rahasia123']);
+    $this->post(route('login.store'), ['email' => $lain->email, 'password' => 'rahasia123']);
+    $sesiLain = session()->all();
+
+    auth()->forgetGuards();
+    $this->flushSession()
+        ->actingAs($this->admin)
+        ->put(route('admin.pengguna.update', $lain), [
+            'nama' => $lain->nama, 'email' => $lain->email, 'password' => 'baru12345', 'password_confirmation' => 'baru12345',
+        ])
+        ->assertSessionHasNoErrors();
+
+    auth()->forgetGuards();
+    $this->flushSession()
+        ->withSession($sesiLain)
+        ->get(route('admin.dashboard'))
+        ->assertRedirect(route('login'));
+});
+
 it('menghapus pengguna lain dan mengeluarkannya dari sesinya', function () {
     $lain = Pengguna::factory()->create();
     $kunciSesi = auth()->guard()->getName();

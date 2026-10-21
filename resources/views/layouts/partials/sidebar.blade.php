@@ -66,6 +66,11 @@
                 <div class="menu-pengguna-email">{{ $pengguna->email }}</div>
             </div>
             <div class="menu-separator"></div>
+            <a href="{{ route('admin.profil.edit') }}" class="menu-item">
+                <x-admin.icon name="user" />
+                Profil Saya
+            </a>
+            <div class="menu-separator"></div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="menu-item menu-item-keluar">

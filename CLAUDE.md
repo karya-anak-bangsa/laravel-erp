@@ -277,10 +277,10 @@ Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
 
 ## 10. Keamanan
 
-- Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete).
+- Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete). Akun sendiri hanya diubah lewat menu pengguna › Profil Saya, yang meminta kata sandi saat ini bila email atau kata sandi diganti.
 - Login: rate limit 5 percobaan/menit per email+IP (dimatikan saat `APP_ENV=local`), `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
-- Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission ada di ROADMAP Fase 5.
+- Semua rute `/admin/*` di bawah middleware `auth` + `auth.session`: begitu kata sandi diganti, sesi akun itu di perangkat lain berakhir. Untuk sekarang semua pengguna terautentikasi = admin; role & permission ada di ROADMAP Fase 5.
 - Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`. Header keamanan belum ada (ROADMAP Fase 5).
 
 ## 11. Kualitas (ISO/IEC 25010)

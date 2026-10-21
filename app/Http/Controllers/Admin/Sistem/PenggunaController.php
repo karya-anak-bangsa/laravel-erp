@@ -41,13 +41,22 @@ class PenggunaController extends Controller
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
-    public function edit(Pengguna $pengguna): View
+    public function edit(Request $request, Pengguna $pengguna): View|RedirectResponse
     {
+        // Akun sendiri diubah lewat Profil Saya yang meminta kata sandi saat ini.
+        if ($pengguna->is($request->user())) {
+            return redirect()->route('admin.profil.edit');
+        }
+
         return view('admin.sistem.pengguna.edit', compact('pengguna'));
     }
 
     public function update(UpdatePenggunaRequest $request, Pengguna $pengguna): RedirectResponse
     {
+        if ($pengguna->is($request->user())) {
+            return redirect()->route('admin.profil.edit');
+        }
+
         $pengguna->update($request->validated());
 
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil diperbarui.');

@@ -30,7 +30,7 @@ it('menampilkan dashboard untuk pengguna yang login dengan page-header seperti m
         ->assertSee(route('logout'));
 });
 
-it('menampilkan menu pengguna berisi logout di sidebar, bukan di topbar', function () {
+it('menampilkan menu pengguna berisi profil dan logout di sidebar, bukan di topbar', function () {
     $pengguna = Pengguna::factory()->create(['nama' => 'Aryajaya Alamsyah', 'email' => 'admin@karyaanakbangsa.co.id']);
 
     $this->actingAs($pengguna)
@@ -38,9 +38,12 @@ it('menampilkan menu pengguna berisi logout di sidebar, bukan di topbar', functi
         ->assertSee('class="sidebar-user" type="button" data-menu="menu-pengguna"', false)
         ->assertDontSee('tb-user', false)
         ->assertDontSee('topbar-right', false)
-        ->assertSee('<template id="menu-pengguna">', false)
-        ->assertSee('admin@karyaanakbangsa.co.id')
-        ->assertSee('<form method="POST" action="'.route('logout').'">', false)
+        ->assertSeeInOrder([
+            '<template id="menu-pengguna">',
+            'admin@karyaanakbangsa.co.id',
+            '<a href="'.route('admin.profil.edit').'" class="menu-item">', 'fa-user', 'Profil Saya',
+            '<form method="POST" action="'.route('logout').'">',
+        ], false)
         ->assertDontSee('theme-toggle', false);
 });
 

@@ -1412,10 +1412,12 @@ table.table.tabel-informasi tbody tr:hover {
         margin: 0;
     }
 
+    // Profil Saya berupa tautan: tanpa garis bawah a:hover bawaan Gentelella.
     .menu-item {
         display: flex;
         align-items: center;
         gap: 10px;
+        text-decoration: none;
     }
 
     .menu-item .icon {

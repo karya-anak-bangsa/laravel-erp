@@ -11,15 +11,20 @@ class UpdatePenggunaRequest extends StorePenggunaRequest
 {
     protected function aturanEmailUnik(): Unique
     {
-        /** @var Pengguna $pengguna */
-        $pengguna = $this->route('pengguna');
-
-        return parent::aturanEmailUnik()->ignoreModel($pengguna);
+        return parent::aturanEmailUnik()->ignoreModel($this->penggunaDiubah());
     }
 
     // Kosong = kata sandi lama dipertahankan, jadi isiannya dibuang dari data tervalidasi.
     protected function aturanPassword(): array
     {
         return [Rule::excludeIf($this->isNotFilled('password')), 'string', Password::min(8), 'confirmed'];
+    }
+
+    protected function penggunaDiubah(): Pengguna
+    {
+        /** @var Pengguna $pengguna */
+        $pengguna = $this->route('pengguna');
+
+        return $pengguna;
     }
 }

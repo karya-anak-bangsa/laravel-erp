@@ -61,7 +61,7 @@
                                                 </table>
                                             </div>
                                         </x-admin.detail-button>
-                                        <a href="{{ route('admin.pengguna.edit', $item) }}" class="btn btn-warning btn-ikon"
+                                        <a href="{{ $item->is($akunSaya) ? route('admin.profil.edit') : route('admin.pengguna.edit', $item) }}" class="btn btn-warning btn-ikon"
                                             title="Ubah" aria-label="Ubah">
                                             <x-admin.icon name="pen-to-square" />
                                         </a>
