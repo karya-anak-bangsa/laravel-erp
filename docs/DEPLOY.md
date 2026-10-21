@@ -188,7 +188,7 @@ Referensi bila server dibangun ulang.
 - **Tampilan polos tanpa CSS** → `public/build` belum diunggah atau tidak lengkap (`ls public/build` harus berisi `assets`, `manifest.json`, `fonts-manifest.json`).
 - **Beranda error 500 `Unable to locate file in Vite manifest: resources/css/web.css`** atau **`Font alias [...] is not defined`** → `public/build` yang terunggah berasal dari build lama. Build ulang dari commit yang sama lalu unggah seluruh `public\build`.
 - **Identitas diubah langsung di database** (bukan lewat admin) tidak langsung tampil di beranda karena di-cache → `php artisan cache:forget company-profile.identitas`. Perubahan lewat admin/seeder membuang cache otomatis; `php artisan optimize` tidak menghapus cache ini.
-- **Super Administrator lupa kata sandi** (fitur lupa kata sandi belum ada): Super Administrator lain menggantinya lewat Pengaturan Sistem › Manajemen Pengguna › Ubah. Bila tidak ada Super Administrator lain, di PuTTY:
+- **Super Administrator lupa kata sandi** (fitur lupa kata sandi tidak dibuat; kata sandi Administrator yang lupa diganti Super Administrator lewat panel admin): Super Administrator lain menggantinya lewat Pengaturan Sistem › Manajemen Pengguna › Ubah. Bila tidak ada Super Administrator lain, di PuTTY:
   ```bash
   php artisan tinker
   App\Models\Pengguna::where('email', 'email@akun')->firstOrFail()->update(['password' => 'kata-sandi-sementara']);

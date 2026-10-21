@@ -30,10 +30,10 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 | created_at, updated_at, deleted_at | TIMESTAMP NULL | |
 
 Catatan implementasi:
-- Model `App\Models\Pengguna extends Authenticatable` (dipakai `config/auth.php`). Tabel bawaan `password_reset_tokens` dan `sessions` tetap dipakai.
+- Model `App\Models\Pengguna extends Authenticatable` (dipakai `config/auth.php`). Tabel bawaan `sessions` tetap dipakai; `password_reset_tokens` ikut dibuat migration bawaan, tetapi tidak dipakai karena fitur lupa kata sandi tidak dibuat.
 - `deleted_at` terisi = akun **Nonaktif**: tidak bisa login dan sesinya berakhir, tetap tercantum di Manajemen Pengguna, dan bisa diaktifkan kembali (`restore()`) dengan email & kata sandi lamanya (pilihan pemilik).
 - `email` UNIQUE termasuk akun Nonaktif, sehingga validasinya tanpa `withoutTrashed()`: email akun Nonaktif tidak bisa dipakai akun baru (pilihan pemilik).
-- **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout dan reset password), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
+- **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
 
 ### tb_log_aktivitas
 Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Tidak pernah diubah; dihapus permanen setelah 7 hari atau lewat tombol Kosongkan Log.
