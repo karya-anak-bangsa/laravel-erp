@@ -56,12 +56,12 @@ it('mengubah nama dan email tanpa kata sandi saat ini lalu kembali ke dashboard'
         ->and(Hash::check('rahasia123', $this->pengguna->password))->toBeTrue();
 });
 
-it('menolak email milik akun lain, termasuk akun yang sudah dihapus', function () {
+it('menolak email milik akun lain, termasuk akun nonaktif', function () {
     Pengguna::factory()->create(['email' => 'terhapus@example.com'])->delete();
 
     $this->actingAs($this->pengguna)
         ->put(route('admin.profil.update'), dataProfilValid(['email' => 'terhapus@example.com']))
-        ->assertSessionHasErrors(['email' => 'Email sudah dipakai akun lain, termasuk akun yang sudah dihapus.']);
+        ->assertSessionHasErrors(['email' => 'Email sudah dipakai akun lain, termasuk akun nonaktif.']);
 });
 
 it('mengganti kata sandi cukup dengan kata sandi baru dan konfirmasinya', function () {

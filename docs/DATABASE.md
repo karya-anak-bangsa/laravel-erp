@@ -31,7 +31,8 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 
 Catatan implementasi:
 - Model `App\Models\Pengguna extends Authenticatable` (dipakai `config/auth.php`). Tabel bawaan `password_reset_tokens` dan `sessions` tetap dipakai.
-- `email` UNIQUE termasuk akun terhapus, sehingga validasinya tanpa `withoutTrashed()`: email akun terhapus tidak bisa dipakai akun baru (pilihan pemilik).
+- `deleted_at` terisi = akun **Nonaktif**: tidak bisa login dan sesinya berakhir, tetap tercantum di Manajemen Pengguna, dan bisa diaktifkan kembali (`restore()`) dengan email & kata sandi lamanya (pilihan pemilik).
+- `email` UNIQUE termasuk akun Nonaktif, sehingga validasinya tanpa `withoutTrashed()`: email akun Nonaktif tidak bisa dipakai akun baru (pilihan pemilik).
 - **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout dan reset password), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
 
 ---

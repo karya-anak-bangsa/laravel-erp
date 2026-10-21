@@ -73,7 +73,8 @@ class PenggunaController extends Controller
 
         $pengguna->delete();
 
-        return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil dihapus.');
+        // Barisnya tetap tampil di daftar, jadi toast menyebut statusnya.
+        return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil dihapus dan kini berstatus Nonaktif.');
     }
 
     // Email & kata sandi lama tetap berlaku: email akun terhapus memang tidak pernah bisa dipakai akun lain.

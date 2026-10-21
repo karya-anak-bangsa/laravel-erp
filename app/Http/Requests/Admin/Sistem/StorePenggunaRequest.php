@@ -36,7 +36,7 @@ class StorePenggunaRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'Email sudah dipakai akun lain, termasuk akun yang sudah dihapus.',
+            'email.unique' => 'Email sudah dipakai akun lain, termasuk akun nonaktif.',
         ];
     }
 
@@ -53,7 +53,8 @@ class StorePenggunaRequest extends FormRequest
         ];
     }
 
-    // Tanpa withoutTrashed(): email akun terhapus tetap terkunci karena kolomnya UNIQUE di database (pilihan pemilik).
+    // Tanpa withoutTrashed(): email akun terhapus (Nonaktif) tetap terkunci karena kolomnya UNIQUE di database
+    // (pilihan pemilik).
     protected function aturanEmailUnik(): Unique
     {
         return Rule::unique('tb_pengguna', 'email');

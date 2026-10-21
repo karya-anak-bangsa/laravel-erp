@@ -50,7 +50,7 @@ it('memvalidasi email dan kata sandi wajib diisi', function () {
         ]);
 });
 
-it('menolak login pengguna yang sudah dihapus', function () {
+it('menolak login pengguna nonaktif (sudah dihapus)', function () {
     $pengguna = Pengguna::factory()->create();
     $pengguna->delete();
 

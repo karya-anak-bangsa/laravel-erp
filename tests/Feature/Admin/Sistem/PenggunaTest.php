@@ -182,7 +182,7 @@ it('memvalidasi isian pengguna baru', function () {
     expect(Pengguna::count())->toBe(1);
 });
 
-it('menolak email yang sudah dipakai, termasuk oleh akun yang sudah dihapus', function () {
+it('menolak email yang sudah dipakai, termasuk oleh akun nonaktif', function () {
     Pengguna::factory()->create(['email' => 'aktif@example.com']);
     Pengguna::factory()->create(['email' => 'terhapus@example.com'])->delete();
 
@@ -195,7 +195,7 @@ it('menolak email yang sudah dipakai, termasuk oleh akun yang sudah dihapus', fu
                 'password' => 'rahasia123',
                 'password_confirmation' => 'rahasia123',
             ])
-            ->assertSessionHasErrors(['email' => 'Email sudah dipakai akun lain, termasuk akun yang sudah dihapus.']);
+            ->assertSessionHasErrors(['email' => 'Email sudah dipakai akun lain, termasuk akun nonaktif.']);
     }
 });
 
@@ -273,7 +273,7 @@ it('menghapus pengguna lain dan mengeluarkannya dari sesinya', function () {
     $this->actingAs($this->admin)
         ->delete(route('admin.pengguna.destroy', $lain))
         ->assertRedirect(route('admin.pengguna.index'))
-        ->assertSessionHas('success');
+        ->assertSessionHas('success', 'Pengguna berhasil dihapus dan kini berstatus Nonaktif.');
 
     expect($lain->refresh()->trashed())->toBeTrue();
 
