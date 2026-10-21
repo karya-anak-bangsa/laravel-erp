@@ -8,6 +8,10 @@
 
     <nav class="sidebar-nav">
         @foreach (config('menu') as $grup)
+            @if (isset($grup['izin']) && Gate::denies($grup['izin']))
+                @continue
+            @endif
+
             <div class="nav-group">
                 <div class="nav-label">{{ $grup['judul'] }}</div>
 

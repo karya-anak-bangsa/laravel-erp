@@ -1,3 +1,5 @@
+@use('App\Enums\Sistem\PeranPengguna')
+
 {{-- Dipakai create & edit; $pengguna = model baru (create) atau yang diubah (edit). --}}
 <div class="row col-8-4">
     <x-admin.card title="Data Pengguna" subtitle="Email dipakai untuk login ke panel admin.">
@@ -5,6 +7,8 @@
         {{-- autocomplete dimatikan agar browser tidak mengisi email & kata sandi admin yang sedang login. --}}
         <x-admin.form-input name="email" type="email" label="Email" :value="$pengguna->email" :required="true" maxlength="150"
             autocomplete="off" placeholder="mis. nama@karyaanakbangsa.co.id" />
+        <x-admin.form-select name="peran" label="Peran" :options="PeranPengguna::opsi()" :value="$pengguna->peran" :required="true"
+            hint="Administrator mengelola Dashboard dan Company Profile; Super Administrator juga Pengaturan Sistem." />
     </x-admin.card>
 
     {{-- Kedua kartu selalu bersubjudul agar isian pertamanya sejajar. --}}

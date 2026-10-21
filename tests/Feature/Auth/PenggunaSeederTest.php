@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Sistem\PeranPengguna;
 use App\Models\Pengguna;
 use Database\Seeders\PenggunaSeeder;
 use Illuminate\Support\Facades\Hash;
@@ -12,12 +13,13 @@ beforeEach(function () {
     ]);
 });
 
-it('membuat akun admin dari konfigurasi env', function () {
+it('membuat akun Super Administrator dari konfigurasi env', function () {
     $this->seed(PenggunaSeeder::class);
 
     $admin = Pengguna::where('email', 'admin@contoh.test')->firstOrFail();
 
     expect($admin->nama)->toBe('Admin Uji')
+        ->and($admin->peran)->toBe(PeranPengguna::SuperAdministrator)
         ->and(Hash::check('rahasia-uji', $admin->password))->toBeTrue();
 });
 

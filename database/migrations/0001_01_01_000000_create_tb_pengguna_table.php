@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama', 100);
             $table->string('email', 150)->unique();
             $table->string('password');
+            $table->string('peran', 20);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -21,9 +21,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Singleton: identitas selalu satu baris, jadi tanpa index/create/destroy.
-Route::singleton('identitas', IdentitasController::class)->only(['edit', 'update']);
-
 Route::resource('hero', HeroController::class)->except('show');
 
 Route::resource('layanan', LayananController::class)->except('show');
@@ -44,10 +41,16 @@ Route::resource('kategori-artikel', KategoriArtikelController::class)->except('s
 
 Route::resource('faq', FaqController::class)->except('show');
 
-// Tampil/tidaknya modul di website (Pengaturan Sistem › Manajemen Modul): baris tetap per modul, hanya status yang diubah.
-Route::resource('modul-website', ModulWebsiteController::class)->only(['index', 'edit', 'update']);
+// Menu Pengaturan Sistem: hanya Super Administrator.
+Route::middleware('can:kelola-sistem')->group(function (): void {
+    // Singleton: identitas selalu satu baris, jadi tanpa index/create/destroy.
+    Route::singleton('identitas', IdentitasController::class)->only(['edit', 'update']);
 
-// Template tampilan frontend (Pengaturan Sistem › Manajemen Template). Pratinjau = beranda dengan nilai isian
-// form, dibuka di tab baru tanpa menyimpan apa pun.
-Route::get('template/pratinjau', [TemplateController::class, 'pratinjau'])->name('template.pratinjau');
-Route::resource('template', TemplateController::class)->except('show');
+    // Tampil/tidaknya modul di website (Manajemen Modul): baris tetap per modul, hanya status yang diubah.
+    Route::resource('modul-website', ModulWebsiteController::class)->only(['index', 'edit', 'update']);
+
+    // Template tampilan frontend (Manajemen Template). Pratinjau = beranda dengan nilai isian form, dibuka di
+    // tab baru tanpa menyimpan apa pun.
+    Route::get('template/pratinjau', [TemplateController::class, 'pratinjau'])->name('template.pratinjau');
+    Route::resource('template', TemplateController::class)->except('show');
+});

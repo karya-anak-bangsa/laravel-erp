@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Admin\Sistem;
 
 use App\Models\Pengguna;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\ExcludeIf;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\RequiredIf;
@@ -12,12 +14,14 @@ use Illuminate\Validation\Rules\Unique;
 class UpdateProfilRequest extends UpdatePenggunaRequest
 {
     /**
-     * @return array<string, array<int, ExcludeIf|Password|RequiredIf|Unique|string>>
+     * @return array<string, array<int, Enum|ExcludeIf|Password|RequiredIf|Unique|string>>
      */
     public function rules(): array
     {
         return [
-            ...parent::rules(),
+            // Tanpa peran: tidak ada yang bisa menaikkan atau menurunkan perannya sendiri, dan kiriman peran
+            // ikut terbuang dari data tervalidasi.
+            ...Arr::except(parent::rules(), 'peran'),
             // Email dipakai login, jadi menggantinya juga meminta kata sandi agar sesi yang dibajak tidak bisa
             // mengambil alih akun.
             'password_saat_ini' => [

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Sistem\PeranPengguna;
 use App\Models\Pengguna;
 use Illuminate\Database\Seeder;
 use RuntimeException;
@@ -20,9 +21,10 @@ class PenggunaSeeder extends Seeder
         }
 
         // firstOrCreate agar seeder aman dijalankan ulang tanpa menimpa password yang sudah diganti.
+        // Akun pertama selalu Super Administrator agar ada yang bisa membuka Pengaturan Sistem.
         Pengguna::withTrashed()->firstOrCreate(
             ['email' => $admin['email']],
-            ['nama' => $admin['nama'], 'password' => $admin['password']],
+            ['nama' => $admin['nama'], 'password' => $admin['password'], 'peran' => PeranPengguna::SuperAdministrator],
         );
     }
 }

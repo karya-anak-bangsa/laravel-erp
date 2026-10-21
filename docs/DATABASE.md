@@ -26,6 +26,7 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 | nama | VARCHAR(100) | |
 | email | VARCHAR(150) UNIQUE | |
 | password | VARCHAR(255) | cast `hashed` |
+| peran | VARCHAR(20) | enum `PeranPengguna`: `super_administrator` (semua menu), `administrator` (Dashboard, Company Profile, Profil Saya); tanpa nilai bawaan |
 | created_at, updated_at, deleted_at | TIMESTAMP NULL | |
 
 Catatan implementasi:

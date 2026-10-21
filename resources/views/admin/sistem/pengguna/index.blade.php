@@ -21,6 +21,7 @@
                     <thead>
                         <tr>
                             <th class="kolom-pas">Nama</th>
+                            <th class="kolom-pas">Peran</th>
                             <th>Email</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
@@ -34,6 +35,7 @@
                                         (Anda)
                                     @endif
                                 </td>
+                                <td class="kolom-pas">{{ $item->peran->label() }}</td>
                                 <td>{{ $item->email }}</td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
@@ -44,6 +46,10 @@
                                                         <tr>
                                                             <th scope="row">Nama</th>
                                                             <td class="cell-strong">{{ $item->nama }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Peran</th>
+                                                            <td>{{ $item->peran->label() }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Email</th>

@@ -72,8 +72,11 @@
                             <td>
                                 @if ($statusSitus['modulNonaktif'] === 0)
                                     <span class="chip chip-green">Semua tampil</span>
-                                @else
+                                @elseif (Gate::allows('kelola-sistem'))
                                     <a href="{{ route('admin.modul-website.index') }}" class="chip chip-yellow">{{ $statusSitus['modulNonaktif'] }} nonaktif</a>
+                                @else
+                                    {{-- Administrator tidak bisa membuka Manajemen Modul. --}}
+                                    <span class="chip chip-yellow">{{ $statusSitus['modulNonaktif'] }} nonaktif</span>
                                 @endif
                             </td>
                         </tr>

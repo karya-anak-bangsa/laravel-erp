@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Admin\Sistem;
 
+use App\Enums\Sistem\PeranPengguna;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\ExcludeIf;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
@@ -16,13 +18,14 @@ class StorePenggunaRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, ExcludeIf|Password|Unique|string>>
+     * @return array<string, array<int, Enum|ExcludeIf|Password|Unique|string>>
      */
     public function rules(): array
     {
         return [
             'nama' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:150', $this->aturanEmailUnik()],
+            'peran' => ['required', Rule::enum(PeranPengguna::class)],
             'password' => $this->aturanPassword(),
         ];
     }
@@ -45,6 +48,7 @@ class StorePenggunaRequest extends FormRequest
         return [
             'nama' => 'nama',
             'email' => 'email',
+            'peran' => 'peran',
             'password' => 'kata sandi',
         ];
     }

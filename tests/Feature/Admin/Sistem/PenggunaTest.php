@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Sistem\PeranPengguna;
 use App\Models\Pengguna;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +23,7 @@ it('mengarahkan tamu ke halaman login', function () {
 });
 
 it('menampilkan daftar pengguna urut abjad sesuai standar admin', function () {
-    $citra = Pengguna::factory()->create(['nama' => 'Citra Lestari', 'created_at' => '2026-10-09 08:30:00']);
+    $citra = Pengguna::factory()->administrator()->create(['nama' => 'Citra Lestari', 'created_at' => '2026-10-09 08:30:00']);
     Pengguna::factory()->create(['nama' => 'Agus Salim']);
 
     $this->actingAs($this->admin)
@@ -34,9 +35,10 @@ it('menampilkan daftar pengguna urut abjad sesuai standar admin', function () {
             'class="card kartu-filter"',
             '<div class="card-title">Manajemen Pengguna</div>',
             'href="'.route('admin.pengguna.create').'"',
-            '<table class="table">',
-            'Agus Salim', 'Budi Santoso', 'Citra Lestari',
-            'data-detail-title="Detail Pengguna"', $citra->email, '09 Oktober 2026, 08:30',
+            '<table class="table">', '<th class="kolom-pas">Peran</th>',
+            'Agus Salim', 'Super Administrator', 'Budi Santoso', 'Super Administrator',
+            'Citra Lestari', '<td class="kolom-pas">Administrator</td>', $citra->email,
+            'data-detail-title="Detail Pengguna"', '<th scope="row">Peran</th>', '<td>Administrator</td>', '09 Oktober 2026, 08:30',
             'href="'.route('admin.pengguna.edit', $citra).'"',
             'action="'.route('admin.pengguna.destroy', $citra).'"',
         ], false);
@@ -75,6 +77,11 @@ it('menambah pengguna dengan kata sandi ter-hash', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.pengguna.create'))
         ->assertOk()
+        // Peran wajib dipilih sendiri, tanpa nilai terpilih bawaan.
+        ->assertSeeInOrder([
+            'name="peran"', '<option value="">— Pilih —</option>',
+            '<option value="super_administrator" >Super Administrator</option>', '<option value="administrator" >Administrator</option>',
+        ], false)
         // Browser tidak boleh mengisi kata sandi admin yang sedang login.
         ->assertSeeInOrder(['name="password"', 'autocomplete="new-password"', 'name="password_confirmation"', 'autocomplete="new-password"'], false);
 
@@ -82,6 +89,7 @@ it('menambah pengguna dengan kata sandi ter-hash', function () {
         ->post(route('admin.pengguna.store'), [
             'nama' => 'Fajar Nugroho',
             'email' => 'fajar@example.com',
+            'peran' => 'administrator',
             'password' => 'rahasia123',
             'password_confirmation' => 'rahasia123',
         ])
@@ -91,6 +99,7 @@ it('menambah pengguna dengan kata sandi ter-hash', function () {
     $pengguna = Pengguna::where('email', 'fajar@example.com')->sole();
 
     expect($pengguna->nama)->toBe('Fajar Nugroho')
+        ->and($pengguna->peran)->toBe(PeranPengguna::Administrator)
         ->and($pengguna->password)->not->toBe('rahasia123')
         ->and(Hash::check('rahasia123', $pengguna->password))->toBeTrue();
 });
@@ -101,6 +110,7 @@ it('memvalidasi isian pengguna baru', function () {
         ->assertSessionHasErrors([
             'nama' => 'Kolom nama wajib diisi.',
             'email' => 'Kolom email wajib diisi.',
+            'peran' => 'Kolom peran wajib diisi.',
             'password' => 'Kolom kata sandi wajib diisi.',
         ]);
 
@@ -108,15 +118,17 @@ it('memvalidasi isian pengguna baru', function () {
         ->post(route('admin.pengguna.store'), [
             'nama' => str_repeat('a', 101),
             'email' => 'bukan-email',
+            'peran' => 'pemilik',
             'password' => 'pendek',
             'password_confirmation' => 'pendek',
         ])
-        ->assertSessionHasErrors(['nama', 'email', 'password' => 'Kolom kata sandi harus berisi minimal 8 karakter.']);
+        ->assertSessionHasErrors(['nama', 'email', 'peran', 'password' => 'Kolom kata sandi harus berisi minimal 8 karakter.']);
 
     $this->actingAs($this->admin)
         ->post(route('admin.pengguna.store'), [
             'nama' => 'Gita',
             'email' => 'gita@example.com',
+            'peran' => 'administrator',
             'password' => 'rahasia123',
             'password_confirmation' => 'rahasia321',
         ])
@@ -134,6 +146,7 @@ it('menolak email yang sudah dipakai, termasuk oleh akun yang sudah dihapus', fu
             ->post(route('admin.pengguna.store'), [
                 'nama' => 'Hadi',
                 'email' => $email,
+                'peran' => 'administrator',
                 'password' => 'rahasia123',
                 'password_confirmation' => 'rahasia123',
             ])
@@ -142,12 +155,13 @@ it('menolak email yang sudah dipakai, termasuk oleh akun yang sudah dihapus', fu
 });
 
 it('mengubah pengguna tanpa mengganti kata sandi bila isiannya kosong', function () {
-    $pengguna = Pengguna::factory()->create(['email' => 'indah@example.com', 'password' => 'rahasia123']);
+    $pengguna = Pengguna::factory()->administrator()->create(['email' => 'indah@example.com', 'password' => 'rahasia123']);
 
     $this->actingAs($this->admin)
         ->get(route('admin.pengguna.edit', $pengguna))
         ->assertOk()
         ->assertSee('value="indah@example.com"', false)
+        ->assertSee('<option value="administrator" selected>Administrator</option>', false)
         ->assertSee('Kosongkan bila tidak ingin mengganti.');
 
     // Email sendiri tidak dianggap bentrok.
@@ -155,6 +169,7 @@ it('mengubah pengguna tanpa mengganti kata sandi bila isiannya kosong', function
         ->put(route('admin.pengguna.update', $pengguna), [
             'nama' => 'Indah Permata',
             'email' => 'indah@example.com',
+            'peran' => 'super_administrator',
             'password' => '',
             'password_confirmation' => '',
         ])
@@ -162,12 +177,13 @@ it('mengubah pengguna tanpa mengganti kata sandi bila isiannya kosong', function
         ->assertSessionHas('success');
 
     expect($pengguna->refresh()->nama)->toBe('Indah Permata')
+        ->and($pengguna->peran)->toBe(PeranPengguna::SuperAdministrator)
         ->and(Hash::check('rahasia123', $pengguna->password))->toBeTrue();
 });
 
 it('mengganti kata sandi pengguna bila diisi', function () {
     $pengguna = Pengguna::factory()->create(['password' => 'rahasia123']);
-    $data = ['nama' => $pengguna->nama, 'email' => $pengguna->email];
+    $data = ['nama' => $pengguna->nama, 'email' => $pengguna->email, 'peran' => $pengguna->peran->value];
 
     $this->actingAs($this->admin)
         ->put(route('admin.pengguna.update', $pengguna), [...$data, 'password' => 'baru1234', 'password_confirmation' => 'beda1234'])
@@ -189,7 +205,8 @@ it('mengakhiri sesi pengguna yang kata sandinya diganti admin lain', function ()
     $this->flushSession()
         ->actingAs($this->admin)
         ->put(route('admin.pengguna.update', $lain), [
-            'nama' => $lain->nama, 'email' => $lain->email, 'password' => 'baru12345', 'password_confirmation' => 'baru12345',
+            'nama' => $lain->nama, 'email' => $lain->email, 'peran' => 'administrator',
+            'password' => 'baru12345', 'password_confirmation' => 'baru12345',
         ])
         ->assertSessionHasNoErrors();
 

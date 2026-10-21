@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Sistem\PeranPengguna;
 use App\Models\Pengguna;
 use Illuminate\Support\Facades\Hash;
 
@@ -129,12 +130,29 @@ it('mengarahkan ubah akun sendiri di Manajemen Pengguna ke Profil Saya', functio
         ->get(route('admin.pengguna.edit', $this->pengguna))
         ->assertRedirect(route('admin.profil.edit'));
 
-    // Form CRUD tidak bisa dipakai melewati syarat kata sandi saat ini.
+    // Form CRUD tidak bisa dipakai melewati syarat kata sandi saat ini maupun menurunkan peran sendiri.
     $this->actingAs($this->pengguna)
         ->put(route('admin.pengguna.update', $this->pengguna), [
-            'nama' => 'Budi Santoso', 'email' => 'budi@example.com', 'password' => 'baru12345', 'password_confirmation' => 'baru12345',
+            'nama' => 'Budi Santoso', 'email' => 'budi@example.com', 'peran' => 'administrator',
+            'password' => 'baru12345', 'password_confirmation' => 'baru12345',
         ])
         ->assertRedirect(route('admin.profil.edit'));
 
-    expect(Hash::check('rahasia123', $this->pengguna->refresh()->password))->toBeTrue();
+    expect($this->pengguna->refresh()->peran)->toBe(PeranPengguna::SuperAdministrator)
+        ->and(Hash::check('rahasia123', $this->pengguna->password))->toBeTrue();
+});
+
+it('tidak menyediakan pengubahan peran sendiri lewat Profil Saya', function () {
+    $administrator = Pengguna::factory()->administrator()->create(['email' => 'ani@example.com']);
+
+    $this->actingAs($administrator)
+        ->get(route('admin.profil.edit'))
+        ->assertOk()
+        ->assertDontSee('name="peran"', false);
+
+    $this->actingAs($administrator)
+        ->put(route('admin.profil.update'), dataProfilValid(['email' => 'ani@example.com', 'peran' => 'super_administrator']))
+        ->assertSessionHasNoErrors();
+
+    expect($administrator->refresh()->peran)->toBe(PeranPengguna::Administrator);
 });

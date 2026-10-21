@@ -6,7 +6,9 @@
 |--------------------------------------------------------------------------
 |
 | Dirender oleh layouts/partials/sidebar. Setiap modul menambah satu grup
-| di sini, tanpa mengubah grup modul lain.
+| di sini, tanpa mengubah grup modul lain. Grup boleh punya kunci izin
+| (nama Gate, mis. kelola-sistem): grup disembunyikan dari pengguna yang
+| tidak memilikinya; rutenya tetap dijaga middleware can: yang sama.
 |
 | - label : teks menu
 | - ikon  : nama ikon Font Awesome solid tanpa awalan "fa-". Dashboard memakai
@@ -107,6 +109,7 @@ return [
     ],
     [
         'judul' => 'Pengaturan Sistem',
+        'izin' => 'kelola-sistem',
         'item' => [
             [
                 'label' => 'Identitas Website',

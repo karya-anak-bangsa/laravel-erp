@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Sistem\PeranPengguna;
 use Database\Factories\PenggunaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,7 +22,7 @@ class Pengguna extends Authenticatable
     // tidak pernah membaca/menulisnya (termasuk saat logout).
     protected $rememberTokenName = '';
 
-    protected $fillable = ['nama', 'email', 'password'];
+    protected $fillable = ['nama', 'email', 'password', 'peran'];
 
     protected $hidden = ['password'];
 
@@ -29,6 +30,7 @@ class Pengguna extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'peran' => PeranPengguna::class,
         ];
     }
 }

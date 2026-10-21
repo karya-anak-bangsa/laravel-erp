@@ -115,7 +115,7 @@ resources/views/{layouts,errors,components/{admin,web},admin/<modul>/<entitas-ke
 ### Menambah Modul Baru (mis. Bootcamp)
 1. Tambah entri di `docs/DATABASE.md` dan `docs/ROADMAP.md` → disetujui.
 2. Buat namespace `Bootcamp` di Models, Controllers/Admin, Requests/Admin, Services, Enums.
-3. Buat `routes/admin/bootcamp.php` dan entri menu di `config/menu.php`.
+3. Buat `routes/admin/bootcamp.php` dan entri menu di `config/menu.php` (bila khusus peran tertentu: Gate + `can:` di rute + `izin` di grup menu, §10).
 4. View di `resources/views/admin/bootcamp/`.
 5. Test di `tests/Feature/Admin/Bootcamp/` dan `tests/Unit/Services/Bootcamp/`.
 
@@ -280,7 +280,8 @@ Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
 - Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete). Akun sendiri hanya diubah lewat menu pengguna › Profil Saya, yang meminta kata sandi saat ini bila email atau kata sandi diganti.
 - Login: rate limit 5 percobaan/menit per email+IP (dimatikan saat `APP_ENV=local`), `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
-- Semua rute `/admin/*` di bawah middleware `auth` + `auth.session`: begitu kata sandi diganti, sesi akun itu di perangkat lain berakhir. Untuk sekarang semua pengguna terautentikasi = admin; role & permission ada di ROADMAP Fase 5.
+- Semua rute `/admin/*` di bawah middleware `auth` + `auth.session`: begitu kata sandi diganti, sesi akun itu di perangkat lain berakhir.
+- Dua peran tetap (enum `PeranPengguna`, kolom `peran`): **Super Administrator** membuka semua menu; **Administrator** hanya Dashboard, Company Profile, dan Profil Saya. Pengaturan Sistem dijaga Gate `kelola-sistem` lewat middleware `can:kelola-sistem` di rutenya dan kunci `izin` di grup `config/menu.php`; menu yang disembunyikan tetap harus dijaga rutenya. Peran sendiri tidak bisa diubah, sehingga selalu ada Super Administrator. Peran baru ditambahkan sebagai case enum bersama modul yang membutuhkannya.
 - Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`. Header keamanan belum ada (ROADMAP Fase 5).
 
 ## 11. Kualitas (ISO/IEC 25010)
