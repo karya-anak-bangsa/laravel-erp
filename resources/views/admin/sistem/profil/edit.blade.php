@@ -29,7 +29,7 @@
                 <x-admin.icon name="floppy-disk" />
                 Simpan
             </button>
-            <a href="{{ route('admin.profil.edit') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
                 <x-admin.icon name="rotate-left" />
                 Batal
             </a>

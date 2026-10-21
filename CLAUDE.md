@@ -277,7 +277,7 @@ Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
 
 ## 10. Keamanan
 
-- Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete). Akun sendiri hanya diubah lewat menu pengguna › Profil Saya (tanpa isian peran); mengganti email atau kata sandi tidak meminta kata sandi saat ini (pilihan pemilik).
+- Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete dan tetap tercantum di daftar bertanda Nonaktif, hanya bisa dilihat). Akun sendiri hanya diubah lewat menu pengguna › Profil Saya (tanpa isian peran; tombol Ubah baris sendiri di daftar nonaktif); mengganti email atau kata sandi tidak meminta kata sandi saat ini, dan setelah disimpan pengguna kembali ke Dashboard (pilihan pemilik).
 - Login: rate limit 5 percobaan/menit per email+IP (dimatikan saat `APP_ENV=local`), `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
 - Semua rute `/admin/*` di bawah middleware `auth` + `auth.session`: begitu kata sandi diganti, sesi akun itu di perangkat lain berakhir.

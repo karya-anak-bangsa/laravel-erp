@@ -40,20 +40,53 @@ it('menampilkan daftar pengguna urut abjad sesuai standar admin', function () {
             'Budi Santoso', '<span class="chip chip-purple">Super Administrator</span>',
             'Citra Lestari', '<td>'.$citra->email.'</td>', '<span class="chip chip-blue">Administrator</span>',
             'data-detail-title="Detail Pengguna"', '<th scope="row">Email</th>', '<th scope="row">Peran</th>',
-            '<td><span class="chip chip-blue">Administrator</span></td>', '09 Oktober 2026, 08:30',
+            '<td><span class="chip chip-blue">Administrator</span></td>',
+            '<th scope="row">Status</th>', '<span class="chip chip-green">Aktif</span>', '09 Oktober 2026, 08:30',
             'href="'.route('admin.pengguna.edit', $citra).'"',
             'action="'.route('admin.pengguna.destroy', $citra).'"',
         ], false);
 });
 
-it('menandai akun sendiri dan menonaktifkan tombol hapusnya', function () {
+it('menandai akun sendiri dan menonaktifkan tombol ubah & hapusnya', function () {
     $lain = Pengguna::factory()->create();
 
     $this->actingAs($this->admin)
         ->get(route('admin.pengguna.index'))
-        ->assertSeeInOrder(['Budi Santoso</span>', '(Anda)', 'title="Akun yang sedang dipakai tidak bisa dihapus"'], false)
+        ->assertSeeInOrder([
+            'Budi Santoso</span>', '(Anda)',
+            'title="Akun Anda diubah lewat menu pengguna › Profil Saya"', 'title="Akun yang sedang dipakai tidak bisa dihapus"',
+        ], false)
+        // Profil Saya hanya dibuka dari menu pengguna, bukan dari daftar.
+        ->assertDontSee('href="'.route('admin.profil.edit').'" class="btn', false)
+        ->assertDontSee('href="'.route('admin.pengguna.edit', $this->admin).'"', false)
         ->assertDontSee('action="'.route('admin.pengguna.destroy', $this->admin).'"', false)
+        ->assertSee('href="'.route('admin.pengguna.edit', $lain).'"', false)
         ->assertSee('action="'.route('admin.pengguna.destroy', $lain).'"', false);
+});
+
+it('menampilkan akun terhapus sebagai Nonaktif tanpa tombol ubah dan hapus', function () {
+    $iim = Pengguna::factory()->administrator()->create(['nama' => 'Iim Karimah', 'email' => 'iim@example.com']);
+    $iim->delete();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.pengguna.index'))
+        ->assertSeeInOrder([
+            'Budi Santoso</span>',
+            'Iim Karimah</span>', '<span class="chip chip-red">Nonaktif</span>', 'iim@example.com',
+            '<th scope="row">Status</th>', '<span class="chip chip-red">Nonaktif</span>',
+            'title="Akun nonaktif tidak bisa diubah"', 'title="Akun sudah nonaktif"',
+        ], false)
+        ->assertDontSee('href="'.route('admin.pengguna.edit', $iim).'"', false)
+        ->assertDontSee('action="'.route('admin.pengguna.destroy', $iim).'"', false);
+
+    // Pencarian ikut mencakup akun nonaktif.
+    $this->actingAs($this->admin)
+        ->get(route('admin.pengguna.index', ['q' => 'iim']))
+        ->assertSee('Iim Karimah')
+        ->assertDontSee('(Anda)');
+
+    $this->actingAs($this->admin)->get(route('admin.pengguna.edit', $iim))->assertNotFound();
+    $this->actingAs($this->admin)->delete(route('admin.pengguna.destroy', $iim))->assertNotFound();
 });
 
 it('mencari pengguna berdasarkan nama atau email', function () {
@@ -249,4 +282,23 @@ it('menolak menghapus akun yang sedang dipakai', function () {
         ->assertSessionHas('error', 'Akun yang sedang Anda pakai tidak bisa dihapus.');
 
     expect($this->admin->refresh()->trashed())->toBeFalse();
+});
+
+it('menolak mengubah akun yang sedang dipakai lewat Manajemen Pengguna', function () {
+    $this->actingAs($this->admin)
+        ->get(route('admin.pengguna.edit', $this->admin))
+        ->assertRedirect(route('admin.pengguna.index'))
+        ->assertSessionHas('error', 'Akun Anda diubah lewat menu pengguna › Profil Saya.');
+
+    // Form CRUD tidak bisa dipakai menurunkan peran sendiri.
+    $this->actingAs($this->admin)
+        ->put(route('admin.pengguna.update', $this->admin), [
+            'nama' => 'Budi Santoso', 'email' => $this->admin->email, 'peran' => 'administrator',
+            'password' => 'baru12345', 'password_confirmation' => 'baru12345',
+        ])
+        ->assertRedirect(route('admin.pengguna.index'))
+        ->assertSessionHas('error', 'Akun Anda diubah lewat menu pengguna › Profil Saya.');
+
+    expect($this->admin->refresh()->peran)->toBe(PeranPengguna::SuperAdministrator)
+        ->and(Hash::check('baru12345', $this->admin->password))->toBeFalse();
 });

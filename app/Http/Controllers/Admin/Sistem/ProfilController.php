@@ -21,6 +21,6 @@ class ProfilController extends Controller
         // hanya sesi di perangkat lain yang berakhir.
         $request->user()->update($request->validated());
 
-        return redirect()->route('admin.profil.edit')->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->route('admin.dashboard')->with('success', 'Profil berhasil diperbarui.');
     }
 }

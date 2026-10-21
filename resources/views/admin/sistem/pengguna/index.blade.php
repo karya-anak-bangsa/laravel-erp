@@ -1,6 +1,10 @@
 @extends('layouts.admin', ['breadcrumb' => ['Pengaturan Sistem' => null, 'Manajemen Pengguna' => null]])
 
-@php($akunSaya = auth()->user())
+{{-- Bentuk blok karena berkas ini juga memuat blok php di dalam loop; Blade salah mengurai bila bentuk sebaris
+     dan bentuk blok bercampur. --}}
+@php
+    $akunSaya = auth()->user();
+@endphp
 
 @section('content')
     <x-admin.page-header title="Pengaturan Sistem" />
@@ -12,7 +16,8 @@
             <x-admin.tombol-tambah :href="route('admin.pengguna.create')" />
         </x-slot>
 
-        {{-- Daftar tanpa pencarian tidak pernah kosong karena memuat akun yang sedang login. --}}
+        {{-- Daftar tanpa pencarian tidak pernah kosong karena memuat akun yang sedang login. Akun terhapus ikut tercantum
+             sebagai Nonaktif (pilihan pemilik). --}}
         @if ($pengguna->isEmpty())
             <x-admin.empty-state title="Pengguna tidak ditemukan" description="Coba ubah kata kunci pencarian." />
         @else
@@ -28,11 +33,24 @@
                     </thead>
                     <tbody>
                         @foreach ($pengguna as $item)
+                            @php
+                                // Alasan tombol Ubah & Hapus dinonaktifkan; server juga menolak kedua aksinya.
+                                $alasanTerkunci = match (true) {
+                                    $item->is($akunSaya) => [
+                                        'ubah' => 'akun Anda diubah lewat menu pengguna › Profil Saya',
+                                        'hapus' => 'akun yang sedang dipakai tidak bisa dihapus',
+                                    ],
+                                    $item->trashed() => ['ubah' => 'akun nonaktif tidak bisa diubah', 'hapus' => 'akun sudah nonaktif'],
+                                    default => null,
+                                };
+                            @endphp
                             <tr>
                                 <td class="kolom-pas">
                                     <span class="cell-strong">{{ $item->nama }}</span>
                                     @if ($item->is($akunSaya))
                                         (Anda)
+                                    @elseif ($item->trashed())
+                                        <span class="chip chip-red">Nonaktif</span>
                                     @endif
                                 </td>
                                 <td>{{ $item->email }}</td>
@@ -58,6 +76,16 @@
                                                             <td><span class="chip {{ $item->peran->kelasChip() }}">{{ $item->peran->label() }}</span></td>
                                                         </tr>
                                                         <tr>
+                                                            <th scope="row">Status</th>
+                                                            <td>
+                                                                @if ($item->trashed())
+                                                                    <span class="chip chip-red">Nonaktif</span>
+                                                                @else
+                                                                    <span class="chip chip-green">Aktif</span>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
                                                             <th scope="row">Dibuat</th>
                                                             <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
                                                         </tr>
@@ -69,20 +97,22 @@
                                                 </table>
                                             </div>
                                         </x-admin.detail-button>
-                                        <a href="{{ $item->is($akunSaya) ? route('admin.profil.edit') : route('admin.pengguna.edit', $item) }}" class="btn btn-warning btn-ikon"
-                                            title="Ubah" aria-label="Ubah">
-                                            <x-admin.icon name="pen-to-square" />
-                                        </a>
-                                        @if ($item->is($akunSaya))
-                                            {{-- Selalu ada satu akun yang bisa login; server juga menolak. --}}
+                                        @if ($alasanTerkunci)
+                                            <button type="button" class="btn btn-warning btn-ikon" disabled
+                                                title="{{ ucfirst($alasanTerkunci['ubah']) }}" aria-label="Ubah ({{ $alasanTerkunci['ubah'] }})">
+                                                <x-admin.icon name="pen-to-square" />
+                                            </button>
                                             <button type="button" class="btn btn-danger btn-ikon" disabled
-                                                title="Akun yang sedang dipakai tidak bisa dihapus" aria-label="Hapus (akun yang sedang dipakai tidak bisa dihapus)">
+                                                title="{{ ucfirst($alasanTerkunci['hapus']) }}" aria-label="Hapus ({{ $alasanTerkunci['hapus'] }})">
                                                 <x-admin.icon name="trash-can" />
                                             </button>
                                         @else
+                                            <a href="{{ route('admin.pengguna.edit', $item) }}" class="btn btn-warning btn-ikon" title="Ubah" aria-label="Ubah">
+                                                <x-admin.icon name="pen-to-square" />
+                                            </a>
                                             <x-admin.delete-button :action="route('admin.pengguna.destroy', $item)" :ikon-saja="true"
                                                 title="Hapus pengguna?"
-                                                :message="'Akun “'.$item->nama.'” tidak bisa dipakai login lagi dan emailnya tidak bisa dipakai akun baru.'" />
+                                                :message="'Akun “'.$item->nama.'” tidak bisa dipakai login lagi dan tetap tercantum di daftar sebagai Nonaktif. Emailnya tidak bisa dipakai akun baru.'" />
                                         @endif
                                     </div>
                                 </td>

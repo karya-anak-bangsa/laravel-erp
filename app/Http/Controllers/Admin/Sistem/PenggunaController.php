@@ -18,6 +18,8 @@ class PenggunaController extends Controller
         $q = $request->string('q')->trim()->value();
 
         $pengguna = Pengguna::query()
+            // Akun terhapus tetap tercantum sebagai Nonaktif (pilihan pemilik).
+            ->withTrashed()
             ->when($q !== '', fn (Builder $query) => $query->where(fn (Builder $query) => $query
                 ->where('nama', 'like', "%{$q}%")
                 ->orWhere('email', 'like', "%{$q}%")))
@@ -43,9 +45,8 @@ class PenggunaController extends Controller
 
     public function edit(Request $request, Pengguna $pengguna): View|RedirectResponse
     {
-        // Akun sendiri diubah lewat Profil Saya yang tidak memuat isian peran, agar peran sendiri tidak bisa diubah.
         if ($pengguna->is($request->user())) {
-            return redirect()->route('admin.profil.edit');
+            return $this->tolakAkunSendiri();
         }
 
         return view('admin.sistem.pengguna.edit', compact('pengguna'));
@@ -54,7 +55,7 @@ class PenggunaController extends Controller
     public function update(UpdatePenggunaRequest $request, Pengguna $pengguna): RedirectResponse
     {
         if ($pengguna->is($request->user())) {
-            return redirect()->route('admin.profil.edit');
+            return $this->tolakAkunSendiri();
         }
 
         $pengguna->update($request->validated());
@@ -73,5 +74,12 @@ class PenggunaController extends Controller
         $pengguna->delete();
 
         return redirect()->route('admin.pengguna.index')->with('success', 'Pengguna berhasil dihapus.');
+    }
+
+    // Akun sendiri hanya diubah lewat menu pengguna › Profil Saya (pilihan pemilik), yang tidak memuat isian peran
+    // sehingga peran sendiri tidak bisa diubah.
+    private function tolakAkunSendiri(): RedirectResponse
+    {
+        return redirect()->route('admin.pengguna.index')->with('error', 'Akun Anda diubah lewat menu pengguna › Profil Saya.');
     }
 }

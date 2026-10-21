@@ -40,14 +40,15 @@ it('menampilkan form profil akun yang sedang login', function () {
             'value="Budi Santoso"', 'value="budi@example.com"',
             'name="password"', 'autocomplete="new-password"', 'data-toggle-password="password"',
             'name="password_confirmation"', 'autocomplete="new-password"', 'data-toggle-password="password_confirmation"',
+            'href="'.route('admin.dashboard').'" class="btn btn-secondary"',
         ], false)
         ->assertDontSee('Kata Sandi Saat Ini');
 });
 
-it('mengubah nama dan email tanpa kata sandi saat ini', function () {
+it('mengubah nama dan email tanpa kata sandi saat ini lalu kembali ke dashboard', function () {
     $this->actingAs($this->pengguna)
         ->put(route('admin.profil.update'), dataProfilValid(['nama' => 'Budi S.', 'email' => 'budi.baru@example.com']))
-        ->assertRedirect(route('admin.profil.edit'))
+        ->assertRedirect(route('admin.dashboard'))
         ->assertSessionHas('success', 'Profil berhasil diperbarui.');
 
     expect($this->pengguna->refresh()->nama)->toBe('Budi S.')
@@ -97,28 +98,6 @@ it('memutus sesi di perangkat lain saat kata sandi diganti, tetapi tidak sesi ya
         ->withSession($sesiPerangkatLain)
         ->get(route('admin.dashboard'))
         ->assertRedirect(route('login'));
-});
-
-it('mengarahkan ubah akun sendiri di Manajemen Pengguna ke Profil Saya', function () {
-    $this->actingAs($this->pengguna)
-        ->get(route('admin.pengguna.index'))
-        ->assertSee('href="'.route('admin.profil.edit').'" class="btn btn-warning btn-ikon"', false)
-        ->assertDontSee('href="'.route('admin.pengguna.edit', $this->pengguna).'"', false);
-
-    $this->actingAs($this->pengguna)
-        ->get(route('admin.pengguna.edit', $this->pengguna))
-        ->assertRedirect(route('admin.profil.edit'));
-
-    // Form CRUD tidak bisa dipakai menurunkan peran sendiri.
-    $this->actingAs($this->pengguna)
-        ->put(route('admin.pengguna.update', $this->pengguna), [
-            'nama' => 'Budi Santoso', 'email' => 'budi@example.com', 'peran' => 'administrator',
-            'password' => 'baru12345', 'password_confirmation' => 'baru12345',
-        ])
-        ->assertRedirect(route('admin.profil.edit'));
-
-    expect($this->pengguna->refresh()->peran)->toBe(PeranPengguna::SuperAdministrator)
-        ->and(Hash::check('rahasia123', $this->pengguna->password))->toBeTrue();
 });
 
 it('tidak menyediakan pengubahan peran sendiri lewat Profil Saya', function () {
