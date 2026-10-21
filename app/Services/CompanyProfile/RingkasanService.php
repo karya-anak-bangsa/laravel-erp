@@ -69,7 +69,7 @@ class RingkasanService
      *
      * @return Collection<int, array{modul: string, judul: string, diperbarui: CarbonInterface, url: string}>
      */
-    public function terakhirDiperbarui(int $jumlah = 8): Collection
+    public function terakhirDiperbarui(int $jumlah = 5): Collection
     {
         return collect(array_merge(
             $this->terbaruDari('Artikel', Artikel::query(), 'judul', 'admin.artikel.edit', $jumlah),
@@ -81,29 +81,6 @@ class RingkasanService
             $this->terbaruDari('Hero', Hero::query(), 'judul', 'admin.hero.edit', $jumlah),
         ))
             // Pengurutan stabil: waktu kembar (mis. data seeder) tetap urut modul seperti di atas.
-            ->sortByDesc(fn (array $item): int => $item['diperbarui']->getTimestamp())
-            ->take($jumlah)
-            ->values();
-    }
-
-    /**
-     * Konten yang belum tampil di website: artikel draf, tutorial draf, dan tutorial terbit yang belum punya materi,
-     * terakhir disimpan lebih dulu.
-     *
-     * @return Collection<int, array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
-     */
-    public function belumTampil(int $jumlah = 5): Collection
-    {
-        $draf = StatusPublikasi::Draf;
-
-        return collect(array_merge(
-            $this->belumTampilDari('Artikel', Artikel::query()->where('status_publikasi', $draf), 'Draf', 'admin.artikel.edit', $jumlah),
-            $this->belumTampilDari('Tutorial', Tutorial::query()->where('status_publikasi', $draf), 'Draf', 'admin.tutorial.edit', $jumlah),
-            // Terbit tetapi belum tampil karena scope tayang juga mensyaratkan minimal satu materi.
-            $this->belumTampilDari('Tutorial', Tutorial::query()->where('status_publikasi', StatusPublikasi::Terbit)->doesntHave('materiTutorial'),
-                'Belum ada materi', 'admin.tutorial.edit', $jumlah),
-        ))
-            // Pengurutan stabil: waktu kembar tetap urut seperti di atas.
             ->sortByDesc(fn (array $item): int => $item['diperbarui']->getTimestamp())
             ->take($jumlah)
             ->values();
@@ -152,25 +129,6 @@ class RingkasanService
                 'diperbarui' => $diperbarui,
                 'url' => route($rute, $item),
             ];
-        }
-
-        return $hasil;
-    }
-
-    /**
-     * Baris terbaruDari() ditambah label status untuk kartu Belum tampil.
-     *
-     * @template TModel of Model
-     *
-     * @param  Builder<TModel>  $query
-     * @return list<array{modul: string, judul: string, status: string, diperbarui: CarbonInterface, url: string}>
-     */
-    private function belumTampilDari(string $modul, Builder $query, string $status, string $rute, int $jumlah): array
-    {
-        $hasil = [];
-
-        foreach ($this->terbaruDari($modul, $query, 'judul', $rute, $jumlah) as $item) {
-            $hasil[] = [...$item, 'status' => $status];
         }
 
         return $hasil;

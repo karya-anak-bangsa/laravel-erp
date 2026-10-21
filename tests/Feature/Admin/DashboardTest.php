@@ -11,7 +11,6 @@ use App\Models\CompanyProfile\Portofolio;
 use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
-use Illuminate\Support\Str;
 
 it('mengarahkan tamu ke halaman login', function () {
     $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
@@ -156,38 +155,15 @@ describe('ringkasan dashboard', function () {
             ->assertDontSee('Artikel terhapus');
     });
 
-    it('membatasi konten terakhir diperbarui sampai delapan', function () {
-        foreach (range(1, 9) as $nomor) {
+    it('membatasi konten terakhir diperbarui sampai lima', function () {
+        foreach (range(1, 6) as $nomor) {
             Layanan::factory()->create(['judul' => sprintf('Layanan Urut %02d', $nomor), 'updated_at' => now()->subMinutes($nomor)]);
         }
 
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
-            ->assertSee('Layanan Urut 08')
-            ->assertDontSee('Layanan Urut 09');
-    });
-
-    it('menampilkan konten belum tampil: artikel draf serta tutorial draf atau tanpa materi, bertautan ke halaman Ubah', function () {
-        $artikel = Artikel::factory()->draf()->create(['judul' => 'Artikel draf', 'updated_at' => '2026-10-20 09:00:00']);
-        $tutorialDraf = Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-19 09:00:00']);
-        $tutorialKosong = Tutorial::factory()->terbit()->create(['judul' => 'Tutorial kosong', 'updated_at' => '2026-10-18 09:00:00']);
-        Artikel::factory()->terbit()->create(['judul' => 'Artikel sudah terbit']);
-        Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['judul' => 'Tutorial lengkap']);
-
-        $isi = $this->actingAs($this->admin)
-            ->get(route('admin.dashboard'))
-            ->assertSeeInOrder([
-                '<div class="card-title">Belum tampil</div>',
-                'href="'.route('admin.artikel.edit', $artikel).'" class="judul-ringkas" title="Artikel draf">Artikel draf</a>', 'Artikel · 20 Oktober 2026, 09:00', 'chip-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialDraf).'" class="judul-ringkas" title="Tutorial draf">Tutorial draf</a>', 'Tutorial · 19 Oktober 2026, 09:00', 'chip-yellow">Draf',
-                'href="'.route('admin.tutorial.edit', $tutorialKosong).'" class="judul-ringkas" title="Tutorial kosong">Tutorial kosong</a>', 'chip-yellow">Belum ada materi',
-            ], false)
-            ->getContent();
-
-        // Konten yang sudah tampil boleh muncul di Terakhir diperbarui, tetapi tidak di kartu Belum tampil.
-        expect(Str::after($isi, '<div class="card-title">Belum tampil</div>'))
-            ->not->toContain('Artikel sudah terbit')
-            ->not->toContain('Tutorial lengkap');
+            ->assertSee('Layanan Urut 05')
+            ->assertDontSee('Layanan Urut 06');
     });
 
     it('menampilkan status website: hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
@@ -230,12 +206,11 @@ describe('ringkasan dashboard', function () {
             ->assertSee('<a href="'.route('admin.modul-website.index').'" class="chip chip-yellow">2 nonaktif</a>', false);
     });
 
-    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, template aktif, dan konten belum tampil', function () {
+    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, dan template aktif', function () {
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertOk()
             ->assertSee('Belum ada konten')
-            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false)
-            ->assertSee('Semua konten sudah tampil');
+            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false);
     });
 });

@@ -1133,30 +1133,14 @@ table.table td.kolom-aksi {
     }
 }
 
-// Kolom kanan dashboard: kartu bertumpuk dengan jarak antarkartu .row Gentelella. Kartu terakhir (Belum tampil)
-// memanjang mengisi sisa tinggi agar dasar kedua kolom sejajar.
-.tumpukan-kartu {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-
-    > .card:last-child {
-        flex: 1;
-    }
-}
-
-// Daftar ringkas dashboard (Terakhir diperbarui, Belum tampil): baris bergaris pemisah berisi judul dan
-// keterangan, label status di kanan. Padding 12px 16px membuat jarak tepi baris ke huruf ±16px, sama dengan kepala
-// kartu.
+// Daftar ringkas dashboard (Terakhir diperbarui): baris bergaris pemisah berisi judul dan keterangan. Padding 12px 16px
+// membuat jarak tepi baris ke huruf ±16px, sama dengan kepala kartu.
 .daftar-ringkas {
     margin: 0;
     padding: 0;
     list-style: none;
 
     > li {
-        display: flex;
-        align-items: center;
-        gap: 12px;
         padding: 12px 16px;
         border-bottom: 1px solid var(--border-color-light);
 
@@ -1168,14 +1152,12 @@ table.table td.kolom-aksi {
 
 // Judul baris 13px seperti isi tabel admin, satu tingkat di bawah judul kartu (16px).
 .isi-ringkas {
-    flex: 1;
-    min-width: 0;
     font-size: 13px;
     line-height: 18px;
 }
 
-// Satu baris berelipsis: judul panjang yang patah membuat tinggi baris tidak seragam di kartu sempit (Belum tampil).
-// Judul lengkap tampil lewat atribut title.
+// Satu baris berelipsis: judul panjang yang patah di layar sempit membuat tinggi baris tidak seragam. Judul lengkap
+// tampil lewat atribut title.
 .judul-ringkas {
     display: block;
     overflow: hidden;
@@ -1193,6 +1175,19 @@ a.judul-ringkas:hover {
     font-size: 12px;
     line-height: 16px;
     color: var(--text-muted);
+}
+
+// Kartu Status website ditarik setinggi kartu Terakhir diperbarui di sebelahnya (baris grid) agar dasar kedua kartu
+// sejajar. Sisa tingginya diisi footer dengan tombol di tengah; tanpa ini ruang kosong jatuh di bawah tombol.
+.kartu-status-situs {
+    display: flex;
+    flex-direction: column;
+
+    > .card-footer {
+        display: flex;
+        flex: 1;
+        align-items: center;
+    }
 }
 
 // Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.

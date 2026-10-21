@@ -22,7 +22,7 @@ it('menghitung angka setiap modul tanpa data terhapus', function () {
     Artikel::factory()->terbit()->create()->delete();
     Portofolio::factory()->count(2)->create();
     Portofolio::factory()->create()->delete();
-    // Dihitung dari status: tutorial terbit tanpa materi tetap terbit (belum tampil, lihat kartu Belum tampil).
+    // Dihitung dari status: tutorial terbit tanpa materi tetap terbit walau belum tampil di website.
     Tutorial::factory()->terbit()->has(MateriTutorial::factory()->count(3), 'materiTutorial')->create();
     Tutorial::factory()->terbit()->create();
     Tutorial::factory()->draf()->has(MateriTutorial::factory(), 'materiTutorial')->create();
@@ -63,27 +63,6 @@ it('melewati konten tanpa waktu simpan, mis. yang diisi di luar Eloquent', funct
     DB::table('tb_hero')->where('id_hero', $hero->id_hero)->update(['updated_at' => null]);
 
     expect($this->ringkasan->terakhirDiperbarui()->pluck('judul')->all())->toBe(['Tanya?']);
-});
-
-it('mengambil artikel & tutorial yang belum tampil, terakhir disimpan lebih dulu, dan membatasi jumlahnya', function () {
-    Artikel::factory()->draf()->create(['judul' => 'Draf lama', 'updated_at' => '2026-10-01 08:00:00']);
-    $artikel = Artikel::factory()->draf()->create(['judul' => 'Draf baru', 'updated_at' => '2026-10-20 08:00:00']);
-    $tutorial = Tutorial::factory()->terbit()->create(['judul' => 'Tanpa materi', 'updated_at' => '2026-10-19 08:00:00']);
-    Tutorial::factory()->draf()->create(['judul' => 'Tutorial draf', 'updated_at' => '2026-10-10 08:00:00']);
-    // Sudah tampil atau terhapus: tidak ikut walau lebih baru.
-    Artikel::factory()->terbit()->create(['updated_at' => '2026-10-20 09:00:00']);
-    Tutorial::factory()->terbit()->has(MateriTutorial::factory(), 'materiTutorial')->create(['updated_at' => '2026-10-20 09:00:00']);
-    Artikel::factory()->draf()->create(['updated_at' => '2026-10-20 10:00:00'])->delete();
-
-    $hasil = $this->ringkasan->belumTampil(3);
-
-    expect($hasil->pluck('judul')->all())->toBe(['Draf baru', 'Tanpa materi', 'Tutorial draf'])
-        ->and($hasil->pluck('modul')->all())->toBe(['Artikel', 'Tutorial', 'Tutorial'])
-        ->and($hasil->pluck('status')->all())->toBe(['Draf', 'Belum ada materi', 'Draf'])
-        ->and($hasil->pluck('url')->take(2)->all())->toBe([
-            route('admin.artikel.edit', $artikel),
-            route('admin.tutorial.edit', $tutorial),
-        ]);
 });
 
 it('membaca hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
