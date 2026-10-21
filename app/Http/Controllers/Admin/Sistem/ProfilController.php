@@ -19,7 +19,7 @@ class ProfilController extends Controller
     {
         // Instance milik guard yang diubah, agar auth.session menyimpan hash kata sandi baru di sesi ini dan
         // hanya sesi di perangkat lain yang berakhir.
-        $request->user()->update($request->safe()->except('password_saat_ini'));
+        $request->user()->update($request->validated());
 
         return redirect()->route('admin.profil.edit')->with('success', 'Profil berhasil diperbarui.');
     }

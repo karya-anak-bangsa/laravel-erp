@@ -8,6 +8,7 @@ import Notify from 'simple-notify';
 import Swal from 'sweetalert2/dist/sweetalert2.esm.js';
 import { pasangRepeater } from './admin/repeater.js';
 import { pasangFormTemplate } from './admin/template.js';
+import { pasangTampilSandi } from './admin/tampil-sandi.js';
 
 // Grup submenu yang terbuka selalu mengikuti halaman aktif (dirender Blade). Gentelella mengingat grup terakhir
 // yang diklik di sessionStorage lalu membukanya di semua halaman, bahkan setelah logout dan login di tab yang sama.
@@ -20,6 +21,7 @@ try {
 mountShell();
 pasangRepeater();
 pasangFormTemplate();
+pasangTampilSandi();
 
 // Pratinjau berkas yang baru dipilih di baris gambar tambahan portofolio (admin/company-profile/portofolio/_baris-gambar).
 // Lewat delegasi karena barisnya bisa ditambah repeater.

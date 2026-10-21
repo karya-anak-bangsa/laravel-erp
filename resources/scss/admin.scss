@@ -1323,8 +1323,13 @@ table.table.tabel-informasi tbody tr:hover {
     text-align: center;
 }
 
-// Tombol tampil/sembunyikan kata sandi di sisi kanan input (resources/js/auth.js).
-.input-group .input-toggle {
+// Tombol tampil/sembunyikan kata sandi di sisi kanan input (resources/js/admin/tampil-sandi.js): .input-group
+// berikon gembok di halaman login, .isian-sandi tanpa ikon kiri di <x-admin.form-input type="password">.
+.isian-sandi {
+    position: relative;
+}
+
+:is(.input-group, .isian-sandi) .input-toggle {
     position: absolute;
     inset-inline-end: 4px;
     top: 50%;
@@ -1356,7 +1361,7 @@ table.table.tabel-informasi tbody tr:hover {
     }
 }
 
-.input-group:has(.input-toggle:not([hidden])) .form-control {
+:is(.input-group, .isian-sandi):has(.input-toggle:not([hidden])) .form-control {
     padding-inline-end: 38px;
 }
 

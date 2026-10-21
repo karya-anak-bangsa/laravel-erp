@@ -21,8 +21,8 @@
                     <thead>
                         <tr>
                             <th class="kolom-pas">Nama</th>
-                            <th class="kolom-pas">Peran</th>
                             <th>Email</th>
+                            <th class="kolom-status">Peran</th>
                             <th class="kolom-aksi">Aksi</th>
                         </tr>
                     </thead>
@@ -35,8 +35,10 @@
                                         (Anda)
                                     @endif
                                 </td>
-                                <td class="kolom-pas">{{ $item->peran->label() }}</td>
                                 <td>{{ $item->email }}</td>
+                                <td class="kolom-status">
+                                    <span class="chip {{ $item->peran->kelasChip() }}">{{ $item->peran->label() }}</span>
+                                </td>
                                 <td class="kolom-aksi">
                                     <div class="aksi-tabel">
                                         <x-admin.detail-button title="Detail Pengguna" :ikon-saja="true">
@@ -48,12 +50,12 @@
                                                             <td class="cell-strong">{{ $item->nama }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <th scope="row">Peran</th>
-                                                            <td>{{ $item->peran->label() }}</td>
-                                                        </tr>
-                                                        <tr>
                                                             <th scope="row">Email</th>
                                                             <td>{{ $item->email }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Peran</th>
+                                                            <td><span class="chip {{ $item->peran->kelasChip() }}">{{ $item->peran->label() }}</span></td>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">Dibuat</th>

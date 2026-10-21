@@ -22,4 +22,15 @@ enum PeranPengguna: string
             self::Administrator => 'Administrator',
         };
     }
+
+    /**
+     * Kelas warna badge .chip Gentelella; hijau, kuning, dan merah tidak dipakai karena sudah bermakna status.
+     */
+    public function kelasChip(): string
+    {
+        return match ($this) {
+            self::SuperAdministrator => 'chip-purple',
+            self::Administrator => 'chip-blue',
+        };
+    }
 }

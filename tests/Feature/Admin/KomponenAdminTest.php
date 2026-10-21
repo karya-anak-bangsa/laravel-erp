@@ -50,6 +50,18 @@ it('tidak mengisi ulang nilai pada input password', function () {
         ->assertDontSee('rahasia');
 });
 
+it('memberi input password tombol tampil kata sandi yang tersembunyi sampai JavaScript berjalan', function () {
+    $this->blade('<x-admin.form-input name="password" type="password" label="Kata Sandi" />')
+        ->assertSeeInOrder([
+            '<div class="isian-sandi">', 'id="password"',
+            '<button type="button" class="input-toggle" data-toggle-password="password"', 'hidden>', 'fa-eye',
+        ], false);
+
+    $this->blade('<x-admin.form-input name="email" type="email" label="Email" />')
+        ->assertDontSee('isian-sandi', false)
+        ->assertDontSee('data-toggle-password', false);
+});
+
 it('memakai notasi titik untuk error pada nama input array', function () {
     $this->withViewErrors(['cta.0.label' => 'Label wajib diisi.']);
 

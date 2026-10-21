@@ -43,7 +43,7 @@ class PenggunaController extends Controller
 
     public function edit(Request $request, Pengguna $pengguna): View|RedirectResponse
     {
-        // Akun sendiri diubah lewat Profil Saya yang meminta kata sandi saat ini.
+        // Akun sendiri diubah lewat Profil Saya yang tidak memuat isian peran, agar peran sendiri tidak bisa diubah.
         if ($pengguna->is($request->user())) {
             return redirect()->route('admin.profil.edit');
         }

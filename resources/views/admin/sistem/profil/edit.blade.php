@@ -17,8 +17,6 @@
             </x-admin.card>
 
             <x-admin.card title="Kata Sandi" subtitle="Kosongkan bila tidak ingin mengganti.">
-                <x-admin.form-input name="password_saat_ini" type="password" label="Kata Sandi Saat Ini"
-                    autocomplete="current-password" hint="Wajib diisi bila email atau kata sandi diganti." />
                 <x-admin.form-input name="password" type="password" label="Kata Sandi Baru"
                     autocomplete="new-password" hint="Minimal 8 karakter." />
                 <x-admin.form-input name="password_confirmation" type="password" label="Ulangi Kata Sandi Baru"

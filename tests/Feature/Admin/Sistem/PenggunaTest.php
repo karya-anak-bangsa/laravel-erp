@@ -35,10 +35,12 @@ it('menampilkan daftar pengguna urut abjad sesuai standar admin', function () {
             'class="card kartu-filter"',
             '<div class="card-title">Manajemen Pengguna</div>',
             'href="'.route('admin.pengguna.create').'"',
-            '<table class="table">', '<th class="kolom-pas">Peran</th>',
-            'Agus Salim', 'Super Administrator', 'Budi Santoso', 'Super Administrator',
-            'Citra Lestari', '<td class="kolom-pas">Administrator</td>', $citra->email,
-            'data-detail-title="Detail Pengguna"', '<th scope="row">Peran</th>', '<td>Administrator</td>', '09 Oktober 2026, 08:30',
+            '<table class="table">', '<th class="kolom-pas">Nama</th>', '<th>Email</th>', '<th class="kolom-status">Peran</th>',
+            'Agus Salim', '<span class="chip chip-purple">Super Administrator</span>',
+            'Budi Santoso', '<span class="chip chip-purple">Super Administrator</span>',
+            'Citra Lestari', '<td>'.$citra->email.'</td>', '<span class="chip chip-blue">Administrator</span>',
+            'data-detail-title="Detail Pengguna"', '<th scope="row">Email</th>', '<th scope="row">Peran</th>',
+            '<td><span class="chip chip-blue">Administrator</span></td>', '09 Oktober 2026, 08:30',
             'href="'.route('admin.pengguna.edit', $citra).'"',
             'action="'.route('admin.pengguna.destroy', $citra).'"',
         ], false);
@@ -83,7 +85,10 @@ it('menambah pengguna dengan kata sandi ter-hash', function () {
             '<option value="super_administrator" >Super Administrator</option>', '<option value="administrator" >Administrator</option>',
         ], false)
         // Browser tidak boleh mengisi kata sandi admin yang sedang login.
-        ->assertSeeInOrder(['name="password"', 'autocomplete="new-password"', 'name="password_confirmation"', 'autocomplete="new-password"'], false);
+        ->assertSeeInOrder([
+            'name="password"', 'autocomplete="new-password"', 'data-toggle-password="password"',
+            'name="password_confirmation"', 'autocomplete="new-password"', 'data-toggle-password="password_confirmation"',
+        ], false);
 
     $this->actingAs($this->admin)
         ->post(route('admin.pengguna.store'), [
