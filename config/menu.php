@@ -126,6 +126,12 @@ return [
                 'rute' => 'admin.template.index',
                 'aktif' => 'admin.template.*',
             ],
+            [
+                'label' => 'Manajemen Pengguna',
+                'ikon' => 'gear',
+                'rute' => 'admin.pengguna.index',
+                'aktif' => 'admin.pengguna.*',
+            ],
         ],
     ],
 ];

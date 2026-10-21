@@ -18,3 +18,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 require __DIR__.'/admin/company-profile.php';
+require __DIR__.'/admin/sistem.php';

@@ -273,10 +273,11 @@ Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
 - Nada dasar Monochrome dari skala abu Tailwind lain (zinc, stone, dst.): bedanya dengan Netral nyaris tak terlihat.
 - JSON-LD FAQPage (hasil kaya FAQ kini hanya untuk situs pemerintah/kesehatan), Meta Keyword di halaman (diabaikan Google), dan favicon WEBP (tidak ditampilkan Google Search).
 - Formulir kontak dan kotak masuk pesan (modul Kontak Kami dihapus 2026-10-20): kontak cukup lewat WhatsApp.
+- Pengguna: kolom `status_aktif` (soft delete sudah memblokir login), email akun terhapus yang boleh dipakai lagi, serta peran & izin dinamis atau paket permission (cukup dua peran tetap).
 
 ## 10. Keamanan
 
-- Tidak ada registrasi publik. Akun admin dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
+- Tidak ada registrasi publik. Akun admin pertama dibuat `PenggunaSeeder` dari env `ADMIN_NAMA`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`; akun lain dibuat di Pengaturan Sistem › Manajemen Pengguna (kata sandi min. 8 karakter, akun yang sedang dipakai tidak bisa dihapus, akun terhapus otomatis keluar karena soft delete).
 - Login: rate limit 5 percobaan/menit per email+IP (dimatikan saat `APP_ENV=local`), `session()->regenerate()` setelah login, invalidate saat logout.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
 - Semua rute `/admin/*` di bawah middleware `auth`. Untuk sekarang semua pengguna terautentikasi = admin; role & permission ada di ROADMAP Fase 5.
