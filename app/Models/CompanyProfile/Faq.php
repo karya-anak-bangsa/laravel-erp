@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\FaqFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,9 +12,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Faq extends Model
 {
     /** @use HasFactory<FaqFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const URUTAN_MAKS = 999;
+
+    public const LABEL_LOG = 'FAQ';
+
+    public const ISIAN_LOG = [
+        'pertanyaan' => 'Pertanyaan',
+        'jawaban' => 'Jawaban',
+        'urutan_ke' => 'Urutan ke',
+    ];
 
     protected $table = 'tb_faq';
 
@@ -26,6 +35,11 @@ class Faq extends Model
         return [
             'urutan_ke' => 'integer',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->pertanyaan;
     }
 
     /**

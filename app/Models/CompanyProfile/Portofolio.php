@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\PortofolioFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,17 +16,33 @@ use Illuminate\Support\Facades\Storage;
 class Portofolio extends Model
 {
     /** @use HasFactory<PortofolioFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/portofolio';
+
+    public const LABEL_LOG = 'Portofolio';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'id_kategori_portofolio' => 'Kategori',
+        'deskripsi' => 'Deskripsi',
+        'gambar' => 'Gambar Utama',
+        // Bukan kolom (tb_gambar_portofolio): ditandai PortofolioService lewat tandaiBerubah().
+        'galeri' => 'Gambar Tambahan',
+    ];
 
     protected $table = 'tb_portofolio';
 
     protected $primaryKey = 'id_portofolio';
 
     protected $fillable = ['id_kategori_portofolio', 'judul', 'slug', 'deskripsi', 'gambar'];
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
+    }
 
     /**
      * Terbaru lebih dulu (id memecah created_at kembar, mis. data seeder yang dibuat dalam detik yang sama).

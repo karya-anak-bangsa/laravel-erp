@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\TutorialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,11 +18,21 @@ use Illuminate\Support\Str;
 class Tutorial extends Model
 {
     /** @use HasFactory<TutorialFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/tutorial';
+
+    public const LABEL_LOG = 'Tutorial';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'deskripsi' => 'Deskripsi',
+        'gambar' => 'Gambar Sampul',
+        'id_kategori_tutorial' => 'Kategori',
+        'status_publikasi' => 'Status',
+    ];
 
     protected $table = 'tb_tutorial';
 
@@ -34,6 +45,11 @@ class Tutorial extends Model
         return [
             'status_publikasi' => StatusPublikasi::class,
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\ArtikelFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,11 +16,22 @@ use Illuminate\Support\Facades\Storage;
 class Artikel extends Model
 {
     /** @use HasFactory<ArtikelFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/artikel';
+
+    public const LABEL_LOG = 'Artikel';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'deskripsi' => 'Isi Artikel',
+        'gambar' => 'Gambar',
+        'id_kategori_artikel' => 'Kategori',
+        'tanggal' => 'Tanggal',
+        'status_publikasi' => 'Status',
+    ];
 
     protected $table = 'tb_artikel';
 
@@ -33,6 +45,11 @@ class Artikel extends Model
             'tanggal' => 'date',
             'status_publikasi' => StatusPublikasi::class,
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
     }
 
     /**

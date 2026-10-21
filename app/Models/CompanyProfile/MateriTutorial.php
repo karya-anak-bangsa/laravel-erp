@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use App\Enums\CompanyProfile\StatusPublikasi;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\MateriTutorialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,9 +14,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class MateriTutorial extends Model
 {
     /** @use HasFactory<MateriTutorialFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const URUTAN_MAKS = 999;
+
+    public const LABEL_LOG = 'Materi Tutorial';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'deskripsi' => 'Isi Materi',
+        'id_tutorial' => 'Tutorial',
+        'urutan_ke' => 'Urutan ke',
+    ];
 
     protected $table = 'tb_materi_tutorial';
 
@@ -28,6 +38,11 @@ class MateriTutorial extends Model
         return [
             'urutan_ke' => 'integer',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
     }
 
     /**

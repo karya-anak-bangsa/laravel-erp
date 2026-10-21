@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\KategoriArtikelFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,13 +14,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class KategoriArtikel extends Model
 {
     /** @use HasFactory<KategoriArtikelFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
+
+    public const LABEL_LOG = 'Kategori Artikel';
+
+    public const ISIAN_LOG = [
+        'nama_kategori' => 'Nama Kategori',
+    ];
 
     protected $table = 'tb_kategori_artikel';
 
     protected $primaryKey = 'id_kategori_artikel';
 
     protected $fillable = ['nama_kategori', 'slug'];
+
+    public function namaUntukLog(): string
+    {
+        return $this->nama_kategori;
+    }
 
     /**
      * Kategori yang punya artikel terbit; hanya kategori ini yang punya halaman di frontend.

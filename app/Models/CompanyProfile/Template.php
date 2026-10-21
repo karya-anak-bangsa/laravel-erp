@@ -10,6 +10,7 @@ use App\Enums\CompanyProfile\LebarKonten;
 use App\Enums\CompanyProfile\NadaDasar;
 use App\Enums\CompanyProfile\SkalaTemplate;
 use App\Enums\CompanyProfile\SudutTemplate;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\TemplateFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,10 +20,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Template extends Model
 {
     /** @use HasFactory<TemplateFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     /** Kolom pengaturan tampilan; kuncinya sama dengan config/tema.php sehingga dibaca TemaService dengan cara yang sama. */
     public const KOLOM_TAMPILAN = ['nama', 'jenis', 'warna_utama', 'warna_aksen', 'nada_dasar', 'font', 'sudut', 'skala', 'lebar_konten', 'ketebalan_judul', 'bayangan'];
+
+    public const LABEL_LOG = 'Template';
+
+    public const ISIAN_LOG = [
+        'nama' => 'Nama Template',
+        'jenis' => 'Jenis',
+        'warna_utama' => 'Warna Utama',
+        'warna_aksen' => 'Warna Aksen',
+        'nada_dasar' => 'Nada Dasar',
+        'font' => 'Font',
+        'ketebalan_judul' => 'Ketebalan Judul',
+        'sudut' => 'Sudut',
+        'bayangan' => 'Bayangan',
+        'skala' => 'Skala',
+        'lebar_konten' => 'Lebar Konten',
+        'status_aktif' => 'Status',
+    ];
 
     protected $table = 'tb_template';
 
@@ -43,6 +61,11 @@ class Template extends Model
             'bayangan' => BayanganTemplate::class,
             'status_aktif' => 'boolean',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->nama;
     }
 
     /**

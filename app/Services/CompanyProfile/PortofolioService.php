@@ -51,6 +51,11 @@ class PortofolioService
         // (pilihan pemilik 2026-10-18).
         $hasil = $this->fileUpload->simpanDenganBerkas($portofolio, Arr::except($data, 'galeri_lama'), ['gambar', 'galeri'], Portofolio::FOLDER, Portofolio::DISK,
             fn (array $data): Portofolio => DB::transaction(function () use ($portofolio, $data, $dibuang): Portofolio {
+                // Gambar tambahan bukan kolom portofolio, jadi perubahannya ditandai agar tercatat di Log Aktivitas.
+                if ($dibuang->isNotEmpty() || ($data['galeri'] ?? []) !== []) {
+                    $portofolio->tandaiBerubah('galeri');
+                }
+
                 $portofolio->update(Arr::except($data, 'galeri'));
                 GambarPortofolio::query()->whereKey($dibuang->modelKeys())->delete();
                 $this->tambahGambar($portofolio, $data['galeri'] ?? []);

@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\LayananFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,13 +15,23 @@ use Illuminate\Support\Facades\Storage;
 class Layanan extends Model
 {
     /** @use HasFactory<LayananFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/layanan';
 
     public const URUTAN_MAKS = 999;
+
+    public const LABEL_LOG = 'Layanan';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'deskripsi' => 'Deskripsi',
+        'keterangan' => 'Keterangan',
+        'gambar' => 'Gambar',
+        'urutan_ke' => 'Urutan ke',
+    ];
 
     protected $table = 'tb_layanan';
 
@@ -33,6 +44,11 @@ class Layanan extends Model
         return [
             'urutan_ke' => 'integer',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
     }
 
     /**

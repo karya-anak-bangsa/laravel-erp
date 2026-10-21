@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\IdentitasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class Identitas extends Model
 {
     /** @use HasFactory<IdentitasFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     // Logo & favicon disimpan di disk public agar bisa ditampilkan di frontend.
     public const DISK = 'public';
@@ -23,6 +24,24 @@ class Identitas extends Model
 
     // Kunci cache identitas untuk frontend publik (IdentitasService::untukSitus).
     public const KUNCI_CACHE = 'company-profile.identitas';
+
+    public const LABEL_LOG = 'Identitas Website';
+
+    public const ISIAN_LOG = [
+        'nama_perusahaan' => 'Nama Perusahaan',
+        'judul_website' => 'Judul Website',
+        'alamat_website' => 'Alamat Website',
+        'meta_deskripsi' => 'Meta Deskripsi',
+        'meta_keyword' => 'Meta Keyword',
+        'logo_website' => 'Logo',
+        'favicon_website' => 'Favicon',
+        'email' => 'Email',
+        'telepon' => 'Telepon',
+        'alamat' => 'Alamat',
+        'link_youtube' => 'YouTube',
+        'link_instagram' => 'Instagram',
+        'link_whatsapp' => 'WhatsApp',
+    ];
 
     protected $table = 'tb_identitas';
 
@@ -51,6 +70,11 @@ class Identitas extends Model
             'email' => 'array',
             'telepon' => 'array',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->nama_perusahaan;
     }
 
     protected static function booted(): void

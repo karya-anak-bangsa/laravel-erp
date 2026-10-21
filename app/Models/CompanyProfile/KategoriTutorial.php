@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\KategoriTutorialFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,13 +13,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class KategoriTutorial extends Model
 {
     /** @use HasFactory<KategoriTutorialFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
+
+    public const LABEL_LOG = 'Kategori Tutorial';
+
+    public const ISIAN_LOG = [
+        'nama_kategori' => 'Nama Kategori',
+    ];
 
     protected $table = 'tb_kategori_tutorial';
 
     protected $primaryKey = 'id_kategori_tutorial';
 
     protected $fillable = ['nama_kategori', 'slug'];
+
+    public function namaUntukLog(): string
+    {
+        return $this->nama_kategori;
+    }
 
     /**
      * Pilihan kategori untuk form dan filter tutorial.

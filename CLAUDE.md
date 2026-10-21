@@ -24,7 +24,7 @@ Panduan utama untuk Claude Code di repositori ini. Baca seluruhnya di awal sesi;
 2. **Rencana dulu**: untuk fitur baru atau perubahan yang menyentuh lebih dari 2 file, tuliskan rencana singkat (daftar file yang dibuat/diubah + alasannya) dan tunggu persetujuan sebelum menulis kode.
 3. **Patuhi skema**: jangan menambah/mengubah/menghapus kolom di luar `docs/DATABASE.md` tanpa persetujuan. Bila ada kebutuhan, usulkan dulu lalu perbarui `docs/DATABASE.md`.
 4. **Migration, seeder, dan data produksi**:
-   - **Seeder = cermin database lokal.** `CompanyProfileSeeder` (+ `PenggunaSeeder` untuk akun admin) selalu menghasilkan data yang sama persis dengan database lokal, termasuk berkas gambarnya (`database/seeders/berkas`, disalin lewat `MenyalinBerkasAwal`). Perubahan data lokal yang harus ikut ke produksi dimasukkan ke seeder, bukan diketik ulang lewat admin produksi.
+   - **Seeder = cermin database lokal.** `CompanyProfileSeeder` (+ `PenggunaSeeder` untuk akun admin) selalu menghasilkan data yang sama persis dengan database lokal, termasuk berkas gambarnya (`database/seeders/berkas`, disalin lewat `MenyalinBerkasAwal`). Pengecualian: isi `tb_log_aktivitas`, yang berupa catatan kejadian. Perubahan data lokal yang harus ikut ke produksi dimasukkan ke seeder, bukan diketik ulang lewat admin produksi.
    - **Selama tahap uji**: migration yang sudah jalan di produksi boleh diedit atau disusun ulang (tetap satu migration per tabel), dan database produksi boleh direset dari seeder berulang kali tanpa cadangan lewat `docs/DEPLOY.md` › Reset Data Produksi. Reset wajib bila migration yang sudah jalan di produksi diedit atau dihapus.
    - **Setelah data real masuk**: migration yang sudah jalan di produksi tidak boleh diedit; perubahan lewat migration baru. Modul yang dibatalkan dibuang lewat migration baru (`dropIfExists`, tabel anak lebih dulu) bila migration-nya sudah jalan di produksi. Perubahan data lewat admin; reset tidak boleh lagi.
 5. **Paket baru** (composer/npm) harus diminta izin dulu, dengan alasan, dan kompatibel dengan Laravel 13 / PHP 8.3.
@@ -100,7 +100,7 @@ composer check                          # pint --test + phpstan + test (wajib se
 app/Enums/<Modul>/
 app/Http/Controllers/{Auth,Admin/<Modul>,Web/<Modul>}/   (+ Admin/DashboardController, Web/SeoController)
 app/Http/Requests/{Admin,Web}/<Modul>/
-app/Models/<Modul>/                (Pengguna langsung di app/Models)
+app/Models/{<Modul>,Concerns}/     (Pengguna langsung di app/Models; Concerns = trait model bersama)
 app/Services/{<Modul>,Shared}/
 app/Support/                       (helper murni tanpa state)
 app/View/Composers/                (menu, tema, situs, SEO, halaman error)
@@ -114,7 +114,7 @@ resources/views/{layouts,errors,components/{admin,web},admin/<modul>/<entitas-ke
 
 ### Menambah Modul Baru (mis. Bootcamp)
 1. Tambah entri di `docs/DATABASE.md` dan `docs/ROADMAP.md` → disetujui.
-2. Buat namespace `Bootcamp` di Models, Controllers/Admin, Requests/Admin, Services, Enums.
+2. Buat namespace `Bootcamp` di Models, Controllers/Admin, Requests/Admin, Services, Enums. Model yang diubah lewat admin memakai trait `App\Models\Concerns\MencatatAktivitas` (konstanta `LABEL_LOG` & `ISIAN_LOG` berlabel seperti form, method `namaUntukLog()`) dan didaftarkan di morph map `AppServiceProvider` (§10 › Log Aktivitas).
 3. Buat `routes/admin/bootcamp.php` dan entri menu di `config/menu.php` (bila khusus peran tertentu: Gate + `can:` di rute + `izin` di grup menu, §10).
 4. View di `resources/views/admin/bootcamp/`.
 5. Test di `tests/Feature/Admin/Bootcamp/` dan `tests/Unit/Services/Bootcamp/`.
@@ -282,6 +282,7 @@ Sudah dicoba atau ditolak pemilik; usulkan lagi hanya bila pemilik memintanya.
 - **Tidak ada fitur "ingat saya"** dan tidak ada kolom `remember_token` (`docs/DATABASE.md` bagian A). Jangan menambahkannya.
 - Semua rute `/admin/*` di bawah middleware `auth` + `auth.session`: begitu kata sandi diganti, sesi akun itu di perangkat lain berakhir.
 - Dua peran tetap (enum `PeranPengguna`, kolom `peran`): **Super Administrator** membuka semua menu; **Administrator** hanya Dashboard, Company Profile, dan Profil Saya. Pengaturan Sistem dijaga Gate `kelola-sistem` lewat middleware `can:kelola-sistem` di rutenya dan kunci `izin` di grup `config/menu.php`; menu yang disembunyikan tetap harus dijaga rutenya. Peran sendiri tidak bisa diubah, sehingga selalu ada Super Administrator. Peran baru ditambahkan sebagai case enum bersama modul yang membutuhkannya.
+- **Log Aktivitas** (Pengaturan Sistem, `tb_log_aktivitas`): tambah, ubah, hapus, dan aktifkan kembali data lewat trait `MencatatAktivitas`, serta masuk & keluar lewat listener event `Login`/`Logout` di `AppServiceProvider`, semuanya ditulis `LogAktivitasService` dan hanya bila ada pengguna login. Aksi Ubah menyimpan label isian yang berubah tanpa nilai lama/baru, dan percobaan masuk yang gagal tidak dicatat (pilihan pemilik). Halamannya hanya daftar baca tanpa tambah, ubah, dan hapus; Alamat IP hanya di modal Lihat dan tanpa filter jenis data agar kartu filter satu baris (pilihan pemilik). Disimpan tanpa batas waktu sampai ada cron (butir Backup database terjadwal).
 - Produksi: `APP_DEBUG=false`, `APP_ENV=production`, HTTPS, cookie `secure`. Header keamanan belum ada (ROADMAP Fase 5).
 
 ## 11. Kualitas (ISO/IEC 25010)

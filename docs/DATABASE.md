@@ -6,18 +6,18 @@ Sumber kebenaran untuk seluruh skema. Perubahan skema harus disetujui pemilik pr
 
 - Tabel domain: `tb_<entitas>` (tunggal). PK: `id_<entitas>` BIGINT UNSIGNED AUTO_INCREMENT (`$table->id('id_<entitas>')`).
 - FK bernama sama dengan PK rujukan. Bila ada dua FK ke tabel yang sama, beri akhiran: `id_pengguna_pengirim`, `id_pengguna_penerima`.
-- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete), kecuali tabel gambar anak yang barisnya bagian dari induknya (`tb_gambar_portofolio`).
+- Setiap tabel domain memiliki `created_at`, `updated_at`, `deleted_at` (soft delete), kecuali tabel gambar anak yang barisnya bagian dari induknya (`tb_gambar_portofolio`) dan tabel log yang tidak pernah diubah atau dihapus (`tb_log_aktivitas`, hanya `created_at`).
 - Boolean berawalan `status_` (mis. `status_baca`, `status_aktif`).
 - Nilai pilihan tetap: `VARCHAR(20)` + PHP backed enum (bukan tipe ENUM MySQL, agar mudah ditambah).
 - File: `VARCHAR(255)` berisi path relatif terhadap disk penyimpanan.
 - Unique pada tabel ber-soft-delete divalidasi di Form Request dengan `->withoutTrashed()`; constraint UNIQUE di database hanya untuk kolom yang tidak boleh berulang sama sekali (mis. slug atau nomor dokumen yang dibuat sistem).
-- Relasi polimorfik (bila kelak dipakai): `nullableMorphs('<nama>')` + alias stabil lewat `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh).
+- Relasi polimorfik: `nullableMorphs('<nama>')` + alias stabil lewat `Relation::enforceMorphMap()` di `AppServiceProvider` (jangan menyimpan nama class penuh). Alias = nama tabel tanpa `tb_`, mis. `kategori_artikel`.
 - Teks panjang yang **tampil di frontend** diisi editor WYSIWYG dan disimpan sebagai HTML tersanitasi (`HtmlSanitizerService`: p, br, strong, em, u, ul, ol, li, a[href], serta `style="text-align: center|right|justify"` pada paragraf). Batas panjangnya dihitung dari teks yang terlihat (`App\Rules\PanjangTeksHtml`), bukan markup; tipe kolom tetap TEXT (maks. 16.000 karakter HTML). Pengecualian: isi artikel dan isi materi tutorial (LONGTEXT) boleh memuat sub-judul h2/h3 dan dibatasi 30.000 karakter terlihat / 100.000 karakter HTML; isi materi juga boleh memuat kode (`code`, `pre`). Teks internal yang tidak tampil di frontend (mis. meta deskripsi, alamat identitas) tetap teks polos.
 - Slug dibuat sistem lewat `SlugService`: UNIQUE di database (termasuk baris terhapus, agar tidak bentrok bila kelak dipulihkan), akhiran angka (`-2`, `-3`, …) bila sudah dipakai, dasar slug maks. 200 karakter.
 
 ---
 
-## A. Autentikasi
+## A. Autentikasi & Sistem
 
 ### tb_pengguna
 | Kolom | Tipe | Keterangan |
@@ -34,6 +34,27 @@ Catatan implementasi:
 - `deleted_at` terisi = akun **Nonaktif**: tidak bisa login dan sesinya berakhir, tetap tercantum di Manajemen Pengguna, dan bisa diaktifkan kembali (`restore()`) dengan email & kata sandi lamanya (pilihan pemilik).
 - `email` UNIQUE termasuk akun Nonaktif, sehingga validasinya tanpa `withoutTrashed()`: email akun Nonaktif tidak bisa dipakai akun baru (pilihan pemilik).
 - **Tidak ada kolom `remember_token`**: model berisi `protected $rememberTokenName = '';` agar Laravel tidak pernah membaca/menulis kolom itu (termasuk saat logout dan reset password), dan login memanggil `Auth::attempt($kredensial)` tanpa argumen kedua.
+
+### tb_log_aktivitas
+Jejak aktivitas pengguna panel admin (Pengaturan Sistem › Log Aktivitas, khusus Super Administrator): tambah, ubah, hapus, dan aktifkan kembali data di semua menu admin, serta masuk & keluar panel admin. Hanya ditambah, tidak pernah diubah atau dihapus dari aplikasi.
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_log_aktivitas | BIGINT UNSIGNED PK | urutan kejadian |
+| id_pengguna | BIGINT UNSIGNED FK → tb_pengguna | `restrictOnDelete`. Pelaku; akun Nonaktif tetap tercantum karena hanya soft delete |
+| aksi | VARCHAR(20) | INDEX. enum `AksiAktivitas`: tambah, ubah, hapus, aktifkan_kembali, masuk, keluar |
+| subjek_type | VARCHAR(255) NULL | `nullableMorphs('subjek')` + INDEX `(subjek_type, subjek_id)`. Alias jenis data (morph map), mis. `artikel`; NULL untuk masuk & keluar |
+| subjek_id | BIGINT UNSIGNED NULL | PK data yang diubah |
+| label_subjek | VARCHAR(255) NULL | nama data saat aksi terjadi (mis. judul artikel), agar tetap terbaca walau data kemudian diganti nama atau dihapus |
+| perubahan | JSON NULL | aksi ubah: daftar label isian yang berubah sesuai label form, mis. `["Judul","Status"]`; tanpa nilai lama/baru (pilihan pemilik 2026-10-21) |
+| alamat_ip | VARCHAR(45) NULL | IPv4/IPv6 pengirim request |
+| created_at | TIMESTAMP NULL | INDEX. Tanpa `updated_at` dan `deleted_at` |
+
+Catatan implementasi:
+- Ditulis otomatis oleh trait `App\Models\Concerns\MencatatAktivitas` (event model `created`, `updated`, `deleted`, `restored`) dan listener event `Login`/`Logout` di `AppServiceProvider`, lewat `LogAktivitasService`. Hanya bila ada pengguna yang login, jadi seeder, tinker, dan factory test tidak menulis log; simpan yang tidak mengubah isian apa pun juga tidak dicatat.
+- Perubahan lewat query massal tidak memicu event model, sehingga tercatat lewat data induknya: materi yang ikut terhapus bersama tutorialnya tercatat sebagai "Hapus" tutorial, hero/template lain yang dinonaktifkan otomatis tercatat sebagai "Ubah" status pada yang diaktifkan, dan gambar tambahan portofolio sebagai isian "Gambar Tambahan" portofolionya.
+- Tidak diisi seeder: isinya catatan kejadian, bukan konten, sehingga tidak termasuk aturan "seeder = database lokal". Reset Data Produksi ikut mengosongkannya.
+- Disimpan tanpa batas waktu (pilihan pemilik 2026-10-21); pembersihan otomatis menyusul bersama Backup database terjadwal (butuh cron).
 
 ---
 

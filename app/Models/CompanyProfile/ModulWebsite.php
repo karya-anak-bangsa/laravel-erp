@@ -3,6 +3,7 @@
 namespace App\Models\CompanyProfile;
 
 use App\Enums\CompanyProfile\JenisModul;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\ModulWebsiteFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,12 +15,19 @@ use Illuminate\Support\Facades\DB;
 class ModulWebsite extends Model
 {
     /** @use HasFactory<ModulWebsiteFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     // Kunci cache status & urutan modul untuk frontend publik (ModulWebsiteService).
     public const KUNCI_CACHE = 'company-profile.modul-website';
 
     public const URUTAN_MAKS = 999;
+
+    public const LABEL_LOG = 'Modul Website';
+
+    public const ISIAN_LOG = [
+        'status_aktif' => 'Status',
+        'urutan_ke' => 'Urutan ke',
+    ];
 
     protected $table = 'tb_modul_website';
 
@@ -34,6 +42,11 @@ class ModulWebsite extends Model
             'urutan_ke' => 'integer',
             'status_aktif' => 'boolean',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->jenis->label();
     }
 
     protected static function booted(): void

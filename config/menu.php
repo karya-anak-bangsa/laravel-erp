@@ -135,6 +135,12 @@ return [
                 'rute' => 'admin.pengguna.index',
                 'aktif' => 'admin.pengguna.*',
             ],
+            [
+                'label' => 'Log Aktivitas',
+                'ikon' => 'gear',
+                'rute' => 'admin.log-aktivitas.index',
+                'aktif' => 'admin.log-aktivitas.*',
+            ],
         ],
     ],
 ];

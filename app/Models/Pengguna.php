@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Sistem\PeranPengguna;
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\PenggunaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,16 @@ use Illuminate\Notifications\Notifiable;
 class Pengguna extends Authenticatable
 {
     /** @use HasFactory<PenggunaFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, MencatatAktivitas, Notifiable, SoftDeletes;
+
+    public const LABEL_LOG = 'Pengguna';
+
+    public const ISIAN_LOG = [
+        'nama' => 'Nama',
+        'email' => 'Email',
+        'peran' => 'Peran',
+        'password' => 'Kata Sandi',
+    ];
 
     protected $table = 'tb_pengguna';
 
@@ -32,5 +42,10 @@ class Pengguna extends Authenticatable
             'password' => 'hashed',
             'peran' => PeranPengguna::class,
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->nama;
     }
 }

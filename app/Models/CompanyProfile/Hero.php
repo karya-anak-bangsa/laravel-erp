@@ -2,6 +2,7 @@
 
 namespace App\Models\CompanyProfile;
 
+use App\Models\Concerns\MencatatAktivitas;
 use Database\Factories\CompanyProfile\HeroFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -13,11 +14,22 @@ use Illuminate\Support\Facades\Storage;
 class Hero extends Model
 {
     /** @use HasFactory<HeroFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, MencatatAktivitas, SoftDeletes;
 
     public const DISK = 'public';
 
     public const FOLDER = 'company-profile/hero';
+
+    public const LABEL_LOG = 'Hero';
+
+    public const ISIAN_LOG = [
+        'judul' => 'Judul',
+        'deskripsi' => 'Deskripsi',
+        'keyword' => 'Keyword',
+        'cta' => 'Tombol CTA',
+        'gambar' => 'Gambar',
+        'status_aktif' => 'Status',
+    ];
 
     protected $table = 'tb_hero';
 
@@ -32,6 +44,11 @@ class Hero extends Model
             'cta' => 'array',
             'status_aktif' => 'boolean',
         ];
+    }
+
+    public function namaUntukLog(): string
+    {
+        return $this->judul;
     }
 
     /**
