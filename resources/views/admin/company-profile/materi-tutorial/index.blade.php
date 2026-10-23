@@ -28,93 +28,74 @@
                 <x-admin.empty-state title="Belum ada materi tutorial" description="Materi adalah bagian berurutan dari sebuah tutorial." />
             @endif
         @else
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
+            <x-admin.tabel>
+                <thead>
+                    <tr>
+                        <th class="kolom-pas">Urutan</th>
+                        <th class="kolom-lebar">Judul</th>
+                        <th class="kolom-pas">Tutorial</th>
+                        <th class="kolom-aksi">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($materiTutorial as $item)
                         <tr>
-                            <th class="kolom-pas">Urutan</th>
-                            <th class="kolom-lebar">Judul</th>
-                            <th class="kolom-pas">Tutorial</th>
-                            <th class="kolom-aksi">Aksi</th>
+                            <td class="kolom-pas cell-strong">{{ $item->urutan_ke }}</td>
+                            <td>
+                                <div class="cell-strong">{{ $item->judul }}</div>
+                                <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 400) }}</div>
+                            </td>
+                            <td class="kolom-pas">{{ $item->tutorial->judul }}</td>
+                            <x-admin.aksi-tabel>
+                                <x-admin.detail-button title="Detail Materi Tutorial" :ikon-saja="true">
+                                    {{-- Materi tanpa gambar: tabel rincian memakai lebar penuh modal. --}}
+                                    <x-admin.tabel-detail :model="$item">
+                                        <tr>
+                                            <th scope="row">Judul</th>
+                                            <td class="cell-strong">{{ $item->judul }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tutorial</th>
+                                            <td>{{ $item->tutorial->judul }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Urutan ke</th>
+                                            <td>{{ $item->urutan_ke }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Alamat detail</th>
+                                            <td>/tutorial/{{ $item->tutorial->slug }}/{{ $item->slug }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Halaman</th>
+                                            <td>
+                                                {{-- Status ada di tingkat tutorial: materi tampil begitu tutorialnya terbit. --}}
+                                                @if ($item->tutorial->status_publikasi === StatusPublikasi::Terbit)
+                                                    <a href="{{ route('materi-tutorial.show', [$item->tutorial->slug, $item->slug]) }}" target="_blank" rel="noopener"
+                                                        class="btn btn-info btn-sm">
+                                                        <x-admin.icon name="eye" />
+                                                        Buka halaman
+                                                    </a>
+                                                @else
+                                                    Belum tampil (tutorial masih draf)
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Isi</th>
+                                            <td class="konten-html">{!! $item->deskripsi !!}</td>
+                                        </tr>
+                                    </x-admin.tabel-detail>
+                                </x-admin.detail-button>
+                                <x-admin.edit-button :href="route('admin.materi-tutorial.edit', $item)" />
+                                <x-admin.delete-button :action="route('admin.materi-tutorial.destroy', $item)" :ikon-saja="true"
+                                    title="Hapus materi tutorial?"
+                                    :message="'Materi “'.$item->judul.'” tidak akan tampil lagi di daftar maupun website.'" />
+                            </x-admin.aksi-tabel>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($materiTutorial as $item)
-                            <tr>
-                                <td class="kolom-pas cell-strong">{{ $item->urutan_ke }}</td>
-                                <td>
-                                    <div class="cell-strong">{{ $item->judul }}</div>
-                                    <div class="card-subtitle ringkasan-tabel">{{ Str::limit(TeksHtml::ringkasan($item->deskripsi), 400) }}</div>
-                                </td>
-                                <td class="kolom-pas">{{ $item->tutorial->judul }}</td>
-                                <td class="kolom-aksi">
-                                    <div class="aksi-tabel">
-                                        <x-admin.detail-button title="Detail Materi Tutorial" :ikon-saja="true">
-                                            {{-- Materi tanpa gambar: tabel rincian memakai lebar penuh modal. --}}
-                                            <div class="tabel-detail">
-                                                <table class="table tabel-informasi">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th scope="row">Judul</th>
-                                                            <td class="cell-strong">{{ $item->judul }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Tutorial</th>
-                                                            <td>{{ $item->tutorial->judul }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Urutan ke</th>
-                                                            <td>{{ $item->urutan_ke }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Alamat detail</th>
-                                                            <td>/tutorial/{{ $item->tutorial->slug }}/{{ $item->slug }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Halaman</th>
-                                                            <td>
-                                                                {{-- Status ada di tingkat tutorial: materi tampil begitu tutorialnya terbit. --}}
-                                                                @if ($item->tutorial->status_publikasi === StatusPublikasi::Terbit)
-                                                                    <a href="{{ route('materi-tutorial.show', [$item->tutorial->slug, $item->slug]) }}" target="_blank" rel="noopener"
-                                                                        class="btn btn-info btn-sm">
-                                                                        <x-admin.icon name="eye" />
-                                                                        Buka halaman
-                                                                    </a>
-                                                                @else
-                                                                    Belum tampil (tutorial masih draf)
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Isi</th>
-                                                            <td class="konten-html">{!! $item->deskripsi !!}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Dibuat</th>
-                                                            <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Diperbarui</th>
-                                                            <td>{{ $item->updated_at->translatedFormat('d F Y, H:i') }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </x-admin.detail-button>
-                                        <a href="{{ route('admin.materi-tutorial.edit', $item) }}" class="btn btn-warning btn-ikon"
-                                            title="Ubah" aria-label="Ubah">
-                                            <x-admin.icon name="pen-to-square" />
-                                        </a>
-                                        <x-admin.delete-button :action="route('admin.materi-tutorial.destroy', $item)" :ikon-saja="true"
-                                            title="Hapus materi tutorial?"
-                                            :message="'Materi “'.$item->judul.'” tidak akan tampil lagi di daftar maupun website.'" />
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </x-admin.tabel>
         @endif
 
         @if ($materiTutorial->hasPages())

@@ -48,86 +48,78 @@
                     description="Perubahan data serta masuk dan keluar panel admin akan tercatat di sini." />
             @endif
         @else
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
+            <x-admin.tabel>
+                <thead>
+                    <tr>
+                        <th class="kolom-pas">Waktu</th>
+                        <th class="kolom-pas">Pengguna</th>
+                        <th class="kolom-pas">Aktivitas</th>
+                        <th class="kolom-pas">Data</th>
+                        <th class="kolom-lebar">Nama Data</th>
+                        <th class="kolom-aksi">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($logAktivitas as $item)
                         <tr>
-                            <th class="kolom-pas">Waktu</th>
-                            <th class="kolom-pas">Pengguna</th>
-                            <th class="kolom-pas">Aktivitas</th>
-                            <th class="kolom-pas">Data</th>
-                            <th class="kolom-lebar">Nama Data</th>
-                            <th class="kolom-aksi">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($logAktivitas as $item)
-                            <tr>
-                                <td class="kolom-pas">{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
-                                <td class="kolom-pas">{{ $item->pengguna->nama }}</td>
-                                <td class="kolom-pas">{{ $item->aksi->label() }}</td>
-                                <td class="kolom-pas">{{ $item->jenis_data ?? '—' }}</td>
-                                <td>
-                                    {{-- Nama saat aksi terjadi; masuk & keluar tidak menyangkut data. --}}
-                                    @if ($item->label_subjek === null)
-                                        —
-                                    @else
-                                        <div class="cell-strong">{{ $item->label_subjek }}</div>
-                                        @if ($item->perubahan)
-                                            <div class="card-subtitle ringkasan-tabel">{{ implode(', ', $item->perubahan) }}</div>
-                                        @endif
+                            <td class="kolom-pas">{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
+                            <td class="kolom-pas">{{ $item->pengguna->nama }}</td>
+                            <td class="kolom-pas">{{ $item->aksi->label() }}</td>
+                            <td class="kolom-pas">{{ $item->jenis_data ?? '—' }}</td>
+                            <td>
+                                {{-- Nama saat aksi terjadi; masuk & keluar tidak menyangkut data. --}}
+                                @if ($item->label_subjek === null)
+                                    —
+                                @else
+                                    <div class="cell-strong">{{ $item->label_subjek }}</div>
+                                    @if ($item->perubahan)
+                                        <div class="card-subtitle ringkasan-tabel">{{ implode(', ', $item->perubahan) }}</div>
                                     @endif
-                                </td>
-                                {{-- Alamat IP hanya di modal: alamat IPv6 terlalu lebar untuk kolom tabel (pilihan pemilik). --}}
-                                <td class="kolom-aksi">
-                                    <div class="aksi-tabel">
-                                        <x-admin.detail-button title="Detail Log Aktivitas" :ikon-saja="true">
-                                            <div class="tabel-detail">
-                                                <table class="table tabel-informasi">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th scope="row">Waktu</th>
-                                                            <td>{{ $item->created_at->translatedFormat('d F Y, H:i:s') }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Pengguna</th>
-                                                            <td class="cell-strong">{{ $item->pengguna->nama }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Email</th>
-                                                            <td>{{ $item->pengguna->email }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Aktivitas</th>
-                                                            <td>{{ $item->aksi->label() }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Data</th>
-                                                            <td>{{ $item->jenis_data ?? '—' }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Nama data</th>
-                                                            <td>{{ $item->label_subjek ?? '—' }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Isian diubah</th>
-                                                            <td>{{ $item->perubahan ? implode(', ', $item->perubahan) : '—' }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Alamat IP</th>
-                                                            <td>{{ $item->alamat_ip ?? '—' }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </x-admin.detail-button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                                @endif
+                            </td>
+                            {{-- Alamat IP hanya di modal: alamat IPv6 terlalu lebar untuk kolom tabel (pilihan pemilik). --}}
+                            <x-admin.aksi-tabel>
+                                <x-admin.detail-button title="Detail Log Aktivitas" :ikon-saja="true">
+                                    <x-admin.tabel-detail>
+                                        <tr>
+                                            <th scope="row">Waktu</th>
+                                            <td>{{ $item->created_at->translatedFormat('d F Y, H:i:s') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Pengguna</th>
+                                            <td class="cell-strong">{{ $item->pengguna->nama }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Email</th>
+                                            <td>{{ $item->pengguna->email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Aktivitas</th>
+                                            <td>{{ $item->aksi->label() }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Data</th>
+                                            <td>{{ $item->jenis_data ?? '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Nama data</th>
+                                            <td>{{ $item->label_subjek ?? '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Isian diubah</th>
+                                            <td>{{ $item->perubahan ? implode(', ', $item->perubahan) : '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Alamat IP</th>
+                                            <td>{{ $item->alamat_ip ?? '—' }}</td>
+                                        </tr>
+                                    </x-admin.tabel-detail>
+                                </x-admin.detail-button>
+                            </x-admin.aksi-tabel>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.tabel>
         @endif
 
         @if ($logAktivitas->hasPages())

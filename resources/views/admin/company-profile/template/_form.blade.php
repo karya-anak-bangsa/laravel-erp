@@ -106,13 +106,4 @@
     </x-admin.card>
 </div>
 
-<div class="form-actions">
-    <button type="submit" class="btn btn-success">
-        <x-admin.icon name="floppy-disk" />
-        Simpan
-    </button>
-    <a href="{{ route('admin.template.index') }}" class="btn btn-secondary">
-        <x-admin.icon name="rotate-left" />
-        Batal
-    </a>
-</div>
+<x-admin.form-aksi :batal="route('admin.template.index')" />

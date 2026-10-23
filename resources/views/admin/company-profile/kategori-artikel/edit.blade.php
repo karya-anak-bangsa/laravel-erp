@@ -7,11 +7,8 @@
 @section('content')
     <x-admin.page-header title="Company Profile" />
 
-    <form method="POST" action="{{ route('admin.kategori-artikel.update', $kategoriArtikel) }}" novalidate
-        data-confirm="Perubahan kategori “{{ $kategoriArtikel->nama_kategori }}” akan disimpan." data-confirm-title="Simpan perubahan?"
-        data-confirm-label="Ya, simpan" data-confirm-variant="success">
-        @csrf
-        @method('PUT')
+    <x-admin.form :action="route('admin.kategori-artikel.update', $kategoriArtikel)" method="PUT"
+        :message="'Perubahan kategori “'.$kategoriArtikel->nama_kategori.'” akan disimpan.'">
         @include('admin.company-profile.kategori-artikel._form')
-    </form>
+    </x-admin.form>
 @endsection

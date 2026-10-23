@@ -3,6 +3,7 @@
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 enum StatusUjiKomponen: string
 {
@@ -202,6 +203,78 @@ it('merender detail-button dan delete-button sebagai tombol ikon tanpa teks', fu
         ->assertSee('title="Hapus"', false)
         ->assertSee('aria-label="Hapus"', false)
         ->assertDontSeeText('Hapus');
+});
+
+it('merender form tambah dengan konfirmasi simpan bawaan', function () {
+    $this->blade('<x-admin.form action="/admin/uji" title="Simpan uji baru?">Isi</x-admin.form>')
+        ->assertSee('<form method="POST" action="/admin/uji"', false)
+        ->assertSee('novalidate', false)
+        ->assertSee('name="_token"', false)
+        ->assertDontSee('name="_method"', false)
+        ->assertDontSee('enctype', false)
+        ->assertSeeInOrder([
+            'data-confirm="Pastikan data sudah benar sebelum disimpan." data-confirm-title="Simpan uji baru?"',
+            'data-confirm-label="Ya, simpan" data-confirm-variant="success">',
+            'Isi',
+            '</form>',
+        ], false);
+});
+
+it('merender form ubah ber-method PUT, berkas, atribut tambahan, dan pesan yang di-escape sekali', function () {
+    $this->blade(
+        '<x-admin.form action="/admin/uji/1" method="PUT" :berkas="true" :message="$pesan" data-form-uji>Isi</x-admin.form>',
+        ['pesan' => 'Perubahan “A & B” akan disimpan.'],
+    )
+        ->assertSee('enctype="multipart/form-data"', false)
+        ->assertSee('data-form-uji="data-form-uji"', false)
+        ->assertSee('name="_method" value="PUT"', false)
+        ->assertSee('data-confirm="Perubahan “A &amp; B” akan disimpan." data-confirm-title="Simpan perubahan?"', false);
+});
+
+it('merender form-aksi dengan tombol Simpan dan Batal ke alamat kembali', function () {
+    $this->blade('<x-admin.form-aksi batal="/admin/uji" />')
+        ->assertSeeInOrder([
+            '<div class="form-actions">',
+            '<button type="submit" class="btn btn-success">', 'fa-floppy-disk', 'Simpan',
+            '<a href="/admin/uji" class="btn btn-secondary">', 'fa-rotate-left', 'Batal',
+        ], false);
+});
+
+it('merender tabel dalam pembungkus gulir dan sel aksi tabel', function () {
+    $this->blade('<x-admin.tabel><tbody><tr><td>Isi</td><x-admin.aksi-tabel>Tombol</x-admin.aksi-tabel></tr></tbody></x-admin.tabel>')
+        ->assertSeeInOrder([
+            '<div class="table-responsive">', '<table class="table">', '<td>Isi</td>',
+            '<td class="kolom-aksi">', '<div class="aksi-tabel">', 'Tombol',
+        ], false);
+});
+
+it('merender edit-button sebagai tautan ikon atau tombol nonaktif beralasan', function () {
+    $this->blade('<x-admin.edit-button href="/admin/uji/1/edit" />')
+        ->assertSee('<a href="/admin/uji/1/edit" class="btn btn-warning btn-ikon" title="Ubah" aria-label="Ubah"', false)
+        ->assertSee('fa-pen-to-square', false)
+        ->assertDontSeeText('Ubah');
+
+    $this->blade('<x-admin.edit-button href="/admin/uji/1/edit" terkunci="akun Anda diubah lewat Profil Saya" />')
+        ->assertSee('<button type="button" class="btn btn-warning btn-ikon" disabled', false)
+        ->assertSee('title="Akun Anda diubah lewat Profil Saya" aria-label="Ubah (akun Anda diubah lewat Profil Saya)"', false)
+        ->assertDontSee('href="/admin/uji/1/edit"', false);
+});
+
+it('menutup tabel-detail dengan baris Dibuat dan Diperbarui hanya bila ada model', function () {
+    $model = (object) ['created_at' => Carbon::parse('2026-10-20 10:00'), 'updated_at' => Carbon::parse('2026-10-21 08:30')];
+
+    $this->blade('<x-admin.tabel-detail :model="$model"><tr><th scope="row">Judul</th><td>Uji</td></tr></x-admin.tabel-detail>', ['model' => $model])
+        ->assertSeeInOrder([
+            '<div class="tabel-detail">', '<table class="table tabel-informasi">', '<tbody>',
+            '<th scope="row">Judul</th>',
+            '<th scope="row">Dibuat</th>', '<td>20 Oktober 2026, 10:00</td>',
+            '<th scope="row">Diperbarui</th>', '<td>21 Oktober 2026, 08:30</td>',
+        ], false);
+
+    $this->blade('<x-admin.tabel-detail><tr><th scope="row">Waktu</th><td>Uji</td></tr></x-admin.tabel-detail>')
+        ->assertSee('<th scope="row">Waktu</th>', false)
+        ->assertDontSee('Dibuat')
+        ->assertDontSee('Diperbarui');
 });
 
 it('merender empty-state dan alert', function () {

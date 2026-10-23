@@ -19,11 +19,8 @@
 @section('content')
     <x-admin.page-header title="Pengaturan Sistem" />
 
-    <form method="POST" action="{{ route('admin.identitas.update') }}" enctype="multipart/form-data" novalidate
-        data-confirm="Perubahan identitas perusahaan akan disimpan dan tampil di website." data-confirm-title="Simpan perubahan?"
-        data-confirm-label="Ya, simpan" data-confirm-variant="success">
-        @csrf
-        @method('PUT')
+    <x-admin.form :action="route('admin.identitas.update')" method="PUT" :berkas="true"
+        message="Perubahan identitas perusahaan akan disimpan dan tampil di website.">
 
         <div class="row col-2">
             <x-admin.card title="Informasi Website" subtitle="Nama dan data SEO yang tampil di mesin pencari.">
@@ -96,15 +93,6 @@
             </x-admin.card>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">
-                <x-admin.icon name="floppy-disk" />
-                Simpan
-            </button>
-            <a href="{{ route('admin.identitas.edit') }}" class="btn btn-secondary">
-                <x-admin.icon name="rotate-left" />
-                Batal
-            </a>
-        </div>
-    </form>
+        <x-admin.form-aksi :batal="route('admin.identitas.edit')" />
+    </x-admin.form>
 @endsection

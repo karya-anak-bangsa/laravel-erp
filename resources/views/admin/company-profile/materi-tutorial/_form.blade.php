@@ -34,13 +34,4 @@
     </x-admin.card>
 </div>
 
-<div class="form-actions">
-    <button type="submit" class="btn btn-success">
-        <x-admin.icon name="floppy-disk" />
-        Simpan
-    </button>
-    <a href="{{ route('admin.materi-tutorial.index', array_filter(['tutorial' => $materiTutorial->id_tutorial])) }}" class="btn btn-secondary">
-        <x-admin.icon name="rotate-left" />
-        Batal
-    </a>
-</div>
+<x-admin.form-aksi :batal="route('admin.materi-tutorial.index', array_filter(['tutorial' => $materiTutorial->id_tutorial]))" />

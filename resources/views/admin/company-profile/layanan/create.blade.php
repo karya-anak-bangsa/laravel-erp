@@ -7,10 +7,7 @@
 @section('content')
     <x-admin.page-header title="Company Profile" />
 
-    <form method="POST" action="{{ route('admin.layanan.store') }}" enctype="multipart/form-data" novalidate
-        data-confirm="Pastikan data sudah benar sebelum disimpan." data-confirm-title="Simpan layanan baru?"
-        data-confirm-label="Ya, simpan" data-confirm-variant="success">
-        @csrf
+    <x-admin.form :action="route('admin.layanan.store')" :berkas="true" title="Simpan layanan baru?">
         @include('admin.company-profile.layanan._form')
-    </form>
+    </x-admin.form>
 @endsection

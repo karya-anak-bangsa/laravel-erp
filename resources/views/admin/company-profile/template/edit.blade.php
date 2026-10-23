@@ -7,11 +7,8 @@
 @section('content')
     <x-admin.page-header title="Pengaturan Sistem" />
 
-    <form method="POST" action="{{ route('admin.template.update', $template) }}" novalidate data-form-template
-        data-confirm="Perubahan template “{{ $template->nama }}” akan disimpan{{ $template->status_aktif ? ' dan langsung tampil di website' : '' }}."
-        data-confirm-title="Simpan perubahan?" data-confirm-label="Ya, simpan" data-confirm-variant="success">
-        @csrf
-        @method('PUT')
+    <x-admin.form :action="route('admin.template.update', $template)" method="PUT" data-form-template
+        :message="'Perubahan template “'.$template->nama.'” akan disimpan'.($template->status_aktif ? ' dan langsung tampil di website' : '').'.'">
         @include('admin.company-profile.template._form')
-    </form>
+    </x-admin.form>
 @endsection

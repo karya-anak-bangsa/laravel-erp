@@ -17,64 +17,45 @@
                 <x-admin.empty-state title="Belum ada kategori portofolio" description="Kategori dipakai untuk mengelompokkan portofolio di website." />
             @endif
         @else
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
+            <x-admin.tabel>
+                <thead>
+                    <tr>
+                        <th class="kolom-pas">Nama Kategori</th>
+                        <th class="kolom-jumlah">Jumlah Portofolio</th>
+                        <th class="kolom-sisa" aria-hidden="true"></th>
+                        <th class="kolom-aksi">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($kategoriPortofolio as $item)
                         <tr>
-                            <th class="kolom-pas">Nama Kategori</th>
-                            <th class="kolom-jumlah">Jumlah Portofolio</th>
-                            <th class="kolom-sisa" aria-hidden="true"></th>
-                            <th class="kolom-aksi">Aksi</th>
+                            <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
+                            <td class="kolom-jumlah">{{ $item->portofolio_count }}</td>
+                            <td class="kolom-sisa" aria-hidden="true"></td>
+                            <x-admin.aksi-tabel>
+                                <x-admin.detail-button title="Detail Kategori Portofolio" :ikon-saja="true">
+                                    <x-admin.tabel-detail :model="$item">
+                                        <tr>
+                                            <th scope="row">Nama Kategori</th>
+                                            <td class="cell-strong">{{ $item->nama_kategori }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Jumlah Portofolio</th>
+                                            <td>{{ $item->portofolio_count }}</td>
+                                        </tr>
+                                    </x-admin.tabel-detail>
+                                </x-admin.detail-button>
+                                <x-admin.edit-button :href="route('admin.kategori-portofolio.edit', $item)" />
+                                <x-admin.delete-button :action="route('admin.kategori-portofolio.destroy', $item)" :ikon-saja="true"
+                                    title="Hapus kategori portofolio?"
+                                    :message="$item->portofolio_count > 0
+                                        ? 'Kategori “'.$item->nama_kategori.'” masih dipakai '.$item->portofolio_count.' portofolio sehingga tidak bisa dihapus.'
+                                        : 'Kategori “'.$item->nama_kategori.'” tidak akan tampil lagi di daftar maupun website.'" />
+                            </x-admin.aksi-tabel>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($kategoriPortofolio as $item)
-                            <tr>
-                                <td class="kolom-pas cell-strong">{{ $item->nama_kategori }}</td>
-                                <td class="kolom-jumlah">{{ $item->portofolio_count }}</td>
-                                <td class="kolom-sisa" aria-hidden="true"></td>
-                                <td class="kolom-aksi">
-                                    <div class="aksi-tabel">
-                                        <x-admin.detail-button title="Detail Kategori Portofolio" :ikon-saja="true">
-                                            <div class="tabel-detail">
-                                                <table class="table tabel-informasi">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th scope="row">Nama Kategori</th>
-                                                            <td class="cell-strong">{{ $item->nama_kategori }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Jumlah Portofolio</th>
-                                                            <td>{{ $item->portofolio_count }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Dibuat</th>
-                                                            <td>{{ $item->created_at->translatedFormat('d F Y, H:i') }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row">Diperbarui</th>
-                                                            <td>{{ $item->updated_at->translatedFormat('d F Y, H:i') }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </x-admin.detail-button>
-                                        <a href="{{ route('admin.kategori-portofolio.edit', $item) }}" class="btn btn-warning btn-ikon"
-                                            title="Ubah" aria-label="Ubah">
-                                            <x-admin.icon name="pen-to-square" />
-                                        </a>
-                                        <x-admin.delete-button :action="route('admin.kategori-portofolio.destroy', $item)" :ikon-saja="true"
-                                            title="Hapus kategori portofolio?"
-                                            :message="$item->portofolio_count > 0
-                                                ? 'Kategori “'.$item->nama_kategori.'” masih dipakai '.$item->portofolio_count.' portofolio sehingga tidak bisa dihapus.'
-                                                : 'Kategori “'.$item->nama_kategori.'” tidak akan tampil lagi di daftar maupun website.'" />
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </x-admin.tabel>
         @endif
 
         @if ($kategoriPortofolio->hasPages())

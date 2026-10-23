@@ -7,11 +7,8 @@
 @section('content')
     <x-admin.page-header title="Company Profile" />
 
-    <form method="POST" action="{{ route('admin.tutorial.update', $tutorial) }}" enctype="multipart/form-data" novalidate
-        data-confirm="Perubahan tutorial “{{ $tutorial->judul }}” akan disimpan." data-confirm-title="Simpan perubahan?"
-        data-confirm-label="Ya, simpan" data-confirm-variant="success">
-        @csrf
-        @method('PUT')
+    <x-admin.form :action="route('admin.tutorial.update', $tutorial)" method="PUT" :berkas="true"
+        :message="'Perubahan tutorial “'.$tutorial->judul.'” akan disimpan.'">
         @include('admin.company-profile.tutorial._form')
-    </form>
+    </x-admin.form>
 @endsection
