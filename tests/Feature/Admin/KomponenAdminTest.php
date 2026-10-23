@@ -292,7 +292,8 @@ it('merender paginasi dengan info jumlah data dan tautan halaman', function () {
 
     $this->blade('<x-admin.pagination :paginator="$paginator" />', ['paginator' => $paginator])
         ->assertSee('Menampilkan 16–30 dari 40 data')
-        ->assertSee('<span class="page-link active" aria-current="page">2</span>', false)
+        ->assertSee('<span class="page-link page-nomor active" aria-current="page">2</span>', false)
+        ->assertSee('<span class="page-ringkas">Halaman 2 dari 3</span>', false)
         ->assertSee('/admin/uji?page=3', false);
 });
 

@@ -1,0 +1,56 @@
+@use 'token' as *;
+
+// Paginasi di kaki kartu daftar (vendor/pagination/admin). Garis atas & padding cukup dari .card-footer: .pagination
+// Gentelella membawa garis dan padding sendiri sehingga kaki kartu bergaris ganda dengan teks menjorok 32px. Tombol
+// halaman setinggi tombol kecil (lihat _tombol.scss); bila tidak muat di samping info (tablet bersidebar, hingga 11
+// tombol), tombol turun ke baris kedua rata kanan alih-alih meluap.
+.card-footer .pagination {
+    padding: 0;
+    border-top: 0;
+}
+
+.pagination {
+    flex-wrap: wrap;
+    row-gap: 8px;
+
+    .page-info {
+        font-size: $teks-kecil;
+        line-height: $baris-kecil;
+    }
+}
+
+.page-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-inline-start: auto;
+}
+
+.page-link {
+    min-width: $tinggi-tombol-kecil;
+    height: $tinggi-tombol-kecil;
+    font-size: $teks-kecil;
+}
+
+.page-ringkas {
+    display: none;
+    font-size: $teks-kecil;
+    line-height: $baris-kecil;
+    color: var(--text-secondary);
+}
+
+// Ponsel: nomor halaman diganti "Halaman 2 dari 7" di antara ‹ › selebar kartu (pola paginasi publik).
+@media (max-width: 768px) {
+    .page-nav {
+        flex-basis: 100%;
+        justify-content: space-between;
+    }
+
+    .page-nomor {
+        display: none;
+    }
+
+    .page-ringkas {
+        display: block;
+    }
+}
