@@ -1,15 +1,11 @@
 // Token ukuran panel admin. Variabel Sass, bukan CSS custom property: panel admin hanya punya satu tema, jadi hasil
 // kompilasinya angka tetap yang langsung terbaca di DevTools.
 //
-// Uji skala teks & jarak setara AdminLTE v4 (acuan pilihan pemilik 2026-10-23, menggantikan Zenith) di Dashboard dan
-// modul Hero. Kelas skala-baru dipasang di <body> (layouts/admin) agar modal & dialog SweetAlert ikut, lalu dilepas
-// setelah skala ini dinyatakan solid dan berlaku di semua halaman admin. Font AdminLTE (Source Sans 3) 12,8% lebih
-// kecil dari Inter pada px yang sama, jadi ukuran teksnya dikonversi (16 → 14 isi, 14 → 12 teks kecil, 17,6 → 16
-// judul kartu, 20 → 18 judul modal, 28 → 24 judul halaman), sedangkan jarak & tinggi komponen disalin apa adanya.
-// Garis, warna, sudut, dan font tetap gaya Gentelella (bayangan & garis AdminLTE dinilai pemilik terlalu tebal).
-//
-// Kerangka (sidebar, breadcrumb, footer, menu pengguna) sudah memakai skala ini di semua halaman, sedangkan isi halaman
-// baru memakainya di halaman uji lewat blok .skala-baru di setiap partial.
+// Skala teks & jarak setara AdminLTE v4 (acuan pilihan pemilik 2026-10-23, menggantikan Zenith) untuk semua halaman
+// yang memuat admin.scss: panel admin, login, dan halaman error admin. Font AdminLTE (Source Sans 3) 12,8% lebih kecil
+// dari Inter pada px yang sama, jadi ukuran teksnya dikonversi (16 → 14 isi, 14 → 12 teks kecil, 17,6 → 16 judul
+// kartu, 20 → 18 judul modal, 28 → 24 judul halaman), sedangkan jarak & tinggi komponen disalin apa adanya. Garis,
+// warna, sudut, dan font tetap gaya Gentelella (bayangan & garis AdminLTE dinilai pemilik terlalu tebal).
 
 // Teks: ukuran dan tinggi baris.
 $teks-judul-halaman: 24px;

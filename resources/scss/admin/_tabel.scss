@@ -1,8 +1,40 @@
 @use 'token' as *;
 
-// Kepala kolom tidak dipatah ("Jumlah Materi" tetap satu baris); di ponsel tabel digeser horizontal.
-table.table thead th {
-    white-space: nowrap;
+// Isi tabel 14/20 dengan sel 10px 16px: baris berisi teks 41px seperti AdminLTE. Garis per sel (bukan collapse) agar
+// setiap baris jatuh di piksel utuh. Kepala kolom huruf biasa setinggi isi, label baris rincian (tbody th) sedikit
+// lebih tipis dan redup.
+table.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+
+    th,
+    td {
+        padding: 10px 16px;
+    }
+
+    th {
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    // Kepala kolom tidak dipatah ("Jumlah Materi" tetap satu baris); di ponsel tabel digeser horizontal.
+    thead th {
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+
+    tbody th {
+        font-weight: var(--font-weight-medium);
+    }
+}
+
+// Chip status (badge Gentelella) di tabel & rincian, seukuran teks kecil.
+.chip {
+    font-size: $teks-kecil;
 }
 
 // Kolom teks panjang (judul + deskripsi) diberi lebar minimum: di ponsel tabel
@@ -61,7 +93,9 @@ table.table td.kolom-aksi {
 
 // Ringkasan di bawah judul tabel daftar: maksimal dua baris yang memenuhi lebar kolom. Baris pertama selalu penuh,
 // jadi jarak ke kolom berikutnya tetap padding sel, bukan sisa acak dari teks yang dipotong per jumlah karakter.
+// Berjarak 2px dari judul (subjudul kartu biasa 0, lihat _kartu.scss).
 .ringkasan-tabel {
+    margin-top: 2px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -102,47 +136,5 @@ table.table.tabel-informasi tbody tr:hover {
 
     span + span {
         margin-inline-start: -6px;
-    }
-}
-
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    .chip {
-        font-size: $teks-kecil;
-    }
-
-    // Isi tabel 14/20 dengan sel 10px 16px: baris berisi teks 41px seperti AdminLTE. Garis per sel (bukan collapse)
-    // agar setiap baris jatuh di piksel utuh. Kepala kolom huruf biasa setinggi isi, label baris rincian (tbody th)
-    // sedikit lebih tipis dan redup.
-    table.table {
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: $teks-isi;
-        line-height: $baris-isi;
-
-        th,
-        td {
-            padding: 10px 16px;
-        }
-
-        th {
-            font-size: $teks-isi;
-            line-height: $baris-isi;
-            letter-spacing: normal;
-            text-transform: none;
-        }
-
-        thead th {
-            color: var(--text-secondary);
-        }
-
-        tbody th {
-            font-weight: var(--font-weight-medium);
-        }
-    }
-
-    .ringkasan-tabel {
-        margin-top: 2px;
     }
 }

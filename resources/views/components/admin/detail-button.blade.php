@@ -12,7 +12,7 @@
     Tombol Lihat: membuka rincian data (isi slot) dalam modal SweetAlert2, dipasang oleh
     resources/js/admin.js lewat atribut data-detail. Isi slot dirender Blade (sudah di-escape)
     ke <template> sehingga modal terbuka tanpa request tambahan.
-    :ikon-saja="true" = tombol ikon persegi 32px tanpa teks, setinggi tombol Tambah
+    :ikon-saja="true" = tombol ikon persegi tanpa teks, 32px di kolom aksi tabel
     (label tetap di tooltip & aria-label).
 --}}
 <button type="button" @class(['btn', 'btn-sm' => ! $ikonSaja, 'btn-info', 'btn-ikon' => $ikonSaja]) title="{{ $label }}"

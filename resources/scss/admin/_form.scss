@@ -1,21 +1,44 @@
 @use 'token' as *;
 
+// Label, isian, dan teks bantuan setara AdminLTE (lihat _token.scss): label 14/20 berjarak 8px ke isian, isian 38px.
+.form-label {
+    margin-bottom: 8px;
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+}
+
+.form-control {
+    height: $tinggi-kontrol;
+    font-size: $teks-isi;
+}
+
+.form-help,
+.form-error {
+    margin-top: 4px;
+    font-size: $teks-kecil;
+    line-height: $baris-kecil;
+}
+
+.switch .switch-label {
+    font-size: $teks-isi;
+}
+
 // Tombol aksi form (Simpan, Batal) sama lebar agar barisnya rapi.
 .form-actions .btn {
     min-width: 110px;
     justify-content: center;
 }
 
-// Input file bergaya input group Bootstrap 5.3 (pilihan pemilik): tombol pilih berkas
-// menempel di sisi kiri setinggi input dan dipisah garis, bukan tombol kecil di dalam input.
+// Input file bergaya input group Bootstrap 5.3 (pilihan pemilik): tombol pilih berkas menempel di sisi kiri setinggi
+// input (dikurangi garis atas & bawah) dan dipisah garis, bukan tombol kecil di dalam input.
 .form-control[type='file'] {
     overflow: hidden;
     padding-inline-start: 0;
-    line-height: 34px;
+    line-height: $tinggi-kontrol - 2px;
     cursor: pointer;
 
     &::file-selector-button {
-        height: 34px;
+        height: $tinggi-kontrol - 2px;
         margin: 0;
         margin-inline-end: 12px;
         padding: 0 12px;
@@ -173,8 +196,8 @@
 // Tombol hapus setinggi input agar sejajar dengan baris isian.
 .repeater-baris .btn-icon {
     flex: none;
-    width: 36px;
-    height: 36px;
+    width: $tinggi-kontrol;
+    height: $tinggi-kontrol;
 }
 
 .repeater-tambah {
@@ -261,48 +284,4 @@
 
 :is(.input-group, .isian-sandi):has(.input-toggle:not([hidden])) .form-control {
     padding-inline-end: 38px;
-}
-
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    .form-label {
-        margin-bottom: 8px;
-        font-size: $teks-isi;
-        line-height: $baris-isi;
-    }
-
-    .form-control {
-        height: $tinggi-kontrol;
-        font-size: $teks-isi;
-    }
-
-    textarea.form-control {
-        height: auto;
-    }
-
-    // Setinggi isian dikurangi garis atas & bawah.
-    .form-control[type='file'] {
-        line-height: $tinggi-kontrol - 2px;
-
-        &::file-selector-button {
-            height: $tinggi-kontrol - 2px;
-        }
-    }
-
-    .form-help,
-    .form-error {
-        margin-top: 4px;
-        font-size: $teks-kecil;
-        line-height: $baris-kecil;
-    }
-
-    .switch .switch-label {
-        font-size: $teks-isi;
-    }
-
-    .repeater-baris .btn-icon {
-        width: $tinggi-kontrol;
-        height: $tinggi-kontrol;
-    }
 }

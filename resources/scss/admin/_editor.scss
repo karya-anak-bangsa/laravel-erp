@@ -47,12 +47,13 @@
     }
 }
 
+// Tombol toolbar 30px (btn-sm AdminLTE 31px); pada 32px tombol terakhir turun sendirian ke baris kedua di tablet 820px.
 .editor-tombol {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     padding: 0;
     border: 0;
     border-radius: var(--radius-sm);
@@ -62,14 +63,14 @@
     transition: background 120ms, color 120ms;
 
     .icon {
-        width: 14px;
-        height: 14px;
-        font-size: 12px;
+        width: 16px;
+        height: 16px;
+        font-size: 13px;
     }
 
     // Tombol sub-judul memakai teks "H2"/"H3" karena Font Awesome tidak punya ikon per level.
     .editor-tombol-teks {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 700;
         line-height: 1;
     }
@@ -98,38 +99,39 @@
 // Kompensasi optik undo/redo sama dengan rotate-left di tombol (lihat _tombol.scss).
 .editor-tombol .icon.fa-rotate-left,
 .editor-tombol .icon.fa-rotate-right {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .editor-pemisah {
     width: 1px;
-    height: 18px;
+    height: 20px;
     margin-inline: 4px;
     background: var(--border-color);
 }
 
-// Editor setinggi 8 baris teks (20px per baris + padding), seperti textarea rows="8"
-// (pilihan pemilik); deskripsi portofolio 15 baris lewat --editor-baris (prop baris). Isi lebih
-// panjang digulir; tinggi bisa ditarik seperti textarea.
+// Editor setinggi 8 baris teks (22px per baris + padding), seperti textarea rows="8" (pilihan pemilik); deskripsi
+// portofolio 15 baris lewat --editor-baris (prop baris). Isi lebih panjang digulir; tinggi bisa ditarik seperti
+// textarea. Teks 14px dengan jarak baris 22px agar paragraf nyaman dibaca.
 .editor-konten {
-    height: calc(var(--editor-baris, 8) * 20px + 16px);
-    min-height: calc(var(--editor-baris, 8) * 20px + 16px);
+    height: calc(var(--editor-baris, 8) * 22px + 16px);
+    min-height: calc(var(--editor-baris, 8) * 22px + 16px);
     overflow-y: auto;
     resize: vertical;
     padding: 8px 12px;
-    font-size: 13px;
-    line-height: 20px;
+    font-size: $teks-isi;
+    line-height: 22px;
     color: var(--text);
     outline: none;
     overflow-wrap: anywhere;
 }
 
 // Isi artikel & materi (prop layarPenuh): editor mengisi sisa layar agar form beserta tombol Simpan muat tanpa
-// gulir (520px = bagian form artikel/materi di atas & di bawah editor), minimal 15 baris (316px). Ruang tulis
-// yang lebih besar lewat tombol Layar penuh (pilihan pemilik).
+// gulir (570px = bagian form artikel/materi di atas & di bawah editor, 527–545px, ditambah ±25px), minimal 10 baris
+// (236px): batas terbesar yang masih memuat tombol Simpan di area tampil 1536×790. Ruang tulis yang lebih besar lewat
+// tombol Layar penuh (pilihan pemilik).
 .editor-pas-layar .editor-konten {
-    height: max(316px, calc(100dvh - 520px));
-    min-height: max(316px, calc(100dvh - 520px));
+    height: max(236px, calc(100dvh - 570px));
+    min-height: max(236px, calc(100dvh - 570px));
 }
 
 .editor-tombol-penuh {
@@ -209,7 +211,7 @@
         padding: 64px 72px;
         border: 1px solid var(--border-color);
         background: var(--bg-surface);
-        // Bayangan sehalus kartu panel admin (pilihan pemilik).
+        // Bayangan halus Gentelella (pilihan pemilik; bayangan dua lapis dinilai terlalu tegas).
         box-shadow: var(--shadow);
         font-size: 15px;
         line-height: 24px;
@@ -222,7 +224,7 @@
             font-size: 16px;
         }
 
-        // Perbandingan kode : teks sama dengan mode biasa (12 : 13px, jarak baris blok kode 18 : 20px).
+        // Perbandingan kode : teks sama dengan mode biasa (13 : 14px, jarak baris blok kode 20 : 22px).
         code {
             font-size: 14px;
         }
@@ -300,7 +302,8 @@ html:has(.editor-penuh) {
         margin: 0 0 8px;
     }
 
-    // Sub-judul isi artikel: sedikit lebih besar dari teks, tanpa ukuran heading bawaan.
+    // Sub-judul isi artikel: sedikit lebih besar dari teks 14px (+3 dan +1px, sama dengan mode layar penuh), tanpa
+    // ukuran heading bawaan.
     h2,
     h3 {
         margin: 12px 0 6px;
@@ -310,11 +313,11 @@ html:has(.editor-penuh) {
     }
 
     h2 {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     h3 {
-        font-size: 14px;
+        font-size: 15px;
     }
 
     > :first-child {
@@ -347,14 +350,15 @@ html:has(.editor-penuh) {
         text-decoration: underline;
     }
 
-    // Kode isi materi tutorial: huruf monospace berlatar abu. Baris kode yang panjang dipatah (spasi & indentasi tetap
-    // utuh), bukan digulir: di modal detail, <pre> yang tidak dipatah melebarkan sel tabel melewati layar ponsel.
+    // Kode isi materi tutorial: huruf monospace berlatar abu, 1px lebih kecil dari teks dengan jarak baris blok kode 2px
+    // lebih rapat. Baris kode yang panjang dipatah (spasi & indentasi tetap utuh), bukan digulir: di modal detail, <pre>
+    // yang tidak dipatah melebarkan sel tabel melewati layar ponsel.
     code {
         padding: 1px 4px;
         border-radius: var(--radius-sm);
         background: var(--bg-surface-secondary);
         font-family: var(--font-mono);
-        font-size: 12px;
+        font-size: 13px;
     }
 
     pre {
@@ -363,7 +367,7 @@ html:has(.editor-penuh) {
         border: 1px solid var(--border-color-light);
         border-radius: var(--radius-sm);
         background: var(--bg-surface-secondary);
-        line-height: 18px;
+        line-height: 20px;
         white-space: pre-wrap;
         overflow-wrap: anywhere;
 
@@ -371,42 +375,5 @@ html:has(.editor-penuh) {
             padding: 0;
             background: none;
         }
-    }
-}
-
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    // Editor: isi 14px dengan jarak baris 22px agar paragraf nyaman dibaca; tinggi tetap 8 baris. Tombol toolbar 30px
-    // (btn-sm AdminLTE 31px); pada 32px tombol terakhir turun sendirian ke baris kedua di tablet 820px.
-    .editor-tombol {
-        width: 30px;
-        height: 30px;
-
-        .icon {
-            width: 16px;
-            height: 16px;
-            font-size: 13px;
-        }
-
-        .icon.fa-rotate-left,
-        .icon.fa-rotate-right {
-            font-size: 12px;
-        }
-
-        .editor-tombol-teks {
-            font-size: 12px;
-        }
-    }
-
-    .editor-pemisah {
-        height: 20px;
-    }
-
-    .editor-konten {
-        height: calc(var(--editor-baris, 8) * 22px + 16px);
-        min-height: calc(var(--editor-baris, 8) * 22px + 16px);
-        font-size: $teks-isi;
-        line-height: 22px;
     }
 }

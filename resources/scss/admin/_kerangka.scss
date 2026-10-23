@@ -23,8 +23,7 @@
     font-size: 15px;
 }
 
-// Kerangka (sidebar, breadcrumb, footer, menu pengguna) setara AdminLTE v4 di semua halaman, bukan hanya halaman uji
-// skala-baru, agar menu tidak melompat saat berpindah halaman (pilihan pemilik 2026-10-23). Teks 14/20 (16px Source
+// Kerangka (sidebar, breadcrumb, footer, menu pengguna) setara AdminLTE v4 (lihat _token.scss). Teks 14/20 (16px Source
 // Sans 3 = 14px Inter); baris menu 34px (AdminLTE 40px) agar sidebar muat tanpa gulir di 1536×790 saat submenu
 // terpanjang (Tutorial, 3 butir) terbuka; pada 36px Log Aktivitas terpotong dan sidebar bergulir 21px. Gentelella tidak
 // seragam: menu 13px, menu bersubmenu 14px (font: inherit pada <button>), submenu 12,5px.
@@ -191,20 +190,11 @@
     font-size: $teks-isi;
     line-height: $baris-isi;
 
-    // Di ponsel kedua teks bertumpuk (hak cipta satu baris, versi di bawahnya) alih-alih berdesakan lalu patah.
+    // Di ponsel kedua teks bertumpuk (hak cipta satu baris, versi di bawahnya) alih-alih berdesakan lalu patah, dengan
+    // isi sejajar tepi kartu (tepi halaman 20px, lihat _halaman.scss).
     @media (max-width: 768px) {
         flex-direction: column;
         gap: 2px;
-    }
-}
-
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    // Di ponsel isi footer sejajar dengan tepi kartu (tepi halaman 20px, lihat _halaman.scss); sebelumnya 24px.
-    @media (max-width: 768px) {
-        .footer {
-            padding-inline: $jarak-kartu;
-        }
+        padding-inline: $jarak-kartu;
     }
 }

@@ -36,16 +36,12 @@
     font-size: 20px;
 }
 
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    .empty-state .empty-state-title {
-        font-size: $teks-isi;
-        line-height: $baris-isi;
-    }
+.empty-state .empty-state-title {
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+}
 
-    .empty-state .empty-state-text {
-        font-size: $teks-kecil;
-        line-height: $baris-kecil;
-    }
+.empty-state .empty-state-text {
+    font-size: $teks-kecil;
+    line-height: $baris-kecil;
 }

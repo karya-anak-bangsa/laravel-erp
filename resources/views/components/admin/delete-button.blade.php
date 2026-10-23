@@ -8,7 +8,7 @@
 
 {{--
     Konfirmasi modal dipasang oleh resources/js/admin.js lewat atribut data-confirm.
-    :ikon-saja="true" = tombol ikon persegi 32px tanpa teks, setinggi tombol Tambah
+    :ikon-saja="true" = tombol ikon persegi tanpa teks, 32px di kolom aksi tabel
     (label tetap di tooltip & aria-label).
 --}}
 <form method="POST" action="{{ $action }}" style="display:inline"

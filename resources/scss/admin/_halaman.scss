@@ -15,36 +15,30 @@
     width: 100%;
     max-width: $lebar-konten-maks;
     margin-inline: auto;
-}
-
-// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
-// skala ini berlaku di semua halaman admin.
-.skala-baru {
-    .page-header {
-        margin-bottom: $jarak-judul-halaman;
-    }
-
-    // Tracking negatif mengikuti anjuran Inter untuk huruf besar (±−0,02em pada 24px).
-    .page-title {
-        font-size: $teks-judul-halaman;
-        line-height: $baris-judul-halaman;
-        letter-spacing: -0.5px;
-    }
-
-    // Jarak antarkartu 20px ke samping & ke bawah, sama dengan jarak kartu ke bilah tombol form (.form-actions):
-    // gutter AdminLTE 24px dinilai pemilik terlalu renggang, Gentelella 16px terlalu rapat.
-    .row {
-        gap: $jarak-kartu;
-    }
-
-    .row:not(:last-child) {
-        margin-bottom: $jarak-kartu;
-    }
 
     // Di ponsel tepi halaman 20px seperti AdminLTE (Gentelella 12px), sama dengan jarak antarkartu.
     @media (max-width: 768px) {
-        .page-wrapper {
-            padding: $jarak-kartu;
-        }
+        padding: $jarak-kartu;
     }
+}
+
+.page-header {
+    margin-bottom: $jarak-judul-halaman;
+}
+
+// Tracking negatif mengikuti anjuran Inter untuk huruf besar (±−0,02em pada 24px).
+.page-title {
+    font-size: $teks-judul-halaman;
+    line-height: $baris-judul-halaman;
+    letter-spacing: -0.5px;
+}
+
+// Jarak antarkartu 20px ke samping & ke bawah, sama dengan jarak kartu ke bilah tombol form (.form-actions):
+// gutter AdminLTE 24px dinilai pemilik terlalu renggang, Gentelella 16px terlalu rapat.
+.row {
+    gap: $jarak-kartu;
+}
+
+.row:not(:last-child) {
+    margin-bottom: $jarak-kartu;
 }
