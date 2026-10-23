@@ -10,9 +10,7 @@ use App\Models\CompanyProfile\KategoriArtikel;
 use App\Models\CompanyProfile\KategoriPortofolio;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
-use App\Models\CompanyProfile\ModulWebsite;
 use App\Models\CompanyProfile\Portofolio;
-use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -84,24 +82,6 @@ class RingkasanService
             ->sortByDesc(fn (array $item): int => $item['diperbarui']->getTimestamp())
             ->take($jumlah)
             ->values();
-    }
-
-    /**
-     * Yang sedang tampil di website: hero aktif, template aktif per jenis, izin mesin pencari (config/seo.php), dan
-     * jumlah modul yang dinonaktifkan di Manajemen Modul agar tidak terlupa.
-     *
-     * @return array{hero: Hero|null, template: Collection<string, Template>, indeks: bool, modulNonaktif: int}
-     */
-    public function statusSitus(): array
-    {
-        return [
-            'hero' => Hero::query()->aktif()->first(['id_hero', 'judul']),
-            'template' => Template::query()->aktif()->get(['id_template', 'nama', 'jenis'])
-                ->keyBy(fn (Template $template): string => $template->jenis->value)
-                ->toBase(),
-            'indeks' => (bool) config('seo.indeks'),
-            'modulNonaktif' => ModulWebsite::query()->where('status_aktif', false)->count(),
-        ];
     }
 
     /**

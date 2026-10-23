@@ -1012,9 +1012,14 @@ table.table td.kolom-aksi {
 // setelah skala ini dinyatakan solid dan berlaku di semua halaman admin. Font AdminLTE (Source Sans 3) 12,8% lebih
 // kecil dari Inter pada px yang sama, jadi ukuran teksnya dikonversi (16 → 14 isi, 14 → 12 teks kecil, 17,6 → 16
 // judul kartu, 20 → 18 judul modal, 28 → 24 judul halaman), sedangkan jarak & tinggi komponen disalin apa adanya.
-// Bayangan, garis, warna, sudut, dan font tetap gaya Gentelella (bayangan & garis AdminLTE dinilai pemilik terlalu
-// tebal).
+// Garis, warna, sudut, dan font tetap gaya Gentelella (bayangan & garis AdminLTE dinilai pemilik terlalu tebal).
 .skala-baru {
+    // Kartu cukup bergaris 1px tanpa bayangan: bayangan Gentelella (0 2px 4px 4%) membentuk pita ±5px di bawah
+    // kartu yang dinilai pemilik terlalu tebal.
+    .card {
+        box-shadow: none;
+    }
+
     .page-header {
         margin-bottom: 24px;
     }
@@ -1053,9 +1058,11 @@ table.table td.kolom-aksi {
         padding: 16px;
     }
 
+    // Tebal 500 (Gentelella 600 dinilai pemilik terlalu tebal); judul tetap di atas isinya lewat ukuran 16px.
     .card-title {
         font-size: 16px;
         line-height: 24px;
+        font-weight: var(--font-weight-medium);
         letter-spacing: -0.2px;
     }
 
@@ -1069,9 +1076,10 @@ table.table td.kolom-aksi {
         padding: 8px 16px;
     }
 
-    // Tombol reguler 38px setinggi isian (Simpan, Batal, Terapkan, tombol dialog); tombol kecil 32px seperti btn-sm
-    // AdminLTE (kepala kartu, tabel, tambah baris repeater). Padding bawaan Gentelella dipertahankan agar tombol ikon
-    // (.btn-ikon, .btn-icon) tetap persegi.
+    // Tombol reguler 38px setinggi isian (Simpan, Batal, Terapkan, Tambah Data, tombol dialog); tombol kecil 32px
+    // seperti btn-sm AdminLTE (tabel, tambah baris repeater). Tambah Data di kepala kartu reguler agar setara dengan
+    // Terapkan di kartu filter (pilihan pemilik). Padding bawaan Gentelella dipertahankan agar tombol ikon (.btn-ikon,
+    // .btn-icon) tetap persegi.
     .btn {
         height: 38px;
         gap: 6px;
@@ -1089,7 +1097,6 @@ table.table td.kolom-aksi {
         }
     }
 
-    .card-header .btn,
     .btn-sm,
     .aksi-tabel .btn {
         height: 32px;
@@ -1322,19 +1329,6 @@ table.table td.kolom-aksi {
     font-size: 16px;
 }
 
-// Baris col-8-4 yang tepinya segaris dengan baris col-3 di atasnya (dashboard). 2fr 1fr Gentelella membagi lebar
-// setelah dikurangi satu gap, sedangkan col-3 setelah dua gap, sehingga tepinya bergeser sepertiga gap (±5 px).
-// Di bawah 1101 px kolomnya tetap bertumpuk seperti col-8-4.
-@media (min-width: 1101px) {
-    .col-8-4.sejajar-col-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-
-        > :first-child {
-            grid-column: span 2;
-        }
-    }
-}
-
 // Daftar ringkas dashboard (Terakhir diperbarui): baris bergaris pemisah berisi judul dan keterangan.
 .daftar-ringkas {
     margin: 0;
@@ -1358,10 +1352,14 @@ table.table td.kolom-aksi {
 }
 
 // Satu baris berelipsis: judul panjang yang patah di layar sempit membuat tinggi baris tidak seragam. Judul lengkap
-// tampil lewat atribut title.
+// tampil lewat atribut title. Selebar teksnya (bukan selebar baris) agar hanya judul yang bisa diklik (pilihan
+// pemilik); vertical-align top menjaga tinggi baris 20px karena garis dasar inline-block ber-overflow jatuh di tepi
+// bawahnya.
 .judul-ringkas {
-    display: block;
+    display: inline-block;
+    max-width: 100%;
     overflow: hidden;
+    vertical-align: top;
     color: var(--text);
     font-weight: var(--font-weight-medium);
     white-space: nowrap;
@@ -1378,43 +1376,6 @@ a.judul-ringkas:hover {
     font-size: 12px;
     line-height: 18px;
     color: var(--text-muted);
-}
-
-// Kartu Status website ditarik setinggi kartu Terakhir diperbarui di sebelahnya (baris grid) agar dasar kedua kartu
-// sejajar. Sisa tingginya diisi footer dengan tombol di tengah; tanpa ini ruang kosong jatuh di bawah tombol.
-.kartu-status-situs {
-    display: flex;
-    flex-direction: column;
-
-    > .card-footer {
-        display: flex;
-        flex: 1;
-        align-items: center;
-    }
-}
-
-// Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.
-// Garis label disamakan dengan garis nilai, dan garis label terakhir dibuang karena menumpuk dengan garis footer.
-// Semua baris setinggi baris berchip (chip 22 + padding 20 + garis 1).
-table.table.tabel-status-situs {
-    th,
-    td {
-        height: 43px;
-    }
-
-    th {
-        width: 1%;
-        white-space: nowrap;
-        border-bottom-color: var(--border-color-light);
-    }
-
-    td {
-        color: var(--text);
-    }
-
-    tr:last-child th {
-        border-bottom: 0;
-    }
 }
 
 // Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat

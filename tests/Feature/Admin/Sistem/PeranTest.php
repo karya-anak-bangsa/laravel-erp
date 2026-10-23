@@ -74,12 +74,3 @@ it('menolak Administrator mengubah data Pengaturan Sistem', function () {
         ->and($lain->refresh()->trashed())->toBeFalse()
         ->and($nonaktif->refresh()->trashed())->toBeTrue();
 });
-
-it('menampilkan peringatan modul nonaktif tanpa tautan bagi Administrator', function () {
-    ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Faq]);
-
-    $this->actingAs($this->administrator)
-        ->get(route('admin.dashboard'))
-        ->assertSee('<span class="chip chip-yellow">1 nonaktif</span>', false)
-        ->assertDontSee('href="'.route('admin.modul-website.index').'"', false);
-});

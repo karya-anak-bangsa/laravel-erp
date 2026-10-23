@@ -1,5 +1,3 @@
-@use('App\Enums\CompanyProfile\JenisTemplate')
-
 @extends('layouts.admin')
 
 @section('content')
@@ -24,70 +22,20 @@
             :keterangan="$statistik['hero']['aktif'].' aktif di beranda'" :href="route('admin.hero.index')" />
     </div>
 
-    <div class="row col-8-4 sejajar-col-3">
-        <x-admin.card title="Terakhir diperbarui" subtitle="Konten yang terakhir disimpan, terbaru lebih dulu." :flush="true">
-            @if ($terakhirDiperbarui->isEmpty())
-                <x-admin.empty-state title="Belum ada konten" description="Konten yang ditambahkan atau diubah akan tampil di sini." />
-            @else
-                <ul class="daftar-ringkas">
-                    @foreach ($terakhirDiperbarui as $item)
-                        <li>
-                            <div class="isi-ringkas">
-                                <a href="{{ $item['url'] }}" class="judul-ringkas" title="{{ $item['judul'] }}">{{ Str::limit($item['judul'], 100) }}</a>
-                                <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </x-admin.card>
-
-        <x-admin.card title="Status website" :flush="true" class="kartu-status-situs">
-            <table class="table tabel-informasi tabel-status-situs">
-                <tbody>
-                    <tr>
-                        <th scope="row">Hero aktif</th>
-                        <td>{{ $statusSitus['hero']?->judul ?? '—' }}</td>
-                    </tr>
-                    @foreach (JenisTemplate::cases() as $jenis)
-                        <tr>
-                            <th scope="row">Template {{ $jenis->label() }}</th>
-                            <td>{{ $statusSitus['template']->get($jenis->value)?->nama ?? '—' }}</td>
-                        </tr>
-                    @endforeach
-                    <tr>
-                        <th scope="row">Mesin pencari</th>
-                        <td>
-                            {{-- SEO_INDEKS di .env; selama tahap uji produksi tidak diindeks. --}}
-                            @if ($statusSitus['indeks'])
-                                <span class="chip chip-green">Diindeks</span>
-                            @else
-                                <span class="chip chip-yellow">Tidak diindeks</span>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Modul website</th>
-                        <td>
-                            @if ($statusSitus['modulNonaktif'] === 0)
-                                <span class="chip chip-green">Semua tampil</span>
-                            @elseif (Gate::allows('kelola-sistem'))
-                                <a href="{{ route('admin.modul-website.index') }}" class="chip chip-yellow">{{ $statusSitus['modulNonaktif'] }} nonaktif</a>
-                            @else
-                                {{-- Administrator tidak bisa membuka Manajemen Modul. --}}
-                                <span class="chip chip-yellow">{{ $statusSitus['modulNonaktif'] }} nonaktif</span>
-                            @endif
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <x-slot:footer>
-                <a href="{{ route('beranda') }}" target="_blank" rel="noopener" class="btn btn-info btn-blok">
-                    <x-admin.icon name="eye" />
-                    Buka website
-                </a>
-            </x-slot>
-        </x-admin.card>
-    </div>
+    <x-admin.card title="Terakhir diperbarui" subtitle="Konten yang terakhir disimpan, terbaru lebih dulu." :flush="true">
+        @if ($terakhirDiperbarui->isEmpty())
+            <x-admin.empty-state title="Belum ada konten" description="Konten yang ditambahkan atau diubah akan tampil di sini." />
+        @else
+            <ul class="daftar-ringkas">
+                @foreach ($terakhirDiperbarui as $item)
+                    <li>
+                        <div class="isi-ringkas">
+                            <a href="{{ $item['url'] }}" class="judul-ringkas" title="{{ $item['judul'] }}">{{ Str::limit($item['judul'], 100) }}</a>
+                            <div class="keterangan-ringkas">{{ $item['modul'] }} · {{ $item['diperbarui']->translatedFormat('d F Y, H:i') }}</div>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </x-admin.card>
 @endsection

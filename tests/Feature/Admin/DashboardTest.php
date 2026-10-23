@@ -1,14 +1,11 @@
 <?php
 
-use App\Enums\CompanyProfile\JenisModul;
 use App\Models\CompanyProfile\Artikel;
 use App\Models\CompanyProfile\Faq;
 use App\Models\CompanyProfile\Hero;
 use App\Models\CompanyProfile\Layanan;
 use App\Models\CompanyProfile\MateriTutorial;
-use App\Models\CompanyProfile\ModulWebsite;
 use App\Models\CompanyProfile\Portofolio;
-use App\Models\CompanyProfile\Template;
 use App\Models\CompanyProfile\Tutorial;
 use App\Models\Pengguna;
 
@@ -166,51 +163,18 @@ describe('ringkasan dashboard', function () {
             ->assertDontSee('Layanan Urut 06');
     });
 
-    it('menampilkan status website: hero aktif, template aktif per jenis, dan izin mesin pencari', function () {
-        Hero::factory()->aktif()->create(['judul' => 'Hero Tampil']);
-        Hero::factory()->create(['judul' => 'Hero Cadangan']);
-        Template::factory()->aktif()->create(['nama' => 'Warna Aktif']);
-        Template::factory()->monochrome()->aktif()->create(['nama' => 'Mono Aktif']);
-        Template::factory()->create(['nama' => 'Warna Cadangan']);
-        config(['seo.indeks' => false]);
-
-        $this->actingAs($this->admin)
-            ->get(route('admin.dashboard'))
-            ->assertSeeInOrder([
-                '<div class="card-title">Status website</div>',
-                'Hero aktif</th>', '<td>Hero Tampil</td>',
-                'Template Full Color</th>', '<td>Warna Aktif</td>',
-                'Template Monochrome</th>', '<td>Mono Aktif</td>',
-                'Mesin pencari</th>', 'chip-yellow">Tidak diindeks',
-                'href="'.route('beranda').'" target="_blank" rel="noopener"', 'Buka website',
-            ], false)
-            // Hero cadangan tetap boleh muncul di Terakhir diperbarui, tetapi bukan sebagai hero aktif.
-            ->assertDontSee('<td>Hero Cadangan</td>', false)
-            ->assertDontSee('Warna Cadangan');
-
-        config(['seo.indeks' => true]);
-
-        $this->actingAs($this->admin)->get(route('admin.dashboard'))->assertSee('chip-green">Diindeks', false);
-    });
-
-    it('mengingatkan modul website yang nonaktif dengan tautan ke Manajemen Modul', function () {
-        $this->actingAs($this->admin)
-            ->get(route('admin.dashboard'))
-            ->assertSeeInOrder(['Mesin pencari</th>', 'Modul website</th>', '<span class="chip chip-green">Semua tampil</span>'], false);
-
-        ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Portofolio]);
-        ModulWebsite::factory()->nonaktif()->create(['jenis' => JenisModul::Faq]);
-
-        $this->actingAs($this->admin)
-            ->get(route('admin.dashboard'))
-            ->assertSee('<a href="'.route('admin.modul-website.index').'" class="chip chip-yellow">2 nonaktif</a>', false);
-    });
-
-    it('menampilkan keadaan kosong bila belum ada konten, hero aktif, dan template aktif', function () {
+    it('menampilkan keadaan kosong bila belum ada konten', function () {
         $this->actingAs($this->admin)
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertSee('Belum ada konten')
-            ->assertSeeInOrder(['Hero aktif</th>', '<td>—</td>', 'Template Full Color</th>', '<td>—</td>'], false);
+            ->assertSee('Belum ada konten');
+    });
+
+    it('tidak menampilkan kartu Status website', function () {
+        // Dihapus pemilik 2026-10-23: dashboard cukup kartu angka dan Terakhir diperbarui.
+        $this->actingAs($this->admin)
+            ->get(route('admin.dashboard'))
+            ->assertDontSee('Status website')
+            ->assertDontSee('Buka website');
     });
 });

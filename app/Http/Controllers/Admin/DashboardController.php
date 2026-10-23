@@ -13,7 +13,6 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'statistik' => $ringkasan->statistik(),
             'terakhirDiperbarui' => $ringkasan->terakhirDiperbarui(),
-            'statusSitus' => $ringkasan->statusSitus(),
         ]);
     }
 }
