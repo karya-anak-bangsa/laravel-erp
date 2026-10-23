@@ -1356,7 +1356,9 @@ a.judul-ringkas:hover {
     color: var(--primary);
 }
 
+// Jarak 2px dari judul, sama dengan ringkasan di bawah judul tabel daftar (.ringkasan-tabel).
 .keterangan-ringkas {
+    margin-top: 2px;
     font-size: 12px;
     line-height: 18px;
     color: var(--text-muted);
