@@ -62,7 +62,7 @@
         </div>
     </x-admin.card>
 
-    <x-admin.card title="Gambar & Status">
+    <x-admin.card title="Gambar & Status" subtitle="Ilustrasi hero dan pengaturan tampil di beranda.">
         @if ($hero->exists)
             <div class="pratinjau-gambar pratinjau-gambar-lebar">
                 <img src="{{ $hero->gambar_url }}" alt="Gambar hero saat ini">

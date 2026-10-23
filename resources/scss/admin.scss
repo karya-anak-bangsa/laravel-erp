@@ -1008,26 +1008,32 @@ table.table td.kolom-aksi {
     justify-content: center;
 }
 
-// Uji skala teks & jarak di dashboard (permintaan pemilik 2026-10-22), diterapkan ke semua halaman admin setelah
-// dinyatakan solid. Proporsinya mengacu pada template Zenith pilihan pemilik, tetapi lebih rapat karena nilai Zenith
-// (isi 14px, padding 20px) tampak dizoom di kartu sempit: empat ukuran teks (12 label & keterangan, 13 isi seperti
-// tabel admin, 16 judul kartu, 24 judul halaman & angka) dengan tinggi baris bulat agar tepi kartu jatuh di piksel
-// utuh, padding kartu 16px, baris daftar 12px 16px, sel tabel 8px 16px, serta jarak 24px dari judul halaman dan
-// antarbaris kartu. Bayangan, warna, sudut, dan garis kepala kartu tetap gaya Gentelella (bayangan Zenith dinilai
-// pemilik terlalu tebal).
-.halaman-dashboard {
+// Uji skala teks & jarak setara AdminLTE v4 (acuan pilihan pemilik 2026-10-23, menggantikan Zenith) di Dashboard dan
+// modul Hero. Kelas skala-baru dipasang di <body> (layouts/admin) agar modal & dialog SweetAlert ikut, lalu dilepas
+// setelah skala ini dinyatakan solid dan berlaku di semua halaman admin. Font AdminLTE (Source Sans 3) 12,8% lebih
+// kecil dari Inter pada px yang sama, jadi ukuran teksnya dikonversi (16 → 14 isi, 14 → 12 teks kecil, 17,6 → 16
+// judul kartu, 20 → 18 judul modal, 28 → 24 judul halaman), sedangkan jarak & tinggi komponen disalin apa adanya.
+// Bayangan, garis, warna, sudut, dan font tetap gaya Gentelella (bayangan & garis AdminLTE dinilai pemilik terlalu
+// tebal).
+.skala-baru {
     .page-header {
         margin-bottom: 24px;
     }
 
+    // Tracking negatif mengikuti anjuran Inter untuk huruf besar (±−0,02em pada 24px).
     .page-title {
         font-size: 24px;
         line-height: 32px;
-        font-weight: 700;
-        letter-spacing: -0.6px;
+        letter-spacing: -0.5px;
     }
 
-    .row:not(:last-child) {
+    // Jarak antarkartu 24px ke samping & ke bawah seperti gutter AdminLTE (Gentelella 16px).
+    .row {
+        gap: 24px;
+    }
+
+    .row:not(:last-child),
+    .kartu-filter {
         margin-bottom: 24px;
     }
 
@@ -1038,20 +1044,53 @@ table.table td.kolom-aksi {
     .card-title {
         font-size: 16px;
         line-height: 24px;
-        letter-spacing: -0.4px;
+        letter-spacing: -0.2px;
     }
 
     .card-subtitle {
         margin-top: 0;
         font-size: 12px;
-        line-height: 16px;
+        line-height: 18px;
     }
 
     .card-footer {
-        padding: 16px;
+        padding: 8px 16px;
     }
 
+    // Tombol reguler 38px setinggi isian (Simpan, Batal, Terapkan, tombol dialog); tombol kecil 32px seperti btn-sm
+    // AdminLTE (kepala kartu, tabel, tambah baris repeater). Padding bawaan Gentelella dipertahankan agar tombol ikon
+    // (.btn-ikon, .btn-icon) tetap persegi.
     .btn {
+        height: 38px;
+        gap: 6px;
+        font-size: 14px;
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            font-size: 13px;
+        }
+
+        // Kompensasi optik rotate-left (lihat .btn .icon.fa-rotate-left) dengan perbandingan yang sama.
+        .icon.fa-rotate-left {
+            font-size: 12px;
+        }
+    }
+
+    .card-header .btn,
+    .btn-sm,
+    .aksi-tabel .btn {
+        height: 32px;
+        font-size: 12px;
+
+        .icon {
+            width: 14px;
+            height: 14px;
+            font-size: 12px;
+        }
+    }
+
+    .aksi-tabel .btn .icon.fa-pen-to-square {
         font-size: 13px;
     }
 
@@ -1059,13 +1098,159 @@ table.table td.kolom-aksi {
         font-size: 12px;
     }
 
-    .empty-state .empty-state-title {
-        font-size: 13px;
+    // Isi tabel 14/20 dengan sel 10px 16px: baris berisi teks 41px seperti AdminLTE. Garis per sel (bukan collapse)
+    // agar setiap baris jatuh di piksel utuh. Kepala kolom huruf biasa setinggi isi, label baris rincian (tbody th)
+    // sedikit lebih tipis dan redup.
+    table.table {
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 14px;
+        line-height: 20px;
+
+        th,
+        td {
+            padding: 10px 16px;
+        }
+
+        th {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        thead th {
+            color: var(--text-secondary);
+        }
+
+        tbody th {
+            font-weight: var(--font-weight-medium);
+        }
+    }
+
+    .ringkasan-tabel {
+        margin-top: 2px;
+    }
+
+    .form-label {
+        margin-bottom: 8px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .form-control {
+        height: 38px;
+        font-size: 14px;
+    }
+
+    textarea.form-control {
+        height: auto;
+    }
+
+    .form-control[type='file'] {
+        line-height: 36px;
+
+        &::file-selector-button {
+            height: 36px;
+        }
+    }
+
+    .form-help,
+    .form-error {
+        margin-top: 4px;
+        font-size: 12px;
         line-height: 18px;
+    }
+
+    .switch .switch-label {
+        font-size: 14px;
+    }
+
+    .repeater-baris .btn-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .form-actions {
+        margin-top: 24px;
+    }
+
+    // Kotak pencarian & dropdown kartu filter setinggi tombol Terapkan; ikon cari seukuran ikon tombol reguler.
+    .search-box {
+        input {
+            height: 38px;
+            padding-inline-start: 36px;
+            font-size: 14px;
+        }
+
+        .s-icon {
+            inset-inline-start: 12px;
+            width: 16px;
+            height: 16px;
+            font-size: 13px;
+        }
+    }
+
+    .kartu-filter select.kolom-filter {
+        height: 38px;
+    }
+
+    // Editor: isi 14px dengan jarak baris 22px agar paragraf nyaman dibaca; tinggi tetap 8 baris. Tombol toolbar 30px
+    // (btn-sm AdminLTE 31px); pada 32px tombol terakhir turun sendirian ke baris kedua di tablet 820px.
+    .editor-tombol {
+        width: 30px;
+        height: 30px;
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            font-size: 13px;
+        }
+
+        .icon.fa-rotate-left,
+        .icon.fa-rotate-right {
+            font-size: 12px;
+        }
+
+        .editor-tombol-teks {
+            font-size: 12px;
+        }
+    }
+
+    .editor-pemisah {
+        height: 20px;
+    }
+
+    .editor-konten {
+        height: calc(var(--editor-baris, 8) * 22px + 16px);
+        min-height: calc(var(--editor-baris, 8) * 22px + 16px);
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    // Kepala modal 60px (judul 28 + padding 16 + 16); tombol × 32px di tengah tingginya.
+    .swal2-title {
+        line-height: 28px;
+    }
+
+    .swal2-popup.swal-detail {
+        --swal2-close-button-inset: 14px 12px auto auto;
+        --swal2-actions-padding: 16px;
+
+        .swal2-html-container {
+            font-size: 14px;
+            line-height: 20px;
+        }
+    }
+
+    .empty-state .empty-state-title {
+        font-size: 14px;
+        line-height: 20px;
     }
 
     .empty-state .empty-state-text {
         font-size: 12px;
+        line-height: 18px;
     }
 }
 
@@ -1091,18 +1276,19 @@ table.table td.kolom-aksi {
         gap: 16px;
     }
 
-    // Huruf biasa: label kapital bawaan (11,5px) tampak setinggi teks 15px karena huruf kapital Inter 34% lebih tinggi
-    // dari huruf kecil.
+    // Label & angka setara small-box AdminLTE (16 & 35,2px Source Sans 3 = 14 & 31px Inter; angka dibulatkan ke 28px).
+    // Label huruf biasa: label kapital bawaan (11,5px) tampak setinggi teks 15px karena huruf kapital Inter 34% lebih
+    // tinggi dari huruf kecil.
     .stat-label {
-        font-size: 12px;
-        line-height: 16px;
+        font-size: 14px;
+        line-height: 20px;
         letter-spacing: normal;
         text-transform: none;
     }
 
     .stat-value {
-        font-size: 24px;
-        line-height: 28px;
+        font-size: 28px;
+        line-height: 32px;
         font-weight: 700;
         letter-spacing: -0.6px;
     }
@@ -1110,7 +1296,7 @@ table.table td.kolom-aksi {
     .stat-subtext {
         margin-top: 0;
         font-size: 12px;
-        line-height: 16px;
+        line-height: 18px;
     }
 }
 
@@ -1133,8 +1319,7 @@ table.table td.kolom-aksi {
     }
 }
 
-// Daftar ringkas dashboard (Terakhir diperbarui): baris bergaris pemisah berisi judul dan keterangan. Padding 12px 16px
-// membuat jarak tepi baris ke huruf ±16px, sama dengan kepala kartu.
+// Daftar ringkas dashboard (Terakhir diperbarui): baris bergaris pemisah berisi judul dan keterangan.
 .daftar-ringkas {
     margin: 0;
     padding: 0;
@@ -1150,10 +1335,10 @@ table.table td.kolom-aksi {
     }
 }
 
-// Judul baris 13px seperti isi tabel admin, satu tingkat di bawah judul kartu (16px).
+// Judul baris 14px seperti isi tabel admin, satu tingkat di bawah judul kartu (16px).
 .isi-ringkas {
-    font-size: 13px;
-    line-height: 18px;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 // Satu baris berelipsis: judul panjang yang patah di layar sempit membuat tinggi baris tidak seragam. Judul lengkap
@@ -1173,7 +1358,7 @@ a.judul-ringkas:hover {
 
 .keterangan-ringkas {
     font-size: 12px;
-    line-height: 16px;
+    line-height: 18px;
     color: var(--text-muted);
 }
 
@@ -1191,27 +1376,17 @@ a.judul-ringkas:hover {
 }
 
 // Tabel Status website di dashboard: label selebar isinya agar tidak patah ("Template Full Color"), nilai di kanan.
-// Label huruf biasa 13px seperti nilainya (label kapital 11px bawaan tampak lebih tinggi dari huruf isi). Garis
-// dipasang per sel, bukan collapse, agar baris jatuh di piksel utuh; garis label disamakan dengan garis nilai, dan
-// garis label terakhir dibuang karena menumpuk dengan garis footer. Semua baris setinggi baris berchip (chip 22 +
-// padding 16 + garis 1).
+// Garis label disamakan dengan garis nilai, dan garis label terakhir dibuang karena menumpuk dengan garis footer.
+// Semua baris setinggi baris berchip (chip 22 + padding 20 + garis 1).
 table.table.tabel-status-situs {
-    border-collapse: separate;
-    border-spacing: 0;
-
     th,
     td {
-        height: 39px;
-        line-height: 20px;
+        height: 43px;
     }
 
     th {
         width: 1%;
         white-space: nowrap;
-        font-size: 13px;
-        font-weight: var(--font-weight-medium);
-        letter-spacing: normal;
-        text-transform: none;
         border-bottom-color: var(--border-color-light);
     }
 

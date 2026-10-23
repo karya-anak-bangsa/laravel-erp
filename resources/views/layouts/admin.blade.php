@@ -4,7 +4,8 @@
     @include('layouts.partials.head')
     @vite(['resources/scss/admin.scss', 'resources/js/admin.js'])
 </head>
-<body data-shell="admin">
+{{-- skala-baru = uji skala teks & jarak setara AdminLTE (admin.scss) di Dashboard & Hero; dilepas setelah skala itu berlaku di semua halaman admin. --}}
+<body data-shell="admin" @class(['skala-baru' => request()->routeIs('admin.dashboard', 'admin.hero.*')])>
     <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
 
     @include('layouts.partials.sidebar')
