@@ -1,0 +1,178 @@
+@use 'token' as *;
+
+// Ikon tombol seragam: glyph 12px dalam kotak 14x14 (sama dengan ikon kotak pencarian, lihat _filter.scss).
+.btn .icon {
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+}
+
+// Kompensasi optik (pilihan pemilik): pen-to-square berupa kotak bergaris sehingga
+// tintanya hanya ±46% bidang dan berwarna gelap di tombol kuning, jadi terasa lebih
+// kecil dari ikon padat seperti trash-can (±53%). Pada 13px tintanya setara.
+.btn .icon.fa-pen-to-square {
+    font-size: 13px;
+}
+
+// Kompensasi optik (pilihan pemilik): panah melingkar rotate-left menyentuh tepi
+// bidang (12x12) sehingga terasa lebih besar dari floppy-disk (10,4x10,6). Pada
+// 11px bentuk luarnya 11x11, setara dengan ikon Simpan di sebelahnya. Tombol undo/redo editor: lihat _editor.scss.
+.btn .icon.fa-rotate-left {
+    font-size: 11px;
+}
+
+// Kompensasi optik (pola paradiplomasi-v2): glyph filter Font Awesome 7 digambar 1/16 em lebih rendah dari ikon
+// lain (bidang 64–512 dari 512), sehingga tampak turun ±0,75 px dari label Terapkan. Digeser 1 px lewat tata
+// letak, bukan transform, agar glyph tetap tajam; geseran 0,75 px yang persis justru hilang oleh pembulatan browser.
+.btn .icon.fa-filter::before {
+    position: relative;
+    top: -1px;
+}
+
+// Tombol success/secondary/info/warning/danger memakai warna Bootstrap bg-success (#198754),
+// bg-secondary (#6c757d), bg-info (#0dcaf0), bg-warning (#ffc107) & bg-danger (#dc3545)
+// yang saturasinya diturunkan 10% atas permintaan pemilik; hover & border mengikuti
+// Bootstrap dengan penurunan yang sama. Teks gelap di tombol biru muda & kuning mengikuti
+// Bootstrap demi keterbacaan. Token --green/--yellow/--red tetap dipakai chip & status.
+// Success = Tambah & Simpan, secondary = Batal (termasuk tombol di dialog konfirmasi),
+// info = Lihat.
+.btn-success {
+    background: #217f53;
+    border-color: #217f53;
+    color: #fff;
+
+    &:hover {
+        background: #1c6c47;
+        border-color: #1a6643;
+        color: #fff;
+    }
+}
+
+// Saturasi #6c757d hanya 7%, jadi setelah diturunkan 10% menjadi abu-abu netral.
+.btn-secondary {
+    background: #747474;
+    border-color: #747474;
+    color: #fff;
+
+    &:hover {
+        background: #636363;
+        border-color: #5d5d5d;
+        color: #fff;
+    }
+}
+
+.btn-info {
+    background: #1ac2e3;
+    border-color: #1ac2e3;
+    color: #000;
+
+    &:hover {
+        background: #3ccbe7;
+        border-color: #31c7e6;
+        color: #000;
+    }
+}
+
+.btn-warning {
+    background: #f3bb13;
+    border-color: #f3bb13;
+    color: #000;
+
+    &:hover {
+        background: #f4c537;
+        border-color: #f4c12b;
+        color: #000;
+    }
+}
+
+.btn-danger {
+    background: #d0414f;
+    border-color: #d0414f;
+
+    &:hover {
+        background: #af3944;
+        border-color: #a53540;
+    }
+}
+
+// Gentelella memberi underline pada semua a:hover; tautan bergaya tombol dikecualikan.
+a.btn:hover {
+    text-decoration: none;
+}
+
+// Tombol nonaktif (mis. Hapus pada template aktif) dipudarkan seperti Bootstrap; Gentelella tidak membedakannya.
+// Kursor tetap menampilkan tooltip alasannya (title).
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+// Tombol ikon tanpa label (aksi tabel: Lihat, Ubah, Hapus): persegi setinggi tombolnya
+// dengan ikon di tengah; nama aksinya ada di title (tooltip) & aria-label.
+.btn-ikon {
+    aspect-ratio: 1;
+    padding-inline: 0;
+    justify-content: center;
+}
+
+// Tombol di kepala kartu daftar (Tambah Data <x-admin.tombol-tambah>, Kosongkan Log) di ponsel hanya ikon, persegi
+// seperti .btn-ikon (pola paradiplomasi-v2); namanya tetap di title & aria-label.
+@media (max-width: 768px) {
+    .tombol-tambah,
+    .tombol-ikon-ponsel {
+        aspect-ratio: 1;
+        padding-inline: 0;
+        justify-content: center;
+
+        .label-tombol {
+            display: none;
+        }
+    }
+}
+
+// Tombol selebar wadahnya, setara .btn-block/.w-100 Bootstrap (mis. Buka pratinjau di kartu Status dan Pratinjau).
+.btn-blok {
+    width: 100%;
+    justify-content: center;
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    // Tombol reguler 38px setinggi isian (Simpan, Batal, Terapkan, Tambah Data, tombol dialog); tombol kecil 32px
+    // seperti btn-sm AdminLTE (tabel, tambah baris repeater). Tambah Data di kepala kartu reguler agar setara dengan
+    // Terapkan di kartu filter (pilihan pemilik). Padding bawaan Gentelella dipertahankan agar tombol ikon (.btn-ikon,
+    // .btn-icon) tetap persegi.
+    .btn {
+        height: $tinggi-kontrol;
+        gap: 6px;
+        font-size: $teks-isi;
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            font-size: 13px;
+        }
+
+        // Kompensasi optik rotate-left (lihat .btn .icon.fa-rotate-left) dengan perbandingan yang sama.
+        .icon.fa-rotate-left {
+            font-size: 12px;
+        }
+    }
+
+    .btn-sm,
+    .aksi-tabel .btn {
+        height: $tinggi-tombol-kecil;
+        font-size: $teks-kecil;
+
+        .icon {
+            width: 14px;
+            height: 14px;
+            font-size: 12px;
+        }
+    }
+
+    .aksi-tabel .btn .icon.fa-pen-to-square {
+        font-size: 13px;
+    }
+}

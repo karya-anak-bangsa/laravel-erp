@@ -1,0 +1,174 @@
+@use 'token' as *;
+
+// Modal SweetAlert2: latar, teks, dan sudut mengikuti token Gentelella;
+// tombol memakai kelas .btn (lihat admin.js).
+:root {
+    --swal2-background: var(--bg-surface);
+    --swal2-color: var(--text-secondary);
+    --swal2-border-radius: var(--radius);
+    --swal2-width: 26em;
+    --swal2-backdrop: rgba(15, 23, 42, 0.5);
+}
+
+.swal2-popup {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.swal2-title {
+    font-size: $teks-judul-modal;
+    color: var(--text);
+}
+
+// Isian dialog (mis. alamat tautan editor) bergaya .form-control Gentelella.
+.swal2-input-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.swal2-popup .swal2-input {
+    height: 36px;
+    margin: 8px 24px 0;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+
+    &:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-lt);
+    }
+
+    &::placeholder {
+        color: var(--text-disabled);
+    }
+}
+
+.swal2-actions {
+    gap: 8px;
+
+    .btn {
+        min-width: 110px;
+        justify-content: center;
+    }
+}
+
+// Modal detail (<x-admin.detail-button>) disusun seperti modal Bootstrap 5.3 (pilihan
+// pemilik): header (judul kiri, tombol × kanan), isi, footer (Tutup rata kanan).
+// Lebar mengikuti .modal-lg — 500px mulai 576px, 800px mulai 992px, selebar layar di bawahnya.
+.swal2-popup.swal-detail {
+    --swal2-width: 100%;
+    --swal2-padding: 0;
+    --swal2-close-button-position: absolute;
+    --swal2-close-button-inset: 11px 12px auto auto;
+    --swal2-actions-justify-content: flex-end;
+    --swal2-actions-width: 100%;
+    --swal2-actions-margin: 0;
+    --swal2-actions-padding: 12px 16px;
+
+    // Tinggi modal dibatasi layar dan hanya isinya yang digulir (pola paradiplomasi-v2), sehingga judul selalu di
+    // atas dan Tutup selalu di bawah, juga untuk isi artikel yang panjang. Baris grid: judul, isi, footer (tombol ×
+    // diposisikan absolut, di luar grid).
+    max-height: calc(100dvh - 2 * var(--swal2-container-padding));
+    grid-template-rows: auto minmax(0, 1fr) auto;
+
+    @media (min-width: 576px) {
+        --swal2-width: 500px;
+    }
+
+    @media (min-width: 992px) {
+        --swal2-width: 800px;
+    }
+
+    .swal2-title {
+        padding: 16px 56px 16px 16px;
+        border-bottom: 1px solid var(--border-color-light);
+        text-align: start;
+    }
+
+    .swal2-close {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        color: var(--text-muted);
+
+        &:hover {
+            color: var(--text);
+        }
+    }
+
+    .swal2-html-container {
+        padding: 16px;
+        font-size: 13px;
+        text-align: start;
+    }
+
+    .swal2-actions {
+        border-top: 1px solid var(--border-color-light);
+    }
+}
+
+// Isi modal detail: tabel rincian kiri & gambar kanan dengan rasio 8:4, sama dengan form
+// tambah/ubah; bertumpuk (tabel lebih dulu) saat modal belum selebar 800px.
+.detail-kolom {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+
+    .pratinjau-gambar {
+        margin-bottom: 0;
+    }
+
+    @media (min-width: 992px) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+}
+
+// Tabel rincian: label di kolom kiri selebar isinya, nilai di kanan; dibingkai agar
+// tampak sebagai satu tabel di dalam modal.
+.tabel-detail {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+
+    table.table {
+        th {
+            width: 1%;
+            white-space: nowrap;
+            vertical-align: top;
+            border-bottom-color: var(--border-color-light);
+        }
+
+        // Rata atas agar label sejajar baris pertama nilai yang panjang (mis. deskripsi).
+        td {
+            vertical-align: top;
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        tr:last-child th {
+            border-bottom: none;
+        }
+    }
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    // Kepala modal 60px (judul 28 + padding 16 + 16); tombol × 32px di tengah tingginya.
+    .swal2-title {
+        line-height: $baris-judul-modal;
+    }
+
+    .swal2-popup.swal-detail {
+        --swal2-close-button-inset: 14px 12px auto auto;
+        --swal2-actions-padding: 16px;
+
+        .swal2-html-container {
+            font-size: $teks-isi;
+            line-height: $baris-isi;
+        }
+    }
+}

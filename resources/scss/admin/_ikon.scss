@@ -1,0 +1,21 @@
+// <x-admin.icon> menggantikan SVG; Gentelella hanya mengatur ukuran "svg",
+// jadi kotak & ukuran glyph disamakan per konteks.
+i.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+
+    // Glyph Font Awesome berbeda lebar (mis. plus & trash-can 448 unit, filter &
+    // pen-to-square 512), jadi tiap glyph diberi bidang persegi 1em agar semua ikon
+    // dengan font-size sama tampil seukuran (permintaan pemilik). Glyph yang lebih
+    // lebar dari bidangnya (mis. eye 576 unit) dipusatkan flex agar luapannya terbagi
+    // rata kiri-kanan; text-align tidak memusatkan konten yang meluap.
+    &::before {
+        display: inline-flex;
+        justify-content: center;
+        width: 1em;
+        height: 1em;
+    }
+}

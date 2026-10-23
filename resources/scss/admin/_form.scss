@@ -1,0 +1,308 @@
+@use 'token' as *;
+
+// Tombol aksi form (Simpan, Batal) sama lebar agar barisnya rapi.
+.form-actions .btn {
+    min-width: 110px;
+    justify-content: center;
+}
+
+// Input file bergaya input group Bootstrap 5.3 (pilihan pemilik): tombol pilih berkas
+// menempel di sisi kiri setinggi input dan dipisah garis, bukan tombol kecil di dalam input.
+.form-control[type='file'] {
+    overflow: hidden;
+    padding-inline-start: 0;
+    line-height: 34px;
+    cursor: pointer;
+
+    &::file-selector-button {
+        height: 34px;
+        margin: 0;
+        margin-inline-end: 12px;
+        padding: 0 12px;
+        font: inherit;
+        color: var(--text);
+        background: var(--bg-surface-secondary);
+        border: 0;
+        border-inline-end: 1px solid var(--border-color);
+        border-radius: 0;
+        pointer-events: none;
+        transition: background 150ms;
+    }
+
+    &:hover::file-selector-button {
+        background: color-mix(in srgb, var(--bg-surface-secondary), var(--text) 8%);
+    }
+}
+
+// Tanda wajib diletakkan di depan label (*Nama Kategori, pilihan pemilik), jadi
+// jarak bawaan Gentelella yang ada di sisi kiri dipindah ke kanan.
+.form-label .required {
+    margin-inline: 0 2px;
+}
+
+// Dua isian sebaris mulai tablet (mis. warna utama & aksen); bertumpuk di ponsel.
+.isian-berjajar {
+    display: grid;
+    column-gap: 16px;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+// Pratinjau gambar tersimpan (mis. logo, favicon) di atas input file-nya. Latar
+// kotak-kotak memperlihatkan bagian transparan; gambar diskalakan tanpa terpotong.
+.pratinjau-gambar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 96px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius);
+    background: repeating-conic-gradient(var(--bg-surface-secondary) 0 25%, var(--bg-surface) 0 50%) 0 0 / 16px 16px;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+}
+
+// Gambar foto (mis. hero) butuh pratinjau lebih tinggi daripada logo.
+.pratinjau-gambar-lebar {
+    height: 180px;
+}
+
+// Isian warna (<x-admin.form-warna>): pemilih warna browser di kiri kotak hex, setinggi isian lain.
+.isian-warna {
+    display: flex;
+    gap: 8px;
+
+    // Chrome memberi tinggi tetap pada input warna; height auto membuatnya merentang setinggi kotak hex.
+    input[type='color'] {
+        flex: 0 0 44px;
+        height: auto;
+        padding: 3px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        background: var(--bg-surface);
+        cursor: pointer;
+
+        // Terkunci (Pengaturan Default): latar & kursor sama dengan .form-control:disabled Gentelella, warnanya
+        // dipudarkan seperti .btn:disabled agar tidak tampak masih bisa diklik.
+        &:disabled {
+            background: var(--bg-surface-secondary);
+            cursor: not-allowed;
+        }
+
+        &:disabled::-webkit-color-swatch {
+            opacity: 0.5;
+        }
+
+        &:disabled::-moz-color-swatch {
+            opacity: 0.5;
+        }
+
+        &::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        // Pseudo-elemen vendor ditulis terpisah: browser membuang seluruh aturan bila satu selektornya tak dikenal.
+        &::-webkit-color-swatch {
+            border: 0;
+            border-radius: var(--radius-sm);
+        }
+
+        &::-moz-color-swatch {
+            border: 0;
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    .form-control {
+        flex: 1;
+    }
+}
+
+// Isian tampilan template dikunci lewat <fieldset disabled> saat Pengaturan Default; fieldset sendiri tidak boleh
+// menambah garis atau jarak.
+.isian-tampilan {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+// Catatan di bawah sepasang isian warna: jaraknya ke isian sama dengan petunjuk (4px), ke isian berikutnya
+// sama dengan antargrup (16px).
+.catatan-warna {
+    margin-top: -12px;
+    margin-bottom: 16px;
+}
+
+// Repeater (resources/js/admin/repeater.js): tiap baris = isian + tombol hapus di kanan.
+.repeater-daftar {
+    display: grid;
+    gap: 8px;
+}
+
+.repeater-baris {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.repeater-isian {
+    flex: 1;
+    min-width: 0;
+}
+
+// Baris CTA: label, URL (paling lebar), dan gaya; bertumpuk di ponsel.
+.repeater-isian-cta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 130px;
+    gap: 8px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+// Tombol hapus setinggi input agar sejajar dengan baris isian.
+.repeater-baris .btn-icon {
+    flex: none;
+    width: 36px;
+    height: 36px;
+}
+
+.repeater-tambah {
+    margin-top: 8px;
+}
+
+// Baris gambar tambahan portofolio: miniatur 4:3 di kiri, isian di tengah, tombol buang di kanan, semuanya di tengah
+// tinggi miniatur.
+.repeater-baris.baris-gambar {
+    align-items: center;
+}
+
+.pratinjau-gambar-baris {
+    flex: none;
+    width: 64px;
+    height: 48px;
+    margin-bottom: 0;
+    padding: 0;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    img[hidden] {
+        display: none;
+    }
+}
+
+.baris-gambar-keterangan {
+    color: var(--text-muted);
+}
+
+// .form-help mengatur display sendiri sehingga atribut hidden perlu ditegaskan.
+[data-repeater-kosong][hidden] {
+    display: none;
+}
+
+.input-group i.input-icon {
+    font-size: 13px;
+    line-height: 14px;
+    text-align: center;
+}
+
+// Tombol tampil/sembunyikan kata sandi di sisi kanan input (resources/js/admin/tampil-sandi.js): .input-group
+// berikon gembok di halaman login, .isian-sandi tanpa ikon kiri di <x-admin.form-input type="password">.
+.isian-sandi {
+    position: relative;
+}
+
+:is(.input-group, .isian-sandi) .input-toggle {
+    position: absolute;
+    inset-inline-end: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &:hover {
+        color: var(--text);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: -2px;
+    }
+}
+
+:is(.input-group, .isian-sandi):has(.input-toggle:not([hidden])) .form-control {
+    padding-inline-end: 38px;
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    .form-label {
+        margin-bottom: 8px;
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+    }
+
+    .form-control {
+        height: $tinggi-kontrol;
+        font-size: $teks-isi;
+    }
+
+    textarea.form-control {
+        height: auto;
+    }
+
+    // Setinggi isian dikurangi garis atas & bawah.
+    .form-control[type='file'] {
+        line-height: $tinggi-kontrol - 2px;
+
+        &::file-selector-button {
+            height: $tinggi-kontrol - 2px;
+        }
+    }
+
+    .form-help,
+    .form-error {
+        margin-top: 4px;
+        font-size: $teks-kecil;
+        line-height: $baris-kecil;
+    }
+
+    .switch .switch-label {
+        font-size: $teks-isi;
+    }
+
+    .repeater-baris .btn-icon {
+        width: $tinggi-kontrol;
+        height: $tinggi-kontrol;
+    }
+}

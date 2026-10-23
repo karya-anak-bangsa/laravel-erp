@@ -1,0 +1,148 @@
+@use 'token' as *;
+
+// Kepala kolom tidak dipatah ("Jumlah Materi" tetap satu baris); di ponsel tabel digeser horizontal.
+table.table thead th {
+    white-space: nowrap;
+}
+
+// Kolom teks panjang (judul + deskripsi) diberi lebar minimum: di ponsel tabel
+// digeser horizontal (table-responsive) alih-alih memeras teks menjadi satu kata per baris.
+table.table .kolom-lebar {
+    min-width: 240px;
+}
+
+table.table .kolom-sedang {
+    min-width: 160px;
+}
+
+// Kolom pendek (gambar, urutan, kategori, tanggal, jumlah, status) selebar isinya seperti kolom aksi, sehingga sisa
+// lebar tabel jatuh ke kolom tanpa kelas ini: kolom judul + ringkasan, atau kolom data terakhir bila tabel tidak punya
+// judul (mis. kategori). Kolom data jadi rapat di kiri dengan jarak seragam (padding sel 16 + 16 px), tidak terpisah
+// ruang kosong yang dibagi rata oleh browser.
+table.table .kolom-pas,
+table.table .kolom-status,
+table.table .kolom-jumlah {
+    width: 1%;
+    white-space: nowrap;
+}
+
+table.table .kolom-status,
+table.table .kolom-jumlah {
+    text-align: center;
+}
+
+// Kolom pengisi kosong sebelum Aksi pada tabel yang semua kolom datanya pendek (kategori): menampung sisa lebar
+// agar kolom data tetap rapat di kiri, sedangkan kolom jumlah tetap selebar judulnya dengan angka di tengah.
+table.table .kolom-sisa {
+    width: 100%;
+    padding: 0;
+}
+
+// Kolom aksi tabel selebar isinya ("autofit"): lebar 1% + nowrap membuat browser
+// memberi kolom ini lebar minimum, sehingga sisa lebar tabel jatuh ke kolom data
+// dan tombol tidak melayang di tengah ruang kosong. Jarak antartombol memakai gap,
+// bukan spasi antar-elemen inline yang lebarnya tergantung font.
+table.table .kolom-aksi {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+// Kepala kolom Aksi di tengah, tombolnya rata kanan (segaris tepi kanan kartu).
+table.table td.kolom-aksi {
+    text-align: right;
+}
+
+.aksi-tabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+// Ringkasan di bawah judul tabel daftar: maksimal dua baris yang memenuhi lebar kolom. Baris pertama selalu penuh,
+// jadi jarak ke kolom berikutnya tetap padding sel, bukan sisa acak dari teks yang dipotong per jumlah karakter.
+.ringkasan-tabel {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+// Tabel yang hanya menampilkan informasi (mis. rincian): baris tidak menyala saat
+// disorot agar tidak terkesan bisa diklik.
+table.table.tabel-informasi tbody tr:hover {
+    background: transparent;
+}
+
+// Gambar mini di tabel daftar, rasio 3:2 seperti gambar hero.
+.gambar-mini {
+    display: block;
+    width: 96px;
+    height: 64px;
+    object-fit: cover;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-sm);
+}
+
+// Manajemen Template: contoh warna (warna utama & aksen, atau tingkat nada dasar) sebagai lingkaran yang
+// saling menumpuk; garis dalam tipis menjaga warna terang tetap terlihat di latar putih.
+.contoh-template {
+    display: inline-flex;
+    flex-shrink: 0;
+    vertical-align: middle;
+
+    span {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--bg-surface);
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+    }
+
+    span + span {
+        margin-inline-start: -6px;
+    }
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    .chip {
+        font-size: $teks-kecil;
+    }
+
+    // Isi tabel 14/20 dengan sel 10px 16px: baris berisi teks 41px seperti AdminLTE. Garis per sel (bukan collapse)
+    // agar setiap baris jatuh di piksel utuh. Kepala kolom huruf biasa setinggi isi, label baris rincian (tbody th)
+    // sedikit lebih tipis dan redup.
+    table.table {
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+
+        th,
+        td {
+            padding: 10px 16px;
+        }
+
+        th {
+            font-size: $teks-isi;
+            line-height: $baris-isi;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        thead th {
+            color: var(--text-secondary);
+        }
+
+        tbody th {
+            font-weight: var(--font-weight-medium);
+        }
+    }
+
+    .ringkasan-tabel {
+        margin-top: 2px;
+    }
+}

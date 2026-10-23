@@ -1,0 +1,51 @@
+@use 'token' as *;
+
+// Toast Simple Notify: tampilan bawaan dipertahankan, hanya font, sudut, dan
+// warna latar/teks memakai token Gentelella agar seragam dengan panel admin.
+.sn-notifications-container {
+    --sn-notify-radius: var(--radius);
+    font-family: inherit;
+}
+
+.sn-notify-outline {
+    --sn-notify-background-color: var(--bg-surface);
+
+    .sn-notify-title {
+        --sn-notify-title-color: var(--text);
+        font-size: 14px;
+    }
+
+    .sn-notify-text {
+        --sn-notify-text-color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    .sn-notify-close {
+        --sn-notify-close-icon-color: var(--text-muted);
+    }
+}
+
+// Ikon Font Awesome di <x-admin.alert> dan <x-admin.empty-state>, menggantikan SVG Gentelella.
+.alert .alert-icon {
+    font-size: 14px;
+}
+
+.empty-state .empty-state-icon .icon {
+    width: 22px;
+    height: 22px;
+    font-size: 20px;
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    .empty-state .empty-state-title {
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+    }
+
+    .empty-state .empty-state-text {
+        font-size: $teks-kecil;
+        line-height: $baris-kecil;
+    }
+}

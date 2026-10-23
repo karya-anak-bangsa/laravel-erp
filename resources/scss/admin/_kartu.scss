@@ -1,0 +1,33 @@
+@use 'token' as *;
+
+// Kartu bergaya Gentelella. Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; menjadi
+// aturan kartu biasa saat skala ini berlaku di semua halaman admin.
+.skala-baru {
+    // Kartu cukup bergaris 1px tanpa bayangan: bayangan Gentelella (0 2px 4px 4%) membentuk pita ±5px di bawah
+    // kartu yang dinilai pemilik terlalu tebal.
+    .card {
+        box-shadow: none;
+    }
+
+    .card-header {
+        padding: 16px;
+    }
+
+    // Tebal 500 (Gentelella 600 dinilai pemilik terlalu tebal); judul tetap di atas isinya lewat ukuran 16px.
+    .card-title {
+        font-size: $teks-judul-kartu;
+        line-height: $baris-judul-kartu;
+        font-weight: var(--font-weight-medium);
+        letter-spacing: -0.2px;
+    }
+
+    .card-subtitle {
+        margin-top: 0;
+        font-size: $teks-kecil;
+        line-height: $baris-kecil;
+    }
+
+    .card-footer {
+        padding: 8px 16px;
+    }
+}

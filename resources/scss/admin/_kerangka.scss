@@ -1,0 +1,210 @@
+@use 'token' as *;
+
+// Logo dibuat putih seperti footer situs publik: warna navy logo asli tidak terbaca di atas sidebar gelap.
+.sidebar-brand .brand-logo {
+    display: block;
+    width: auto;
+    height: 22px;
+    filter: brightness(0) invert(1);
+}
+
+// Topbar solid; latar bawaan Gentelella semi-transparan + blur sehingga isi halaman terlihat di baliknya saat digulir.
+.topbar {
+    background: var(--bg-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+// Ikon tombol topbar (buka/ciutkan sidebar).
+.sidebar-toggle .icon,
+.tb-btn .icon {
+    width: 18px;
+    height: 18px;
+    font-size: 15px;
+}
+
+// Kerangka (sidebar, breadcrumb, footer, menu pengguna) setara AdminLTE v4 di semua halaman, bukan hanya halaman uji
+// skala-baru, agar menu tidak melompat saat berpindah halaman (pilihan pemilik 2026-10-23). Teks 14/20 (16px Source
+// Sans 3 = 14px Inter); baris menu 34px (AdminLTE 40px) agar sidebar muat tanpa gulir di 1536×790 saat submenu
+// terpanjang (Tutorial, 3 butir) terbuka; pada 36px Log Aktivitas terpotong dan sidebar bergulir 21px. Gentelella tidak
+// seragam: menu 13px, menu bersubmenu 14px (font: inherit pada <button>), submenu 12,5px.
+.nav-label {
+    padding: 10px 12px 6px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.nav-link {
+    gap: 12px;
+    min-height: 34px;
+    margin-bottom: 2px;
+    padding: 7px 12px;
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        font-size: 16px;
+    }
+}
+
+// Teks submenu segaris dengan teks menu induk (12 + ikon 20 + 12 = 44px dari tepi grup) dan garis pemandu di tengah
+// ikon induk; jarak antarbaris 2px seperti menu. Ujung bawah garis menyertakan margin butir terakhir (4 + 2px) agar
+// rata dengan tepi butir pertama dan terakhir.
+.nav-tree .nav-sub > .nav-sub-inner {
+    padding-inline-start: 32px;
+    transition: padding 220ms cubic-bezier(0.2, 0, 0, 1);
+
+    &::before {
+        inset-inline-start: 22px;
+        bottom: 6px;
+    }
+}
+
+// Padding pembungkus submenu bawaan Gentelella tetap terhitung saat tertutup (baris
+// grid 0fr) sehingga ada celah di bawah menu induk; dinolkan selama tertutup.
+.nav-tree:not(.open) .nav-sub > .nav-sub-inner {
+    padding-block: 0;
+}
+
+.nav-sublink {
+    margin: 0 0 2px;
+    padding: 7px 12px;
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+}
+
+.breadcrumb {
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+}
+
+// Submenu sidebar (.nav-tree): chevron Font Awesome dikecilkan setara SVG 12px bawaan
+// Gentelella, bukan ukuran ikon menu 20px.
+.nav-toggle .icon.nav-chev {
+    width: 12px;
+    height: 12px;
+    font-size: 10px;
+}
+
+// .sidebar-user dijadikan <button> pembuka menu pengguna; gaya bawaan <button> direset
+// agar tampilannya tetap seperti blok profil Gentelella.
+.sidebar-user {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: start;
+    color: inherit;
+
+    &[aria-expanded='true'] {
+        background: var(--sidebar-hover);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: -2px;
+    }
+
+    .sidebar-user-info .name {
+        display: block;
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+    }
+}
+
+.sidebar-user-caret {
+    font-size: 10px;
+    color: var(--sidebar-text);
+}
+
+// Mode rail (sidebar diciutkan, lebar 64px) hanya menampilkan logo yang diperkecil dan avatar.
+@media (min-width: 769px) {
+    body.sidebar-rail .sidebar-brand .brand-logo {
+        height: 18px;
+    }
+
+    body.sidebar-rail .sidebar-user-caret {
+        display: none;
+    }
+}
+
+// Popover menu pengguna (openPanel menambah .menu-panel yang terlalu lebar untuk menu pendek).
+.menu-popover.menu-pengguna {
+    min-width: 220px;
+    max-width: 280px;
+    padding: 4px;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    // Profil Saya berupa tautan: tanpa garis bawah a:hover bawaan Gentelella.
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px;
+        font-size: $teks-isi;
+        line-height: $baris-isi;
+        text-decoration: none;
+    }
+
+    .menu-item .icon {
+        width: 16px;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .menu-item-keluar,
+    .menu-item-keluar .icon {
+        color: var(--red);
+    }
+}
+
+.menu-pengguna-header {
+    padding: 8px 10px 6px;
+    min-width: 0;
+}
+
+.menu-pengguna-nama {
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.menu-pengguna-email {
+    font-size: $teks-kecil;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Footer selebar layar agar garis atasnya utuh; isinya sejajar dengan konten yang dibatasi (_halaman.scss).
+.footer {
+    padding-inline: max(24px, calc((100% - #{$lebar-konten-maks}) / 2 + 24px));
+    font-size: $teks-isi;
+    line-height: $baris-isi;
+
+    // Di ponsel kedua teks bertumpuk (hak cipta satu baris, versi di bawahnya) alih-alih berdesakan lalu patah.
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+// Skala uji setara AdminLTE (lihat _token.scss) di halaman ber-body .skala-baru; dilebur ke aturan di atas saat
+// skala ini berlaku di semua halaman admin.
+.skala-baru {
+    // Di ponsel isi footer sejajar dengan tepi kartu (tepi halaman 20px, lihat _halaman.scss); sebelumnya 24px.
+    @media (max-width: 768px) {
+        .footer {
+            padding-inline: $jarak-kartu;
+        }
+    }
+}
