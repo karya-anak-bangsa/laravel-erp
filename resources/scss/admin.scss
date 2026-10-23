@@ -1027,14 +1027,15 @@ table.table td.kolom-aksi {
         letter-spacing: -0.5px;
     }
 
-    // Jarak antarkartu 24px ke samping & ke bawah seperti gutter AdminLTE (Gentelella 16px).
+    // Jarak antarkartu 20px ke samping & ke bawah, sama dengan jarak kartu ke bilah tombol form (.form-actions):
+    // gutter AdminLTE 24px dinilai pemilik terlalu renggang, Gentelella 16px terlalu rapat.
     .row {
-        gap: 24px;
+        gap: 20px;
     }
 
     .row:not(:last-child),
     .kartu-filter {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     .card-header {
@@ -1169,10 +1170,6 @@ table.table td.kolom-aksi {
     .repeater-baris .btn-icon {
         width: 38px;
         height: 38px;
-    }
-
-    .form-actions {
-        margin-top: 24px;
     }
 
     // Kotak pencarian & dropdown kartu filter setinggi tombol Terapkan; ikon cari seukuran ikon tombol reguler.
