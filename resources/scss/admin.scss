@@ -138,7 +138,6 @@ i.icon {
     }
 }
 
-.nav-link .icon,
 .sidebar-toggle .icon,
 .tb-btn .icon {
     width: 18px;
@@ -1038,6 +1037,18 @@ table.table td.kolom-aksi {
         margin-bottom: 20px;
     }
 
+    // Di ponsel tepi halaman 20px seperti AdminLTE (Gentelella 12px), sama dengan jarak antarkartu; isi footer ikut
+    // sejajar dengan tepi kartu (sebelumnya 24px).
+    @media (max-width: 768px) {
+        .page-wrapper {
+            padding: 20px;
+        }
+
+        .footer {
+            padding-inline: 20px;
+        }
+    }
+
     .card-header {
         padding: 16px;
     }
@@ -1190,6 +1201,14 @@ table.table td.kolom-aksi {
 
     .kartu-filter select.kolom-filter {
         height: 38px;
+    }
+
+    // Lebar 25% hanya ±114px di tablet 820px, sehingga "Cari Data" dan "Semua status" terpotong (kotak pencarian
+    // Chrome tetap menyisakan ruang tombol × walau kosong). Minimal 164px: teks bawaan terpanjang ("Semua pengguna"
+    // 116px) + padding & garis dropdown 46px = 162px, ditambah cadangan 2px untuk pembulatan piksel; bila tidak muat
+    // sebaris, tombol turun ke baris kedua.
+    .kartu-filter .kolom-filter {
+        min-width: 164px;
     }
 
     // Editor: isi 14px dengan jarak baris 22px agar paragraf nyaman dibaca; tinggi tetap 8 baris. Tombol toolbar 30px
@@ -1404,8 +1423,58 @@ table.table.tabel-informasi tbody tr:hover {
     background: transparent;
 }
 
+// Kerangka (sidebar, breadcrumb, footer, menu pengguna) setara AdminLTE v4 di semua halaman, bukan hanya halaman uji
+// skala-baru, agar menu tidak melompat saat berpindah halaman (pilihan pemilik 2026-10-23). Teks 14/20 (16px Source
+// Sans 3 = 14px Inter); baris menu 34px (AdminLTE 40px) agar sidebar muat tanpa gulir di 1536×790 saat submenu
+// terpanjang (Tutorial, 3 butir) terbuka; pada 36px Log Aktivitas terpotong dan sidebar bergulir 21px. Gentelella tidak
+// seragam: menu 13px, menu bersubmenu 14px (font: inherit pada <button>), submenu 12,5px.
+.nav-label {
+    padding: 10px 12px 6px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.nav-link {
+    gap: 12px;
+    min-height: 34px;
+    margin-bottom: 2px;
+    padding: 7px 12px;
+    font-size: 14px;
+    line-height: 20px;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        font-size: 16px;
+    }
+}
+
+// Teks submenu segaris dengan teks menu induk (12 + ikon 20 + 12 = 44px dari tepi grup) dan garis pemandu di tengah
+// ikon induk; jarak antarbaris 2px seperti menu. Ujung bawah garis menyertakan margin butir terakhir (4 + 2px) agar
+// rata dengan tepi butir pertama dan terakhir.
+.nav-tree .nav-sub > .nav-sub-inner {
+    padding-inline-start: 32px;
+
+    &::before {
+        inset-inline-start: 22px;
+        bottom: 6px;
+    }
+}
+
+.nav-sublink {
+    margin: 0 0 2px;
+    padding: 7px 12px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    line-height: 20px;
+}
+
 // Submenu sidebar (.nav-tree): chevron Font Awesome dikecilkan setara SVG 12px bawaan
-// Gentelella, bukan ukuran ikon menu 18px.
+// Gentelella, bukan ukuran ikon menu 20px.
 .nav-toggle .icon.nav-chev {
     width: 12px;
     height: 12px;
@@ -1681,6 +1750,8 @@ table.table.tabel-informasi tbody tr:hover {
 
     .sidebar-user-info .name {
         display: block;
+        font-size: 14px;
+        line-height: 20px;
     }
 }
 
@@ -1717,6 +1788,9 @@ table.table.tabel-informasi tbody tr:hover {
         display: flex;
         align-items: center;
         gap: 10px;
+        padding: 6px 10px;
+        font-size: 14px;
+        line-height: 20px;
         text-decoration: none;
     }
 
@@ -1738,7 +1812,8 @@ table.table.tabel-informasi tbody tr:hover {
 }
 
 .menu-pengguna-nama {
-    font-size: 13px;
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 600;
     color: var(--text);
 }
@@ -1763,6 +1838,8 @@ $lebar-konten-maks: 1600px;
 
 .footer {
     padding-inline: max(24px, calc((100% - #{$lebar-konten-maks}) / 2 + 24px));
+    font-size: 14px;
+    line-height: 20px;
 
     // Di ponsel kedua teks bertumpuk (hak cipta satu baris, versi di bawahnya) alih-alih berdesakan lalu patah.
     @media (max-width: 768px) {
